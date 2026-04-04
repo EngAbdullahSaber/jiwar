@@ -1,0 +1,474 @@
+import { useState, useEffect } from 'react';
+import { useLocation, useParams } from "wouter";
+import { TopHeader } from '../../components/TopHeader';
+import { Shell } from '../../components/shared/Shell';
+import { 
+  Shield, 
+  ChevronRight, 
+  Save, 
+  ArrowLeft,
+  Search,
+  LayoutGrid,
+  ClipboardList,
+  Users,
+  Wallet,
+  FileText,
+  CheckCircle2,
+  AlertCircle,
+  Loader2,
+  Settings,
+  Sparkles,
+  Fingerprint,
+  Info
+} from 'lucide-react';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import api from '@/lib/api';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { toast } from "react-hot-toast";
+import { cn } from '@/lib/utils';
+
+interface Permission {
+  id: number;
+  resource: string;
+  actions: string[];
+}
+
+interface PermissionResponse {
+  code: number;
+  data: Permission[];
+}
+
+interface RolePermission {
+  id: number;
+  permission: Permission;
+}
+
+interface Role {
+  id: number;
+  name: string;
+  description: string;
+  rolePermissions: RolePermission[];
+}
+
+interface RoleDataResponse {
+  code: number;
+  data: Role;
+}
+
+const RESOURCE_CONFIG: Record<string, { name: string, description: string, icon: any }> = {
+  user: { name: 'Users Management', description: 'Manage system users and their account settings', icon: Users },
+  role: { name: 'Roles & Permissions', description: 'Define access levels and system permissions', icon: Shield },
+  legality: { name: 'Legality & Compliance', description: 'Manage legal documents and compliance records', icon: LayoutGrid },
+  template: { name: 'Templates & Modules', description: 'System templates and module configurations', icon: ClipboardList },
+  projects: { name: 'Projects', description: 'Site planning, timelines, and floorplans', icon: LayoutGrid },
+  sales: { name: 'Sales', description: 'Inventory booking and contract management', icon: ClipboardList },
+  clients: { name: 'Clients', description: 'Lead nurturing and customer support tickets', icon: Users },
+  financials: { name: 'Financials', description: 'Invoicing, budgeting, and payroll processing', icon: Wallet },
+  contracts: { name: 'Contracts', description: 'On-site logs, materials, and labor management', icon: FileText },
+};
+
+export default function UpdateRole() {
+  const { id } = useParams();
+  const [, setLocation] = useLocation();
+  const queryClient = useQueryClient();
+  const [formData, setFormData] = useState({
+    name: '',
+    description: ''
+  });
+  const [searchValue, setSearchValue] = useState("");
+  
+  const { data: permissionsData, isLoading: permissionsLoading } = useQuery<PermissionResponse>({
+    queryKey: ['permissions'],
+    queryFn: async () => {
+      const response = await api.get('/role-permission/permissions/all');
+      return response.data;
+    }
+  });
+
+  const { data: roleData, isLoading: roleLoading } = useQuery<RoleDataResponse>({
+    queryKey: ['role', id],
+    queryFn: async () => {
+      const response = await api.get(`/role-permission/${id}`);
+      return response.data;
+    },
+    enabled: !!id
+  });
+
+  const [matrix, setMatrix] = useState<Record<number, Record<string, boolean>>>({});
+
+  useEffect(() => {
+    if (roleData?.data) {
+      setFormData({
+        name: roleData.data.name,
+        description: roleData.data.description || ''
+      });
+
+      const newMatrix: Record<number, Record<string, boolean>> = {};
+      roleData.data.rolePermissions.forEach(rp => {
+        newMatrix[rp.permission.id] = {
+           READ: rp.permission.actions.includes('READ'),
+           CREATE: rp.permission.actions.includes('CREATE'),
+           UPDATE: rp.permission.actions.includes('UPDATE'),
+           DELETE: rp.permission.actions.includes('DELETE'),
+        };
+      });
+      setMatrix(newMatrix);
+    }
+  }, [roleData]);
+
+  const togglePermission = (permissionId: number, action: string) => {
+    setMatrix(prev => ({
+      ...prev,
+      [permissionId]: {
+        ...(prev[permissionId] || { READ: false, CREATE: false, UPDATE: false, DELETE: false }),
+        [action]: !prev[permissionId]?.[action]
+      }
+    }));
+  };
+
+  const updateMutation = useMutation({
+    mutationFn: async (roleData: any) => {
+      const response = await api.patch(`/role-permission/${id}`, roleData);
+      return response.data;
+    },
+    onSuccess: () => {
+      toast.success('Role updated successfully');
+      queryClient.invalidateQueries({ queryKey: ['roles'] });
+      queryClient.invalidateQueries({ queryKey: ['role', id] });
+      setLocation('/roles');
+    },
+    onError: (error: any) => {
+      toast.error(error.response?.data?.message?.english || 'Failed to update role');
+    }
+  });
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!formData.name) {
+      toast.error('Role name is required');
+      return;
+    }
+
+    const permissionIds = Object.entries(matrix)
+      .filter(([_, actions]) => Object.values(actions).some(v => v))
+      .map(([id]) => parseInt(id));
+
+    if (permissionIds.length === 0) {
+      toast.error('Please select at least one permission');
+      return;
+    }
+
+    updateMutation.mutate({
+      name: formData.name,
+      description: formData.description,
+      permissionIds: permissionIds
+    });
+  };
+
+  if (roleLoading) {
+    return (
+      <Shell>
+        <TopHeader />
+        <div className="flex items-center justify-center min-h-[60vh]">
+          <Loader2 className="w-12 h-12 animate-spin text-[#B39371]" />
+        </div>
+      </Shell>
+    );
+  }
+
+  return (
+    <Shell>
+      <TopHeader />
+      
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-50 dark:from-gray-950 dark:via-gray-900 dark:to-gray-950 pb-20">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+          
+          {/* Detailed Hero Header */}
+          <div className="bg-white dark:bg-gray-900 rounded-md border border-gray-200 dark:border-gray-800 p-8 shadow-sm relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-96 h-96 bg-[#B39371]/5 rounded-full -mr-48 -mt-48 blur-3xl opacity-50" />
+            <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
+              <div className="flex items-center gap-6">
+                <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#4A1B1B] to-[#6B2727] shadow-xl flex items-center justify-center border border-white/10 rotate-3">
+                  <Shield className="w-8 h-8 text-[#B39371]" />
+                </div>
+                <div>
+                  <div className="flex items-center gap-2 mb-1.5">
+                    <div className="flex items-center gap-1.5 text-xs font-bold text-[#B39371] uppercase tracking-widest">
+                      <Settings className="w-3.5 h-3.5" />
+                      Protocol Update
+                    </div>
+                  </div>
+                  <h1 className="text-3xl font-black text-gray-900 dark:text-white tracking-tight">Modify Security Role</h1>
+                  <p className="text-sm text-gray-500 dark:text-gray-400 mt-1 max-w-lg leading-relaxed">
+                    Update clearance levels for <span className="text-[#B39371] font-bold">"{roleData?.data.name}"</span> and refine access across system modules.
+                  </p>
+                </div>
+              </div>
+              <Button 
+                variant="outline" 
+                onClick={() => setLocation('/roles')}
+                className="h-11 rounded-xl px-6 border-gray-200 text-gray-500 hover:text-gray-900 dark:hover:text-white dark:border-gray-800 transition-all font-bold gap-2"
+              >
+                <ArrowLeft className="w-4 h-4" />
+                Return to Registry
+              </Button>
+            </div>
+          </div>
+
+          <form onSubmit={handleSubmit} className="space-y-8">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+              {/* Left Column: Form Details */}
+              <div className="lg:col-span-4 space-y-8">
+                <motion.div 
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  className="bg-white dark:bg-gray-900 rounded-3xl border border-gray-100 dark:border-gray-800 p-8 shadow-sm sticky top-8"
+                >
+                  <div className="flex items-center gap-3 mb-8">
+                    <div className="w-10 h-10 rounded-xl bg-[#4A1B1B]/5 dark:bg-white/5 flex items-center justify-center text-[#4A1B1B] dark:text-[#B39371]">
+                      <Fingerprint className="w-5 h-5" />
+                    </div>
+                    <div>
+                      <h2 className="text-lg font-bold text-gray-900 dark:text-white">Role Identity</h2>
+                      <p className="text-[11px] text-gray-400 font-medium">Core identifier for the role</p>
+                    </div>
+                  </div>
+
+                  <div className="space-y-6">
+                    <div className="space-y-2">
+                      <Label className="text-xs font-black text-gray-400 uppercase tracking-widest px-1">Role Identifier</Label>
+                      <Input 
+                        placeholder="e.g. Lead Architect" 
+                        className="h-12 rounded-xl bg-gray-50 dark:bg-gray-800/50 border-gray-100 dark:border-gray-800 focus:bg-white dark:focus:bg-gray-800 focus:ring-4 focus:ring-[#B39371]/10 transition-all font-bold placeholder:font-normal"
+                        value={formData.name}
+                        onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
+                        required
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label className="text-xs font-black text-gray-400 uppercase tracking-widest px-1">Deployment Memo</Label>
+                      <textarea 
+                        placeholder="Detailed description of role responsibilities..." 
+                        rows={4}
+                        className="w-full p-4 rounded-xl bg-gray-50 dark:bg-gray-800/50 border border-gray-100 dark:border-gray-800 focus:bg-white dark:focus:bg-gray-800 focus:ring-4 focus:ring-[#B39371]/10 transition-all font-medium text-sm placeholder:font-normal resize-none"
+                        value={formData.description}
+                        onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="mt-8 pt-8 border-t border-gray-50 dark:border-gray-800 space-y-4">
+                    <div className="flex items-start gap-3 p-4 bg-emerald-50 dark:bg-emerald-500/5 rounded-2xl border border-emerald-100 dark:border-emerald-500/10">
+                      <CheckCircle2 className="w-4 h-4 text-emerald-500 mt-0.5 shrink-0" />
+                      <p className="text-[11px] text-emerald-700 dark:text-emerald-400 font-medium leading-relaxed">
+                        Security changes are deployed instantly across all associated accounts.
+                      </p>
+                    </div>
+                    <div className="flex items-start gap-3 p-4 bg-amber-50 dark:bg-amber-500/5 rounded-2xl border border-amber-100 dark:border-amber-500/10">
+                      <AlertCircle className="w-4 h-4 text-amber-500 mt-0.5 shrink-0" />
+                      <p className="text-[11px] text-amber-700 dark:text-amber-400 font-medium leading-relaxed">
+                        Modifying core permissions may affect system stability. Verify before committing.
+                      </p>
+                    </div>
+                  </div>
+                </motion.div>
+              </div>
+
+              {/* Right Column: Permissions Matrix */}
+              <div className="lg:col-span-8 space-y-8">
+                <motion.div 
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.1 }}
+                  className="bg-white dark:bg-gray-900 rounded-3xl border border-gray-100 dark:border-gray-800 shadow-sm overflow-hidden"
+                >
+                  <div className="p-8 pb-4 border-b border-gray-50 dark:border-gray-800">
+                    <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#4A1B1B] to-[#6B2727] flex items-center justify-center text-[#B39371] shadow-lg">
+                          <LayoutGrid className="w-5 h-5" />
+                        </div>
+                        <div>
+                          <h2 className="text-xl font-black text-gray-900 dark:text-white tracking-tight">Access Matrix</h2>
+                          <p className="text-xs text-gray-400 font-medium">Update granular permissions per module</p>
+                        </div>
+                      </div>
+                      <div className="relative w-full md:w-72">
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                        <Input 
+                          placeholder="Search modules..." 
+                          className="h-10 pl-9 rounded-xl bg-gray-50 dark:bg-gray-800/50 border-none text-sm font-medium"
+                          value={searchValue}
+                          onChange={(e) => setSearchValue(e.target.value)}
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="overflow-x-auto">
+                    <Table>
+                      <TableHeader className="bg-gray-50/50 dark:bg-white/5">
+                        <TableRow className="border-b border-gray-100 dark:border-gray-800">
+                          <TableHead className="w-[350px] text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] h-12 px-8">Component Module</TableHead>
+                          <TableHead className="text-center text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] h-12 w-24">Read</TableHead>
+                          <TableHead className="text-center text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] h-12 w-24">Create</TableHead>
+                          <TableHead className="text-center text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] h-12 w-24">Edit</TableHead>
+                          <TableHead className="text-center text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] h-12 w-24">Delete</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {permissionsLoading ? (
+                          Array.from({ length: 6 }).map((_, i) => (
+                             <TableRow key={i} className="animate-pulse h-20 border-b border-gray-50 dark:border-gray-800/50">
+                                <TableCell className="px-8"><div className="h-10 bg-gray-100 dark:bg-gray-800 rounded-xl w-64" /></TableCell>
+                                <TableCell><div className="h-5 w-5 bg-gray-100 dark:bg-gray-800 rounded mx-auto" /></TableCell>
+                                <TableCell><div className="h-5 w-5 bg-gray-100 dark:bg-gray-800 rounded mx-auto" /></TableCell>
+                                <TableCell><div className="h-5 w-5 bg-gray-100 dark:bg-gray-800 rounded mx-auto" /></TableCell>
+                                <TableCell><div className="h-5 w-5 bg-gray-100 dark:bg-gray-800 rounded mx-auto" /></TableCell>
+                             </TableRow>
+                          ))
+                        ) : (
+                          <AnimatePresence>
+                            {permissionsData?.data.filter(p => 
+                              p.resource.toLowerCase().includes(searchValue.toLowerCase()) ||
+                              (RESOURCE_CONFIG[p.resource]?.name.toLowerCase().includes(searchValue.toLowerCase()) ?? false)
+                            ).map((perm, idx) => {
+                              const config = RESOURCE_CONFIG[perm.resource] || { name: perm.resource, description: 'Module access', icon: Shield };
+                              const Icon = config.icon;
+                              const matrixRow = matrix[perm.id] || { READ: false, CREATE: false, UPDATE: false, DELETE: false };
+                              
+                              return (
+                                <motion.tr 
+                                  key={perm.id}
+                                  initial={{ opacity: 0, y: 10 }}
+                                  animate={{ opacity: 1, y: 0 }}
+                                  transition={{ delay: idx * 0.03 }}
+                                  className="group hover:bg-[#B39371]/5 dark:hover:bg-[#B39371]/10 transition-colors border-b border-gray-50 dark:border-gray-800 last:border-0 h-20"
+                                >
+                                  <TableCell className="px-8">
+                                    <div className="flex items-center gap-4">
+                                      <div className="w-12 h-12 rounded-2xl bg-gray-100 dark:bg-white/5 flex items-center justify-center text-gray-400 group-hover:bg-[#4A1B1B]/10 group-hover:text-[#4A1B1B] dark:group-hover:bg-[#B39371]/20 dark:group-hover:text-[#B39371] transition-all border border-transparent group-hover:border-[#4A1B1B]/10 dark:group-hover:border-[#B39371]/30">
+                                        <Icon className="w-6 h-6" />
+                                      </div>
+                                      <div className="space-y-0.5">
+                                        <p className="text-sm font-black text-gray-900 dark:text-white uppercase tracking-tight">{config.name}</p>
+                                        <p className="text-[11px] text-gray-400 dark:text-gray-500 font-medium line-clamp-1">{config.description}</p>
+                                      </div>
+                                    </div>
+                                  </TableCell>
+                                  <TableCell className="text-center">
+                                    <div className="flex justify-center">
+                                      {perm.actions.includes('READ') ? (
+                                        <Checkbox 
+                                          checked={matrixRow.READ}
+                                          onCheckedChange={() => togglePermission(perm.id, 'READ')}
+                                          className="w-6 h-6 rounded-lg border-gray-200 dark:border-gray-700 data-[state=checked]:bg-[#B39371] data-[state=checked]:border-[#B39371] transition-all hover:scale-110 active:scale-90"
+                                        />
+                                      ) : (
+                                        <span className="w-1.5 h-1.5 rounded-full bg-gray-200 dark:bg-gray-800" />
+                                      )}
+                                    </div>
+                                  </TableCell>
+                                  <TableCell className="text-center">
+                                    <div className="flex justify-center">
+                                      {perm.actions.includes('CREATE') ? (
+                                        <Checkbox 
+                                          checked={matrixRow.CREATE}
+                                          onCheckedChange={() => togglePermission(perm.id, 'CREATE')}
+                                          className="w-6 h-6 rounded-lg border-gray-200 dark:border-gray-700 data-[state=checked]:bg-[#B39371] data-[state=checked]:border-[#B39371] transition-all hover:scale-110 active:scale-90"
+                                        />
+                                      ) : (
+                                        <span className="w-1.5 h-1.5 rounded-full bg-gray-200 dark:bg-gray-800" />
+                                      )}
+                                    </div>
+                                  </TableCell>
+                                  <TableCell className="text-center">
+                                    <div className="flex justify-center">
+                                      {perm.actions.includes('UPDATE') ? (
+                                        <Checkbox 
+                                          checked={matrixRow.UPDATE}
+                                          onCheckedChange={() => togglePermission(perm.id, 'UPDATE')}
+                                          className="w-6 h-6 rounded-lg border-gray-200 dark:border-gray-700 data-[state=checked]:bg-[#B39371] data-[state=checked]:border-[#B39371] transition-all hover:scale-110 active:scale-90"
+                                        />
+                                      ) : (
+                                        <span className="w-1.5 h-1.5 rounded-full bg-gray-200 dark:bg-gray-800" />
+                                      )}
+                                    </div>
+                                  </TableCell>
+                                  <TableCell className="text-center">
+                                    <div className="flex justify-center">
+                                      {perm.actions.includes('DELETE') ? (
+                                        <Checkbox 
+                                          checked={matrixRow.DELETE}
+                                          onCheckedChange={() => togglePermission(perm.id, 'DELETE')}
+                                          className="w-6 h-6 rounded-lg border-gray-200 dark:border-gray-700 data-[state=checked]:bg-[#B39371] data-[state=checked]:border-[#B39371] transition-all hover:scale-110 active:scale-90"
+                                        />
+                                      ) : (
+                                        <span className="w-1.5 h-1.5 rounded-full bg-gray-200 dark:bg-gray-800" />
+                                      )}
+                                    </div>
+                                  </TableCell>
+                                </motion.tr>
+                              );
+                            })}
+                          </AnimatePresence>
+                        )}
+                      </TableBody>
+                    </Table>
+                  </div>
+
+                  {/* Submission Row */}
+                  <div className="p-8 bg-gray-50/50 dark:bg-white/5 border-t border-gray-100 dark:border-gray-800 flex items-center justify-between gap-6">
+                    <div className="flex items-center gap-3 text-gray-400">
+                      <Info className="w-4 h-4" />
+                      <p className="text-[10px] font-bold uppercase tracking-widest">Protocol modification authorization</p>
+                    </div>
+                    <div className="flex items-center gap-4">
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        onClick={() => setLocation('/roles')}
+                        className="h-12 px-8 rounded-xl font-bold text-gray-400 hover:text-gray-900 dark:hover:text-white transition-all"
+                      >
+                        Cancel Update
+                      </Button>
+                      <Button
+                        type="submit"
+                        disabled={updateMutation.isPending}
+                        className="h-12 px-10 rounded-xl bg-gradient-to-r from-[#4A1B1B] to-[#6B2727] hover:from-[#6B2727] hover:to-[#4A1B1B] text-white font-bold shadow-2xl shadow-[#4A1B1B]/30 flex items-center gap-3 transition-all active:scale-[0.98] min-w-[220px]"
+                      >
+                        {updateMutation.isPending ? (
+                          <>
+                            <Loader2 className="w-5 h-5 animate-spin" />
+                            Updating registry...
+                          </>
+                        ) : (
+                          <>
+                            <span>Commit Modifications</span>
+                            <Sparkles className="w-4 h-4 text-[#B39371]" />
+                          </>
+                        )}
+                      </Button>
+                    </div>
+                  </div>
+                </motion.div>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </Shell>
+  );
+}
