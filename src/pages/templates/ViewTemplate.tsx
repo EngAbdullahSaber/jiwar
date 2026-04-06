@@ -3,20 +3,9 @@ import { useQuery } from '@tanstack/react-query';
 import { TopHeader } from '../../components/TopHeader';
 import { Shell } from '../../components/shared/Shell';
 import { 
-  ChevronLeft, 
   MapPin,
-  Ruler,
-  Info,
-  Check,
-  FileText,
-  Calendar,
-  Layers,
-  Sparkles,
-  BedDouble,
   Bath,
   Edit,
-  Download,
-  Home,
   DoorOpen,
   Maximize2,
   Users,
@@ -31,18 +20,22 @@ import {
   Building2,
   Hash,
   Tag,
-  DollarSign,
   ArrowLeft,
   Share2,
-  Printer,
-  Star,
   AlertCircle,
-  ExternalLink
+  ExternalLink,
+  Sparkles,
+  Layers,
+  BedDouble,
+  Calendar,
+  Home
 } from 'lucide-react';
 import api from '@/lib/api';
+import toast from 'react-hot-toast';
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Badge } from "@/components/ui/badge";
 
 interface Template {
@@ -53,7 +46,10 @@ interface Template {
   };
   modelType: string;
   sku: string;
-  managementFees: string;
+  maidRoom: number;
+  clothsRoom: number;
+  driverRoom: number;
+  rooftop: boolean;
   size: number;
   totalRooms: number;
   bedrooms: number;
@@ -155,6 +151,7 @@ const DetailItem = ({ icon: Icon, label, value }: any) => (
 export default function ViewTemplate() {
   const [, params] = useRoute("/templates/:id");
   const [, setLocation] = useLocation();
+  const { t, i18n } = useTranslation();
   const id = params?.id;
   const [imageError, setImageError] = useState(false);
 
@@ -181,8 +178,7 @@ export default function ViewTemplate() {
                 </div>
               </div>
               <div className="text-center mt-6 space-y-2">
-                <p className="text-lg font-semibold text-gray-900 dark:text-white">Loading Template</p>
-                <p className="text-sm text-gray-500 dark:text-gray-400">Fetching template details...</p>
+                <p className="text-lg font-semibold text-gray-900 dark:text-white">{t('common.loading')}</p>
               </div>
             </div>
           </div>
@@ -205,9 +201,9 @@ export default function ViewTemplate() {
               <div className="w-24 h-24 rounded-2xl bg-red-50 dark:bg-red-900/20 flex items-center justify-center mx-auto mb-6">
                 <AlertCircle className="w-12 h-12 text-red-500" />
               </div>
-              <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">Template Not Found</h2>
+              <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">{t('templates.empty.title')}</h2>
               <p className="text-sm text-gray-500 dark:text-gray-400 mb-8">
-                The template you're looking for doesn't exist or has been removed.
+                {t('templates.empty.searchDesc')}
               </p>
               <motion.button 
                 whileHover={{ scale: 1.02 }}
@@ -216,7 +212,7 @@ export default function ViewTemplate() {
                 className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-[#4A1B1B] to-[#6B2727] text-white rounded-xl font-medium shadow-lg shadow-[#4A1B1B]/20 hover:shadow-xl transition-all"
               >
                 <ArrowLeft className="w-4 h-4" />
-                Back to Templates
+                {t('common.back')}
               </motion.button>
             </motion.div>
           </div>
@@ -232,20 +228,54 @@ export default function ViewTemplate() {
   const imageUrl = template.file ? (template.file.startsWith('http') ? template.file : `${baseUrl}/${template.file}`) : null;
 
   const features = [
-    { key: 'duelEntrances', label: 'Dual Entrances', icon: DoorOpen, active: template.duelEntrances },
-    { key: 'familyLounge', label: 'Family Lounge', icon: Users, active: template.familyLounge },
-    { key: 'guestMajlis', label: 'Guest Majlis', icon: Coffee, active: template.guestMajlis },
-    { key: 'kitchen', label: 'Kitchen', icon: Utensils, active: template.kitchen },
-    { key: 'balconyAccess', label: 'Balcony Access', icon: Wind, active: template.balconyAccess }
+    { key: 'duelEntrances', label: t('templates.amenities.dualEntrances'), icon: DoorOpen, active: template.duelEntrances },
+    { key: 'familyLounge', label: t('templates.amenities.familyLounge'), icon: Users, active: template.familyLounge },
+    { key: 'guestMajlis', label: t('templates.amenities.guestMajlis'), icon: Coffee, active: template.guestMajlis },
+    { key: 'kitchen', label: t('templates.amenities.kitchen'), icon: Utensils, active: template.kitchen },
+    { key: 'balconyAccess', label: t('templates.amenities.balcony'), icon: Wind, active: template.balconyAccess },
+    { key: 'rooftop', label: t('templates.amenities.rooftop') || "Rooftop", icon: Home, active: template.rooftop }
   ];
+
+  const getPlaceholderImage = (id: number) => {
+    const images = [
+      'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80',
+      'https://images.unsplash.com/photo-1600607687940-4e2a09695d51?auto=format&fit=crop&w=1200&q=80',
+      'https://images.unsplash.com/photo-1600566753190-17f0bb2a6c3e?auto=format&fit=crop&w=1200&q=80',
+      'https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=1200&q=80'
+    ];
+    return images[id ? id % images.length : 0];
+  };
 
   const formatDate = () => {
     const date = new Date();
-    return date.toLocaleDateString('en-US', { 
+    return date.toLocaleDateString(i18n.language === 'ar' ? 'ar-SA' : 'en-US', { 
       year: 'numeric', 
       month: 'long', 
       day: 'numeric' 
     });
+  };
+
+  const handleShare = async () => {
+    try {
+      if (navigator.share) {
+        await navigator.share({
+          title: template.name?.[i18n.language === 'ar' ? 'arabic' : 'english'],
+          text: t('templates.viewDetails'),
+          url: window.location.href,
+        });
+      } else {
+        await navigator.clipboard.writeText(window.location.href);
+        toast.success(t('common.linkCopied') || 'Link copied to clipboard!', {
+          style: {
+            borderRadius: '1rem',
+            background: '#10b981',
+            color: '#fff',
+          }
+        });
+      }
+    } catch (error) {
+      console.error('Error sharing:', error);
+    }
   };
 
   return (
@@ -275,17 +305,17 @@ export default function ViewTemplate() {
                   <div className="flex items-center gap-2 mb-1">
                     <Sparkles className="w-4 h-4 text-[#B39371]" />
                     <p className="text-xs font-medium text-[#B39371] uppercase tracking-wider">
-                      Template Details
-                    </p>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-                      {template.name.english}
-                    </h1>
-                    <Badge variant="outline" className="text-[#B39371] border-[#B39371]/20">
-                      {template.sku}
-                    </Badge>
-                  </div>
+                    {t('common.details')}
+                  </p>
+                </div>
+                <div className="flex items-center gap-3">
+                  <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+                    {template.name?.[i18n.language === 'ar' ? 'arabic' : 'english']}
+                  </h1>
+                  <Badge variant="outline" className="text-[#B39371] border-[#B39371]/20">
+                    {t('templates.sku')}: {template.sku}
+                  </Badge>
+                </div>
                 </div>
               </div>
 
@@ -293,16 +323,10 @@ export default function ViewTemplate() {
                 <motion.button
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
+                  onClick={handleShare}
                   className="p-2.5 rounded-xl border border-gray-200 dark:border-gray-700 text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 transition-all"
                 >
                   <Share2 className="w-5 h-5" />
-                </motion.button>
-                <motion.button
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                  className="p-2.5 rounded-xl border border-gray-200 dark:border-gray-700 text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 transition-all"
-                >
-                  <Printer className="w-5 h-5" />
                 </motion.button>
                 <motion.button
                   whileHover={{ scale: 1.02 }}
@@ -311,7 +335,7 @@ export default function ViewTemplate() {
                   className="px-5 py-2.5 bg-gradient-to-r from-[#4A1B1B] to-[#6B2727] text-white rounded-xl text-sm font-medium shadow-lg shadow-[#4A1B1B]/20 hover:shadow-xl transition-all flex items-center gap-2"
                 >
                   <Edit className="w-4 h-4" />
-                  Edit Template
+                  {t('common.edit')}
                 </motion.button>
               </div>
             </div>
@@ -327,25 +351,31 @@ export default function ViewTemplate() {
                 animate={{ opacity: 1, y: 0 }}
                 className="relative h-[400px] rounded-2xl overflow-hidden shadow-lg bg-gray-100 dark:bg-gray-800 group"
               >
-                {imageUrl && !imageError ? (
+                {imageUrl ? (
                   <img 
-                    src={imageUrl}
+                    src={imageError ? getPlaceholderImage(template.id) : imageUrl}
                     alt={template.name.english}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
-                    onError={() => setImageError(true)}
+                    onError={(e) => {
+                      const target = e.target as HTMLImageElement;
+                      target.onerror = null;
+                      setImageError(true);
+                      target.src = 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80';
+                    }}
                   />
                 ) : (
-                  <div className="w-full h-full flex flex-col items-center justify-center">
-                    <ImageIcon className="w-20 h-20 text-gray-300 dark:text-gray-600 mb-4" />
-                    <p className="text-sm text-gray-400 dark:text-gray-500">No image available</p>
-                  </div>
+                  <img 
+                    src={getPlaceholderImage(template.id)}
+                    alt={template.name.english}
+                    className="w-full h-full object-cover"
+                  />
                 )}
                 
                 {/* Location Badge */}
                 <div className="absolute top-4 right-4">
                   <Badge className="bg-white/90 backdrop-blur-sm text-gray-700 border-0 shadow-lg px-3 py-1.5">
                     <MapPin className="w-3.5 h-3.5 text-[#B39371] mr-1" />
-                    {template.location} VIEW
+                    {t(`templates.${template.location.toLowerCase()}`)}
                   </Badge>
                 </div>
               </motion.div>
@@ -354,32 +384,59 @@ export default function ViewTemplate() {
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
                 <StatCard 
                   icon={Maximize2} 
-                  label="Total Area" 
-                  value={`${template.size} m²`}
-                  subValue="Built-up area"
+                  label={t('templates.size')} 
+                  value={`${template.size} ${t('templates.sqm')}`}
+                  subValue={t('templates.sections.specifications')}
                   delay={0.1}
                 />
                 <StatCard 
                   icon={Layers} 
-                  label="Total Rooms" 
+                  label={t('templates.totalRooms')} 
                   value={template.totalRooms.toString()}
-                  subValue="Total spaces"
+                  subValue={t('templates.totalRooms')}
                   delay={0.15}
                 />
                 <StatCard 
                   icon={BedDouble} 
-                  label="Bedrooms" 
+                  label={t('templates.beds')} 
                   value={template.bedrooms.toString()}
-                  subValue="Sleeping quarters"
+                  subValue={t('templates.beds')}
                   delay={0.2}
                 />
                 <StatCard 
                   icon={Bath} 
-                  label="Bathrooms" 
+                  label={t('templates.baths')} 
                   value={template.bathrooms.toString()}
-                  subValue="Washrooms"
+                  subValue={t('templates.baths')}
                   delay={0.25}
                 />
+                {template.maidRoom > 0 && (
+                  <StatCard 
+                    icon={Users} 
+                    label={t('templates.labels.maidRoom') || "Maid Room"} 
+                    value={`${template.maidRoom} ${t('templates.sqm')}`}
+                    subValue={t('templates.labels.maidRoom') || "Maid Room"}
+                    delay={0.3}
+                  />
+                )}
+                {template.clothsRoom > 0 && (
+                  <StatCard 
+                    icon={Layers} 
+                    label={t('templates.labels.clothsRoom') || "Cloths Room"} 
+                    value={`${template.clothsRoom} ${t('templates.sqm')}`}
+                    subValue={t('templates.labels.clothsRoom') || "Cloths Room"}
+                    delay={0.35}
+                  />
+                )}
+                {template.driverRoom > 0 && (
+                  <StatCard 
+                    icon={Building2} 
+                    label={t('templates.labels.driverRoom') || "Driver Room"} 
+                    value={`${template.driverRoom} ${t('templates.sqm')}`}
+                    subValue={t('templates.labels.driverRoom') || "Driver Room"}
+                    delay={0.4}
+                  />
+                )}
               </div>
 
               {/* Features & Amenities */}
@@ -392,7 +449,7 @@ export default function ViewTemplate() {
                 <div className="p-6 border-b border-gray-100 dark:border-gray-800">
                   <h3 className="text-lg font-semibold text-gray-900 dark:text-white flex items-center gap-2">
                     <Sparkles className="w-5 h-5 text-[#B39371]" />
-                    Features & Amenities
+                    {t('templates.sections.features')}
                   </h3>
                 </div>
                 <div className="p-6">
@@ -420,18 +477,17 @@ export default function ViewTemplate() {
                 className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 overflow-hidden  "
               >
                 <div className="p-6 border-b border-gray-100 dark:border-gray-800">
-                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Template Details</h3>
+                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white">{t('common.details')}</h3>
                 </div>
                 <div className="p-6 space-y-4">
-                  <DetailItem icon={Hash} label="SKU" value={template.sku} />
-                  <DetailItem icon={Tag} label="Model Type" value={template.modelType} />
-                  <DetailItem icon={DollarSign} label="Management Fees" value={template.managementFees} />
-                  <DetailItem icon={MapPin} label="Location" value={template.location} />
+                  <DetailItem icon={Hash} label={t('templates.sku')} value={template.sku} />
+                  <DetailItem icon={Tag} label={t('templates.modelType')} value={template.modelType} />
+                  <DetailItem icon={MapPin} label={t('templates.location')} value={t(`templates.${template.location.toLowerCase()}`)} />
                   
                   <div className="pt-4 mt-4 border-t border-gray-100 dark:border-gray-800">
                     <div className="flex items-center gap-2 text-gray-500 dark:text-gray-400 mb-2">
                       <Clock className="w-4 h-4" />
-                      <span className="text-xs font-medium">Last Updated</span>
+                      <span className="text-xs font-medium">{t('common.updated_at')}</span>
                     </div>
                     <div className="flex items-center gap-2 text-sm text-gray-900 dark:text-white">
                       <Calendar className="w-4 h-4 text-gray-400" />
@@ -450,7 +506,7 @@ export default function ViewTemplate() {
                   className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 overflow-hidden"
                 >
                   <div className="p-6 border-b border-gray-100 dark:border-gray-800">
-                    <h4 className="text-sm font-semibold text-gray-900 dark:text-white">Template File</h4>
+                    <h4 className="text-sm font-semibold text-gray-900 dark:text-white">{t('templates.sections.visualAssets')}</h4>
                   </div>
                   <div className="p-6">
                     <a 
@@ -464,8 +520,8 @@ export default function ViewTemplate() {
                           <ImageIcon className="w-5 h-5 text-[#B39371]" />
                         </div>
                         <div>
-                          <p className="text-sm font-medium text-gray-900 dark:text-white">Template Image</p>
-                          <p className="text-xs text-gray-500 dark:text-gray-400">Click to view full size</p>
+                          <p className="text-sm font-medium text-gray-900 dark:text-white">{t('templates.sections.visualAssets')}</p>
+                          <p className="text-xs text-gray-500 dark:text-gray-400">{t('common.viewFile')}</p>
                         </div>
                       </div>
                       <ExternalLink className="w-5 h-5 text-gray-400 group-hover:text-[#B39371] transition-colors" />
@@ -474,35 +530,7 @@ export default function ViewTemplate() {
                 </motion.div>
               )}
 
-              {/* Quick Actions */}
-              <motion.div 
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.2 }}
-                className="grid grid-cols-2 gap-4"
-              >
-                <motion.button
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                  className="p-4 bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 hover:border-[#B39371]/30 transition-all group"
-                >
-                  <div className="w-10 h-10 rounded-lg bg-[#F5F1ED] dark:bg-gray-800 group-hover:bg-[#B39371]/10 flex items-center justify-center mb-3 mx-auto">
-                    <Users className="w-5 h-5 text-[#B39371]" />
-                  </div>
-                  <p className="text-xs font-medium text-gray-900 dark:text-white text-center">Assign Project</p>
-                </motion.button>
-                
-                <motion.button
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                  className="p-4 bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 hover:border-[#B39371]/30 transition-all group"
-                >
-                  <div className="w-10 h-10 rounded-lg bg-[#F5F1ED] dark:bg-gray-800 group-hover:bg-[#B39371]/10 flex items-center justify-center mb-3 mx-auto">
-                    <Copy className="w-5 h-5 text-[#B39371]" />
-                  </div>
-                  <p className="text-xs font-medium text-gray-900 dark:text-white text-center">Duplicate</p>
-                </motion.button>
-              </motion.div>
+             
 
               {/* Status Badge */}
               <motion.div 

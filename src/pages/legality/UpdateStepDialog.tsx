@@ -92,10 +92,6 @@ export function UpdateStepDialog({ isOpen, onClose, legalityId, stepData }: Upda
     const payload = {
       step: {
         id: stepData.step.id,
-        name: {
-          arabic: formData.nameAr,
-          english: formData.nameEn
-        },
         details: formData.details,
         fromDate: formData.fromDate || null,
         toDate: formData.toDate || null,
@@ -136,27 +132,27 @@ export function UpdateStepDialog({ isOpen, onClose, legalityId, stepData }: Upda
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label className="text-xs font-semibold uppercase tracking-wider text-gray-400">
-                  Step Name (English)
+                  {t('legality.labels.stepNameEn')}
                 </Label>
                 <Input
                   value={formData.nameEn}
                   onChange={(e) => setFormData(prev => ({ ...prev, nameEn: e.target.value }))}
-                  className="bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 h-11 rounded-xl"
-                  placeholder="Purchase & Title Transfer"
-                  required
+                  className="bg-gray-100 dark:bg-gray-800/50 border-gray-200 dark:border-gray-700 h-11 rounded-xl cursor-not-allowed opacity-70"
+                  placeholder={t('legality.placeholders.stepNameEn')}
+                  disabled
                 />
               </div>
               <div className="space-y-2 text-right">
                 <Label className="text-xs font-semibold uppercase tracking-wider text-gray-400">
-                  اسم الخطوة (عربي)
+                  {t('legality.labels.stepNameAr')}
                 </Label>
                 <Input
                   value={formData.nameAr}
                   onChange={(e) => setFormData(prev => ({ ...prev, nameAr: e.target.value }))}
                   dir="rtl"
-                  className="bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 h-11 rounded-xl text-right"
-                  placeholder="نقل الملكية والافراغ"
-                  required
+                  className="bg-gray-100 dark:bg-gray-800/50 border-gray-200 dark:border-gray-700 h-11 rounded-xl text-right cursor-not-allowed opacity-70"
+                  placeholder={t('legality.placeholders.stepNameAr')}
+                  disabled
                 />
               </div>
             </div>
@@ -164,13 +160,13 @@ export function UpdateStepDialog({ isOpen, onClose, legalityId, stepData }: Upda
             {/* Details Section */}
             <div className="space-y-2">
               <Label className="text-xs font-semibold uppercase tracking-wider text-gray-400">
-                Details / Description
+                {t('legality.labels.details')}
               </Label>
               <Textarea
                 value={formData.details}
                 onChange={(e) => setFormData(prev => ({ ...prev, details: e.target.value }))}
                 className="bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-xl min-h-[100px] resize-none"
-                placeholder="Provide additional details about this step..."
+                placeholder={t('legality.placeholders.details')}
               />
             </div>
 
@@ -179,7 +175,7 @@ export function UpdateStepDialog({ isOpen, onClose, legalityId, stepData }: Upda
               <div className="space-y-2">
                 <div className="flex items-center gap-2 text-gray-400 mb-1">
                   <CalendarIcon className="w-3.5 h-3.5" />
-                  <Label className="text-xs font-semibold uppercase tracking-wider">Start Date</Label>
+                  <Label className="text-xs font-semibold uppercase tracking-wider">{t('legality.labels.startDate')}</Label>
                 </div>
                 <DatePicker
                   value={formData.fromDate}
@@ -190,7 +186,7 @@ export function UpdateStepDialog({ isOpen, onClose, legalityId, stepData }: Upda
               <div className="space-y-2">
                 <div className="flex items-center gap-2 text-gray-400 mb-1">
                   <CalendarIcon className="w-3.5 h-3.5" />
-                  <Label className="text-xs font-semibold uppercase tracking-wider">End Date</Label>
+                  <Label className="text-xs font-semibold uppercase tracking-wider">{t('legality.labels.endDate')}</Label>
                 </div>
                 <DatePicker
                   value={formData.toDate}
@@ -201,14 +197,14 @@ export function UpdateStepDialog({ isOpen, onClose, legalityId, stepData }: Upda
               <div className="space-y-2">
                 <div className="flex items-center gap-2 text-gray-400 mb-1">
                   <DollarSign className="w-3.5 h-3.5" />
-                  <Label className="text-xs font-semibold uppercase tracking-wider">Amount (SAR)</Label>
+                  <Label className="text-xs font-semibold uppercase tracking-wider">{t('legality.labels.amount')}</Label>
                 </div>
                 <Input
                   type="number"
                   value={formData.amount}
                   onChange={(e) => setFormData(prev => ({ ...prev, amount: e.target.value }))}
                   className="bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 h-11 rounded-xl"
-                  placeholder="0.00"
+                  placeholder={t('legality.placeholders.amount')}
                 />
               </div>
             </div>
@@ -218,9 +214,9 @@ export function UpdateStepDialog({ isOpen, onClose, legalityId, stepData }: Upda
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2 text-gray-400">
                   <Paperclip className="w-3.5 h-3.5" />
-                  <Label className="text-xs font-semibold uppercase tracking-wider">Attachments</Label>
+                  <Label className="text-xs font-semibold uppercase tracking-wider">{t('legality.labels.attachments')}</Label>
                 </div>
-                <span className="text-[10px] text-gray-500 font-medium">{files.length} Files</span>
+                <span className="text-[10px] text-gray-500 font-medium">{files.length} {t('legality.labels.files')}</span>
               </div>
               
               {/* File List */}
@@ -255,7 +251,7 @@ export function UpdateStepDialog({ isOpen, onClose, legalityId, stepData }: Upda
                 <div className="pt-2">
                   <FileUpload
                     multiple
-                    label={t('legality.uploadLabel') || "Add New Files"}
+                    label={t('legality.placeholders.uploadFiles')}
                     accept=".pdf,.jpg,.jpeg,.png,.doc,.docx"
                     maxSizeMB={5}
                     onUploadSuccess={(url) => setFiles(prev => [...prev, url])}

@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { 
   Upload, X, CheckCircle2, Loader2, FileText, Image, AlertCircle, 
-  Download, Files, File, Trash2, Eye, Paperclip, Maximize2 
+  Files, File, Trash2, Eye, Paperclip 
 } from 'lucide-react';
 import api from '@/lib/api';
 import toast from 'react-hot-toast';
@@ -18,7 +18,6 @@ interface FileUploadProps {
   helperText?: string;
   multiple?: boolean;
   className?: string;
-  showPreview?: boolean;
 }
 
 interface FileInfo {
@@ -37,8 +36,7 @@ export function FileUpload({
   maxSizeMB = 10,
   helperText,
   multiple = false,
-  className,
-  showPreview = true
+  className
 }: FileUploadProps) {
   const [isUploading, setIsUploading] = useState(false);
   const [preview, setPreview] = useState<string | null>(defaultValue || null);
@@ -58,6 +56,9 @@ export function FileUpload({
         type: fileName.split('.').pop() || 'unknown',
         url: defaultValue
       });
+    } else {
+      setPreview(null);
+      setFileInfo(null);
     }
   }, [defaultValue]);
 
@@ -447,7 +448,7 @@ export function FileUpload({
                     {fileInfo?.name}
                   </p>
                   <div className="flex items-center gap-2 mt-1">
-                    {fileInfo?.size > 0 && (
+                    {fileInfo?.size !== undefined && fileInfo.size > 0 && (
                       <>
                         <span className="text-xs text-gray-500 font-medium">
                           {formatFileSize(fileInfo.size)}

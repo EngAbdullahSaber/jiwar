@@ -39,9 +39,9 @@ const menuItems: MenuItem[] = [
   { icon: Users,           label: "clients",     path: "/clients",            },
   { icon: UserCircle,      label: "salesTeam",   path: "/salesman",          },
   { icon: FileCheck,       label: "contracts",   path: "/contracts",            },
-  // { icon: PieChart,        label: "finance",     path: "/finance-dashboard",  },
-  { icon: ShieldAlert,     label: "roles",       path: "/roles",              },
-  { icon: Users,           label: "users",       path: "/users",              },
+  // // { icon: PieChart,        label: "finance",     path: "/finance-dashboard",  },
+  // { icon: ShieldAlert,     label: "roles",       path: "/roles",              },
+  // { icon: Users,           label: "users",       path: "/users",              },
   { icon: Layers,          label: "materials",   path: "/materials",          },
   { icon: Globe,           label: "countries",   path: "/countries",          },
   { icon: Building2,       label: "cities",      path: "/cities",             },
@@ -386,15 +386,11 @@ export function Sidebar() {
                 (item.path !== "/" && location.startsWith(item.path));
 
               return (
-                <Link key={item.label} href={item.path}>
-                  <a
-                    className={cn("sb-item", isActive && "active")}
-                    style={{
+                <Link key={item.label} href={item.path} className={cn("sb-item", isActive && "active")} style={{
                       padding: expanded ? "8px 10px" : "10px",
                       justifyContent: expanded ? "flex-start" : "center",
                       gap: expanded ? 10 : 0,
-                    }}
-                  >
+                    }}>
                     {/* Icon */}
                     <div
                       className="sb-item-icon-wrap"
@@ -439,7 +435,6 @@ export function Sidebar() {
                     {!expanded && (
                       <span className="sb-tooltip">{t(`sidebar.${item.label}`)}</span>
                     )}
-                  </a>
                 </Link>
               );
             })}

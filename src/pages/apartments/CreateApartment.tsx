@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { TopHeader } from '../../components/TopHeader';
 import { Link, useLocation } from "wouter";
 import { 
@@ -86,6 +87,7 @@ const Label = ({ children, className, ...props }: any) => (
 
 export default function CreateApartment() {
   const [, setLocation] = useLocation();
+  const { t, i18n } = useTranslation();
   const [formData, setFormData] = useState({
     mainName: { arabic: "", english: "" },
     secondaryName: { arabic: "", english: "" },
@@ -123,14 +125,14 @@ export default function CreateApartment() {
       return response.data;
     },
     onSuccess: () => {
-      toast.success("Apartment created successfully", {
+      toast.success(t('apartments.success.create'), {
         icon: '🎉',
         style: { borderRadius: '1rem', background: '#10b981', color: '#fff' }
       });
       setLocation('/apartments');
     },
     onError: (error: any) => {
-      toast.error(error.response?.data?.message || "Failed to create apartment", {
+      toast.error(error.response?.data?.message || t('apartments.errors.create'), {
         icon: '❌',
         style: { borderRadius: '1rem', background: '#ef4444', color: '#fff' }
       });
@@ -140,7 +142,7 @@ export default function CreateApartment() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.mainName.english || !formData.mainName.arabic || !formData.projectId || !formData.templateId) {
-      toast.error("Please fill all required fields", { 
+      toast.error(t('apartments.errors.fillRequired'), { 
         icon: '⚠️',
         style: { borderRadius: '1rem', background: '#ef4444', color: '#fff' } 
       });
@@ -175,14 +177,14 @@ export default function CreateApartment() {
                 <div className="flex items-center gap-2 mb-1">
                   <Sparkles className="w-4 h-4 text-[#B39371]" />
                   <p className="text-xs font-medium text-[#B39371] uppercase tracking-wider">
-                    Create Apartment
+                    {t('apartments.create')}
                   </p>
                 </div>
                 <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-                  New Apartment
+                  {t('apartments.new')}
                 </h1>
                 <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                  Add an individual apartment unit explicitly mapped to a project
+                  {t('apartments.description')}
                 </p>
               </div>
             </div>
@@ -193,25 +195,25 @@ export default function CreateApartment() {
             {/* Identification Section */}
             <FormSection 
               icon={FileText}
-              title="Identification Details"
-              description="Basic names, identifiers, and serial codes"
+              title={t('apartments.sections.identification')}
+              description={t('apartments.sections.identificationDesc')}
               delay={0.1}
             >
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 
-                <FormField label="Main Name (English)" required>
+                <FormField label={t('apartments.labels.majorNameEn')} required>
                   <Input 
-                    placeholder="e.g. Apartment 101"
+                    placeholder={t('apartments.placeholders.majorNameEn')}
                     value={formData.mainName.english}
                     onChange={(e) => setFormData({ ...formData, mainName: { ...formData.mainName, english: e.target.value } })}
                     className="h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md"
                     required
                   />
                 </FormField>
-                <FormField label="الاسم الرئيسي (عربي)" required>
+                <FormField label={t('apartments.labels.majorNameAr')} required>
                   <Input 
                     dir="rtl"
-                    placeholder="مثال: شقة 101"
+                    placeholder={t('apartments.placeholders.majorNameAr')}
                     value={formData.mainName.arabic}
                     onChange={(e) => setFormData({ ...formData, mainName: { ...formData.mainName, arabic: e.target.value } })}
                     className="h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md text-right"
@@ -219,45 +221,45 @@ export default function CreateApartment() {
                   />
                 </FormField>
                 
-                <FormField label="Secondary Name / Suite (English)">
+                <FormField label={t('apartments.labels.secondaryNameEn')}>
                   <Input 
-                    placeholder="e.g. Suite A"
+                    placeholder={t('apartments.placeholders.secondaryNameEn')}
                     value={formData.secondaryName.english}
                     onChange={(e) => setFormData({ ...formData, secondaryName: { ...formData.secondaryName, english: e.target.value } })}
                     className="h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md"
                   />
                 </FormField>
-                <FormField label="الاسم الثانوي (عربي)">
+                <FormField label={t('apartments.labels.secondaryNameAr')}>
                   <Input 
                     dir="rtl"
-                    placeholder="مثال: الجناح الأول"
+                    placeholder={t('apartments.placeholders.secondaryNameAr')}
                     value={formData.secondaryName.arabic}
                     onChange={(e) => setFormData({ ...formData, secondaryName: { ...formData.secondaryName, arabic: e.target.value } })}
                     className="h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md text-right"
                   />
                 </FormField>
 
-                <FormField label="Serial Number">
+                <FormField label={t('apartments.labels.serialNumber')}>
                   <Input 
-                    placeholder="e.g. SN-001"
+                    placeholder={t('apartments.placeholders.serialNumber')}
                     value={formData.serialNumber}
                     onChange={(e) => setFormData({ ...formData, serialNumber: e.target.value })}
                     className="h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md"
                   />
                 </FormField>
 
-                 <FormField label="Account Number">
+                 <FormField label={t('apartments.labels.accountNumber')}>
                   <Input 
-                    placeholder="e.g. ACC-001"
+                    placeholder={t('apartments.placeholders.accountNumber')}
                     value={formData.accountNumber}
                     onChange={(e) => setFormData({ ...formData, accountNumber: e.target.value })}
                     className="h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md"
                   />
                 </FormField>
                 
-                 <FormField label="Subscription Number">
+                 <FormField label={t('apartments.labels.subscriptionNumber')}>
                   <Input 
-                    placeholder="e.g. SUB-001"
+                    placeholder={t('apartments.placeholders.subscriptionNumber')}
                     value={formData.subscriptionNumber}
                     onChange={(e) => setFormData({ ...formData, subscriptionNumber: e.target.value })}
                     className="h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md"
@@ -269,82 +271,82 @@ export default function CreateApartment() {
             {/* Structure & Mapping Section */}
             <FormSection 
               icon={Ruler}
-              title="Locational & Metrical Stats"
-              description="Floor mapping, footprint sizing, and structural ties"
+              title={t('apartments.sections.locational')}
+              description={t('apartments.sections.locationalDesc')}
               delay={0.2}
             >
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 
-                <FormField label="Building Or Block">
+                <FormField label={t('apartments.labels.buildingOrBlock')}>
                   <Input 
-                    placeholder="e.g. Block A"
+                    placeholder={t('apartments.placeholders.building')}
                     value={formData.buildingOrBlock}
                     onChange={(e) => setFormData({ ...formData, buildingOrBlock: e.target.value })}
                     className="h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md"
                   />
                 </FormField>
 
-                <FormField label="Floor Number">
+                <FormField label={t('apartments.labels.floorNo')}>
                   <Input 
                     type="number"
-                    placeholder="e.g. 1"
+                    placeholder={t('apartments.placeholders.floor')}
                     value={formData.floorNumber}
                     onChange={(e) => setFormData({ ...formData, floorNumber: Number(e.target.value) })}
                     className="h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md"
                   />
                 </FormField>
 
-                <FormField label="Size (Sqm)">
+                <FormField label={t('apartments.labels.size')}>
                   <Input 
-                    placeholder="e.g. 120"
+                    placeholder={t('apartments.placeholders.size')}
                     value={formData.size}
                     onChange={(e) => setFormData({ ...formData, size: e.target.value })}
                     className="h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md"
                   />
                 </FormField>
                 
-                <FormField label="Meter Number">
+                <FormField label={t('apartments.labels.meterNumber')}>
                   <Input 
                     type="number"
                     step="any"
-                    placeholder="e.g. 12345.67"
+                    placeholder={t('apartments.placeholders.meter')}
                     value={formData.meterNumber}
                     onChange={(e) => setFormData({ ...formData, meterNumber: e.target.value })}
                     className="h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md"
                   />
                 </FormField>
 
-                <FormField label="Linked Project" required>
+                <FormField label={t('apartments.labels.linkedProject')} required>
                   <PaginatedSelect
                     apiEndpoint="/project"
                     queryKey="projects-paginated"
                     value={formData.projectId.toString()}
                     onChange={(val) => setFormData({ ...formData, projectId: val })}
-                    placeholder="Select Linked Project"
-                    searchPlaceholder="Search projects..."
+                    placeholder={t('apartments.placeholders.selectProject')}
+                    searchPlaceholder={t('apartments.placeholders.searchProject')}
                     mapResponseToOptions={(pageData) => {
                       const data = pageData.data || [];
                       return data.map((project: any) => ({
                         value: project.id,
-                        label: project.name?.english || project.name?.arabic || `Project #${project.id}`,
+                        label: i18n.language === 'ar' ? (project.name?.arabic || project.name?.english) : (project.name?.english || project.name?.arabic) || `Project #${project.id}`,
                       }));
                     }}
                   />
                 </FormField>
 
-                <FormField label="Linked Template" required>
+                <FormField label={t('apartments.labels.linkedTemplate')} required>
                   <PaginatedSelect
                     apiEndpoint="/template"
                     queryKey="templates-paginated"
                     value={formData.templateId.toString()}
                     onChange={(val) => setFormData({ ...formData, templateId: val })}
-                    placeholder="Select Blueprint Template"
-                    searchPlaceholder="Search templates..."
+                    placeholder={t('apartments.placeholders.selectTemplate')}
+                    searchPlaceholder={t('apartments.placeholders.searchTemplate')}
                     mapResponseToOptions={(pageData) => {
                       const data = pageData.data || [];
                       return data.map((template: any) => ({
                         value: template.id,
-                        label: template.name?.english || template.name?.arabic || `Template #${template.id}`,
+                        label: i18n.language === 'ar' ? (template.name?.arabic || template.name?.english) : (template.name?.english || template.name?.arabic) || `Template #${template.id}`,
                       }));
                     }}
                   />
@@ -356,72 +358,72 @@ export default function CreateApartment() {
             {/* Financial & Status Section */}
             <FormSection 
               icon={Tags}
-              title="Economics & Status"
-              description="Listing details, requests, and ownership"
+              title={t('apartments.sections.economics')}
+              description={t('apartments.sections.economicsDesc')}
               delay={0.3}
             >
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
 
-                <FormField label="Base Price (SAR)">
+                <FormField label={t('apartments.labels.basePrice')}>
                   <Input 
-                    placeholder="e.g. 250000"
+                    placeholder={t('apartments.placeholders.basePrice')}
                     value={formData.basePrice}
                     onChange={(e) => setFormData({ ...formData, basePrice: e.target.value })}
                     className="h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md"
                   />
                 </FormField>
 
-                <FormField label="Apartment Type">
+                <FormField label={t('apartments.labels.apartmentType')}>
                   <Select 
                     value={formData.apartmentType} 
                     onValueChange={(val) => setFormData({ ...formData, apartmentType: val })}
                   >
                     <SelectTrigger className="h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md">
-                      <SelectValue placeholder="Select Type" />
+                      <SelectValue placeholder={t('apartments.placeholders.selectType')} />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="residential">Residential</SelectItem>
-                      <SelectItem value="commercial">Commercial</SelectItem>
-                      <SelectItem value="penthouse">Penthouse</SelectItem>
-                      <SelectItem value="duplex">Duplex</SelectItem>
+                      <SelectItem value="residential">{t('apartments.types.residential')}</SelectItem>
+                      <SelectItem value="commercial">{t('apartments.types.commercial')}</SelectItem>
+                      <SelectItem value="penthouse">{t('apartments.types.penthouse')}</SelectItem>
+                      <SelectItem value="duplex">{t('apartments.types.duplex')}</SelectItem>
                     </SelectContent>
                   </Select>
                 </FormField>
 
-                <FormField label="Owner Status">
+                <FormField label={t('apartments.labels.ownerStatus')}>
                   <Select 
                     value={formData.ownerStatus} 
                     onValueChange={(val) => setFormData({ ...formData, ownerStatus: val })}
                   >
                     <SelectTrigger className="h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md">
-                      <SelectValue placeholder="Select Status" />
+                      <SelectValue placeholder={t('apartments.placeholders.selectStatus')} />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="owned">Owned</SelectItem>
-                      <SelectItem value="rented">Rented</SelectItem>
-                      <SelectItem value="company_owned">Company Owned</SelectItem>
+                      <SelectItem value="owned">{t('apartments.owners.owned')}</SelectItem>
+                      <SelectItem value="rented">{t('apartments.owners.rented')}</SelectItem>
+                      <SelectItem value="company_owned">{t('apartments.owners.company_owned')}</SelectItem>
                     </SelectContent>
                   </Select>
                 </FormField>
 
-                <FormField label="Status">
+                <FormField label={t('apartments.labels.status')}>
                    <Select 
                     value={formData.status} 
                     onValueChange={(val) => setFormData({ ...formData, status: val })}
                   >
                     <SelectTrigger className="h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md">
-                      <SelectValue placeholder="Select Overall Status" />
+                      <SelectValue placeholder={t('apartments.placeholders.selectOverallStatus')} />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="available">Available</SelectItem>
-                      <SelectItem value="sold">Sold</SelectItem>
-                      <SelectItem value="reserved">Reserved</SelectItem>
-                      <SelectItem value="maintenance">Maintenance</SelectItem>
+                      <SelectItem value="available">{t('apartments.statuses.available')}</SelectItem>
+                      <SelectItem value="sold">{t('apartments.statuses.sold')}</SelectItem>
+                      <SelectItem value="reserved">{t('apartments.statuses.reserved')}</SelectItem>
+                      <SelectItem value="maintenance">{t('apartments.statuses.maintenance')}</SelectItem>
                     </SelectContent>
                   </Select>
                 </FormField>
 
-                <FormField label="Request Date">
+                <FormField label={t('apartments.labels.requestDate')}>
                   <DatePicker 
                     value={formData.requestDate}
                     onChange={(date) => setFormData({ ...formData, requestDate: date })}
@@ -429,9 +431,9 @@ export default function CreateApartment() {
                   />
                 </FormField>
                 
-                <FormField label="Request Number">
+                <FormField label={t('apartments.labels.requestNumber')}>
                   <Input 
-                    placeholder="e.g. REQ-001"
+                    placeholder={t('apartments.placeholders.requestNumber')}
                     value={formData.requestNumber}
                     onChange={(e) => setFormData({ ...formData, requestNumber: e.target.value })}
                     className="h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md"
@@ -441,9 +443,9 @@ export default function CreateApartment() {
                 <div className="flex items-center gap-4 py-4 px-4 bg-gray-50 dark:bg-gray-800/50 rounded-md border border-gray-100 dark:border-gray-800 md:col-span-2">
                   <div className="flex-1">
                     <Label className="text-sm font-semibold text-gray-900 dark:text-white mb-1 block">
-                      Currently Available?
+                      {t('apartments.labels.isAvailable')}
                     </Label>
-                    <span className="text-xs text-gray-500">Toggle if this unit is currently available for purchase or rental.</span>
+                    <span className="text-xs text-gray-500">{t('apartments.labels.isAvailableDesc')}</span>
                   </div>
                   <Switch 
                     checked={formData.isAvailable}
@@ -458,32 +460,32 @@ export default function CreateApartment() {
             {/* Attachments */}
             <FormSection 
               icon={LinkIcon}
-              title="Official Documents (URLs)"
-              description="Provide paths or URLs to the official PDFs"
+              title={t('apartments.sections.documents')}
+              description={t('apartments.sections.documentsDesc')}
               delay={0.4}
             >
               <div className="grid grid-cols-1 gap-6">
-                <FormField label="Project Sak PDF URL">
+                <FormField label={t('apartments.labels.projectSak')}>
                   <Input 
-                    placeholder="e.g. uploads/project-sak.pdf"
+                    placeholder={t('apartments.placeholders.projectSak')}
                     value={formData.projectSakPdfUrl}
                     onChange={(e) => setFormData({ ...formData, projectSakPdfUrl: e.target.value })}
                     className="h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md"
                   />
                 </FormField>
 
-                <FormField label="Apartment Sak PDF URL">
+                <FormField label={t('apartments.labels.apartmentSak')}>
                   <Input 
-                    placeholder="e.g. uploads/apartment-sak.pdf"
+                    placeholder={t('apartments.placeholders.apartmentSak')}
                     value={formData.apartmentSakPdfUrl}
                     onChange={(e) => setFormData({ ...formData, apartmentSakPdfUrl: e.target.value })}
                     className="h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md"
                   />
                 </FormField>
 
-                <FormField label="Apartment Sub Division PDF URL">
+                <FormField label={t('apartments.labels.subDivision')}>
                   <Input 
-                    placeholder="e.g. uploads/subdivision.pdf"
+                    placeholder={t('apartments.placeholders.subDivision')}
                     value={formData.apartmentSubDivisionPdfUrl}
                     onChange={(e) => setFormData({ ...formData, apartmentSubDivisionPdfUrl: e.target.value })}
                     className="h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md"
@@ -495,8 +497,8 @@ export default function CreateApartment() {
             <FormActions
               onCancel={() => setLocation('/apartments')}
               isSubmitting={createMutation.isPending}
-              submitText="Create Apartment"
-              submittingText="Creating..."
+              submitText={t('apartments.create')}
+              submittingText={t('common.saving')}
               align="between"
             />
           </form>

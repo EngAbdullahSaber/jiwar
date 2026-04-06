@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { TopHeader } from '../../components/TopHeader';
 import { Link, useLocation } from "wouter";
 import { 
@@ -92,6 +93,7 @@ const Label = ({ children, className, ...props }: any) => (
 
 export default function CreateProject() {
   const [, setLocation] = useLocation();
+  const { t } = useTranslation();
   const [formData, setFormData] = useState({
     name: { arabic: "", english: "" },
     projectIdentity: `PROJ-${Math.floor(1000 + Math.random() * 9000)}`,
@@ -120,14 +122,14 @@ export default function CreateProject() {
       return response.data;
     },
     onSuccess: () => {
-      toast.success("Project created successfully", {
+      toast.success(t('projects.success.create'), {
         icon: '🎉',
         style: { borderRadius: '1rem', background: '#10b981', color: '#fff' }
       });
       setLocation('/projects');
     },
     onError: (error: any) => {
-      toast.error(error.response?.data?.message || "Failed to create project", {
+      toast.error(error.response?.data?.message || t('projects.errors.create'), {
         icon: '❌',
         style: { borderRadius: '1rem', background: '#ef4444', color: '#fff' }
       });
@@ -137,7 +139,7 @@ export default function CreateProject() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.name.english || !formData.name.arabic || !formData.projectIdentity || !formData.legalityId || !formData.address) {
-      toast.error("Please fill all required fields", { 
+      toast.error(t('projects.errors.fillRequired'), { 
         icon: '⚠️',
         style: { borderRadius: '1rem', background: '#ef4444', color: '#fff' } 
       });
@@ -172,14 +174,14 @@ export default function CreateProject() {
                 <div className="flex items-center gap-2 mb-1">
                   <Sparkles className="w-4 h-4 text-[#B39371]" />
                   <p className="text-xs font-medium text-[#B39371] uppercase tracking-wider">
-                    Create Project
+                    {t('projects.create')}
                   </p>
                 </div>
                 <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-                  New Project
+                  {t('projects.newProject')}
                 </h1>
                 <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                  Create a new construction project and link it to a legality file
+                  {t('projects.formDescription')}
                 </p>
               </div>
             </div>
@@ -190,13 +192,13 @@ export default function CreateProject() {
             {/* Project Identity Section */}
             <FormSection 
               icon={Building2}
-              title="Project Identity"
-              description="Basic information and identification for the project"
+              title={t('projects.labels.identity')}
+              description={t('projects.labels.identityDesc')}
               delay={0.1}
             >
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {/* Project ID */}
-                <FormField label="Project ID" required>
+                <FormField label={t('projects.labels.projectId')} required>
                   <div className="relative">
                     <Hash className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                     <Input 
@@ -209,29 +211,29 @@ export default function CreateProject() {
                 </FormField>
 
                 {/* Status */}
-                <FormField label="Status" required>
+                <FormField label={t('projects.labels.status')} required>
                   <Select 
                     value={formData.status} 
                     onValueChange={(val) => setFormData({ ...formData, status: val })}
                   >
                     <SelectTrigger className="h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md">
-                      <SelectValue placeholder="Select Status" />
+                      <SelectValue placeholder={t('projects.placeholders.selectStatus')} />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="planning">Planning & Design</SelectItem>
-                      <SelectItem value="evacuation">Evacuation</SelectItem>
-                      <SelectItem value="demolition">Demolition</SelectItem>
-                      <SelectItem value="construction">Construction</SelectItem>
-                      <SelectItem value="handover">Handover</SelectItem>
-                      <SelectItem value="onhold">On Hold</SelectItem>
+                      <SelectItem value="planning">{t('projects.statuses.planning')}</SelectItem>
+                      <SelectItem value="evacuation">{t('projects.statuses.evacuation')}</SelectItem>
+                      <SelectItem value="demolition">{t('projects.statuses.demolition')}</SelectItem>
+                      <SelectItem value="construction">{t('projects.statuses.construction')}</SelectItem>
+                      <SelectItem value="handover">{t('projects.statuses.handover')}</SelectItem>
+                      <SelectItem value="onhold">{t('projects.statuses.onhold')}</SelectItem>
                     </SelectContent>
                   </Select>
                 </FormField>
 
                 {/* Project Name English */}
-                <FormField label="Project Name (English)" required>
+                <FormField label={t('projects.labels.projectNameEn')} required>
                   <Input 
-                    placeholder="e.g. Project 1" 
+                    placeholder={t('projects.placeholders.nameEn')} 
                     className="h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md"
                     value={formData.name.english}
                     onChange={(e) => setFormData({ ...formData, name: { ...formData.name, english: e.target.value } })}
@@ -240,10 +242,10 @@ export default function CreateProject() {
                 </FormField>
 
                 {/* Project Name Arabic */}
-                <FormField label="اسم المشروع (عربي)" required>
+                <FormField label={t('projects.labels.projectNameAr')} required>
                   <Input 
                     dir="rtl"
-                    placeholder="مثال: مشروع 1" 
+                    placeholder={t('projects.placeholders.nameAr')} 
                     className="h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md text-right"
                     value={formData.name.arabic}
                     onChange={(e) => setFormData({ ...formData, name: { ...formData.name, arabic: e.target.value } })}
@@ -252,14 +254,14 @@ export default function CreateProject() {
                 </FormField>
 
                 {/* Linked Legality File */}
-                <FormField label="Linked Legality File" required>
+                <FormField label={t('projects.labels.linkedLegality')} required>
                   <PaginatedSelect
                     apiEndpoint="/legality"
                     queryKey="legalities-paginated"
                     value={formData.legalityId}
                     onChange={(val) => setFormData({ ...formData, legalityId: val })}
-                    placeholder="Select Legality File"
-                    searchPlaceholder="Search legality files..."
+                    placeholder={t('projects.placeholders.selectLegality')}
+                    searchPlaceholder={t('projects.placeholders.searchLegality')}
                     mapResponseToOptions={(pageData) => {
                       const items = pageData.data || [];
                       return items.map((legality: any) => ({
@@ -280,16 +282,16 @@ export default function CreateProject() {
             {/* Location Section */}
             <FormSection 
               icon={MapPin}
-              title="Location Details"
-              description="Geographical coordinates and physical address"
+              title={t('projects.labels.locationDetails')}
+              description={t('projects.labels.locationDesc')}
               delay={0.2}
             >
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 <div className="space-y-6">
                   {/* Physical Address */}
-                  <FormField label="Physical Address" required>
+                  <FormField label={t('projects.labels.address')} required>
                     <Textarea 
-                      placeholder="Enter the complete physical address of the project" 
+                      placeholder={t('projects.placeholders.address')} 
                       className="bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md min-h-[120px] resize-none"
                       value={formData.address}
                       onChange={(e) => setFormData({ ...formData, address: e.target.value })}
@@ -299,11 +301,11 @@ export default function CreateProject() {
 
                   {/* Coordinates */}
                   <div className="grid grid-cols-2 gap-4">
-                    <FormField label="Latitude" required>
+                    <FormField label={t('projects.labels.latitude')} required>
                       <div className="relative">
                         <Globe className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                         <Input 
-                          placeholder="24.7136" 
+                          placeholder={t('projects.placeholders.latitude')} 
                           className="pl-10 h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md"
                           value={formData.latitude}
                           onChange={(e) => setFormData({ ...formData, latitude: e.target.value })}
@@ -313,11 +315,11 @@ export default function CreateProject() {
                         />
                       </div>
                     </FormField>
-                    <FormField label="Longitude" required>
+                    <FormField label={t('projects.labels.longitude')} required>
                       <div className="relative">
                         <Globe className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                         <Input 
-                          placeholder="46.6753" 
+                          placeholder={t('projects.placeholders.longitude')} 
                           className="pl-10 h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md"
                           value={formData.longitude}
                           onChange={(e) => setFormData({ ...formData, longitude: e.target.value })}
@@ -333,7 +335,7 @@ export default function CreateProject() {
                   <div className="bg-[#F5F1ED] dark:bg-gray-800 rounded-md p-4 border border-[#B39371]/20">
                     <div className="flex items-center gap-2 text-[#4A1B1B] dark:text-[#B39371] mb-2">
                       <Navigation className="w-4 h-4" />
-                      <span className="text-xs font-medium">Selected Coordinates</span>
+                      <span className="text-xs font-medium">{t('projects.labels.selectedCoordinates')}</span>
                     </div>
                     <p className="text-sm font-mono">
                       {formData.latitude}, {formData.longitude}

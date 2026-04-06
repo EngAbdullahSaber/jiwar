@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useQuery } from '@tanstack/react-query';
 import api from '@/lib/api';
 import { TopHeader } from '../../components/TopHeader';
@@ -57,6 +58,7 @@ interface ApartmentsResponse {
 
 
 export default function Apartments() {
+  const { t, i18n } = useTranslation();
   const [filters, setFilters] = useState({ search: '' });
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 10;
@@ -78,69 +80,79 @@ export default function Apartments() {
   const filterFields: FilterField[] = [
     {
       type: 'search',
-      label: 'Search Apartments',
-      placeholder: 'Search by major name or secondary name...',
+      label: t('apartments.title'),
+      placeholder: t('apartments.placeholders.search'),
       key: 'search'
     }
   ];
 
   const columns: Column<Apartment>[] = [
     {
-      header: "ID",
+      header: t('common.id'),
       accessorKey: "id",
       className: "text-sm font-medium text-[#B39371] w-16"
     },
     {
-      header: "Apartment No.",
+      header: t('apartments.labels.apartmentNo'),
       cell: (a) => (
         <div>
-          <p className="text-sm font-semibold text-gray-900 dark:text-white">{a.mainName?.english || 'N/A'}</p>
-          <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5" dir="rtl">{a.mainName?.arabic || 'N/A'}</p>
+          <p className="text-sm font-semibold text-gray-900 dark:text-white">
+            {i18n.language === 'ar' ? a.mainName?.arabic : a.mainName?.english}
+          </p>
+          <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
+            {i18n.language === 'ar' ? a.mainName?.english : a.mainName?.arabic}
+          </p>
         </div>
       )
     },
     {
-      header: "Suite / Secondary Name",
+      header: t('apartments.labels.suite'),
       cell: (a) => (
         <div>
-          <p className="text-sm text-gray-900 dark:text-white">{a.secondaryName?.english || 'N/A'}</p>
-          <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5" dir="rtl">{a.secondaryName?.arabic || 'N/A'}</p>
+          <p className="text-sm text-gray-900 dark:text-white">
+            {i18n.language === 'ar' ? a.secondaryName?.arabic : a.secondaryName?.english}
+          </p>
+          <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
+            {i18n.language === 'ar' ? a.secondaryName?.english : a.secondaryName?.arabic}
+          </p>
         </div>
       )
     },
     {
-      header: "Floor",
+      header: t('apartments.labels.floor'),
       cell: (a) => (
         <span className="text-sm font-medium text-gray-900 dark:text-white">{a.floorNumber}</span>
       )
     },
     {
-      header: "Size",
+      header: t('apartments.labels.size'),
       cell: (a) => (
-        <span className="text-sm font-medium text-gray-900 dark:text-white">{a.size} sqm</span>
+        <span className="text-sm font-medium text-gray-900 dark:text-white">{a.size} {t('apartments.labels.sqmLabel')}</span>
       )
     },
     {
-      header: "Template",
+      header: t('apartments.labels.template'),
       cell: (a) => (
         <div className="flex flex-col">
-          <span className="text-sm text-gray-900 dark:text-white">{a.templateName?.english || 'N/A'}</span>
-          <span className="text-xs text-gray-500 dark:text-gray-400">{a.templateTotalRooms} Rooms</span>
+          <span className="text-sm text-gray-900 dark:text-white">
+            {i18n.language === 'ar' ? a.templateName?.arabic : a.templateName?.english}
+          </span>
+          <span className="text-xs text-gray-500 dark:text-gray-400">{a.templateTotalRooms} {t('apartments.labels.rooms')}</span>
         </div>
       )
     },
     {
-      header: "Actions",
+      header: t('common.actions'),
       headerClassName: "text-center",
       cell: (a) => (
         <div className="flex items-center justify-center gap-2">
           <Link href={`/apartments/${a.id}`}>
-            <button className="p-2 hover:bg-[#F5F1ED] dark:hover:bg-gray-800 rounded-lg text-gray-400 hover:text-[#4A1B1B] dark:hover:text-[#B39371] transition-colors" title="View Details">
+            <button className="p-2 hover:bg-[#F5F1ED] dark:hover:bg-gray-800 rounded-lg text-gray-400 hover:text-[#4A1B1B] dark:hover:text-[#B39371] transition-colors" title={t('common.view')}>
               <Eye className="w-4 h-4" />
             </button>
           </Link>
           <Link href={`/apartments/${a.id}/edit`}>
-            <button className="p-2 hover:bg-[#F5F1ED] dark:hover:bg-gray-800 rounded-lg text-gray-400 hover:text-[#4A1B1B] dark:hover:text-[#B39371] transition-colors" title="Edit">
+            <button className="p-2 hover:bg-[#F5F1ED] dark:hover:bg-gray-800 rounded-lg text-gray-400 hover:text-[#4A1B1B] dark:hover:text-[#B39371] transition-colors" title={t('common.edit')}>
               <Pencil className="w-4 h-4" />
             </button>
           </Link>
@@ -173,21 +185,19 @@ export default function Apartments() {
                   <div className="flex items-center gap-2 mb-1">
                     <Sparkles className="w-4 h-4 text-[#B39371]" />
                     <p className="text-xs font-medium text-[#B39371] uppercase tracking-wider">
-                      Property Management
+                      {t('apartments.management')}
                     </p>
                   </div>
                   <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
-                    Apartments
+                    {t('apartments.title')}
                   </h1>
                   <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                    Manage individual apartments and view templates across your properties
+                    {t('apartments.description')}
                   </p>
                 </div>
               </div>
 
               <div className="flex items-center gap-4">
-
-                
                 <Link href="/apartments/new">
                   <motion.button
                     whileHover={{ scale: 1.02 }}
@@ -195,7 +205,7 @@ export default function Apartments() {
                     className="flex items-center gap-2 px-6 py-2.5 bg-gradient-to-r from-[#4A1B1B] to-[#6B2727] text-white rounded-md text-sm font-medium shadow-lg shadow-[#4A1B1B]/20 hover:shadow-xl transition-all"
                   >
                     <Plus className="w-5 h-5" />
-                    Add Apartment
+                    {t('apartments.add')}
                   </motion.button>
                 </Link>
               </div>
@@ -206,16 +216,16 @@ export default function Apartments() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
             <StatCard 
               icon={Building}
-              label="TOTAL APARTMENTS"
+              label={t('apartments.stats.total')}
               value={(statics?.total || 0).toLocaleString()}
-              subValue="Across all projects"
+              subValue={t('apartments.stats.acrossAll')}
               color="from-blue-500 to-blue-600"
             />
             <StatCard 
               icon={CheckCircle2}
-              label="AVAILABLE COUNT"
+              label={t('apartments.stats.available')}
               value={(statics?.availableCount || 0).toLocaleString()}
-              subValue="Ready units"
+              subValue={t('apartments.stats.readyUnits')}
               color="from-emerald-500 to-emerald-600"
             />
           </div>
@@ -234,7 +244,7 @@ export default function Apartments() {
             columns={columns} 
             data={apartments}
             isLoading={isLoading}
-            loadingMessage="Loading apartments..."
+            loadingMessage={t('common.loading')}
             currentPage={currentPage}
             totalPages={response?.totalPages}
             totalItems={response?.totalItems}
@@ -253,18 +263,18 @@ export default function Apartments() {
                 <Home className="w-8 h-8 text-gray-400" />
               </div>
               <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
-                No apartments found
+                {t('apartments.empty.title')}
               </h3>
               <p className="text-sm text-gray-500 dark:text-gray-400 mb-8 max-w-md mx-auto">
                 {filters.search 
-                  ? 'Try adjusting your search to find what you\'re looking for'
-                  : 'Get started by adding your first apartment'}
+                  ? t('apartments.empty.description')
+                  : t('apartments.empty.createFirst')}
               </p>
               {!filters.search && (
                 <Link href="/apartments/new">
                   <button className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-[#4A1B1B] to-[#6B2727] text-white rounded-md text-sm font-medium shadow-lg shadow-[#4A1B1B]/20 hover:shadow-xl transition-all">
                     <Plus className="w-5 h-5" />
-                    Add Apartment
+                    {t('apartments.add')}
                   </button>
                 </Link>
               )}

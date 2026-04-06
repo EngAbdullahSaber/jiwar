@@ -23,6 +23,10 @@ import {
   Loader2,
   AlertCircle,
   Tag,
+  Phone,
+  Mail,
+  Scale,
+  DollarSign,
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
@@ -33,7 +37,17 @@ import { useTranslation } from 'react-i18next';
 interface MaterialDetail {
   id: number;
   name: string;
-  supplier: string;
+  supplier: {
+    name: string;
+    phoneNumber?: string;
+    optionalPhoneNumber?: string;
+    email?: string;
+    quantityText?: string;
+    price?: number;
+    editPrice?: number;
+    editPriceDate?: string;
+    documents?: string[];
+  };
   quantity: number;
   requestStatus: string;
   approvalStatus: string;
@@ -207,7 +221,7 @@ export default function ViewMaterial() {
     ? material.project?.name?.arabic
     : material.project?.name?.english;
 
-  const formatDate = (iso: string | null) =>
+  const formatDate = (iso: string | null | undefined) =>
     iso
       ? new Date(iso).toLocaleDateString(isRtl ? 'ar-SA' : 'en-GB', {
           year: 'numeric',
@@ -253,7 +267,7 @@ export default function ViewMaterial() {
                     {material.name}
                   </h1>
                   <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">
-                    #{material.id} · {material.supplier}
+                    #{material.id} · {material.supplier?.name}
                   </p>
                 </div>
               </div>
@@ -335,9 +349,66 @@ export default function ViewMaterial() {
               {/* Material Details */}
               <SectionCard icon={Package} title={t('materials.details')} delay={0.1}>
                 <DetailRow icon={Layers} label={t('materials.name')} value={material.name} />
-                <DetailRow icon={Building2} label={t('materials.supplier')} value={material.supplier} />
                 <DetailRow icon={Hash} label={t('materials.quantity')} value={material.quantity.toLocaleString()} />
               </SectionCard>
+
+              {/* Supplier Information */}
+              {material.supplier && (
+                <SectionCard icon={Building2} title={t('materials.supplier')} delay={0.12}>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6">
+                    <DetailRow icon={Building2} label={t('materials.supplierName')} value={material.supplier.name} />
+                    <DetailRow icon={Mail} label={t('materials.supplierEmail')} value={material.supplier.email || '—'} />
+                    <DetailRow icon={Phone} label={t('materials.supplierPhone')} value={material.supplier.phoneNumber || '—'} />
+                    <DetailRow icon={Phone} label={t('materials.supplierOptionalPhone')} value={material.supplier.optionalPhoneNumber || '—'} />
+                    <DetailRow icon={Scale} label={t('materials.quantityText')} value={material.supplier.quantityText || '—'} />
+                    <DetailRow 
+                      icon={DollarSign} 
+                      label={t('materials.price')} 
+                      value={material.supplier.price ? `${material.supplier.price.toLocaleString()} ${t('common.sar') || 'SAR'}` : '—'} 
+                    />
+                    {material.supplier.editPrice && (
+                      <>
+                        <DetailRow 
+                          icon={DollarSign} 
+                          label={t('materials.editPrice')} 
+                          value={`${material.supplier.editPrice.toLocaleString()} ${t('common.sar') || 'SAR'}`} 
+                        />
+                        <DetailRow 
+                          icon={Calendar} 
+                          label={t('materials.editPriceDate')} 
+                          value={formatDate(material.supplier.editPriceDate)} 
+                        />
+                      </>
+                    )}
+                  </div>
+
+                  {/* Supplier Documents */}
+                  {material.supplier.documents && material.supplier.documents.length > 0 && (
+                    <div className="mt-4 border-t border-gray-100 dark:border-gray-800 pt-4">
+                      <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-widest mb-3">
+                        {t('materials.supplierDocuments')}
+                      </p>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                        {material.supplier.documents.map((doc, i) => {
+                          const fileName = doc.split('/').pop() || doc;
+                          return (
+                            <a
+                              key={i}
+                              href={`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000'}/${doc}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="flex items-center gap-2 p-2 rounded-lg bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 hover:border-[#B39371]/40 transition-all group"
+                            >
+                              <Paperclip className="w-3.5 h-3.5 text-gray-400 group-hover:text-[#B39371]" />
+                              <span className="text-xs font-medium text-gray-600 dark:text-gray-400 truncate">{fileName}</span>
+                            </a>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
+                </SectionCard>
+              )}
 
               {/* Project Information */}
               {material.project && (

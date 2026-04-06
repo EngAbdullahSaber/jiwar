@@ -11,7 +11,12 @@ import {
   Loader2,
   Building2,
   Hash,
-  Tags
+  Tags,
+  Phone,
+  Mail,
+  Scale,
+  DollarSign,
+  Calendar
 } from 'lucide-react';
 import { Input } from "@/components/ui/input";
 import {
@@ -91,13 +96,25 @@ export default function UpdateMaterial() {
 
   const [formData, setFormData] = useState({
     name: "",
-    supplier: "",
     quantity: 0,
     requestStatus: "",
     approvalStatus: "",
     projectId: ""
   });
+
+  const [supplierData, setSupplierData] = useState({
+    name: "",
+    phoneNumber: "",
+    optionalPhoneNumber: "",
+    email: "",
+    quantityText: "",
+    price: 0,
+    editPrice: 0,
+    editPriceDate: "",
+  });
+
   const [attachments, setAttachments] = useState<string[]>([]);
+  const [supplierDocuments, setSupplierDocuments] = useState<string[]>([]);
 
   const { data: materialData, isLoading: isLoadingMaterial } = useQuery({
     queryKey: ['material', materialId],
@@ -113,12 +130,28 @@ export default function UpdateMaterial() {
       const m = materialData.data;
       setFormData({
         name: m.name || "",
-        supplier: m.supplier || "",
         quantity: m.quantity || 0,
         requestStatus: m.requestStatus || "pending",
         approvalStatus: m.approvalStatus || "draft",
         projectId: m.project?.id ? m.project.id.toString() : ""
       });
+      
+      if (m.supplier) {
+        setSupplierData({
+          name: m.supplier.name || "",
+          phoneNumber: m.supplier.phoneNumber || "",
+          optionalPhoneNumber: m.supplier.optionalPhoneNumber || "",
+          email: m.supplier.email || "",
+          quantityText: m.supplier.quantityText || "",
+          price: m.supplier.price || 0,
+          editPrice: m.supplier.editPrice || 0,
+          editPriceDate: m.supplier.editPriceDate ? m.supplier.editPriceDate.split('T')[0] : "",
+        });
+        if (Array.isArray(m.supplier.documents)) {
+          setSupplierDocuments(m.supplier.documents);
+        }
+      }
+
       if (Array.isArray(m.files) && m.files.length > 0) {
         setAttachments(m.files);
       }
@@ -129,14 +162,18 @@ export default function UpdateMaterial() {
   const updateMutation = useMutation({
     mutationFn: async (data: typeof formData) => {
       // Create payload dynamically handling required transformations
-      const payload: any = {};
-      if (data.name) payload.name = data.name;
-      if (data.supplier) payload.supplier = data.supplier;
-      if (data.quantity) payload.quantity = Number(data.quantity);
-      if (data.requestStatus) payload.requestStatus = data.requestStatus;
-      if (data.approvalStatus) payload.approvalStatus = data.approvalStatus;
-      if (data.projectId) payload.projectId = Number(data.projectId);
-      if (attachments.length > 0) payload.files = attachments;
+      const payload: any = {
+        ...data,
+        quantity: Number(data.quantity),
+        projectId: Number(data.projectId),
+        files: attachments,
+        supplier: {
+          ...supplierData,
+          price: Number(supplierData.price),
+          editPrice: Number(supplierData.editPrice),
+          documents: supplierDocuments,
+        }
+      };
       
       const response = await api.patch(`/material/${materialId}`, payload);
       return response.data;
@@ -161,7 +198,7 @@ export default function UpdateMaterial() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formData.name || !formData.supplier || !formData.quantity || !formData.projectId) {
+    if (!formData.name || !supplierData.name || !formData.quantity || !formData.projectId) {
       toast.error(t('materials.formError'), { 
         icon: '⚠️',
         style: { borderRadius: '1rem', background: '#ef4444', color: '#fff' } 
@@ -250,20 +287,6 @@ export default function UpdateMaterial() {
                   </div>
                 </FormField>
 
-                {/* Supplier */}
-                <FormField label={t('materials.supplier')} required>
-                  <div className="relative">
-                    <Building2 className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 rtl:left-auto rtl:right-3" />
-                    <Input 
-                      placeholder="e.g. Al-Rajhi Materials"
-                      value={formData.supplier}
-                      onChange={(e) => setFormData({ ...formData, supplier: e.target.value })}
-                      className="pl-10 rtl:pl-3 rtl:pr-10 h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md"
-                      required
-                    />
-                  </div>
-                </FormField>
-
                 {/* Quantity */}
                 <FormField label={t('materials.quantity')} required>
                   <div className="relative">
@@ -278,6 +301,163 @@ export default function UpdateMaterial() {
                     />
                   </div>
                 </FormField>
+
+              </div>
+            </FormSection>
+
+            {/* Supplier Details Section */}
+            <FormSection 
+              icon={Building2}
+              title={t('materials.supplier')}
+              description={t('materials.supplierDesc') || "Enter supplier contact and financial details"}
+              delay={0.15}
+            >
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                
+                {/* Supplier Name */}
+                <FormField label={t('materials.supplierName')} required>
+                  <div className="relative">
+                    <Building2 className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 rtl:left-auto rtl:right-3" />
+                    <Input 
+                      placeholder="e.g. Al-Rajhi Materials"
+                      value={supplierData.name}
+                      onChange={(e) => setSupplierData({ ...supplierData, name: e.target.value })}
+                      className="pl-10 rtl:pl-3 rtl:pr-10 h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md"
+                      required
+                    />
+                  </div>
+                </FormField>
+
+                {/* Email */}
+                <FormField label={t('materials.supplierEmail')}>
+                  <div className="relative">
+                    <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 rtl:left-auto rtl:right-3" />
+                    <Input 
+                      type="email"
+                      placeholder="supplier@example.com"
+                      value={supplierData.email}
+                      onChange={(e) => setSupplierData({ ...supplierData, email: e.target.value })}
+                      className="pl-10 rtl:pl-3 rtl:pr-10 h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md"
+                    />
+                  </div>
+                </FormField>
+
+                {/* Phone Number */}
+                <FormField label={t('materials.supplierPhone')}>
+                  <div className="relative">
+                    <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 rtl:left-auto rtl:right-3" />
+                    <Input 
+                      placeholder="050XXXXXXXX"
+                      value={supplierData.phoneNumber}
+                      onChange={(e) => setSupplierData({ ...supplierData, phoneNumber: e.target.value })}
+                      className="pl-10 rtl:pl-3 rtl:pr-10 h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md"
+                    />
+                  </div>
+                </FormField>
+
+                {/* Optional Phone Number */}
+                <FormField label={t('materials.supplierOptionalPhone')}>
+                  <div className="relative">
+                    <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 rtl:left-auto rtl:right-3" />
+                    <Input 
+                      placeholder="055XXXXXXXX"
+                      value={supplierData.optionalPhoneNumber}
+                      onChange={(e) => setSupplierData({ ...supplierData, optionalPhoneNumber: e.target.value })}
+                      className="pl-10 rtl:pl-3 rtl:pr-10 h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md"
+                    />
+                  </div>
+                </FormField>
+
+                {/* Quantity Text */}
+                <FormField label={t('materials.quantityText')}>
+                  <div className="relative">
+                    <Scale className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 rtl:left-auto rtl:right-3" />
+                    <Input 
+                      placeholder="e.g. 100 tons"
+                      value={supplierData.quantityText}
+                      onChange={(e) => setSupplierData({ ...supplierData, quantityText: e.target.value })}
+                      className="pl-10 rtl:pl-3 rtl:pr-10 h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md"
+                    />
+                  </div>
+                </FormField>
+
+                {/* Price */}
+                <FormField label={t('materials.price')}>
+                  <div className="relative">
+                    <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 rtl:left-auto rtl:right-3" />
+                    <Input 
+                      type="number"
+                      placeholder="0.00"
+                      value={supplierData.price}
+                      onChange={(e) => setSupplierData({ ...supplierData, price: Number(e.target.value) })}
+                      className="pl-10 rtl:pl-3 rtl:pr-10 h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md"
+                    />
+                  </div>
+                </FormField>
+
+                {/* Edit Price */}
+                <FormField label={t('materials.editPrice')}>
+                  <div className="relative">
+                    <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 rtl:left-auto rtl:right-3" />
+                    <Input 
+                      type="number"
+                      placeholder="0.00"
+                      value={supplierData.editPrice}
+                      onChange={(e) => setSupplierData({ ...supplierData, editPrice: Number(e.target.value) })}
+                      className="pl-10 rtl:pl-3 rtl:pr-10 h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md"
+                    />
+                  </div>
+                </FormField>
+
+                {/* Edit Price Date */}
+                <FormField label={t('materials.editPriceDate')}>
+                  <div className="relative">
+                    <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 rtl:left-auto rtl:right-3" />
+                    <Input 
+                      type="date"
+                      value={supplierData.editPriceDate}
+                      onChange={(e) => setSupplierData({ ...supplierData, editPriceDate: e.target.value })}
+                      className="pl-10 rtl:pl-3 rtl:pr-10 h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md"
+                    />
+                  </div>
+                </FormField>
+
+                {/* Supplier Documents */}
+                <div className="md:col-span-2 space-y-4">
+                  <FormField label={t('materials.supplierDocuments')}>
+                    {/* Existing document previews */}
+                    {supplierDocuments.length > 0 && (
+                      <div className="mb-4 flex flex-wrap gap-2">
+                        {supplierDocuments.map((url, i) => {
+                          const fileName = url.split('/').pop() || `doc-${i + 1}`;
+                          return (
+                            <div
+                              key={i}
+                              className="flex items-center gap-2 px-3 py-1.5 bg-gray-100 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 text-xs text-gray-700 dark:text-gray-300"
+                            >
+                              <span className="truncate max-w-[160px]">{fileName}</span>
+                              <button
+                                type="button"
+                                className="text-red-500 hover:text-red-700 transition-colors"
+                                onClick={() => setSupplierDocuments((prev) => prev.filter((_, idx) => idx !== i))}
+                              >
+                                ×
+                              </button>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    )}
+                    <FileUpload
+                      multiple
+                      label={t('materials.addMoreDocs') || "Add More Supplier Documents"}
+                      accept=".pdf,.jpg,.jpeg,.png,.doc,.docx"
+                      maxSizeMB={10}
+                      onUploadSuccess={(url) => setSupplierDocuments((prev) => [...prev, url])}
+                      onUploadMultipleSuccess={(urls) => setSupplierDocuments((prev) => [...prev, ...urls])}
+                    />
+                  </FormField>
+                </div>
 
               </div>
             </FormSection>

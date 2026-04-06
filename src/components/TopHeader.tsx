@@ -35,7 +35,7 @@ export function TopHeader() {
       'finance-dashboard': t('sidebar.finance', 'Finance'),
       'roles': t('sidebar.roles', 'Roles'),
       'users': t('sidebar.users', 'Users'),
-      'materials': t('sidebar.purchases', 'Purchases'),
+      'materials': t('sidebar.materials', 'Purchases'),
       'countries': t('sidebar.countries', 'Countries'),
       'cities': t('sidebar.cities', 'Cities'),
       'banks': t('sidebar.banks', 'Banks'),

@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { TopHeader } from '../../components/TopHeader';
 import { Link, useLocation } from "wouter";
 import { 
@@ -32,6 +33,7 @@ interface Phase {
 
 export default function AddProjectStage() {
   const [, setLocation] = useLocation();
+  const { t } = useTranslation();
   const [phases, setPhases] = useState<Phase[]>([
     {
       id: '1',
@@ -103,11 +105,11 @@ export default function AddProjectStage() {
           </div>
           <div>
             <div className="flex items-center gap-2 text-[10px] font-bold text-gray-400 uppercase tracking-widest">
-              <Link href="/projects" className="hover:text-[#B39371] transition-colors">Projects</Link>
+              <Link href="/projects" className="hover:text-[#B39371] transition-colors">{t('sidebar.projects')}</Link>
               <ChevronRight className="w-3 h-3 text-gray-300" />
-              <span className="text-gray-500">Stage</span>
+              <span className="text-gray-500">{t('projects.stages.addStage')}</span>
             </div>
-            <h1 className="text-2xl font-bold text-gray-900 mt-0.5">Add Stage</h1>
+            <h1 className="text-2xl font-bold text-gray-900 mt-0.5">{t('projects.stages.addTitle')}</h1>
           </div>
         </div>
 
@@ -115,15 +117,15 @@ export default function AddProjectStage() {
           <div className="p-10 space-y-10">
             <div className="flex items-center justify-between">
               <div>
-                <h2 className="text-xl font-bold text-gray-900">Construction Phases</h2>
-                <p className="text-sm text-gray-400 mt-1">Define the timeline, costs, and hierarchical structure of your construction process.</p>
+                <h2 className="text-xl font-bold text-gray-900">{t('projects.stages.phasesTitle')}</h2>
+                <p className="text-sm text-gray-400 mt-1">{t('projects.stages.phasesDescription')}</p>
               </div>
               <button 
                 onClick={addPhase}
                 className="flex items-center gap-2 px-5 py-2.5 bg-[#F5F1ED] text-[#4A1B1B] rounded-xl text-xs font-bold hover:bg-[#4A1B1B] hover:text-white transition-all group"
               >
                 <Plus className="w-4 h-4" />
-                Add New Stage
+                {t('projects.stages.addNewStage')}
               </button>
             </div>
 
@@ -140,7 +142,7 @@ export default function AddProjectStage() {
                   >
                     <div className="grid grid-cols-12 gap-6 items-end">
                       <div className="col-span-5 space-y-2">
-                        <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">Stage Name</label>
+                        <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">{t('projects.stages.stageName')}</label>
                         <Input 
                           value={phase.name} 
                           placeholder="e.g. Excavation & Foundation" 
@@ -149,7 +151,7 @@ export default function AddProjectStage() {
                         />
                       </div>
                       <div className="col-span-3 space-y-2">
-                        <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">Estimated Cost (SAR)</label>
+                        <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">{t('projects.stages.estCost')}</label>
                         <Input 
                           value={phase.cost} 
                           placeholder="0.00" 
@@ -158,7 +160,7 @@ export default function AddProjectStage() {
                         />
                       </div>
                       <div className="col-span-3 space-y-2">
-                        <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">Timeline (Range)</label>
+                        <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">{t('projects.stages.timeline')}</label>
                         <div className="relative">
                           <Input 
                             value={phase.timeline} 
@@ -194,7 +196,7 @@ export default function AddProjectStage() {
                             <div className="col-span-4">
                               <Input 
                                 value={sub.name} 
-                                placeholder="Sub-stage name" 
+                                placeholder={t('projects.stages.subStageName')} 
                                 className="bg-white border-gray-100 h-10 rounded-lg focus:border-[#4A1B1B]/30 transition-all text-sm"
                                 onChange={(e) => setPhases(phases.map(p => p.id === phase.id ? { ...p, subStages: p.subStages.map(s => s.id === sub.id ? { ...s, name: e.target.value } : s) } : p))}
                               />
@@ -202,7 +204,7 @@ export default function AddProjectStage() {
                             <div className="col-span-3">
                               <Input 
                                 value={sub.cost} 
-                                placeholder="Cost" 
+                                placeholder={t('projects.stages.cost')} 
                                 className="bg-white border-gray-100 h-10 rounded-lg focus:border-[#4A1B1B]/30 transition-all text-sm font-medium"
                                 onChange={(e) => setPhases(phases.map(p => p.id === phase.id ? { ...p, subStages: p.subStages.map(s => s.id === sub.id ? { ...s, cost: e.target.value } : s) } : p))}
                               />
@@ -210,7 +212,7 @@ export default function AddProjectStage() {
                             <div className="col-span-4">
                               <Input 
                                 value={sub.timeline} 
-                                placeholder="Timeline" 
+                                placeholder={t('projects.stages.timelineLabel')} 
                                 className="bg-white border-gray-100 h-10 rounded-lg focus:border-[#4A1B1B]/30 transition-all text-sm font-medium"
                                 onChange={(e) => setPhases(phases.map(p => p.id === phase.id ? { ...p, subStages: p.subStages.map(s => s.id === sub.id ? { ...s, timeline: e.target.value } : s) } : p))}
                               />
@@ -232,7 +234,7 @@ export default function AddProjectStage() {
                         className="flex items-center gap-2 text-[10px] font-bold text-[#B39371] hover:text-[#4A1B1B] transition-colors uppercase tracking-widest mt-2 group"
                       >
                         <PlusCircle className="w-3.5 h-3.5" />
-                        Add Sub-stage
+                        {t('projects.stages.addSubStage')}
                       </button>
                     </div>
                   </motion.div>
@@ -248,7 +250,7 @@ export default function AddProjectStage() {
                   <Plus className="w-6 h-6" />
                 </div>
                 <div className="text-center">
-                  <p className="text-sm font-bold text-gray-400 uppercase tracking-widest group-hover:text-gray-600 transition-colors">Add Construction Phase</p>
+                  <p className="text-sm font-bold text-gray-400 uppercase tracking-widest group-hover:text-gray-600 transition-colors">{t('projects.stages.addPhase')}</p>
                 </div>
               </button>
             </div>
@@ -260,12 +262,12 @@ export default function AddProjectStage() {
               onClick={() => setLocation('/projects')}
               className="px-8 py-3 rounded-xl text-sm font-bold text-gray-500 hover:bg-white hover:text-gray-900 transition-all border border-transparent hover:border-gray-100"
             >
-              Cancel
+              {t('common.cancel')}
             </button>
             <button 
               className="px-10 py-3 bg-[#B39371] text-white rounded-xl text-sm font-bold shadow-xl shadow-[#B39371]/20 hover:bg-[#4A1B1B] transition-all flex items-center gap-2 group"
             >
-              Add Stage
+              {t('projects.stages.addStage')}
               <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
             </button>
           </div>

@@ -17,10 +17,7 @@ import {
   ArrowRight,
   Trash2,
   Edit,
-  Grid3x3,
-  List,
   Sparkles,
- 
   FileText
 } from 'lucide-react';
 import { Link } from "wouter";
@@ -55,7 +52,6 @@ interface Template {
   };
   modelType: string;
   sku: string;
-  managementFees: string;
   size: number;
   totalRooms: number;
   bedrooms: number;
@@ -67,6 +63,7 @@ interface Template {
   familyLounge: boolean;
   guestMajlis: boolean;
   kitchen: boolean;
+  rooftop: boolean;
 }
 
 interface TemplatesResponse {
@@ -91,7 +88,6 @@ export default function Templates() {
   const [sortOrder, setSortOrder] = useState('newest');
   const [showSortDropdown, setShowSortDropdown] = useState(false);
   const [templateToDelete, setTemplateToDelete] = useState<number | null>(null);
-  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const pageSize = 10;
   const queryClient = useQueryClient();
 
@@ -116,7 +112,7 @@ export default function Templates() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['templates'] });
-      toast.success("Template deleted successfully", {
+      toast.success(t('templates.successDelete'), {
         icon: '🗑️',
         style: {
           borderRadius: '1rem',
@@ -127,7 +123,7 @@ export default function Templates() {
       setTemplateToDelete(null);
     },
     onError: (error: any) => {
-      toast.error(error.response?.data?.message || "Failed to delete template", {
+      toast.error(error.response?.data?.message || t('templates.errorDelete'), {
         icon: '❌',
         style: {
           borderRadius: '1rem',
@@ -158,8 +154,7 @@ export default function Templates() {
   const sortOptions = [
     { value: 'newest', label: t('templates.sort.newest') },
     { value: 'oldest', label: t('templates.sort.oldest') },
-    { value: 'name_asc', label: t('templates.sort.nameAsc') },
-    { value: 'name_desc', label: t('templates.sort.nameDesc') },
+ 
  
   ];
  
@@ -222,7 +217,7 @@ export default function Templates() {
                 <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
                 <input
                   type="text"
-                  placeholder="Search by name or SKU..."
+                  placeholder={t('templates.placeholders.search')}
                   className="w-full pl-12 pr-4 py-3 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#B39371]/20 focus:border-[#B39371] transition-all"
                   value={searchValue}
                   onChange={(e) => setSearchValue(e.target.value)}
@@ -328,14 +323,15 @@ export default function Templates() {
                         className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
                         onError={(e) => {
                           const target = e.target as HTMLImageElement;
-                          target.src = getPlaceholderImage(template.id);
+                          target.onerror = null; // Prevent infinite loop
+                          target.src = 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80';
                         }}
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
                       
                       {/* SKU Badge */}
                       <Badge className="absolute top-3 left-3 bg-black/50 backdrop-blur-sm text-white border-0">
-                        SKU: {template.sku}
+                        {t('templates.sku')}: {template.sku}
                       </Badge>
                       
                       {/* Location Badge */}
@@ -383,22 +379,27 @@ export default function Templates() {
                       <div className="flex flex-wrap gap-1.5">
                         {template.kitchen && (
                           <Badge variant="secondary" className="bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400">
-                            Kitchen
+                            {t('templates.amenities.kitchen')}
                           </Badge>
                         )}
                         {template.familyLounge && (
                           <Badge variant="secondary" className="bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400">
-                            Family Lounge
+                            {t('templates.amenities.familyLounge')}
                           </Badge>
                         )}
                         {template.guestMajlis && (
                           <Badge variant="secondary" className="bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400">
-                            Guest Majlis
+                            {t('templates.amenities.guestMajlis')}
                           </Badge>
                         )}
                         {template.balconyAccess && (
                           <Badge variant="secondary" className="bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400">
-                            Balcony
+                            {t('templates.amenities.balcony')}
+                          </Badge>
+                        )}
+                        {template.rooftop && (
+                          <Badge variant="secondary" className="bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400">
+                            {t('templates.amenities.rooftop')}
                           </Badge>
                         )}
                       </div>
@@ -406,8 +407,8 @@ export default function Templates() {
                       {/* Action Buttons */}
                       <div className="flex items-center gap-2 pt-2">
                         <Link href={`/templates/${template.id}`} className="flex-1">
-                          <button className="w-full py-2.5 bg-gradient-to-r from-[#4A1B1B] to-[#6B2727] text-white rounded-xl text-xs font-medium shadow-lg shadow-[#4A1B1B]/20 hover:shadow-xl transition-all">
-                            View Details
+                          <button className="w-full py-2.5 cursor-pointer bg-gradient-to-r from-[#4A1B1B] to-[#6B2727] text-white rounded-xl text-xs font-medium shadow-lg shadow-[#4A1B1B]/20 hover:shadow-xl transition-all">
+                            {t('templates.viewDetails')}
                           </button>
                         </Link>
                         
@@ -421,7 +422,7 @@ export default function Templates() {
                             <Link href={`/templates/${template.id}/edit`}>
                               <DropdownMenuItem className="gap-2 cursor-pointer rounded-lg">
                                 <Edit className="w-4 h-4" />
-                                <span>Edit</span>
+                                <span>{t('common.edit')}</span>
                               </DropdownMenuItem>
                             </Link>
                             <DropdownMenuSeparator />
@@ -430,7 +431,7 @@ export default function Templates() {
                               onClick={() => setTemplateToDelete(template.id)}
                             >
                               <Trash2 className="w-4 h-4" />
-                              <span>Delete</span>
+                              <span>{t('common.delete')}</span>
                             </DropdownMenuItem>
                           </DropdownMenuContent>
                         </DropdownMenu>
@@ -447,25 +448,23 @@ export default function Templates() {
             <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 p-6 shadow-sm">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
                 <p className="text-sm text-gray-600 dark:text-gray-400">
-                  Showing{' '}
+                  {t('common.showing')}{' '}
                   <span className="font-medium text-gray-900 dark:text-white">
                     {(currentPage - 1) * pageSize + 1}
                   </span>{' '}
-                  to{' '}
+                  {t('common.to')}{' '}
                   <span className="font-medium text-gray-900 dark:text-white">
                     {Math.min(currentPage * pageSize, data.totalItems)}
                   </span>{' '}
-                  of{' '}
+                  {t('common.of')}{' '}
                   <span className="font-medium text-gray-900 dark:text-white">
                     {data.totalItems}
                   </span>{' '}
-                  results
+                  {t('common.results')}
                 </p>
                 <Pagination 
                   currentPage={currentPage}
                   totalPages={data.totalPages}
-                  totalItems={data.totalItems}
-                  itemsPerPage={pageSize}
                   onPageChange={setCurrentPage}
                 />
               </div>
@@ -483,18 +482,18 @@ export default function Templates() {
                 <FileText className="w-8 h-8 text-gray-400" />
               </div>
               <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
-                No templates found
+                {t('templates.empty.title')}
               </h3>
               <p className="text-sm text-gray-500 dark:text-gray-400 max-w-md mx-auto mb-8">
                 {searchValue 
-                  ? 'Try adjusting your search or filters to find what you\'re looking for'
-                  : 'Get started by creating your first template to showcase your properties'}
+                  ? t('templates.empty.searchDesc')
+                  : t('templates.empty.createDesc')}
               </p>
               {!searchValue && (
                 <Link href="/templates/new">
                   <button className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-[#4A1B1B] to-[#6B2727] text-white rounded-xl text-sm font-medium shadow-lg shadow-[#4A1B1B]/20 hover:shadow-xl transition-all">
                     <Plus className="w-5 h-5" />
-                    Create Template
+                    {t('templates.create')}
                   </button>
                 </Link>
               )}
@@ -507,14 +506,14 @@ export default function Templates() {
       <AlertDialog open={templateToDelete !== null} onOpenChange={(open) => !open && setTemplateToDelete(null)}>
         <AlertDialogContent className="rounded-2xl">
           <AlertDialogHeader>
-            <AlertDialogTitle className="text-xl font-semibold">Are you absolutely sure?</AlertDialogTitle>
+            <AlertDialogTitle className="text-xl font-semibold">{t('templates.deleteConfirm.title')}</AlertDialogTitle>
             <AlertDialogDescription className="text-gray-500">
-              This action cannot be undone. This will permanently delete the template and all associated data from our servers.
+              {t('templates.deleteConfirm.description')}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter className="gap-3">
             <AlertDialogCancel className="rounded-xl border-gray-200 hover:bg-gray-50">
-              Cancel
+              {t('common.cancel')}
             </AlertDialogCancel>
             <AlertDialogAction 
               onClick={handleDelete}
@@ -524,10 +523,10 @@ export default function Templates() {
               {deleteMutation.isPending ? (
                 <div className="flex items-center gap-2">
                   <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                  Deleting...
+                  {t('common.processing')}
                 </div>
               ) : (
-                "Delete Template"
+                t('templates.deleteConfirm.button')
               )}
             </AlertDialogAction>
           </AlertDialogFooter>

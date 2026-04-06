@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useQuery } from '@tanstack/react-query';
 import api from '@/lib/api';
 import { TopHeader } from '../../components/TopHeader';
@@ -32,6 +32,7 @@ import {
   FileText
 } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { useState } from 'react';
 
 interface Project {
   id: number;
@@ -62,26 +63,27 @@ interface ProjectsResponse {
 
 // Status Badge Component
 const StatusBadge = ({ status }: { status: string }) => {
+  const { t } = useTranslation();
   const statusConfig: Record<string, { color: string; icon: any; label: string }> = {
     CONSTRUCTION: { 
       color: "bg-blue-50 text-blue-700 dark:bg-blue-500/10 dark:text-blue-400 border-blue-200 dark:border-blue-500/20", 
       icon: Clock,
-      label: "Construction"
+      label: t('projects.statuses.construction')
     },
     PLANNING: { 
       color: "bg-gray-50 text-gray-700 dark:bg-gray-500/10 dark:text-gray-400 border-gray-200 dark:border-gray-500/20", 
       icon: FileText,
-      label: "Planning"
+      label: t('projects.statuses.planning')
     },
     HANDOVER: { 
       color: "bg-emerald-50 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-400 border-emerald-200 dark:border-emerald-500/20", 
       icon: CheckCircle2,
-      label: "Handover"
+      label: t('projects.statuses.handover')
     },
     "ON HOLD": { 
       color: "bg-amber-50 text-amber-700 dark:bg-amber-500/10 dark:text-amber-400 border-amber-200 dark:border-amber-500/20", 
       icon: AlertCircle,
-      label: "On Hold"
+      label: t('projects.statuses.onhold')
     }
   };
 
@@ -99,6 +101,7 @@ const StatusBadge = ({ status }: { status: string }) => {
 
 
 export default function Projects() {
+  const { t, i18n } = useTranslation();
   const [filters, setFilters] = useState({ search: '', status: 'all' });
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 10;
@@ -121,42 +124,46 @@ export default function Projects() {
   const filterFields: FilterField[] = [
     {
       type: 'search',
-      label: 'Search Project',
-      placeholder: 'Search by project name or ID...',
+      label: t('projects.labels.projectName'),
+      placeholder: t('projects.placeholders.search'),
       key: 'search'
     },
     {
       type: 'select',
-      label: 'Status',
-      placeholder: 'All Statuses',
+      label: t('projects.labels.status'),
+      placeholder: t('projects.statuses.allStatus'),
       key: 'status',
       options: [
-        { value: 'all', label: 'All Statuses' },
-        { value: 'CONSTRUCTION', label: 'Construction' },
-        { value: 'PLANNING', label: 'Planning' },
-        { value: 'HANDOVER', label: 'Handover' },
-        { value: 'ON HOLD', label: 'On Hold' }
+        { value: 'all', label: t('projects.statuses.allStatus') },
+        { value: 'CONSTRUCTION', label: t('projects.statuses.construction') },
+        { value: 'PLANNING', label: t('projects.statuses.planning') },
+        { value: 'HANDOVER', label: t('projects.statuses.handover') },
+        { value: 'ON HOLD', label: t('projects.statuses.onhold') }
       ]
     }
   ];
 
   const columns: Column<Project>[] = [
     {
-      header: "Project ID",
+      header: t('projects.labels.projectId'),
       accessorKey: "projectIdentity",
       className: "text-sm font-medium text-[#B39371]"
     },
     {
-      header: "Project Name",
+      header: t('projects.labels.projectName'),
       cell: (p) => (
         <div>
-          <p className="text-sm font-semibold text-gray-900 dark:text-white">{p.name?.english || 'N/A'}</p>
-          <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5" dir="rtl">{p.name?.arabic || 'N/A'}</p>
+          <p className="text-sm font-semibold text-gray-900 dark:text-white">
+            {i18n.language === 'ar' ? p.name?.arabic : p.name?.english}
+          </p>
+          <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
+             {i18n.language === 'ar' ? p.name?.english : p.name?.arabic}
+          </p>
         </div>
       )
     },
     {
-      header: "Location",
+      header: t('projects.labels.location'),
       cell: (p) => (
         <div className="flex items-center gap-1.5 text-gray-600 dark:text-gray-400">
           <MapPin className="w-4 h-4 text-gray-400" />
@@ -165,11 +172,11 @@ export default function Projects() {
       )
     },
     {
-      header: "Status",
+      header: t('projects.labels.status'),
       cell: (p) => <StatusBadge status={p.lastStage || "PLANNING"} />
     },
     {
-      header: "Budget",
+      header: t('projects.labels.budget'),
       cell: (p) => (
         <span className="text-sm font-semibold text-gray-900 dark:text-white">
           SAR {p.budgetSum?.toLocaleString() || 0}
@@ -177,7 +184,7 @@ export default function Projects() {
       )
     },
     {
-      header: "Progress",
+      header: t('projects.labels.progress'),
       cell: (p) => {
         const progress = Math.floor(Math.random() * 100); // Replace with actual progress
         return (
@@ -191,19 +198,19 @@ export default function Projects() {
       }
     },
     {
-      header: "Sold",
+      header: t('projects.labels.sold'),
       cell: () => <span className="text-sm font-medium text-gray-900 dark:text-white">24</span>,
       className: "text-center",
       headerClassName: "text-center"
     },
     {
-      header: "Reserved",
+      header: t('projects.labels.reserved'),
       cell: () => <span className="text-sm font-medium text-gray-900 dark:text-white">12</span>,
       className: "text-center",
       headerClassName: "text-center"
     },
     {
-      header: "Actions",
+      header: t('common.actions'),
       headerClassName: "text-center",
       cell: (p) => (
         <div className="flex items-center justify-center gap-2">
@@ -262,21 +269,19 @@ export default function Projects() {
                   <div className="flex items-center gap-2 mb-1">
                     <Sparkles className="w-4 h-4 text-[#B39371]" />
                     <p className="text-xs font-medium text-[#B39371] uppercase tracking-wider">
-                      Project Management
+                      {t('projects.management')}
                     </p>
                   </div>
                   <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
-                    Project Management List
+                    {t('projects.listTitle')}
                   </h1>
                   <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                    Manage and track your construction lifecycle through the central project ledger
+                    {t('projects.description')}
                   </p>
                 </div>
               </div>
 
               <div className="flex items-center gap-4">
-
-                
                 <Link href="/projects/new">
                   <motion.button
                     whileHover={{ scale: 1.02 }}
@@ -284,7 +289,7 @@ export default function Projects() {
                     className="flex items-center gap-2 px-6 py-2.5 bg-gradient-to-r from-[#4A1B1B] to-[#6B2727] text-white rounded-md text-sm font-medium shadow-lg shadow-[#4A1B1B]/20 hover:shadow-xl transition-all"
                   >
                     <Plus className="w-5 h-5" />
-                    Create Project
+                    {t('projects.create')}
                   </motion.button>
                 </Link>
               </div>
@@ -295,33 +300,33 @@ export default function Projects() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             <StatCard 
               icon={Building2}
-              label="TOTAL PROJECTS"
+              label={t('projects.stats.totalProjects')}
               value={totalProjects.toLocaleString()}
-              subValue="Active projects"
+              subValue={t('projects.stats.activeProjects')}
               trend="+12%"
               trendDirection="up"
               color="from-blue-500 to-blue-600"
             />
             <StatCard 
               icon={Wallet}
-              label="TOTAL BUDGET"
+              label={t('projects.stats.totalBudget')}
               value={`${statics?.totalBudget?.toLocaleString() || "0"} SAR`}
-              subValue="Across all phases"
+              subValue={t('projects.stats.allPhases')}
               color="from-emerald-500 to-emerald-600"
             />
             <StatCard 
               icon={FileEdit}
-              label="EVACUATION COUNT"
+              label={t('projects.stats.evacuationCount')}
               value={statics?.evacuationCount?.toString() || "0"}
-              subValue="Total evacuations"
+              subValue={t('projects.stats.totalEvacuations')}
               color="from-amber-500 to-amber-600"
               progress={45}
             />
             <StatCard 
               icon={TrendingUp}
-              label="DEMOLITION COUNT"
+              label={t('projects.stats.demolitionCount')}
               value={statics?.demolitionCount?.toString() || "0"}
-              subValue="In progress"
+              subValue={t('projects.stats.inProgress')}
               color="from-purple-500 to-purple-600"
               progress={30}
             />
@@ -360,18 +365,18 @@ export default function Projects() {
                 <Home className="w-8 h-8 text-gray-400" />
               </div>
               <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
-                No projects found
+                {t('projects.empty.title')}
               </h3>
               <p className="text-sm text-gray-500 dark:text-gray-400 mb-8 max-w-md mx-auto">
                 {filters.search || filters.status !== 'all' 
-                  ? 'Try adjusting your search or filters to find what you\'re looking for'
-                  : 'Get started by creating your first project'}
+                  ? t('projects.empty.description')
+                  : t('projects.empty.createFirst')}
               </p>
               {!filters.search && filters.status === 'all' && (
                 <Link href="/projects/new">
                   <button className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-[#4A1B1B] to-[#6B2727] text-white rounded-xl text-sm font-medium shadow-lg shadow-[#4A1B1B]/20 hover:shadow-xl transition-all">
                     <Plus className="w-5 h-5" />
-                    Create Project
+                    {t('projects.create')}
                   </button>
                 </Link>
               )}

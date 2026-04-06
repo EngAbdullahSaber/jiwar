@@ -24,7 +24,16 @@
     "max": "Max",
     "noResults": "No results found",
     "noData": "No data available",
-    "items": "items"
+    "items": "items",
+    "showing": "Showing",
+    "to": "to",
+    "of": "of",
+    "results": "results",
+    "available": "Available",
+    "notAvailable": "Not Available",
+    "viewFile": "View File",
+    "updated_at": "Updated At",
+    "details": "Details"
   },
   "sidebar": {
     "navigation": "Navigation",
@@ -267,6 +276,20 @@
     "emptyDesc": "Try adjusting your search or filters to find what you're looking for.",
     "createFirst": "Get started by creating your first material item.",
     "projectIdentity": "Project Identity",
+    "supplierDesc": "Enter supplier contact and financial details",
+    "supplierName": "Supplier Name",
+    "supplierEmail": "Supplier Email",
+    "supplierPhone": "Phone Number",
+    "supplierOptionalPhone": "Optional Phone",
+    "quantityText": "Quantity Text (e.g. 100 tons)",
+    "price": "Order Price",
+    "editPrice": "Adjusted Price",
+    "editPriceDate": "Adjustment Date",
+    "supplierDocuments": "Supplier Documents",
+    "uploadSupplierDocs": "Upload Contract/Invoice",
+    "addMoreDocs": "Add More Supplier Docs",
+    "contactInfo": "Contact Information",
+    "financialInfo": "Financial Details",
     "statuses": {
       "pending": "Pending",
       "ordered": "Ordered",
@@ -320,18 +343,98 @@
     "fillRequiredFields": "Please fill in both English and Arabic names to create a legality.",
     "conflictWarning": "This step name conflicts with a default step. Please use a different name.",
     "createSuccess": "Legality created successfully",
-    "createError": "Failed to create legality"
+    "createError": "Failed to create legality",
+    "updateStep": "Update Step Details",
+    "updateStepDesc": "Modify step name, timing, and attachments.",
+    "labels": {
+      "stepNameEn": "Step Name (English)",
+      "stepNameAr": "Step Name (Arabic)",
+      "details": "Details / Description",
+      "startDate": "Start Date",
+      "endDate": "End Date",
+      "amount": "Amount (SAR)",
+      "attachments": "Attachments",
+      "files": "Files"
+    },
+    "placeholders": {
+      "stepNameEn": "e.g. Purchase & Title Transfer",
+      "stepNameAr": "مثال: نقل الملكية والافراغ",
+      "details": "Provide additional details about this step...",
+      "amount": "0.00",
+      "uploadFiles": "Add New Files"
+    }
   },
   "templates": {
     "title": "Template Management",
+    "management": "Template Management",
     "description": "Manage and track your construction lifecycle through the central project ledger.",
     "create": "Create Template",
     "createSub": "Define a new residential configuration and floor plan",
-    "sortBy": "Sort by",
+    "newTemplate": "New Template",
+    "formDescription": "Create and manage your apartment templates for easy property creation",
     "editTemplate": "Edit Template",
+    "editDescription": "Update technical dimensions and structural features of this template",
+    "sortBy": "Sort by",
     "sqft": "sq ft",
+    "sqm": "m²",
     "beds": "Beds",
     "baths": "Baths",
+    "size": "Size",
+    "totalRooms": "Total Rooms",
+    "sku": "SKU / ID Code",
+    "modelType": "Model Type",
+    "location": "Location",
+    "front": "Front",
+    "back": "Back",
+    "amenities": {
+      "kitchen": "Kitchen",
+      "familyLounge": "Family Lounge",
+      "guestMajlis": "Guest Majlis",
+      "balcony": "Balcony",
+      "dualEntrances": "Dual Entrances",
+      "rooftop": "Rooftop"
+    },
+    "sections": {
+      "generalInfo": "General Information",
+      "generalInfoDesc": "Basic identifiers and classification for this floor plan template",
+      "specifications": "Template Specifications",
+      "specificationsDesc": "Technical dimensions, room configuration, and structural features",
+      "features": "Key Features",
+      "visualAssets": "Visual Assets",
+      "visualAssetsDesc": "Upload floor plans and architectural visualization for this template"
+    },
+    "placeholders": {
+      "search": "Search by name or SKU...",
+      "nameEn": "e.g. Skyline Luxury Suite",
+      "nameAr": "مثال: جناح سكاي لاين الفاخر",
+      "selectModel": "Select model type",
+      "sku": "APT-2024-X1"
+    },
+    "labels": {
+      "nameEn": "Template Name (English)",
+      "nameAr": "Template Name (Arabic)",
+      "balconyAccess": "Balcony Access",
+      "maidRoom": "Maid Room (m²)",
+      "clothsRoom": "Dressing Room (m²)",
+      "driverRoom": "Driver Room (m²)"
+    },
+    "viewDetails": "View Details",
+    "successCreate": "Template created successfully!",
+    "successUpdate": "Template updated successfully!",
+    "successDelete": "Template deleted successfully",
+    "errorCreate": "Failed to create template",
+    "errorUpdate": "Failed to update template",
+    "errorDelete": "Failed to delete template",
+    "empty": {
+      "title": "No templates found",
+      "searchDesc": "Try adjusting your search or filters to find what you're looking for",
+      "createDesc": "Get started by creating your first template to showcase your properties"
+    },
+    "deleteConfirm": {
+      "title": "Are you absolutely sure?",
+      "description": "This action cannot be undone. This will permanently delete the template and all associated data from our servers.",
+      "button": "Delete Template"
+    },
     "sort": {
       "newest": "Newest First",
       "oldest": "Oldest First",
@@ -442,6 +545,213 @@
     "createSuccess": "Bank created successfully",
     "updateSuccess": "Bank updated successfully",
     "deleteSuccess": "Bank deleted successfully"
+  },
+  "projects": {
+    "title": "Project Management",
+    "management": "Project Management",
+    "listTitle": "Project Management List",
+    "description": "Manage and track your construction lifecycle through the central project ledger",
+    "create": "Create Project",
+    "newProject": "New Project",
+    "editProject": "Edit Project",
+    "projectDetails": "Project Details",
+    "formDescription": "Create a new construction project and link it to a legality file",
+    "editDescription": "Update project details, status, and location information",
+    "stats": {
+      "totalProjects": "TOTAL PROJECTS",
+      "activeProjects": "Active projects",
+      "totalBudget": "TOTAL BUDGET",
+      "evacuationCount": "EVACUATION COUNT",
+      "demolitionCount": "DEMOLITION COUNT",
+      "allPhases": "Across all phases",
+      "totalEvacuations": "Total evacuations",
+      "inProgress": "In progress"
+    },
+    "placeholders": {
+      "search": "Search by project name or ID...",
+      "nameEn": "e.g. Skyline Heights",
+      "nameAr": "مثال: واجهة الرياض",
+      "address": "Enter the complete physical address",
+      "selectStatus": "Select Status",
+      "selectLegality": "Select Legality File",
+      "searchLegality": "Search legality files...",
+      "latitude": "24.7136",
+      "longitude": "46.6753"
+    },
+    "statuses": {
+      "planning": "Planning & Design",
+      "evacuation": "Evacuation",
+      "demolition": "Demolition",
+      "construction": "Construction",
+      "handover": "Handover",
+      "onhold": "On Hold",
+      "allStatus": "All Statuses"
+    },
+    "labels": {
+      "projectId": "Project ID",
+      "projectName": "Project Name",
+      "projectNameEn": "Project Name (English)",
+      "projectNameAr": "Project Name (Arabic)",
+      "location": "Location",
+      "status": "Status",
+      "budget": "Budget",
+      "progress": "Progress",
+      "sold": "Sold",
+      "reserved": "Reserved",
+      "identity": "Project Identity",
+      "identityDesc": "Basic information and identification for the project",
+      "linkedLegality": "Linked Legality File",
+      "locationDetails": "Location Details",
+      "locationDesc": "Geographical coordinates and physical address",
+      "address": "Physical Address",
+      "latitude": "Latitude",
+      "longitude": "Longitude",
+      "selectedCoordinates": "Selected Coordinates"
+    },
+    "success": {
+      "create": "Project created successfully",
+      "update": "Project updated successfully"
+    },
+    "errors": {
+      "create": "Failed to create project",
+      "update": "Failed to update project",
+      "fillRequired": "Please fill all required fields"
+    },
+    "empty": {
+      "title": "No projects found",
+      "description": "Try adjusting your search or filters to find what you're looking for",
+      "createFirst": "Get started by creating your first project"
+    },
+    "stages": {
+      "addTitle": "Add Project Stage",
+      "addStage": "Add Stage",
+      "phasesTitle": "Construction Phases",
+      "phasesDescription": "Define the timeline, costs, and hierarchical structure of your construction process.",
+      "addNewStage": "Add New Stage",
+      "addPhase": "Add Construction Phase",
+      "stageName": "Stage Name",
+      "estCost": "Estimated Cost (SAR)",
+      "timeline": "Timeline (Range)",
+      "addSubStage": "Add Sub-stage",
+      "subStageName": "Sub-stage name",
+      "cost": "Cost",
+      "timelineLabel": "Timeline"
+    }
+  },
+  "apartments": {
+    "title": "Apartments",
+    "management": "Property Management",
+    "description": "Manage individual apartments and view templates across your properties",
+    "add": "Add Apartment",
+    "create": "Create Apartment",
+    "new": "New Apartment",
+    "edit": "Edit Apartment",
+    "stats": {
+      "total": "TOTAL APARTMENTS",
+      "available": "AVAILABLE COUNT",
+      "acrossAll": "Across all projects",
+      "readyUnits": "Ready units"
+    },
+    "labels": {
+      "apartmentNo": "Apartment No.",
+      "suite": "Suite / Secondary Name",
+      "floor": "Floor",
+      "size": "Size",
+      "sqm": "Sqm",
+      "sqmLabel": "sqm",
+      "template": "Template",
+      "rooms": "Rooms",
+      "majorNameEn": "Major Name (English)",
+      "majorNameAr": "Major Name (Arabic)",
+      "secondaryNameEn": "Secondary Name / Suite (English)",
+      "secondaryNameAr": "Secondary Name (Arabic)",
+      "serialNumber": "Serial Number",
+      "accountNumber": "Account Number",
+      "subscriptionNumber": "Subscription Number",
+      "buildingOrBlock": "Building / Block",
+      "floorNo": "Floor Number",
+      "meterNumber": "Meter Number",
+      "linkedProject": "Linked Project",
+      "linkedTemplate": "Linked Template",
+      "basePrice": "Base Price (SAR)",
+      "apartmentType": "Apartment Type",
+      "ownerStatus": "Owner Status",
+      "status": "Status",
+      "requestDate": "Request Date",
+      "requestNumber": "Request Number",
+      "isAvailable": "Currently Available?",
+      "isAvailableDesc": "Toggle if this unit is currently available for purchase or rental.",
+      "projectSak": "Project Sak PDF URL",
+      "apartmentSak": "Apartment Sak PDF URL",
+      "subDivision": "Apartment Sub Division PDF URL"
+    },
+    "placeholders": {
+      "search": "Search by major name or secondary name...",
+      "selectProject": "Select Linked Project",
+      "searchProject": "Search projects...",
+      "selectTemplate": "Select Blueprint Template",
+      "searchTemplate": "Search templates...",
+      "selectType": "Select Type",
+      "selectStatus": "Select Status",
+      "selectOverallStatus": "Select Overall Status",
+      "majorNameEn": "e.g. Apartment 101",
+      "majorNameAr": "مثال: شقة 101",
+      "secondaryNameEn": "e.g. Suite A",
+      "secondaryNameAr": "مثال: الجناح الأول",
+      "serialNumber": "e.g. SN-001",
+      "accountNumber": "e.g. ACC-001",
+      "subscriptionNumber": "e.g. SUB-001",
+      "building": "e.g. Block A",
+      "floor": "e.g. 1",
+      "size": "e.g. 120",
+      "meter": "e.g. 12345.67",
+      "basePrice": "e.g. 250000",
+      "requestNumber": "e.g. REQ-001",
+      "projectSak": "e.g. uploads/project-sak.pdf",
+      "apartmentSak": "e.g. uploads/apartment-sak.pdf",
+      "subDivision": "e.g. uploads/subdivision.pdf"
+    },
+    "types": {
+      "residential": "Residential",
+      "commercial": "Commercial",
+      "penthouse": "Penthouse",
+      "duplex": "Duplex"
+    },
+    "owners": {
+      "owned": "Owned",
+      "rented": "Rented",
+      "company_owned": "Company Owned"
+    },
+    "statuses": {
+      "available": "Available",
+      "sold": "Sold",
+      "reserved": "Reserved",
+      "maintenance": "Maintenance"
+    },
+    "sections": {
+      "identification": "Identification Details",
+      "identificationDesc": "Basic names, identifiers, and serial codes",
+      "locational": "Locational & Metrical Stats",
+      "locationalDesc": "Floor mapping, footprint sizing, and structural ties",
+      "economics": "Economics & Status",
+      "economicsDesc": "Listing details, requests, and ownership",
+      "documents": "Official Documents (URLs)",
+      "documentsDesc": "Provide paths or URLs to the official PDFs"
+    },
+    "success": {
+      "create": "Apartment created successfully",
+      "update": "Apartment updated successfully"
+    },
+    "errors": {
+      "create": "Failed to create apartment",
+      "update": "Failed to update apartment",
+      "fillRequired": "Please fill all required fields"
+    },
+    "empty": {
+      "title": "No apartments found",
+      "description": "Try adjusting your search to find what you're looking for",
+      "createFirst": "Get started by adding your first apartment"
+    }
   },
   "salesman": {
     "title": "Salesman Management",

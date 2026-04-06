@@ -48,6 +48,7 @@ const DatePicker: React.FC<DatePickerProps> = ({
         },
         // Premium customization
         disableMobile: true,
+        static: true,
       });
     }
 
