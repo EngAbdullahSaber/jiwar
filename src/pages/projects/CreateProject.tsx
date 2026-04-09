@@ -213,12 +213,8 @@ export default function CreateProject() {
                       <SelectValue placeholder={t('projects.placeholders.selectStatus')} />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="planning">{t('projects.statuses.planning')}</SelectItem>
                       <SelectItem value="evacuation">{t('projects.statuses.evacuation')}</SelectItem>
                       <SelectItem value="demolition">{t('projects.statuses.demolition')}</SelectItem>
-                      <SelectItem value="construction">{t('projects.statuses.construction')}</SelectItem>
-                      <SelectItem value="handover">{t('projects.statuses.handover')}</SelectItem>
-                      <SelectItem value="onhold">{t('projects.statuses.onhold')}</SelectItem>
                     </SelectContent>
                   </Select>
                 </FormField>

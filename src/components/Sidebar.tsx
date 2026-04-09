@@ -15,7 +15,9 @@ import {
   Layers,
   Globe,
   Building2,
-  Building
+  Building,
+  ShieldAlert,
+  PieChart
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { cn } from "@/lib/utils";
@@ -37,9 +39,9 @@ const menuItems: MenuItem[] = [
   { icon: Users,           label: "clients",     path: "/clients",            },
   { icon: UserCircle,      label: "salesTeam",   path: "/salesman",          },
   { icon: FileCheck,       label: "contracts",   path: "/contracts",            },
-  // // { icon: PieChart,        label: "finance",     path: "/finance-dashboard",  },
-  // { icon: ShieldAlert,     label: "roles",       path: "/roles",              },
-  // { icon: Users,           label: "users",       path: "/users",              },
+  { icon: PieChart,        label: "finance",     path: "/finance-dashboard",  },
+  { icon: ShieldAlert,     label: "roles",       path: "/roles",              },
+  { icon: Users,           label: "users",       path: "/users",              },
   { icon: Layers,          label: "materials",   path: "/materials",          },
   { icon: Globe,           label: "countries",   path: "/countries",          },
   { icon: Building2,       label: "cities",      path: "/cities",             },

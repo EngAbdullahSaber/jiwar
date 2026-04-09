@@ -84,6 +84,16 @@ const StatusBadge = ({ status }: { status: string }) => {
       color: "bg-amber-50 text-amber-700 dark:bg-amber-500/10 dark:text-amber-400 border-amber-200 dark:border-amber-500/20", 
       icon: AlertCircle,
       label: t('projects.statuses.onhold')
+    },
+    EVACUATION: { 
+      color: "bg-purple-50 text-purple-700 dark:bg-purple-500/10 dark:text-purple-400 border-purple-200 dark:border-purple-500/20", 
+      icon: Home,
+      label: t('projects.statuses.evacuation')
+    },
+    DEMOLITION: { 
+      color: "bg-red-50 text-red-700 dark:bg-red-500/10 dark:text-red-400 border-red-200 dark:border-red-500/20", 
+      icon: TrendingUp,
+      label: t('projects.statuses.demolition')
     }
   };
 
@@ -135,10 +145,8 @@ export default function Projects() {
       key: 'status',
       options: [
         { value: 'all', label: t('projects.statuses.allStatus') },
-        { value: 'CONSTRUCTION', label: t('projects.statuses.construction') },
-        { value: 'PLANNING', label: t('projects.statuses.planning') },
-        { value: 'HANDOVER', label: t('projects.statuses.handover') },
-        { value: 'ON HOLD', label: t('projects.statuses.onhold') }
+        { value: 'EVACUATION', label: t('projects.statuses.evacuation') },
+        { value: 'DEMOLITION', label: t('projects.statuses.demolition') }
       ]
     }
   ];
