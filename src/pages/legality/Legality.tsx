@@ -327,9 +327,7 @@ export default function Legality() {
               <Pagination
                 currentPage={currentPage}
                 totalPages={data.totalPages}
-                totalItems={data.totalItems}
-                itemsPerPage={pageSize}
-                onPageChange={setCurrentPage}
+                 onPageChange={setCurrentPage}
               />
             </div>
           )}
