@@ -95,7 +95,7 @@ const StatCard = ({ icon: Icon, label, value, color, gradient }: any) => (
 
 // Step Timeline Component
 const StepTimeline = ({ steps }: { steps: LegalityStep[] }) => {
-  const completedCount = steps.filter(s => s.step.isUpdated).length;
+  const completedCount = steps.filter(s => s.step.isUpdated || !!s.step.toDate).length;
   const totalSteps = steps.length;
   
   return (
@@ -108,7 +108,7 @@ const StepTimeline = ({ steps }: { steps: LegalityStep[] }) => {
       </div>
       <div className="space-y-2">
         {steps.map((item, index) => {
-          const isCompleted = item.step.isUpdated;
+          const isCompleted = item.step.isUpdated || !!item.step.toDate;
           const stepNumber = index + 1;
           
           return (
@@ -185,7 +185,7 @@ export default function ViewLegality() {
 
   const calculateProgress = (steps: LegalityStep[]) => {
     if (!steps || steps.length === 0) return 0;
-    const completedCount = steps.filter(s => s.step.isUpdated).length;
+    const completedCount = steps.filter(s => s.step.isUpdated || !!s.step.toDate).length;
     return Math.round((completedCount / steps.length) * 100);
   };
 
@@ -245,7 +245,7 @@ export default function ViewLegality() {
   }
 
   const progress = calculateProgress(legality.legalitySteps);
-  const completedCount = legality.legalitySteps.filter(s => s.step.isUpdated).length;
+  const completedCount = legality.legalitySteps.filter(s => s.step.isUpdated || !!s.step.toDate).length;
   const pendingCount = legality.legalitySteps.length - completedCount;
 
   return (
@@ -391,7 +391,7 @@ export default function ViewLegality() {
             <div className="space-y-3">
               {legality.legalitySteps.map((item, index) => {
                 const step = item.step;
-                const isCompleted = step.isUpdated;
+                const isCompleted = step.isUpdated || !!step.toDate;
                 const isExpanded = expandedStep === item.id;
                 
                 return (
