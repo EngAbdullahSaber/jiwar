@@ -99,7 +99,7 @@ export default function Templates() {
           page: currentPage,
           pageSize: pageSize,
           search: searchValue || undefined,
-          sort: sortOrder
+          sortOption: sortOrder
         }
       });
       return response.data;

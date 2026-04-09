@@ -9,7 +9,9 @@ import NotFound from "@/pages/not-found";
 
 import { NewPassword } from "@/pages/auth-pages/NewPassword";
 import { Login } from "@/pages/auth-pages/Login";
+import CreateContract from "@/pages/contracts/CreateContract";
 import { Loading } from "@/pages/Loading";
+
 import { ResetPassword } from "@/pages/auth-pages/ResetPassword";
 import { Verify } from "@/pages/auth-pages/Verify";
 import Templates from "@/pages/templates/Templates";
@@ -50,66 +52,213 @@ import UpdateBank from "@/pages/finance/UpdateBank";
 import Clients from "@/pages/clients/Clients";
 import CreateClient from "@/pages/clients/CreateClient";
 import UpdateClient from "@/pages/clients/UpdateClient";
+import ViewClient from "@/pages/clients/ViewClient";
+import Contracts from "@/pages/contracts/Contracts";
+
 
 import Salesman from "@/pages/salesman/Salesman";
 import CreateSalesman from "@/pages/salesman/CreateSalesman";
 import UpdateSalesman from "@/pages/salesman/UpdateSalesman";
 
+import { useLocation } from "wouter";
+
+function ProtectedRoute({ component: Component, ...rest }: any) {
+  const token = localStorage.getItem("token");
+  const [, setLocation] = useLocation();
+
+  if (!token) {
+    setLocation("/");
+    return null;
+  }
+
+  return <Component {...rest} />;
+}
+
+function PublicRoute({ component: Component, ...rest }: any) {
+  const token = localStorage.getItem("token");
+  const [, setLocation] = useLocation();
+
+  if (token) {
+    setLocation("/dashboard");
+    return null;
+  }
+
+  return <Component {...rest} />;
+}
+
 function Router() {
   return (
     <Switch>
       {/* Add pages below */}
-      <Route path="/" component={Login} />
-      <Route path="/dashboard" component={Dashboard} />
-      <Route path="/templates" component={Templates} />
-      <Route path="/templates/new" component={CreateTemplate} />
-      <Route path="/templates/:id" component={ViewTemplate} />
-      <Route path="/templates/:id/edit" component={UpdateTemplate} />
-      <Route path="/legality" component={Legality} />
-      <Route path="/legality/new" component={CreateLegality} />
-      <Route path="/legality/:id" component={ViewLegality} />
-      <Route path="/legality/:id/edit" component={UpdateLegality} />
-      <Route path="/users" component={Users} />
-      <Route path="/salesman" component={Salesman} />
-      <Route path="/salesman/new" component={CreateSalesman} />
-      <Route path="/salesman/:id/edit" component={UpdateSalesman} />
-      <Route path="/users/new" component={CreateUser} />
-      <Route path="/roles" component={Roles} />
-      <Route path="/roles/new" component={CreateRole} />
-      <Route path="/roles/:id/edit" component={UpdateRole} />
-      <Route path="/countries" component={Countries} />
-      <Route path="/countries/new" component={CreateCountry} />
-      <Route path="/countries/:id/edit" component={UpdateCountry} />
-      <Route path="/cities" component={Cities} />
-      <Route path="/cities/new" component={CreateCity} />
-      <Route path="/cities/:id/edit" component={UpdateCity} />
-      <Route path="/banks" component={Banks} />
-      <Route path="/banks/new" component={CreateBank} />
-      <Route path="/banks/:id/edit" component={UpdateBank} />
-      <Route path="/clients" component={Clients} />
-      <Route path="/clients/new" component={CreateClient} />
-      <Route path="/clients/:id/edit" component={UpdateClient} />
-       <Route path="/projects" component={Projects} />
-      <Route path="/apartments" component={Apartments} />
-      <Route path="/apartments/new" component={CreateApartment} />
-      <Route path="/projects/new" component={CreateProject} />
-      <Route path="/projects/:id/edit" component={UpdateProject} />
-      <Route path="/projects/:id" component={ProjectProfile} />
-      <Route path="/projects/:id/media" component={AddProjectMedia} />
-      <Route path="/projects/:id/stages" component={AddProjectStage} />
-      <Route path="/materials" component={Materials} />
-      <Route path="/materials/new" component={CreateMaterial} />
-      <Route path="/materials/:id/edit" component={UpdateMaterial} />
-      <Route path="/materials/:id" component={ViewMaterial} />
-      <Route path="/loading" component={Loading} />
-      <Route path="/reset-password" component={ResetPassword} />
-      <Route path="/verify" component={Verify} />
-      <Route path="/new-password" component={NewPassword} />
+      <Route path="/">
+        <PublicRoute component={Login} />
+      </Route>
+      
+      <Route path="/dashboard">
+        <ProtectedRoute component={Dashboard} />
+      </Route>
+      
+      <Route path="/templates">
+        <ProtectedRoute component={Templates} />
+      </Route>
+      <Route path="/templates/new">
+        <ProtectedRoute component={CreateTemplate} />
+      </Route>
+      <Route path="/templates/:id">
+        <ProtectedRoute component={ViewTemplate} />
+      </Route>
+      <Route path="/templates/:id/edit">
+        <ProtectedRoute component={UpdateTemplate} />
+      </Route>
+      
+      <Route path="/legality">
+        <ProtectedRoute component={Legality} />
+      </Route>
+      <Route path="/legality/new">
+        <ProtectedRoute component={CreateLegality} />
+      </Route>
+      <Route path="/legality/:id">
+        <ProtectedRoute component={ViewLegality} />
+      </Route>
+      <Route path="/legality/:id/edit">
+        <ProtectedRoute component={UpdateLegality} />
+      </Route>
+      
+      <Route path="/users">
+        <ProtectedRoute component={Users} />
+      </Route>
+      <Route path="/users/new">
+        <ProtectedRoute component={CreateUser} />
+      </Route>
+      
+      <Route path="/salesman">
+        <ProtectedRoute component={Salesman} />
+      </Route>
+      <Route path="/salesman/new">
+        <ProtectedRoute component={CreateSalesman} />
+      </Route>
+      <Route path="/salesman/:id/edit">
+        <ProtectedRoute component={UpdateSalesman} />
+      </Route>
+      
+      <Route path="/roles">
+        <ProtectedRoute component={Roles} />
+      </Route>
+      <Route path="/roles/new">
+        <ProtectedRoute component={CreateRole} />
+      </Route>
+      <Route path="/roles/:id/edit">
+        <ProtectedRoute component={UpdateRole} />
+      </Route>
+      
+      <Route path="/countries">
+        <ProtectedRoute component={Countries} />
+      </Route>
+      <Route path="/countries/new">
+        <ProtectedRoute component={CreateCountry} />
+      </Route>
+      <Route path="/countries/:id/edit">
+        <ProtectedRoute component={UpdateCountry} />
+      </Route>
+      
+      <Route path="/cities">
+        <ProtectedRoute component={Cities} />
+      </Route>
+      <Route path="/cities/new">
+        <ProtectedRoute component={CreateCity} />
+      </Route>
+      <Route path="/cities/:id/edit">
+        <ProtectedRoute component={UpdateCity} />
+      </Route>
+      
+      <Route path="/banks">
+        <ProtectedRoute component={Banks} />
+      </Route>
+      <Route path="/banks/new">
+        <ProtectedRoute component={CreateBank} />
+      </Route>
+      <Route path="/banks/:id/edit">
+        <ProtectedRoute component={UpdateBank} />
+      </Route>
+      
+      <Route path="/clients">
+        <ProtectedRoute component={Clients} />
+      </Route>
+      <Route path="/clients/new">
+        <ProtectedRoute component={CreateClient} />
+      </Route>
+      <Route path="/clients/:id/edit">
+        <ProtectedRoute component={UpdateClient} />
+      </Route>
+      <Route path="/clients/:id">
+        <ProtectedRoute component={ViewClient} />
+      </Route>
+      
+      <Route path="/contracts">
+        <ProtectedRoute component={Contracts} />
+      </Route>
+      <Route path="/contracts/new">
+        <ProtectedRoute component={CreateContract} />
+      </Route>
+
+      <Route path="/projects">
+        <ProtectedRoute component={Projects} />
+      </Route>
+      <Route path="/apartments">
+        <ProtectedRoute component={Apartments} />
+      </Route>
+      <Route path="/apartments/new">
+        <ProtectedRoute component={CreateApartment} />
+      </Route>
+      <Route path="/projects/new">
+        <ProtectedRoute component={CreateProject} />
+      </Route>
+      <Route path="/projects/:id/edit">
+        <ProtectedRoute component={UpdateProject} />
+      </Route>
+      <Route path="/projects/:id">
+        <ProtectedRoute component={ProjectProfile} />
+      </Route>
+      <Route path="/projects/:id/media">
+        <ProtectedRoute component={AddProjectMedia} />
+      </Route>
+      <Route path="/projects/:id/stages">
+        <ProtectedRoute component={AddProjectStage} />
+      </Route>
+      
+      <Route path="/materials">
+        <ProtectedRoute component={Materials} />
+      </Route>
+      <Route path="/materials/new">
+        <ProtectedRoute component={CreateMaterial} />
+      </Route>
+      <Route path="/materials/:id/edit">
+        <ProtectedRoute component={UpdateMaterial} />
+      </Route>
+      <Route path="/materials/:id">
+        <ProtectedRoute component={ViewMaterial} />
+      </Route>
+
+      <Route path="/loading">
+        <ProtectedRoute component={Loading} />
+      </Route>
+      
+      <Route path="/reset-password">
+        <PublicRoute component={ResetPassword} />
+      </Route>
+      <Route path="/verify">
+        <PublicRoute component={Verify} />
+      </Route>
+      <Route path="/new-password">
+        <PublicRoute component={NewPassword} />
+      </Route>
       {/* Fallback to 404 */}
       <Route component={NotFound} />
     </Switch>
   );
 }
+
+
 
 function App() {
   useEffect(() => {

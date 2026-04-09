@@ -41,6 +41,8 @@ export function UpdateStepDialog({ isOpen, onClose, legalityId, stepData }: Upda
   const { t, i18n } = useTranslation();
   const queryClient = useQueryClient();
   
+  const isDefault = stepData?.step?.isDefault !== false; // disabled when isDefault is true or undefined
+
   const [formData, setFormData] = useState({
     nameEn: '',
     nameAr: '',
@@ -88,19 +90,25 @@ export function UpdateStepDialog({ isOpen, onClose, legalityId, stepData }: Upda
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
-    const payload = {
-      step: {
-        id: stepData.step.id,
-        details: formData.details,
-        fromDate: formData.fromDate || null,
-        toDate: formData.toDate || null,
-        amount: formData.amount ? Number(formData.amount) : null,
-        files: files
-      }
+
+    const step: any = {
+      id: stepData.step.id,
+      details: formData.details,
+      fromDate: formData.fromDate || null,
+      toDate: formData.toDate || null,
+      amount: formData.amount ? Number(formData.amount) : null,
+      files: files
     };
 
-    updateMutation.mutate(payload);
+    // Only include name in payload when the step is not a default step
+    if (!isDefault) {
+      step.name = {
+        english: formData.nameEn,
+        arabic: formData.nameAr
+      };
+    }
+
+    updateMutation.mutate({ step });
   };
 
   const removeFile = (index: number) => {
@@ -137,9 +145,14 @@ export function UpdateStepDialog({ isOpen, onClose, legalityId, stepData }: Upda
                 <Input
                   value={formData.nameEn}
                   onChange={(e) => setFormData(prev => ({ ...prev, nameEn: e.target.value }))}
-                  className="bg-gray-100 dark:bg-gray-800/50 border-gray-200 dark:border-gray-700 h-11 rounded-xl cursor-not-allowed opacity-70"
+                  className={cn(
+                    "border-gray-200 dark:border-gray-700 h-11 rounded-xl",
+                    isDefault
+                      ? "bg-gray-100 dark:bg-gray-800/50 cursor-not-allowed opacity-70"
+                      : "bg-gray-50 dark:bg-gray-800"
+                  )}
                   placeholder={t('legality.placeholders.stepNameEn')}
-                  disabled
+                  disabled={isDefault}
                 />
               </div>
               <div className="space-y-2 text-right">
@@ -150,9 +163,14 @@ export function UpdateStepDialog({ isOpen, onClose, legalityId, stepData }: Upda
                   value={formData.nameAr}
                   onChange={(e) => setFormData(prev => ({ ...prev, nameAr: e.target.value }))}
                   dir="rtl"
-                  className="bg-gray-100 dark:bg-gray-800/50 border-gray-200 dark:border-gray-700 h-11 rounded-xl text-right cursor-not-allowed opacity-70"
+                  className={cn(
+                    "border-gray-200 dark:border-gray-700 h-11 rounded-xl text-right",
+                    isDefault
+                      ? "bg-gray-100 dark:bg-gray-800/50 cursor-not-allowed opacity-70"
+                      : "bg-gray-50 dark:bg-gray-800"
+                  )}
                   placeholder={t('legality.placeholders.stepNameAr')}
-                  disabled
+                  disabled={isDefault}
                 />
               </div>
             </div>

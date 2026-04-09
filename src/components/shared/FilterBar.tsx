@@ -58,8 +58,7 @@ export function FilterBar({
   showFilterChips = true,
   activeFiltersCount
 }: FilterBarProps) {
-  const { t, i18n } = useTranslation();
-  const isRtl = i18n.language === 'ar';
+  const { t } = useTranslation();
   const [isExpanded, setIsExpanded] = useState(true);
 
   const getFilterWidth = (width?: string) => {

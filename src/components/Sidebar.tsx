@@ -8,8 +8,6 @@ import {
   Home,
   Users,
   FileCheck,
-  PieChart,
-  ShieldAlert,
   UserCircle,
   Gavel,
   ChevronRight,

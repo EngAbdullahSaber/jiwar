@@ -43,6 +43,7 @@ interface LegalityStep {
       english: string;
     };
     isDefault: boolean;
+    isUpdated: boolean;
     details: string | null;
     fromDate: string | null;
     toDate: string | null;
@@ -98,7 +99,7 @@ const StatCard = ({ icon: Icon, label, value, color, gradient }: any) => (
 
 // Step Timeline Component
 const StepTimeline = ({ steps }: { steps: LegalityStep[] }) => {
-  const completedCount = steps.filter(s => s.step.toDate).length;
+  const completedCount = steps.filter(s => s.step.isUpdated).length;
   const totalSteps = steps.length;
   
   return (
@@ -111,7 +112,7 @@ const StepTimeline = ({ steps }: { steps: LegalityStep[] }) => {
       </div>
       <div className="space-y-2">
         {steps.map((item, index) => {
-          const isCompleted = !!item.step.toDate;
+          const isCompleted = item.step.isUpdated;
           const stepNumber = index + 1;
           
           return (
@@ -188,7 +189,7 @@ export default function ViewLegality() {
 
   const calculateProgress = (steps: LegalityStep[]) => {
     if (!steps || steps.length === 0) return 0;
-    const completedCount = steps.filter(s => s.step.toDate).length;
+    const completedCount = steps.filter(s => s.step.isUpdated).length;
     return Math.round((completedCount / steps.length) * 100);
   };
 
@@ -248,7 +249,7 @@ export default function ViewLegality() {
   }
 
   const progress = calculateProgress(legality.legalitySteps);
-  const completedCount = legality.legalitySteps.filter(s => s.step.toDate).length;
+  const completedCount = legality.legalitySteps.filter(s => s.step.isUpdated).length;
   const pendingCount = legality.legalitySteps.length - completedCount;
 
   return (
@@ -394,7 +395,7 @@ export default function ViewLegality() {
             <div className="space-y-3">
               {legality.legalitySteps.map((item, index) => {
                 const step = item.step;
-                const isCompleted = !!step.toDate;
+                const isCompleted = step.isUpdated;
                 const isExpanded = expandedStep === item.id;
                 
                 return (
@@ -496,11 +497,30 @@ export default function ViewLegality() {
                           className="border-t border-gray-200 dark:border-gray-800"
                         >
                           <div className="p-4 bg-gray-50 dark:bg-gray-800/50 space-y-4">
+                            {/* Status row always shown */}
+                            <div className="flex items-center gap-3 pb-3 border-b border-gray-200 dark:border-gray-700">
+                              <div className={cn(
+                                "flex items-center gap-1.5 text-xs font-medium px-2.5 py-1 rounded-full",
+                                isCompleted
+                                  ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-400"
+                                  : "bg-amber-100 text-amber-700 dark:bg-amber-500/10 dark:text-amber-400"
+                              )}>
+                                {isCompleted
+                                  ? <><CheckCircle2 className="w-3.5 h-3.5" /> {i18n.language === 'ar' ? 'مكتمل' : 'Completed'}</>
+                                  : <><Clock className="w-3.5 h-3.5" /> {i18n.language === 'ar' ? 'قيد الانتظار' : 'Pending'}</>}
+                              </div>
+                              {step.isDefault && (
+                                <span className="text-[10px] font-medium text-gray-400 bg-gray-100 dark:bg-gray-800 px-2 py-0.5 rounded-full">
+                                  {i18n.language === 'ar' ? 'افتراضي' : 'Default Step'}
+                                </span>
+                              )}
+                            </div>
+
                             {/* Description */}
                             {step.details && (
                               <div>
                                 <h4 className="text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">
-                                  Description
+                                  {i18n.language === 'ar' ? 'الوصف' : 'Description'}
                                 </h4>
                                 <p className="text-sm text-gray-700 dark:text-gray-300">
                                   {step.details}
@@ -509,39 +529,41 @@ export default function ViewLegality() {
                             )}
 
                             {/* Dates and Amount */}
-                            <div className="grid grid-cols-3 gap-4">
-                              {step.fromDate && (
-                                <div>
-                                  <p className="text-xs text-gray-500 dark:text-gray-400">Start Date</p>
-                                  <p className="text-sm font-medium text-gray-900 dark:text-white">
-                                    {formatDate(step.fromDate)}
-                                  </p>
-                                </div>
-                              )}
-                              {step.toDate && (
-                                <div>
-                                  <p className="text-xs text-gray-500 dark:text-gray-400">End Date</p>
-                                  <p className="text-sm font-medium text-gray-900 dark:text-white">
-                                    {formatDate(step.toDate)}
-                                  </p>
-                                </div>
-                              )}
-                              {step.amount && (
-                                <div>
-                                  <p className="text-xs text-gray-500 dark:text-gray-400">Amount</p>
-                                  <p className="text-sm font-medium text-[#B39371]">
-                                    {step.amount.toLocaleString()} SAR
-                                  </p>
-                                </div>
-                              )}
-                            </div>
+                            {(step.fromDate || step.toDate || step.amount) && (
+                              <div className="grid grid-cols-3 gap-4">
+                                {step.fromDate && (
+                                  <div>
+                                    <p className="text-xs text-gray-500 dark:text-gray-400">{i18n.language === 'ar' ? 'تاريخ البداية' : 'Start Date'}</p>
+                                    <p className="text-sm font-medium text-gray-900 dark:text-white">
+                                      {formatDate(step.fromDate)}
+                                    </p>
+                                  </div>
+                                )}
+                                {step.toDate && (
+                                  <div>
+                                    <p className="text-xs text-gray-500 dark:text-gray-400">{i18n.language === 'ar' ? 'تاريخ الانتهاء' : 'End Date'}</p>
+                                    <p className="text-sm font-medium text-gray-900 dark:text-white">
+                                      {formatDate(step.toDate)}
+                                    </p>
+                                  </div>
+                                )}
+                                {step.amount && (
+                                  <div>
+                                    <p className="text-xs text-gray-500 dark:text-gray-400">{i18n.language === 'ar' ? 'المبلغ' : 'Amount'}</p>
+                                    <p className="text-sm font-medium text-[#B39371]">
+                                      {step.amount.toLocaleString()} SAR
+                                    </p>
+                                  </div>
+                                )}
+                              </div>
+                            )}
 
                             {/* Files */}
                             {step.files && step.files.length > 0 && (
                               <div>
                                 <h4 className="text-xs font-medium text-gray-500 dark:text-gray-400 mb-2 flex items-center gap-1">
                                   <Paperclip className="w-3.5 h-3.5" />
-                                  Attachments ({step.files.length})
+                                  {i18n.language === 'ar' ? 'المرفقات' : 'Attachments'} ({step.files.length})
                                 </h4>
                                 <div className="grid grid-cols-2 gap-2">
                                   {step.files.map((file, idx) => (
@@ -560,6 +582,25 @@ export default function ViewLegality() {
                                     </a>
                                   ))}
                                 </div>
+                              </div>
+                            )}
+
+                            {/* Fallback — nothing to show yet */}
+                            {!step.details && !step.fromDate && !step.toDate && !step.amount && (!step.files || step.files.length === 0) && (
+                              <div className="flex flex-col items-center justify-center py-4 text-center">
+                                <Info className="w-8 h-8 text-gray-300 dark:text-gray-600 mb-2" />
+                                <p className="text-xs text-gray-400 dark:text-gray-500">
+                                  {i18n.language === 'ar'
+                                    ? 'لم يتم إضافة تفاصيل لهذه الخطوة بعد'
+                                    : 'No details have been added to this step yet'}
+                                </p>
+                                <button
+                                  onClick={(e) => { e.stopPropagation(); setSelectedStepData(item); setIsUpdateDialogOpen(true); }}
+                                  className="mt-3 text-xs font-medium text-[#B39371] hover:text-[#8B6951] flex items-center gap-1 transition-colors"
+                                >
+                                  <Edit className="w-3 h-3" />
+                                  {i18n.language === 'ar' ? 'إضافة تفاصيل' : 'Add details'}
+                                </button>
                               </div>
                             )}
                           </div>

@@ -1,4 +1,4 @@
-import { Search, Globe, Bell, ChevronDown, ChevronRight, Moon, Sun, LogOut, Settings, User } from 'lucide-react';
+import { Search, Globe, Bell, ChevronDown, ChevronRight, Moon, Sun, LogOut } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useState, useEffect, useRef } from "react";
 import { cn } from "@/lib/utils";
@@ -69,6 +69,11 @@ export function TopHeader() {
     setTheme(newTheme);
     localStorage.setItem("theme", newTheme);
     document.documentElement.classList.toggle('dark', newTheme === 'dark');
+  };
+
+  const handleSignOut = () => {
+    localStorage.removeItem('token');
+    window.location.replace('/');
   };
 
   const notifications = [
@@ -462,16 +467,7 @@ export function TopHeader() {
                 </div>
 
                 <div style={{ padding: "6px" }}>
-                  <div className="th-menu-item" style={{ borderRadius: 8 }}>
-                    <User style={{ width: 14, height: 14, flexShrink: 0 }} />
-                    {t('topHeader.viewProfile')}
-                  </div>
-                  <div className="th-menu-item" style={{ borderRadius: 8 }}>
-                    <Settings style={{ width: 14, height: 14, flexShrink: 0 }} />
-                    {t('topHeader.accountSettings')}
-                  </div>
-                  <div style={{ height: "1px", background: "var(--th-border)", margin: "5px 0" }} />
-                  <div className="th-menu-item danger" style={{ borderRadius: 8 }}>
+                  <div className="th-menu-item danger" style={{ borderRadius: 8 }} onClick={handleSignOut}>
                     <LogOut style={{ width: 14, height: 14, flexShrink: 0 }} />
                     {t('topHeader.signOut')}
                   </div>
@@ -484,4 +480,4 @@ export function TopHeader() {
       </header>
     </>
   );
-}
+}

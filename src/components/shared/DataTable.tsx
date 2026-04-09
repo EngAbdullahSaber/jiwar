@@ -332,7 +332,7 @@ export const TableCell = {
     );
   },
   
-  Avatar: ({ src, name }: { src?: string; name: string }) => (
+  Avatar: ({ src: _src, name }: { src?: string; name: string }) => (
     <div className="flex items-center gap-3">
       <div className="w-8 h-8 rounded-md bg-gradient-to-br from-[#4A1B1B] to-[#6B2727] flex items-center justify-center text-white text-xs font-medium">
         {name.charAt(0).toUpperCase()}

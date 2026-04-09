@@ -22,9 +22,11 @@ import {
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { PaginatedSelect } from '../../components/shared/PaginatedSelect';
+import { FileUpload } from '../../components/shared/FileUpload';
 import { FormActions } from '../../components/shared/FormActions';
+
 import { Shell } from '../../components/shared/Shell';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import api from '@/lib/api';
 import toast from 'react-hot-toast';
 import { cn } from '@/lib/utils';
@@ -88,6 +90,7 @@ const Label = ({ children, className, ...props }: any) => (
 export default function CreateApartment() {
   const [, setLocation] = useLocation();
   const { t, i18n } = useTranslation();
+  const queryClient = useQueryClient();
   const [formData, setFormData] = useState({
     mainName: { arabic: "", english: "" },
     secondaryName: { arabic: "", english: "" },
@@ -125,6 +128,7 @@ export default function CreateApartment() {
       return response.data;
     },
     onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['apartments'] });
       toast.success(t('apartments.success.create'), {
         icon: '🎉',
         style: { borderRadius: '1rem', background: '#10b981', color: '#fff' }
@@ -464,31 +468,34 @@ export default function CreateApartment() {
               description={t('apartments.sections.documentsDesc')}
               delay={0.4}
             >
-              <div className="grid grid-cols-1 gap-6">
+              <div className="grid grid-cols-1 gap-8">
                 <FormField label={t('apartments.labels.projectSak')}>
-                  <Input 
-                    placeholder={t('apartments.placeholders.projectSak')}
-                    value={formData.projectSakPdfUrl}
-                    onChange={(e) => setFormData({ ...formData, projectSakPdfUrl: e.target.value })}
-                    className="h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md"
+                  <FileUpload 
+                    onUploadSuccess={(url: string) => setFormData({ ...formData, projectSakPdfUrl: url })}
+                    defaultValue={formData.projectSakPdfUrl}
+                    accept=".pdf"
+                    maxSizeMB={20}
+                    helperText="Upload Project Sak (PDF)"
                   />
                 </FormField>
 
                 <FormField label={t('apartments.labels.apartmentSak')}>
-                  <Input 
-                    placeholder={t('apartments.placeholders.apartmentSak')}
-                    value={formData.apartmentSakPdfUrl}
-                    onChange={(e) => setFormData({ ...formData, apartmentSakPdfUrl: e.target.value })}
-                    className="h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md"
+                  <FileUpload 
+                    onUploadSuccess={(url: string) => setFormData({ ...formData, apartmentSakPdfUrl: url })}
+                    defaultValue={formData.apartmentSakPdfUrl}
+                    accept=".pdf"
+                    maxSizeMB={20}
+                    helperText="Upload Apartment Sak (PDF)"
                   />
                 </FormField>
 
                 <FormField label={t('apartments.labels.subDivision')}>
-                  <Input 
-                    placeholder={t('apartments.placeholders.subDivision')}
-                    value={formData.apartmentSubDivisionPdfUrl}
-                    onChange={(e) => setFormData({ ...formData, apartmentSubDivisionPdfUrl: e.target.value })}
-                    className="h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md"
+                  <FileUpload 
+                    onUploadSuccess={(url: string) => setFormData({ ...formData, apartmentSubDivisionPdfUrl: url })}
+                    defaultValue={formData.apartmentSubDivisionPdfUrl}
+                    accept=".pdf"
+                    maxSizeMB={20}
+                    helperText="Upload Sub Division (PDF)"
                   />
                 </FormField>
               </div>
@@ -507,3 +514,4 @@ export default function CreateApartment() {
     </Shell>
   );
 }
+

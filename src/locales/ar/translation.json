@@ -33,7 +33,8 @@
     "notAvailable": "غير متاح",
     "viewFile": "عرض الملف",
     "updated_at": "آخر تحديث",
-    "details": "التفاصيل"
+    "details": "التفاصيل",
+    "sar": "ر.س"
   },
   "sidebar": {
     "navigation": "الملاحة",
@@ -147,6 +148,7 @@
     "bank": "البنك",
     "individual": "فرد",
     "company": "شركة",
+    "corporate": "شركات",
     "addPayment": "إضافة دفعة",
     "relationshipManagement": "إدارة العلاقات",
     "essentialDetails": "تفاصيل أساسية لسجل العميل الجديد",
@@ -801,5 +803,65 @@
     "cancel": "إلغاء",
     "confirm": "حذف السجل",
     "deleting": "جاري الحذف..."
+  },
+  "contracts": {
+    "title": "العقود",
+    "management": "إدارة العقود",
+    "description": "الإشراف على وإدارة الاتفاقيات القانونية وعقود بيع الوحدات السكنية.",
+    "add": "إضافة عقد",
+    "create": "إنشاء عقد",
+    "new": "عقد جديد",
+    "edit": "تعديل العقد",
+    "labels": {
+      "type": "نوع العقد",
+      "hijriDate": "التاريخ الهجري",
+      "contractDate": "تاريخ العقد",
+      "contractCity": "مدينة العقد",
+      "district": "الحي",
+      "nationalId": "السجل الوطني",
+      "projectDistrict": "حي المشروع",
+      "plotNumber": "رقم القطعة",
+      "deedNumber": "رقم الصك",
+      "delayPenalty": "غرامة التأخير",
+      "paymentType": "نوع الدفع",
+      "paidAmount": "المبلغ المدفوع",
+      "referenceType": "نوع المرجع",
+      "referenceNumber": "رقم المرجع",
+      "maintenanceFee": "رسوم الصيانة",
+      "client": "العميل",
+      "apartment": "الوحدة السكنية",
+      "createdBy": "بواسطة",
+      "basicInfo": "المعلومات الأساسية",
+      "basicInfoDesc": "تفاصيل العقد الأساسية والتواريخ",
+      "clientSection": "معلومات العميل",
+      "clientSectionDesc": "ربط العميل والتحقق من الهوية",
+      "propertySection": "تفاصيل العقار",
+      "propertySectionDesc": "بيانات الوحدة السكنية والموقع الجغرافي",
+      "financialSection": "التفاصيل المالية",
+      "financialSectionDesc": "المبالغ المدفوعة وطرق السداد"
+    },
+    "placeholders": {
+      "search": "البحث في العقود حسب النوع، العميل، أو الحي...",
+      "selectType": "اختر نوع العقد",
+      "selectClient": "اختر العميل",
+      "selectApartment": "اختر الوحدة السكنية",
+      "selectPaymentType": "اختر نوع الدفع",
+      "selectReferenceType": "اختر نوع المرجع"
+    },
+    "types": {
+      "apartment_sale": "بيع وحدة سكنية"
+    },
+    "empty": {
+      "title": "لم يتم العثور على عقود",
+      "description": "حاول تعديل البحث أو المرشحات للعثور على ما تبحث عنه",
+      "createFirst": "ابدأ بإنشاء أول عقد لك"
+    },
+    "deleteSuccess": "تم حذف العقد بنجاح",
+    "deleteError": "فشل في حذف العقد",
+    "successCreate": "تم إنشاء العقد بنجاح",
+    "errorCreate": "فشل في إنشاء العقد"
   }
 }
+
+
+

@@ -228,7 +228,13 @@ export default function Clients() {
             <DropdownMenuLabel className="text-xs font-medium text-gray-400">
               {t('common.actions')}
             </DropdownMenuLabel>
-             
+            <Link href={`/clients/${client.id}`}>
+              <DropdownMenuItem className="rounded-lg cursor-pointer">
+                <Eye className="w-3.5 h-3.5 mr-2 rtl:ml-2 rtl:mr-0 text-gray-400" />
+                <span className="text-xs">{t('common.details')}</span>
+              </DropdownMenuItem>
+            </Link>
+            <DropdownMenuSeparator />
             <DropdownMenuItem 
               className="rounded-lg cursor-pointer text-emerald-600 focus:text-emerald-700"
               onClick={() => setPaymentClient({ id: client.id, name: client.fullName })}
@@ -314,37 +320,7 @@ export default function Clients() {
             </div>
           </div>
 
-          {/* Stats Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <StatCard 
-              icon={UsersIcon}
-              label={t('sidebar.clients')}
-              value={data?.totalItems || 0}
-              subValue={t('clients.stats.totalActive')}
-              color="from-blue-500 to-blue-600"
-            />
-            <StatCard 
-              icon={UserIcon}
-              label={t('clients.individual')}
-              value={data?.data.filter(c => c.type === 'individual').length || 0}
-              subValue={t('clients.stats.physicalPersons')}
-              color="from-emerald-500 to-emerald-600"
-            />
-            <StatCard 
-              icon={Building2}
-              label={t('clients.company')}
-              value={data?.data.filter(c => c.type === 'company').length || 0}
-              subValue={t('clients.stats.corporateEntities')}
-              color="from-purple-500 to-purple-600"
-            />
-            <StatCard 
-              icon={MapPin}
-              label={t('sidebar.cities')}
-              value={new Set(data?.data.map(c => c.city?.id)).size || 0}
-              subValue={t('clients.stats.locations')}
-              color="from-amber-500 to-amber-600"
-            />
-          </div>
+         
 
           {/* Filter Bar */}
           <FilterBar 

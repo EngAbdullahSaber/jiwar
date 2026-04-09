@@ -33,7 +33,8 @@
     "notAvailable": "Not Available",
     "viewFile": "View File",
     "updated_at": "Updated At",
-    "details": "Details"
+    "details": "Details",
+    "sar": "SAR"
   },
   "sidebar": {
     "navigation": "Navigation",
@@ -147,6 +148,7 @@
     "bank": "Bank",
     "individual": "Individual",
     "company": "Company",
+    "corporate": "Corporate",
     "addPayment": "Add Payment",
     "relationshipManagement": "Relationship Management",
     "essentialDetails": "Essential details for the new client record",
@@ -801,5 +803,65 @@
     "cancel": "Cancel",
     "confirm": "Delete Record",
     "deleting": "Deleting..."
+  },
+  "contracts": {
+    "title": "Contracts",
+    "management": "Contract Management",
+    "description": "Oversee and manage legal agreements and apartment sales contracts.",
+    "add": "Add Contract",
+    "create": "Create Contract",
+    "new": "New Contract",
+    "edit": "Edit Contract",
+    "labels": {
+      "type": "Contract Type",
+      "hijriDate": "Hijri Date",
+      "contractDate": "Contract Date",
+      "contractCity": "Contract City",
+      "district": "District",
+      "nationalId": "National ID",
+      "projectDistrict": "Project District",
+      "plotNumber": "Plot Number",
+      "deedNumber": "Deed Number",
+      "delayPenalty": "Delay Penalty",
+      "paymentType": "Payment Type",
+      "paidAmount": "Paid Amount",
+      "referenceType": "Reference Type",
+      "referenceNumber": "Reference Number",
+      "maintenanceFee": "Maintenance Fee",
+      "client": "Client",
+      "apartment": "Apartment",
+      "createdBy": "Created By",
+      "basicInfo": "Basic Information",
+      "basicInfoDesc": "Core contract details and dates",
+      "clientSection": "Client Information",
+      "clientSectionDesc": "Linking client and identity verification",
+      "propertySection": "Property Details",
+      "propertySectionDesc": "Apartment unit data and geographic location",
+      "financialSection": "Financial Details",
+      "financialSectionDesc": "Payment amounts and recovery terms"
+    },
+    "placeholders": {
+      "search": "Search contracts by type, client, or district...",
+      "selectType": "Select contract type",
+      "selectClient": "Select client",
+      "selectApartment": "Select apartment",
+      "selectPaymentType": "Select payment type",
+      "selectReferenceType": "Select reference type"
+    },
+    "types": {
+      "apartment_sale": "Apartment Sale"
+    },
+    "empty": {
+      "title": "No contracts found",
+      "description": "Try adjusting your search or filters to find what you're looking for",
+      "createFirst": "Get started by creating your first contract"
+    },
+    "deleteSuccess": "Contract deleted successfully",
+    "deleteError": "Failed to delete contract",
+    "successCreate": "Contract created successfully",
+    "errorCreate": "Failed to create contract"
   }
 }
+
+
+
