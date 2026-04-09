@@ -71,9 +71,8 @@ interface RoleResponse {
 export default function Roles() {
   const [searchValue, setSearchValue] = useState('');
   const [roleToDelete, setRoleToDelete] = useState<number | null>(null);
-  const { t, i18n } = useTranslation();
-  const isRtl = i18n.language === 'ar';
-  const queryClient = useQueryClient();
+  const { t } = useTranslation();
+   const queryClient = useQueryClient();
 
   const { data, isLoading, refetch } = useQuery<RoleResponse>({
     queryKey: ['roles'],

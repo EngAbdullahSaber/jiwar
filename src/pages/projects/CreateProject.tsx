@@ -1,25 +1,18 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { TopHeader } from '../../components/TopHeader';
 import { Link, useLocation } from "wouter";
 import { 
   Building2, 
   MapPin, 
-  Maximize2, 
-  Plus, 
-  Minus, 
-  Crosshair,
-  Loader2,
+ 
   Sparkles,
   ArrowLeft,
   AlertCircle,
   Hash,
   Globe,
   Navigation,
-  Save,
-  Clock,
-  X,
-  CheckCircle
+ 
 } from 'lucide-react';
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";

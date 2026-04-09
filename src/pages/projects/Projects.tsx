@@ -185,7 +185,7 @@ export default function Projects() {
     },
     {
       header: t('projects.labels.progress'),
-      cell: (p) => {
+      cell: () => {
         const progress = Math.floor(Math.random() * 100); // Replace with actual progress
         return (
           <div className="flex items-center gap-3 min-w-[120px]">
@@ -245,8 +245,6 @@ export default function Projects() {
   const projects = response?.data || [];
   const statics = response?.statics;
   const totalProjects = response?.totalItems || 0;
-  const completedProjects = projects.filter(p => p.lastStage === 'HANDOVER').length;
-  const inProgressProjects = projects.filter(p => p.lastStage === 'CONSTRUCTION').length;
 
   return (
     <Shell>

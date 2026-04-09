@@ -227,8 +227,7 @@ export default function Legality() {
             {!isLoading && data?.data.map((item, idx) => {
               const progress = calcProgress(item.legalitySteps);
               const status = getStatus(progress);
-              const StatusIcon = status.icon;
-
+ 
               return (
                 <motion.div
                   key={item.id}

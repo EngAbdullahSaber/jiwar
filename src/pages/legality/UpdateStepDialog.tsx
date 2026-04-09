@@ -20,8 +20,7 @@ import {
   Save,
   Paperclip,
   X,
-  Plus
-} from 'lucide-react';
+ } from 'lucide-react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import api from '@/lib/api';
 import { toast } from 'react-hot-toast';
@@ -38,7 +37,7 @@ interface UpdateStepDialogProps {
 }
 
 export function UpdateStepDialog({ isOpen, onClose, legalityId, stepData }: UpdateStepDialogProps) {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
   
   const isDefault = stepData?.step?.isDefault !== false; // disabled when isDefault is true or undefined

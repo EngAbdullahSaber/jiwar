@@ -2,18 +2,15 @@ import { useState, useRef, useEffect } from 'react';
 import { TopHeader } from '../../components/TopHeader';
 import { Link, useLocation } from "wouter";
 import { 
-  ChevronRight, 
-  Trash2, 
+   Trash2, 
   Lock,
   PlusCircle,
   Gavel,
   CheckCircle2,
-  Layers,
-  ArrowLeft,
+   ArrowLeft,
   Sparkles,
   AlertCircle,
-  XCircle
-} from 'lucide-react';
+ } from 'lucide-react';
 import { Input } from "@/components/ui/input";
 import { motion, AnimatePresence } from "framer-motion";
 import { Shell } from '../../components/shared/Shell';
@@ -46,7 +43,7 @@ interface DefaultStepsResponse {
 }
 
 export default function CreateLegality() {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const [, setLocation] = useLocation();
   const queryClient = useQueryClient();
   const [formData, setFormData] = useState({

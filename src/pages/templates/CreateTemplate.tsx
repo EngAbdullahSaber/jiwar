@@ -8,30 +8,20 @@ import { useTranslation } from 'react-i18next';
 import { TopHeader } from '../../components/TopHeader';
 import { Shell } from '../../components/shared/Shell';
 import { 
-  ChevronRight, 
-  Info, 
+   Info, 
   Layout, 
   Image as ImageIcon,
   Check,
-  Save,
-  Home,
+   Home,
   Ruler,
   DoorOpen,
   Bath,
-  MapPin,
-  X,
+ 
   Sparkles,
   ArrowLeft,
-  FileText,
-  Hash,
-  DollarSign,
-  Layers,
-  Grid3x3,
+ 
   BedDouble,
-  Coffee,
-  Users,
-  Camera,
-  Upload,
+ 
   AlertCircle
 } from 'lucide-react';
 import { Input } from "@/components/ui/input";
@@ -44,8 +34,7 @@ import {
 } from "@/components/ui/select";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
-import { Badge } from "@/components/ui/badge";
-import api from '@/lib/api';
+ import api from '@/lib/api';
 import toast from 'react-hot-toast';
 import { cn } from '@/lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -132,7 +121,7 @@ export default function CreateTemplate() {
   const [, setLocation] = useLocation();
   const { t } = useTranslation();
 
-  const { register, handleSubmit, setValue, watch, formState: { errors, isSubmitting } } = useForm<TemplateFormValues>({
+  const { register, handleSubmit, setValue, watch, formState: { errors } } = useForm<TemplateFormValues>({
     resolver: zodResolver(templateSchema),
     defaultValues: {
       location: 'FRONT',

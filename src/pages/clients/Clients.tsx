@@ -3,8 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { TopHeader } from '../../components/TopHeader';
 import { 
   MoreVertical,
-  User as UserIcon,
-  Phone,
+   Phone,
   MapPin,
   Building2,
   Users as UsersIcon,
@@ -25,8 +24,7 @@ import { cn } from '@/lib/utils';
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { StatCard } from '../../components/shared/StatCard';
-import { DataTable } from '../../components/shared/DataTable';
+ import { DataTable } from '../../components/shared/DataTable';
 import type { Column } from '../../components/shared/DataTable';
 import { FilterBar } from '../../components/shared/FilterBar';
 import type { FilterField } from '../../components/shared/FilterBar';

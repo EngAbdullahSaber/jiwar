@@ -3,8 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useQuery } from '@tanstack/react-query';
 import api from '@/lib/api';
 import { TopHeader } from '../../components/TopHeader';
-import { StatCard } from '../../components/shared/StatCard';
-import { DataTable } from '../../components/shared/DataTable';
+ import { DataTable } from '../../components/shared/DataTable';
 import type { Column } from '../../components/shared/DataTable';
 import { FilterBar } from '../../components/shared/FilterBar';
 import type { FilterField } from '../../components/shared/FilterBar';
@@ -16,8 +15,7 @@ import {
   Plus,
   Eye,
   Pencil,
-  MoreVertical,
-  Wallet,
+ 
   FileEdit,
   Sparkles,
   Home,
