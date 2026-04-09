@@ -4,8 +4,7 @@ import { TopHeader } from '../../components/TopHeader';
 import { Shell } from '../../components/shared/Shell';
 import { 
   Shield, 
-  ChevronRight, 
-  Save, 
+ 
   ArrowLeft,
   Search,
   LayoutGrid,
@@ -37,8 +36,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { toast } from "react-hot-toast";
-import { cn } from '@/lib/utils';
-
+ 
 interface Permission {
   id: number;
   resource: string;
