@@ -19,6 +19,8 @@ import Dashboard from "@/pages/Dashboard";
 import Projects from "@/pages/projects/Projects";
 import Apartments from "@/pages/apartments/Apartments";
 import CreateApartment from "@/pages/apartments/CreateApartment";
+import UpdateApartment from "@/pages/apartments/UpdateApartment";
+import ViewApartment from "@/pages/apartments/ViewApartment";
 import CreateProject from "@/pages/projects/CreateProject";
 import AddProjectMedia from "@/pages/projects/AddProjectMedia";
 import AddProjectStage from "@/pages/projects/AddProjectStage";
@@ -209,6 +211,12 @@ function Router() {
       </Route>
       <Route path="/apartments/new">
         <ProtectedRoute component={CreateApartment} />
+      </Route>
+      <Route path="/apartments/:id">
+        <ProtectedRoute component={ViewApartment} />
+      </Route>
+      <Route path="/apartments/:id/edit">
+        <ProtectedRoute component={UpdateApartment} />
       </Route>
       <Route path="/projects/new">
         <ProtectedRoute component={CreateProject} />

@@ -42,8 +42,10 @@ interface Project {
   };
   projectIdentity: string;
   address: string;
+  status: string;
   budgetSum: number;
-  lastStage: string | null;
+  totalApartments: number;
+  apartmentsWithContract: number;
 }
 
 interface ProjectsResponse {
@@ -97,7 +99,7 @@ const StatusBadge = ({ status }: { status: string }) => {
     }
   };
 
-  const config = statusConfig[status] || statusConfig.PLANNING;
+  const config = statusConfig[status.toUpperCase()] || statusConfig.PLANNING;
   const Icon = config.icon;
 
   return (
@@ -181,7 +183,7 @@ export default function Projects() {
     },
     {
       header: t('projects.labels.status'),
-      cell: (p) => <StatusBadge status={p.lastStage || "PLANNING"} />
+      cell: (p) => <StatusBadge status={p.status || "PLANNING"} />
     },
     {
       header: t('projects.labels.budget'),
@@ -193,8 +195,10 @@ export default function Projects() {
     },
     {
       header: t('projects.labels.progress'),
-      cell: () => {
-        const progress = Math.floor(Math.random() * 100); // Replace with actual progress
+      cell: (p) => {
+        const progress = p.totalApartments > 0 
+          ? Math.floor((p.apartmentsWithContract / p.totalApartments) * 100) 
+          : 0;
         return (
           <div className="flex items-center gap-3 min-w-[120px]">
             <div className="flex-1">
@@ -207,13 +211,13 @@ export default function Projects() {
     },
     {
       header: t('projects.labels.sold'),
-      cell: () => <span className="text-sm font-medium text-gray-900 dark:text-white">24</span>,
+      cell: (p) => <span className="text-sm font-medium text-gray-900 dark:text-white">{p.apartmentsWithContract}</span>,
       className: "text-center",
       headerClassName: "text-center"
     },
     {
       header: t('projects.labels.reserved'),
-      cell: () => <span className="text-sm font-medium text-gray-900 dark:text-white">12</span>,
+      cell: (p) => <span className="text-sm font-medium text-gray-900 dark:text-white">{p.totalApartments - p.apartmentsWithContract}</span>,
       className: "text-center",
       headerClassName: "text-center"
     },

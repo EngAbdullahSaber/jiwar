@@ -5,13 +5,12 @@ import { Link, useLocation, useRoute } from "wouter";
 import { 
   Building2, 
   MapPin, 
-  Loader2,
-  Sparkles,
+   Sparkles,
   ArrowLeft,
   AlertCircle,
   Hash,
   Navigation,
-  Save
+   Globe
 } from 'lucide-react';
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -23,6 +22,9 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Shell } from '../../components/shared/Shell';
+import { PaginatedSelect } from '../../components/shared/PaginatedSelect';
+import { FormActions } from '../../components/shared/FormActions';
+import { LocationMap } from '../../components/shared/LocationMap';
 import { useQuery, useMutation } from '@tanstack/react-query';
 import api from '@/lib/api';
 import toast from 'react-hot-toast';
@@ -35,13 +37,13 @@ const FormSection = ({ icon: Icon, title, description, children, delay = 0 }: an
     initial={{ opacity: 0, y: 20 }}
     animate={{ opacity: 1, y: 0 }}
     transition={{ delay }}
-    className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 overflow-hidden"
+    className="bg-white dark:bg-gray-900 rounded-md border border-gray-200 dark:border-gray-800 "
   >
     <div className="p-6 border-b border-gray-100 dark:border-gray-800 bg-gradient-to-r from-gray-50/50 to-white dark:from-gray-800/50 dark:to-gray-900">
       <div className="flex items-center gap-4">
         <div className="relative">
-          <div className="absolute inset-0 bg-gradient-to-r from-[#4A1B1B] to-[#6B2727] rounded-xl blur-lg opacity-20" />
-          <div className="relative w-12 h-12 rounded-xl bg-gradient-to-br from-[#4A1B1B] to-[#6B2727] shadow-lg flex items-center justify-center">
+          <div className="absolute inset-0 bg-gradient-to-r from-[#4A1B1B] to-[#6B2727] rounded-md blur-lg opacity-20" />
+          <div className="relative w-12 h-12 rounded-md bg-gradient-to-br from-[#4A1B1B] to-[#6B2727] shadow-lg flex items-center justify-center">
             <Icon className="w-6 h-6 text-[#B39371]" />
           </div>
         </div>
@@ -82,14 +84,18 @@ const Label = ({ children, className, ...props }: any) => (
 
 export default function UpdateProject() {
   const [, setLocation] = useLocation();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [, params] = useRoute('/projects/:id/edit');
   const projectId = params?.id;
 
   const [formData, setFormData] = useState({
     name: { arabic: "", english: "" },
+    projectIdentity: "",
     status: "",
-    address: ""
+    legalityId: "",
+    address: "",
+    latitude: "24.7136",
+    longitude: "46.6753"
   });
 
   const { data: projectData, isLoading: isLoadingProject } = useQuery({
@@ -109,8 +115,12 @@ export default function UpdateProject() {
           arabic: p.name?.arabic || "",
           english: p.name?.english || ""
         },
-        status: p.lastStage?.toLowerCase() || "planning", // Maps appropriately to dropdown values
-        address: p.address || ""
+        projectIdentity: p.projectIdentity || "",
+        status: p.status || "evacuation",
+        legalityId: p.legalityId?.toString() || "",
+        address: p.address || "",
+        latitude: p.latitude?.toString() || "24.7136",
+        longitude: p.longitude?.toString() || "46.6753"
       });
     }
   }, [projectData]);
@@ -120,7 +130,10 @@ export default function UpdateProject() {
       const payload = {
         name: data.name,
         status: data.status,
-        address: data.address
+        legalityId: Number(data.legalityId),
+        address: data.address,
+        latitude: Number(data.latitude),
+        longitude: Number(data.longitude)
       };
       
       const response = await api.patch(`/project/${projectId}`, payload);
@@ -143,7 +156,7 @@ export default function UpdateProject() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formData.name.english || !formData.name.arabic || !formData.address) {
+    if (!formData.name.english || !formData.name.arabic || !formData.legalityId || !formData.address) {
       toast.error(t('projects.errors.fillRequired'), { 
         icon: '⚠️',
         style: { borderRadius: '1rem', background: '#ef4444', color: '#fff' } 
@@ -158,7 +171,10 @@ export default function UpdateProject() {
       <Shell>
         <TopHeader />
         <div className="flex items-center justify-center min-h-[60vh]">
-          <Loader2 className="w-8 h-8 text-[#B39371] animate-spin" />
+          <div className="relative w-16 h-16">
+            <div className="absolute inset-0 border-4 border-[#B39371]/20 rounded-md" />
+            <div className="absolute inset-0 border-4 border-t-[#B39371] rounded-md animate-spin" />
+          </div>
         </div>
       </Shell>
     );
@@ -172,17 +188,17 @@ export default function UpdateProject() {
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8 pb-32">
           
           {/* Header Section */}
-          <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 p-6 shadow-sm">
+          <div className="bg-white dark:bg-gray-900 rounded-md border border-gray-200 dark:border-gray-800 p-6 shadow-sm">
             <div className="flex items-center gap-4">
               <Link 
                 href="/projects" 
-                className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-xl transition-colors"
+                className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-md transition-colors"
               >
                 <ArrowLeft className="w-5 h-5 text-gray-500" />
               </Link>
               <div className="relative">
-                <div className="absolute inset-0 bg-gradient-to-r from-[#4A1B1B] to-[#6B2727] rounded-xl blur-lg opacity-50" />
-                <div className="relative w-12 h-12 rounded-xl bg-gradient-to-br from-[#4A1B1B] to-[#6B2727] shadow-lg flex items-center justify-center">
+                <div className="absolute inset-0 bg-gradient-to-r from-[#4A1B1B] to-[#6B2727] rounded-md blur-lg opacity-50" />
+                <div className="relative w-12 h-12 rounded-md bg-gradient-to-br from-[#4A1B1B] to-[#6B2727] shadow-lg flex items-center justify-center">
                   <Building2 className="w-6 h-6 text-[#B39371]" />
                 </div>
               </div>
@@ -194,7 +210,7 @@ export default function UpdateProject() {
                   </p>
                 </div>
                 <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-                  {t('projects.projectDetails')}
+                  {i18n.language === 'ar' ? projectData?.data?.name?.arabic : projectData?.data?.name?.english}
                 </h1>
                 <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
                   {t('projects.editDescription')}
@@ -213,16 +229,14 @@ export default function UpdateProject() {
               delay={0.1}
             >
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                
-                {/* Project ID (Read-only reference) */}
-                <FormField label={t('projects.labels.projectId')}>
+                {/* Project ID (Read-only) */}
+                <FormField label={t('projects.labels.projectId')} required>
                   <div className="relative">
                     <Hash className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                     <Input 
-                      value={projectData?.data?.projectIdentity || ""}
+                      value={formData.projectIdentity}
                       readOnly
-                      disabled
-                      className="pl-10 h-12 bg-gray-100 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-xl cursor-not-allowed opacity-70"
+                      className="pl-10 h-12 bg-gray-100 dark:bg-gray-800 border-gray-100 dark:border-gray-700 rounded-md cursor-not-allowed text-gray-500"
                     />
                   </div>
                 </FormField>
@@ -233,7 +247,7 @@ export default function UpdateProject() {
                     value={formData.status} 
                     onValueChange={(val) => setFormData({ ...formData, status: val })}
                   >
-                    <SelectTrigger className="h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-xl">
+                    <SelectTrigger className="h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md">
                       <SelectValue placeholder={t('projects.placeholders.selectStatus')} />
                     </SelectTrigger>
                     <SelectContent>
@@ -247,7 +261,7 @@ export default function UpdateProject() {
                 <FormField label={t('projects.labels.projectNameEn')} required>
                   <Input 
                     placeholder={t('projects.placeholders.nameEn')} 
-                    className="h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-xl"
+                    className="h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md"
                     value={formData.name.english}
                     onChange={(e) => setFormData({ ...formData, name: { ...formData.name, english: e.target.value } })}
                     required
@@ -259,10 +273,35 @@ export default function UpdateProject() {
                   <Input 
                     dir="rtl"
                     placeholder={t('projects.placeholders.nameAr')} 
-                    className="h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-xl text-right"
+                    className="h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md text-right"
                     value={formData.name.arabic}
                     onChange={(e) => setFormData({ ...formData, name: { ...formData.name, arabic: e.target.value } })}
                     required
+                  />
+                </FormField>
+
+                {/* Linked Legality File */}
+                <FormField label={t('projects.labels.linkedLegality')} required>
+                  <PaginatedSelect
+                    apiEndpoint="/legality"
+                    queryKey="legalities-paginated"
+                    value={formData.legalityId}
+                    onChange={(val) => setFormData({ ...formData, legalityId: val })}
+                    placeholder={t('projects.placeholders.selectLegality')}
+                    searchPlaceholder={t('projects.placeholders.searchLegality')}
+                    initialLabel={projectData?.data?.legality ? (i18n.language === 'ar' ? projectData.data.legality.name.arabic : projectData.data.legality.name.english) : ''}
+                    mapResponseToOptions={(pageData) => {
+                      const items = pageData.data || [];
+                      return items.map((legality: any) => ({
+                        value: legality.id,
+                        label: `LF-${legality.id.toString().padStart(4, '0')} - ${legality.name?.english || ''}`,
+                        description: legality.name?.arabic || '',
+                        badge: legality.legalitySteps?.length ? {
+                          label: `${legality.legalitySteps.length} Steps`,
+                          variant: 'default'
+                        } : undefined
+                      }));
+                    }}
                   />
                 </FormField>
               </div>
@@ -272,7 +311,7 @@ export default function UpdateProject() {
             <FormSection 
               icon={MapPin}
               title={t('projects.labels.locationDetails')}
-              description={t('projects.labels.address')}
+              description={t('projects.labels.locationDesc')}
               delay={0.2}
             >
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -281,100 +320,74 @@ export default function UpdateProject() {
                   <FormField label={t('projects.labels.address')} required>
                     <Textarea 
                       placeholder={t('projects.placeholders.address')} 
-                      className="bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-xl min-h-[120px] resize-none"
+                      className="bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md min-h-[120px] resize-none"
                       value={formData.address}
                       onChange={(e) => setFormData({ ...formData, address: e.target.value })}
                       required
                     />
                   </FormField>
-                  
-                  {/* Read Only Coordinates reference */}
-                  <div className="bg-[#F5F1ED] dark:bg-gray-800 rounded-xl p-4 border border-[#B39371]/20">
+
+                  {/* Coordinates */}
+                  <div className="grid grid-cols-2 gap-4">
+                    <FormField label={t('projects.labels.latitude')} required>
+                      <div className="relative">
+                        <Globe className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                        <Input 
+                          placeholder={t('projects.placeholders.latitude')} 
+                          className="pl-10 h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md"
+                          value={formData.latitude}
+                          onChange={(e) => setFormData({ ...formData, latitude: e.target.value })}
+                          required
+                          type="number"
+                          step="any"
+                        />
+                      </div>
+                    </FormField>
+                    <FormField label={t('projects.labels.longitude')} required>
+                      <div className="relative">
+                        <Globe className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                        <Input 
+                          placeholder={t('projects.placeholders.longitude')} 
+                          className="pl-10 h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md"
+                          value={formData.longitude}
+                          onChange={(e) => setFormData({ ...formData, longitude: e.target.value })}
+                          required
+                          type="number"
+                          step="any"
+                        />
+                      </div>
+                    </FormField>
+                  </div>
+
+                  {/* Coordinates Display */}
+                  <div className="bg-[#F5F1ED] dark:bg-gray-800 rounded-md p-4 border border-[#B39371]/20">
                     <div className="flex items-center gap-2 text-[#4A1B1B] dark:text-[#B39371] mb-2">
                       <Navigation className="w-4 h-4" />
-                      <span className="text-xs font-medium">Original Coordinates</span>
+                      <span className="text-xs font-medium">{t('projects.labels.selectedCoordinates')}</span>
                     </div>
-                    <p className="text-sm font-mono text-gray-500">
-                      Cannot be edited post-creation
+                    <p className="text-sm font-mono">
+                      {formData.latitude}, {formData.longitude}
                     </p>
                   </div>
                 </div>
 
-                {/* Decorative Map Preview */}
-                <div className="relative group">
-                  <div className="w-full aspect-video bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-900 rounded-2xl overflow-hidden border border-gray-200 dark:border-gray-700 relative shadow-inner">
-                    <div className="absolute inset-0 bg-grid-pattern opacity-10" />
-                    <div className="absolute inset-0 flex items-center justify-center">
-                      <motion.div 
-                        animate={{ 
-                          scale: [1, 1.2, 1],
-                          opacity: [0.5, 1, 0.5]
-                        }}
-                        transition={{ 
-                          duration: 2,
-                          repeat: Infinity,
-                          ease: "easeInOut"
-                        }}
-                        className="relative"
-                      >
-                        <div className="w-16 h-16 bg-[#B39371]/20 rounded-full blur-xl absolute -inset-4" />
-                        <div className="w-12 h-12 bg-[#4A1B1B] rounded-full border-4 border-white shadow-xl flex items-center justify-center relative z-10">
-                          <MapPin className="w-6 h-6 text-white" />
-                        </div>
-                      </motion.div>
-                    </div>
-
-                    <div className="absolute top-4 left-4 px-3 py-1.5 bg-white/90 dark:bg-gray-900/90 backdrop-blur-sm rounded-lg text-xs font-medium text-gray-700 dark:text-gray-300 shadow-lg">
-                      <div className="flex items-center gap-1">
-                        <MapPin className="w-3.5 h-3.5 text-[#B39371]" />
-                        Locked Location
-                      </div>
-                    </div>
-                  </div>
+                {/* Map Preview */}
+                <div className="relative group w-full aspect-video">
+                  <LocationMap 
+                    latitude={formData.latitude} 
+                    longitude={formData.longitude} 
+                    onChange={(lat, lng) => setFormData({ ...formData, latitude: lat.toString(), longitude: lng.toString() })}
+                  />
                 </div>
               </div>
             </FormSection>
 
             {/* Form Actions */}
-            <motion.div 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3 }}
-              className="fixed bottom-0 left-0 right-0 bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl border-t border-gray-200 dark:border-gray-800 shadow-2xl z-50"
-            >
-              <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-                <div className="flex items-center justify-end gap-4">
-                  <motion.button
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                    type="button"
-                    onClick={() => setLocation('/projects')}
-                    className="px-6 py-2.5 rounded-xl text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-all"
-                  >
-                    {t('common.cancel')}
-                  </motion.button>
-                  <motion.button
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                    type="submit"
-                    disabled={updateMutation.isPending}
-                    className="px-8 py-2.5 rounded-xl bg-gradient-to-r from-[#4A1B1B] to-[#6B2727] text-white text-sm font-medium shadow-lg shadow-[#4A1B1B]/20 hover:shadow-xl transition-all flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    {updateMutation.isPending ? (
-                      <>
-                        <Loader2 className="w-4 h-4 animate-spin" />
-                        {t('common.saving')}
-                      </>
-                    ) : (
-                      <>
-                        <Save className="w-4 h-4" />
-                        {t('common.save')}
-                      </>
-                    )}
-                  </motion.button>
-                </div>
-              </div>
-            </motion.div>
+            <FormActions
+              onCancel={() => setLocation('/projects')}
+              isSubmitting={updateMutation.isPending}
+              align="between"
+            />
           </form>
         </div>
       </div>
@@ -390,3 +403,4 @@ export default function UpdateProject() {
     </Shell>
   );
 }
+

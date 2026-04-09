@@ -38,6 +38,7 @@ interface PaginatedSelectProps {
   label?: string;
   error?: string;
   helperText?: string;
+  initialLabel?: string;
 }
 
 export function PaginatedSelect({
@@ -54,6 +55,7 @@ export function PaginatedSelect({
   label,
   error,
   helperText,
+  initialLabel,
 }: PaginatedSelectProps) {
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState('');
@@ -122,7 +124,7 @@ export function PaginatedSelect({
     }
   };
 
-  const displayLabel = selectedOption?.label || '';
+  const displayLabel = selectedOption?.label || initialLabel || '';
 
   const handleClear = (e: React.MouseEvent) => {
     e.stopPropagation();

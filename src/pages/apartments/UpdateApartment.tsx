@@ -1,7 +1,7 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { TopHeader } from '../../components/TopHeader';
-import { Link, useLocation } from "wouter";
+import { Link, useLocation, useRoute } from "wouter";
 import { 
   Building,
   ArrowLeft,
@@ -10,7 +10,8 @@ import {
   FileText,
   Ruler,
   Tags,
-  Link as LinkIcon
+  Link as LinkIcon,
+  Loader2
 } from 'lucide-react';
 import { Input } from "@/components/ui/input";
 import {
@@ -24,9 +25,8 @@ import { Switch } from "@/components/ui/switch";
 import { PaginatedSelect } from '../../components/shared/PaginatedSelect';
 import { FileUpload } from '../../components/shared/FileUpload';
 import { FormActions } from '../../components/shared/FormActions';
-
 import { Shell } from '../../components/shared/Shell';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import api from '@/lib/api';
 import toast from 'react-hot-toast';
 import { cn } from '@/lib/utils';
@@ -87,10 +87,13 @@ const Label = ({ children, className, ...props }: any) => (
   </label>
 );
 
-export default function CreateApartment() {
+export default function UpdateApartment() {
   const [, setLocation] = useLocation();
+  const [, params] = useRoute("/apartments/:id/edit");
+  const apartmentId = params?.id;
   const { t, i18n } = useTranslation();
   const queryClient = useQueryClient();
+
   const [formData, setFormData] = useState({
     mainName: { arabic: "", english: "" },
     secondaryName: { arabic: "", english: "" },
@@ -115,7 +118,46 @@ export default function CreateApartment() {
     apartmentSubDivisionPdfUrl: ""
   });
 
-  const createMutation = useMutation({
+  // Fetch initial data
+  const { data: apartmentResponse, isLoading: isFetching } = useQuery({
+    queryKey: ['apartment', apartmentId],
+    queryFn: async () => {
+      const response = await api.get(`/apartment/${apartmentId}`);
+      return response.data;
+    },
+    enabled: !!apartmentId
+  });
+
+  useEffect(() => {
+    if (apartmentResponse?.data) {
+      const apartment = apartmentResponse.data;
+      setFormData({
+        mainName: apartment.mainName || { arabic: "", english: "" },
+        secondaryName: apartment.secondaryName || { arabic: "", english: "" },
+        floorNumber: apartment.floorNumber || 1,
+        buildingOrBlock: apartment.buildingOrBlock || "",
+        basePrice: apartment.basePrice || "",
+        apartmentType: apartment.apartmentType || "residential",
+        isAvailable: apartment.isAvailable ?? true,
+        serialNumber: apartment.serialNumber || "",
+        accountNumber: apartment.accountNumber || "",
+        subscriptionNumber: apartment.subscriptionNumber || "",
+        size: apartment.size || "",
+        ownerStatus: apartment.ownerStatus || "owned",
+        status: apartment.status || "available",
+        requestDate: apartment.requestDate || "",
+        requestNumber: apartment.requestNumber || "",
+        projectId: apartment.project?.id?.toString() || "",
+        meterNumber: apartment.meterNumber?.toString() || "",
+        templateId: apartment.template?.id?.toString() || "",
+        projectSakPdfUrl: apartment.projectSakPdfUrl || "",
+        apartmentSakPdfUrl: apartment.apartmentSakPdfUrl || "",
+        apartmentSubDivisionPdfUrl: apartment.apartmentSubDivisionPdfUrl || ""
+      });
+    }
+  }, [apartmentResponse]);
+
+  const updateMutation = useMutation({
     mutationFn: async (data: typeof formData) => {
       const payload = {
         ...data,
@@ -124,19 +166,20 @@ export default function CreateApartment() {
         templateId: Number(data.templateId),
         meterNumber: Number(data.meterNumber) || 0
       };
-      const response = await api.post('/apartment', payload);
+      const response = await api.patch(`/apartment/${apartmentId}`, payload);
       return response.data;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['apartments'] });
-      toast.success(t('apartments.success.create'), {
-        icon: '🎉',
+      queryClient.invalidateQueries({ queryKey: ['apartment', apartmentId] });
+      toast.success(t('apartments.success.update'), {
+        icon: '✨',
         style: { borderRadius: '1rem', background: '#10b981', color: '#fff' }
       });
-      setLocation('/apartments');
+      setLocation(`/apartments/${apartmentId}`);
     },
     onError: (error: any) => {
-      toast.error(error.response?.data?.message || t('apartments.errors.create'), {
+      toast.error(error.response?.data?.message || t('apartments.errors.update'), {
         icon: '❌',
         style: { borderRadius: '1rem', background: '#ef4444', color: '#fff' }
       });
@@ -152,8 +195,19 @@ export default function CreateApartment() {
       });
       return;
     }
-    createMutation.mutate(formData);
+    updateMutation.mutate(formData);
   };
+
+  if (isFetching) {
+    return (
+      <Shell>
+        <TopHeader />
+        <div className="flex items-center justify-center min-h-[60vh]">
+          <Loader2 className="w-10 h-10 text-[#B39371] animate-spin" />
+        </div>
+      </Shell>
+    );
+  }
 
   return (
     <Shell>
@@ -166,7 +220,7 @@ export default function CreateApartment() {
           <div className="bg-white dark:bg-gray-900 rounded-md border border-gray-200 dark:border-gray-800 p-6 shadow-sm">
             <div className="flex items-center gap-4">
               <Link 
-                href="/apartments" 
+                href={`/apartments/${apartmentId}`} 
                 className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-md transition-colors"
               >
                 <ArrowLeft className="w-5 h-5 text-gray-500" />
@@ -181,11 +235,11 @@ export default function CreateApartment() {
                 <div className="flex items-center gap-2 mb-1">
                   <Sparkles className="w-4 h-4 text-[#B39371]" />
                   <p className="text-xs font-medium text-[#B39371] uppercase tracking-wider">
-                    {t('apartments.create')}
+                    {t('apartments.edit')}
                   </p>
                 </div>
                 <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-                  {t('apartments.new')}
+                  {i18n.language === 'ar' ? formData.mainName.arabic : formData.mainName.english}
                 </h1>
                 <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
                   {t('apartments.description')}
@@ -242,7 +296,7 @@ export default function CreateApartment() {
                     className="h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md text-right"
                   />
                 </FormField>
-
+ 
                 <FormField label={t('apartments.labels.serialNumber')}>
                   <Input 
                     placeholder={t('apartments.placeholders.serialNumber')}
@@ -251,7 +305,7 @@ export default function CreateApartment() {
                     className="h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md"
                   />
                 </FormField>
-
+ 
                  <FormField label={t('apartments.labels.accountNumber')}>
                   <Input 
                     placeholder={t('apartments.placeholders.accountNumber')}
@@ -271,7 +325,7 @@ export default function CreateApartment() {
                 </FormField>
               </div>
             </FormSection>
-
+ 
             {/* Structure & Mapping Section */}
             <FormSection 
               icon={Ruler}
@@ -289,7 +343,7 @@ export default function CreateApartment() {
                     className="h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md"
                   />
                 </FormField>
-
+ 
                 <FormField label={t('apartments.labels.floorNo')}>
                   <Input 
                     type="number"
@@ -299,7 +353,7 @@ export default function CreateApartment() {
                     className="h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md"
                   />
                 </FormField>
-
+ 
                 <FormField label={t('apartments.labels.size')}>
                   <Input 
                     type="number"
@@ -320,7 +374,7 @@ export default function CreateApartment() {
                     className="h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md"
                   />
                 </FormField>
-
+ 
                 <FormField label={t('apartments.labels.linkedProject')} required>
                   <PaginatedSelect
                     apiEndpoint="/project"
@@ -329,6 +383,7 @@ export default function CreateApartment() {
                     onChange={(val) => setFormData({ ...formData, projectId: val })}
                     placeholder={t('apartments.placeholders.selectProject')}
                     searchPlaceholder={t('apartments.placeholders.searchProject')}
+                    initialLabel={apartmentResponse?.data?.project ? (i18n.language === 'ar' ? apartmentResponse.data.project.name.arabic : apartmentResponse.data.project.name.english) : ''}
                     mapResponseToOptions={(pageData) => {
                       const data = pageData.data || [];
                       return data.map((project: any) => ({
@@ -338,7 +393,7 @@ export default function CreateApartment() {
                     }}
                   />
                 </FormField>
-
+ 
                 <FormField label={t('apartments.labels.linkedTemplate')} required>
                   <PaginatedSelect
                     apiEndpoint="/template"
@@ -347,6 +402,7 @@ export default function CreateApartment() {
                     onChange={(val) => setFormData({ ...formData, templateId: val })}
                     placeholder={t('apartments.placeholders.selectTemplate')}
                     searchPlaceholder={t('apartments.placeholders.searchTemplate')}
+                    initialLabel={apartmentResponse?.data?.template ? (i18n.language === 'ar' ? apartmentResponse.data.template.name.arabic : apartmentResponse.data.template.name.english) : ''}
                     mapResponseToOptions={(pageData) => {
                       const data = pageData.data || [];
                       return data.map((template: any) => ({
@@ -356,10 +412,10 @@ export default function CreateApartment() {
                     }}
                   />
                 </FormField>
-
+ 
               </div>
             </FormSection>
-
+ 
             {/* Financial & Status Section */}
             <FormSection 
               icon={Tags}
@@ -368,7 +424,7 @@ export default function CreateApartment() {
               delay={0.3}
             >
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-
+ 
                 <FormField label={t('apartments.labels.basePrice')}>
                   <Input 
                     type="number"
@@ -379,7 +435,7 @@ export default function CreateApartment() {
                     className="h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md"
                   />
                 </FormField>
-
+ 
                 <FormField label={t('apartments.labels.apartmentType')}>
                   <Select 
                     value={formData.apartmentType} 
@@ -396,7 +452,7 @@ export default function CreateApartment() {
                     </SelectContent>
                   </Select>
                 </FormField>
-
+ 
                 <FormField label={t('apartments.labels.ownerStatus')}>
                   <Select 
                     value={formData.ownerStatus} 
@@ -412,7 +468,7 @@ export default function CreateApartment() {
                     </SelectContent>
                   </Select>
                 </FormField>
-
+ 
                 <FormField label={t('apartments.labels.status')}>
                    <Select 
                     value={formData.status} 
@@ -429,7 +485,7 @@ export default function CreateApartment() {
                     </SelectContent>
                   </Select>
                 </FormField>
-
+ 
                 <FormField label={t('apartments.labels.requestDate')}>
                   <DatePicker 
                     value={formData.requestDate}
@@ -446,7 +502,7 @@ export default function CreateApartment() {
                     className="h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md"
                   />
                 </FormField>
-
+ 
                 <div className="flex items-center gap-4 py-4 px-4 bg-gray-50 dark:bg-gray-800/50 rounded-md border border-gray-100 dark:border-gray-800 md:col-span-2">
                   <div className="flex-1">
                     <Label className="text-sm font-semibold text-gray-900 dark:text-white mb-1 block">
@@ -460,10 +516,10 @@ export default function CreateApartment() {
                     className="data-[state=checked]:bg-[#B39371]"
                   />
                 </div>
-
+ 
               </div>
             </FormSection>
-
+ 
             {/* Attachments */}
             <FormSection 
               icon={LinkIcon}
@@ -481,7 +537,7 @@ export default function CreateApartment() {
                     helperText="Upload Project Sak (PDF)"
                   />
                 </FormField>
-
+ 
                 <FormField label={t('apartments.labels.apartmentSak')}>
                   <FileUpload 
                     onUploadSuccess={(url: string) => setFormData({ ...formData, apartmentSakPdfUrl: url })}
@@ -491,7 +547,7 @@ export default function CreateApartment() {
                     helperText="Upload Apartment Sak (PDF)"
                   />
                 </FormField>
-
+ 
                 <FormField label={t('apartments.labels.subDivision')}>
                   <FileUpload 
                     onUploadSuccess={(url: string) => setFormData({ ...formData, apartmentSubDivisionPdfUrl: url })}
@@ -503,11 +559,11 @@ export default function CreateApartment() {
                 </FormField>
               </div>
             </FormSection>
-
+ 
             <FormActions
-              onCancel={() => setLocation('/apartments')}
-              isSubmitting={createMutation.isPending}
-              submitText={t('apartments.create')}
+              onCancel={() => setLocation(`/apartments/${apartmentId}`)}
+              isSubmitting={updateMutation.isPending}
+              submitText={t('common.save')}
               submittingText={t('common.saving')}
               align="between"
             />
@@ -517,4 +573,3 @@ export default function CreateApartment() {
     </Shell>
   );
 }
-
