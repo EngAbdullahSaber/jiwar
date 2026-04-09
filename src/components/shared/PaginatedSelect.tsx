@@ -1,10 +1,9 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
-import { Check, ChevronsUpDown, Loader2, Search, X, Globe } from 'lucide-react';
+import { useState, useEffect, useRef } from 'react';
+import { Check, ChevronsUpDown, Loader2, Search, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import {
   Command,
-  CommandEmpty,
   CommandGroup,
   CommandItem,
   CommandList,
@@ -13,7 +12,6 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { useInfiniteQuery } from '@tanstack/react-query';
 import api from '@/lib/api';
-import { motion, AnimatePresence } from 'framer-motion';
 
 export interface PaginatedSelectOption {
   value: string | number;
@@ -84,7 +82,6 @@ export function PaginatedSelect({
 
   const {
     data,
-    fetchNextPage,
     hasNextPage,
     isFetchingNextPage,
     status,

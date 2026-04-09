@@ -3,12 +3,9 @@ import { useTranslation } from 'react-i18next';
 import { TopHeader } from '../../components/TopHeader';
 import { Link, useRoute } from "wouter";
 import { 
-  ChevronRight, 
   ChevronDown,
-  ChevronUp,
   Gavel,
-  FileText,
-  Download,
+
   Info,
   CheckCircle2,
   Clock,
@@ -21,7 +18,6 @@ import {
   Paperclip,
   File,
   Eye,
-  BadgeCheck,
   Hourglass,
   TrendingUp,
   Edit
@@ -153,7 +149,7 @@ const StepTimeline = ({ steps }: { steps: LegalityStep[] }) => {
 
 export default function ViewLegality() {
   const [, params] = useRoute("/legality/:id");
-  const { t, i18n } = useTranslation();
+  const {  i18n } = useTranslation();
   const id = params?.id;
   const [expandedStep, setExpandedStep] = useState<number | null>(null);
   const [isUpdateDialogOpen, setIsUpdateDialogOpen] = useState(false);
