@@ -51,7 +51,7 @@ interface Phase {
 
 export default function AddProjectStage() {
   const [, setLocation] = useLocation();
-  const [  params] = useRoute("/projects/:id/stages");
+  const [, params] = useRoute("/projects/:id/stages");
   const projectId = params?.id;
   const { t, i18n } = useTranslation();
   const isRtl = i18n.language === 'ar';

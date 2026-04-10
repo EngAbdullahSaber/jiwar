@@ -48,7 +48,7 @@ interface ProjectData {
 
 export default function ProjectProfile() {
   const { t, i18n } = useTranslation();
-  const [  params] = useRoute("/projects/:id");
+  const [, params] = useRoute("/projects/:id");
   const projectId = params?.id;
   const isRtl = i18n.language === 'ar';
 
