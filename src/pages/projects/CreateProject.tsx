@@ -39,23 +39,23 @@ const FormSection = ({ icon: Icon, title, description, children, delay = 0 }: an
     initial={{ opacity: 0, y: 20 }}
     animate={{ opacity: 1, y: 0 }}
     transition={{ delay }}
-    className="bg-white dark:bg-gray-900 rounded-md border border-gray-200 dark:border-gray-800  "
+    className="bg-white dark:bg-gray-900 rounded-[32px] border border-gray-100 dark:border-gray-800 shadow-sm overflow-hidden"
   >
-    <div className="p-6 border-b border-gray-100 dark:border-gray-800 bg-gradient-to-r from-gray-50/50 to-white dark:from-gray-800/50 dark:to-gray-900">
-      <div className="flex items-center gap-4">
+    <div className="p-8 border-b border-gray-50 dark:border-gray-800 bg-gradient-to-r from-gray-50/50 to-white dark:from-gray-800/50 dark:to-gray-900">
+      <div className="flex items-center gap-5">
         <div className="relative">
-          <div className="absolute inset-0 bg-gradient-to-r from-[#4A1B1B] to-[#6B2727] rounded-md blur-lg opacity-20" />
-          <div className="relative w-12 h-12 rounded-md bg-gradient-to-br from-[#4A1B1B] to-[#6B2727] shadow-lg flex items-center justify-center">
-            <Icon className="w-6 h-6 text-[#B39371]" />
+          <div className="absolute inset-0 bg-[#4A1B1B] blur-lg opacity-20 rounded-2xl" />
+          <div className="relative w-14 h-14 rounded-2xl bg-[#F5F1ED] dark:bg-gray-800 flex items-center justify-center">
+            <Icon className="w-7 h-7 text-[#4A1B1B] dark:text-[#B39371]" />
           </div>
         </div>
         <div>
-          <h2 className="text-lg font-semibold text-gray-900 dark:text-white">{title}</h2>
-          <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">{description}</p>
+          <h2 className="text-xl font-bold text-gray-900 dark:text-white">{title}</h2>
+          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">{description}</p>
         </div>
       </div>
     </div>
-    <div className="p-6">
+    <div className="p-8">
       {children}
     </div>
   </motion.div>
@@ -63,13 +63,13 @@ const FormSection = ({ icon: Icon, title, description, children, delay = 0 }: an
 
 // Form Field Component
 const FormField = ({ label, required = false, children, error }: any) => (
-  <div className="space-y-2">
-    <Label className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+  <div className="space-y-2.5">
+    <Label className="text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-[0.2em] ml-1">
       {label} {required && <span className="text-[#B39371]">*</span>}
     </Label>
     {children}
     {error && (
-      <p className="text-xs text-red-500 dark:text-red-400 font-medium flex items-center gap-1">
+      <p className="text-[10px] text-red-500 dark:text-red-400 font-bold flex items-center gap-1.5 ml-1 animate-pulse">
         <AlertCircle className="w-3.5 h-3.5" />
         {error}
       </p>
@@ -77,7 +77,7 @@ const FormField = ({ label, required = false, children, error }: any) => (
   </div>
 );
 
-// Label Component (reuse from shadcn)
+// Label Component
 const Label = ({ children, className, ...props }: any) => (
   <label className={cn("text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70", className)} {...props}>
     {children}
@@ -149,31 +149,31 @@ export default function CreateProject() {
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8 pb-32">
           
           {/* Header Section */}
-          <div className="bg-white dark:bg-gray-900 rounded-md border border-gray-200 dark:border-gray-800 p-6 shadow-sm">
-            <div className="flex items-center gap-4">
+          <div className="bg-white dark:bg-gray-900 rounded-[28px] border border-gray-100 dark:border-gray-800 p-6 shadow-sm">
+            <div className="flex flex-col sm:flex-row items-center gap-6">
               <Link 
                 href="/projects" 
-                className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-md transition-colors"
+                className="p-3 bg-gray-50 dark:bg-gray-800 hover:bg-[#F5F1ED] dark:hover:bg-[#B39371]/10 rounded-2xl transition-all shadow-sm group"
               >
-                <ArrowLeft className="w-5 h-5 text-gray-500" />
+                <ArrowLeft className="w-6 h-6 text-gray-500 dark:text-gray-400 group-hover:text-[#4A1B1B] dark:group-hover:text-[#B39371]" />
               </Link>
               <div className="relative">
-                <div className="absolute inset-0 bg-gradient-to-r from-[#4A1B1B] to-[#6B2727] rounded-md blur-lg opacity-50" />
-                <div className="relative w-12 h-12 rounded-md bg-gradient-to-br from-[#4A1B1B] to-[#6B2727] shadow-lg flex items-center justify-center">
-                  <Building2 className="w-6 h-6 text-[#B39371]" />
+                <div className="absolute inset-0 bg-gradient-to-r from-[#4A1B1B] to-[#6B2727] rounded-2xl blur-lg opacity-30" />
+                <div className="relative w-16 h-16 rounded-2xl bg-gradient-to-br from-[#4A1B1B] to-[#6B2727] shadow-xl flex items-center justify-center">
+                  <Building2 className="w-8 h-8 text-[#B39371]" />
                 </div>
               </div>
-              <div>
-                <div className="flex items-center gap-2 mb-1">
+              <div className="text-center sm:text-left">
+                <div className="flex items-center justify-center sm:justify-start gap-2 mb-1.5">
                   <Sparkles className="w-4 h-4 text-[#B39371]" />
-                  <p className="text-xs font-medium text-[#B39371] uppercase tracking-wider">
+                  <p className="text-[10px] font-bold text-[#B39371] uppercase tracking-[0.2em]">
                     {t('projects.create')}
                   </p>
                 </div>
-                <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+                <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
                   {t('projects.newProject')}
                 </h1>
-                <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                <p className="text-sm text-gray-500 dark:text-gray-400 mt-1 max-w-md">
                   {t('projects.formDescription')}
                 </p>
               </div>

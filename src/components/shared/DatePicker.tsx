@@ -15,6 +15,7 @@ interface DatePickerProps {
   className?: string;
   name?: string;
   required?: boolean;
+  mode?: 'single' | 'range';
 }
 
 const DatePicker: React.FC<DatePickerProps> = ({ 
@@ -23,7 +24,8 @@ const DatePicker: React.FC<DatePickerProps> = ({
   placeholder, 
   className,
   name,
-  required
+  required,
+  mode = 'single'
 }) => {
   const { i18n } = useTranslation();
   const inputRef = useRef<HTMLInputElement>(null);
@@ -32,16 +34,31 @@ const DatePicker: React.FC<DatePickerProps> = ({
   useEffect(() => {
     if (inputRef.current) {
       fp.current = flatpickr(inputRef.current, {
-        defaultDate: value,
+        mode: mode,
+        defaultDate: value ? (mode === 'range' ? value.split(' to ') : value) : undefined,
         dateFormat: 'Y-m-d',
         locale: i18n.language === 'ar' ? Arabic : 'default',
         onChange: (selectedDates) => {
           if (selectedDates.length > 0) {
-            const date = selectedDates[0];
-            const year = date.getFullYear();
-            const month = String(date.getMonth() + 1).padStart(2, '0');
-            const day = String(date.getDate()).padStart(2, '0');
-            onChange(`${year}-${month}-${day}`);
+            if (mode === 'range') {
+              if (selectedDates.length === 2) {
+                const start = selectedDates[0];
+                const end = selectedDates[1];
+                const formatDate = (date: Date) => {
+                  const year = date.getFullYear();
+                  const month = String(date.getMonth() + 1).padStart(2, '0');
+                  const day = String(date.getDate()).padStart(2, '0');
+                  return `${year}-${month}-${day}`;
+                };
+                onChange(`${formatDate(start)} to ${formatDate(end)}`);
+              }
+            } else {
+              const date = selectedDates[0];
+              const year = date.getFullYear();
+              const month = String(date.getMonth() + 1).padStart(2, '0');
+              const day = String(date.getDate()).padStart(2, '0');
+              onChange(`${year}-${month}-${day}`);
+            }
           } else {
             onChange('');
           }
@@ -57,13 +74,13 @@ const DatePicker: React.FC<DatePickerProps> = ({
         fp.current.destroy();
       }
     };
-  }, [i18n.language]);
+  }, [i18n.language, mode]);
 
   useEffect(() => {
     if (fp.current && value !== fp.current.input.value) {
-      fp.current.setDate(value, false);
+      fp.current.setDate(value ? (mode === 'range' ? value.split(' to ') : value) : '', false);
     }
-  }, [value]);
+  }, [value, mode]);
 
   return (
     <div className="relative group w-full">
@@ -75,6 +92,7 @@ const DatePicker: React.FC<DatePickerProps> = ({
         placeholder={placeholder}
         className={cn(
           "w-full h-12 pl-11 rtl:pl-4 rtl:pr-11 rounded-xl bg-gray-50 dark:bg-gray-800/50 border border-gray-100 dark:border-gray-800 focus:bg-white dark:focus:bg-gray-800 outline-none focus:ring-2 focus:ring-[#B39371]/10 transition-all font-medium text-sm text-gray-900 dark:text-white dark:placeholder-gray-500",
+          mode === 'range' ? "text-[13px]" : "text-sm",
           className
         )}
       />

@@ -19,8 +19,7 @@ import {
   Eye,
   Layers,
   Pencil,
-  MoreVertical,
-  Wallet,
+   Wallet,
   FileEdit,
   TrendingUp,
   Sparkles,
@@ -246,9 +245,6 @@ export default function Projects() {
               <Pencil className="w-4 h-4" />
             </button>
           </Link>
-          <button className="p-2 hover:bg-[#F5F1ED] dark:hover:bg-gray-800 rounded-lg text-gray-400 hover:text-[#4A1B1B] dark:hover:text-[#B39371] transition-colors" title="More">
-            <MoreVertical className="w-4 h-4" />
-          </button>
         </div>
       )
     }
@@ -266,19 +262,19 @@ export default function Projects() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
           
           {/* Header Section */}
-          <div className="bg-white dark:bg-gray-900 rounded-md border border-gray-200 dark:border-gray-800 p-6 shadow-sm">
+          <div className="bg-white dark:bg-gray-900 rounded-[28px] border border-gray-100 dark:border-gray-800 p-6 shadow-sm">
             <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
-              <div className="flex items-center gap-4">
+              <div className="flex items-center gap-5">
                 <div className="relative">
-                  <div className="absolute inset-0 bg-gradient-to-r from-[#4A1B1B] to-[#6B2727] rounded-xl blur-lg opacity-50" />
-                  <div className="relative w-14 h-14 rounded-xl bg-gradient-to-br from-[#4A1B1B] to-[#6B2727] shadow-lg flex items-center justify-center">
-                    <Building2 className="w-7 h-7 text-[#B39371]" />
+                  <div className="absolute inset-0 bg-gradient-to-r from-[#4A1B1B] to-[#6B2727] rounded-2xl blur-lg opacity-30" />
+                  <div className="relative w-16 h-16 rounded-2xl bg-gradient-to-br from-[#4A1B1B] to-[#6B2727] shadow-xl flex items-center justify-center">
+                    <Building2 className="w-8 h-8 text-[#B39371]" />
                   </div>
                 </div>
                 <div>
-                  <div className="flex items-center gap-2 mb-1">
+                  <div className="flex items-center gap-2 mb-1.5">
                     <Sparkles className="w-4 h-4 text-[#B39371]" />
-                    <p className="text-xs font-medium text-[#B39371] uppercase tracking-wider">
+                    <p className="text-[10px] font-bold text-[#B39371] uppercase tracking-[0.2em]">
                       {t('projects.management')}
                     </p>
                   </div>
@@ -296,7 +292,7 @@ export default function Projects() {
                   <motion.button
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
-                    className="flex items-center gap-2 px-6 py-2.5 bg-gradient-to-r from-[#4A1B1B] to-[#6B2727] text-white rounded-md text-sm font-medium shadow-lg shadow-[#4A1B1B]/20 hover:shadow-xl transition-all"
+                    className="flex items-center gap-2 px-8 py-3 bg-gradient-to-r from-[#4A1B1B] to-[#6B2727] text-white rounded-2xl text-sm font-bold shadow-xl shadow-[#4A1B1B]/20 hover:shadow-2xl transition-all"
                   >
                     <Plus className="w-5 h-5" />
                     {t('projects.create')}

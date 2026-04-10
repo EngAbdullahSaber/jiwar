@@ -636,8 +636,34 @@
       "timeline": "Timeline (Range)",
       "addSubStage": "Add Sub-stage",
       "subStageName": "Sub-stage name",
+      "nameArabic": "Name in Arabic",
+      "nameEnglish": "Name in English",
+      "subTasksTitle": "Sub-Tasks & Milestones",
+      "remainingBudget": "Remaining Budget",
+      "noSubStages": "No sub-stages added yet.",
       "cost": "Cost",
-      "timelineLabel": "Timeline"
+      "timelineLabel": "Timeline",
+      "validation": {
+        "costExceeded": "Sub-tasks total cannot exceed stage cost",
+        "emptyPhases": "Please add at least one stage with a name",
+        "dateMismatch": "Sub-task start date must match stage start date",
+        "dateRangeExceeded": "Sub-task timeline must be within the stage timeline"
+      },
+      "profile": {
+        "title": "Project Profile",
+        "noStages": "No construction stages defined",
+        "addFirstStage": "Add First Stage",
+        "infoTitle": "Project Information",
+        "internalId": "Internal ID / Identity",
+        "legalityRecord": "Legality Record",
+        "financeTitle": "Financial Overview",
+        "estCost": "Construction Cost (Est.)",
+        "liquidity": "Available Liquidity",
+        "totalPhases": "Total Phases",
+        "avgPerStage": "Avg per Stage",
+        "docsTitle": "Project Documents",
+        "noDocs": "No documents attached"
+      }
     }
   },
   "apartments": {
