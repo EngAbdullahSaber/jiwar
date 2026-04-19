@@ -105,20 +105,79 @@ export default function CreateContract() {
     paidAmount: "",
     referenceType: "",
     paymentReferenceNumber: "",
-    maintenanceFee: ""
+    maintenanceFee: "",
+    buyerTitle: "",
+    deedDate: "",
+    sharePercentage: "",
+    penaltyText: "",
+    paidAmountText: "",
+    transferNumber: "",
+    maintenanceFeeText: "",
+    landValue: "",
+    landValueText: "",
+    investmentAmount: "",
+    investmentAmountText: "",
+    totalContractValue: "",
+    totalContractValueText: ""
   });
 
   const createMutation = useMutation({
     mutationFn: async (data: typeof formData) => {
-      const payload = {
-        ...data,
+      const isPartial = data.type === 'apartment_partial_sale';
+      const isLandPartnership = data.type === 'land_partnership';
+      
+      const payload: any = {
+        hijriDate: data.hijriDate,
+        contractDate: data.contractDate,
+        contractCity: data.contractCity,
+        district: data.district,
+        nationalId: data.nationalId,
         clientId: Number(data.clientId),
-        apartmentId: Number(data.apartmentId),
+        projectDistrict: data.projectDistrict,
+        plotNumber: data.plotNumber,
+        deedNumber: data.deedNumber,
         delayPenaltyAmount: Number(data.delayPenaltyAmount),
+        paymentType: data.paymentType,
         paidAmount: Number(data.paidAmount),
-        maintenanceFee: Number(data.maintenanceFee)
+        maintenanceFee: Number(data.maintenanceFee),
       };
-      const response = await api.post('/contract/apartment-sale', payload);
+
+      if (!isLandPartnership) {
+        payload.apartmentId = Number(data.apartmentId);
+      }
+
+      if (isPartial) {
+        payload.buyerTitle = data.buyerTitle;
+        payload.deedDate = data.deedDate;
+        payload.sharePercentage = Number(data.sharePercentage);
+        payload.penaltyText = data.penaltyText;
+        payload.paidAmountText = data.paidAmountText;
+        payload.transferNumber = data.transferNumber;
+        payload.maintenanceFeeText = data.maintenanceFeeText;
+      } else if (isLandPartnership) {
+        payload.buyerTitle = data.buyerTitle;
+        payload.deedDate = data.deedDate;
+        payload.landValue = Number(data.landValue);
+        payload.landValueText = data.landValueText;
+        payload.investmentAmount = Number(data.investmentAmount);
+        payload.investmentAmountText = data.investmentAmountText;
+        payload.totalContractValue = Number(data.totalContractValue);
+        payload.totalContractValueText = data.totalContractValueText;
+        payload.paidAmountText = data.paidAmountText;
+        payload.transferNumber = data.transferNumber;
+      } else {
+        payload.type = "apartment_sale";
+        payload.referenceType = data.referenceType;
+        payload.paymentReferenceNumber = data.paymentReferenceNumber;
+      }
+      
+      const endpoint = isLandPartnership 
+        ? '/contract/land-partnership'
+        : isPartial 
+          ? '/contract/apartment-partial-sale' 
+          : '/contract/apartment-sale';
+        
+      const response = await api.post(endpoint, payload);
       return response.data;
     },
     onSuccess: () => {
@@ -139,7 +198,8 @@ export default function CreateContract() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     // Basic validation
-    if (!formData.clientId || !formData.apartmentId || !formData.contractDate || !formData.paidAmount) {
+    const isLandPartnership = formData.type === 'land_partnership';
+    if (!formData.clientId || (!isLandPartnership && !formData.apartmentId) || !formData.contractDate || !formData.paidAmount) {
       toast.error(t('contracts.fillRequiredFields'), { 
         icon: '⚠️',
         style: { borderRadius: '1rem', background: '#ef4444', color: '#fff' } 
@@ -209,9 +269,22 @@ export default function CreateContract() {
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="apartment_sale">{t('contracts.types.apartment_sale')}</SelectItem>
+                      <SelectItem value="apartment_partial_sale">{t('contracts.types.apartment_partial_sale')}</SelectItem>
+                      <SelectItem value="land_partnership">{t('contracts.types.land_partnership')}</SelectItem>
                     </SelectContent>
                   </Select>
                 </FormField>
+
+                {(formData.type === 'apartment_partial_sale' || formData.type === 'land_partnership') && (
+                  <FormField label={t('contracts.labels.buyerTitle')}>
+                    <Input 
+                      placeholder={t('contracts.labels.buyerTitle')}
+                      value={formData.buyerTitle}
+                      onChange={(e) => setFormData({ ...formData, buyerTitle: e.target.value })}
+                      className="h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md"
+                    />
+                  </FormField>
+                )}
 
                 <FormField label={t('contracts.labels.contractDate')} required>
                   <DatePicker 
@@ -288,23 +361,25 @@ export default function CreateContract() {
             >
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 
-                <FormField label={t('contracts.labels.apartment')} required>
-                  <PaginatedSelect
-                    apiEndpoint="/apartment"
-                    queryKey="apartments-paginated"
-                    value={formData.apartmentId.toString()}
-                    onChange={(val) => setFormData({ ...formData, apartmentId: val })}
-                    placeholder={t('contracts.placeholders.selectApartment')}
-                    searchPlaceholder={t('apartments.placeholders.search')}
-                    mapResponseToOptions={(pageData) => {
-                      const data = pageData.data || [];
-                      return data.map((apt: any) => ({
-                        value: apt.id,
-                        label: i18n.language === 'ar' ? apt.mainName?.arabic : apt.mainName?.english || `Apartment #${apt.id}`,
-                      }));
-                    }}
-                  />
-                </FormField>
+                {formData.type !== 'land_partnership' && (
+                  <FormField label={t('contracts.labels.apartment')} required>
+                    <PaginatedSelect
+                      apiEndpoint="/apartment"
+                      queryKey="apartments-paginated"
+                      value={formData.apartmentId.toString()}
+                      onChange={(val) => setFormData({ ...formData, apartmentId: val })}
+                      placeholder={t('contracts.placeholders.selectApartment')}
+                      searchPlaceholder={t('apartments.placeholders.search')}
+                      mapResponseToOptions={(pageData) => {
+                        const data = pageData.data || [];
+                        return data.map((apt: any) => ({
+                          value: apt.id,
+                          label: i18n.language === 'ar' ? apt.mainName?.arabic : apt.mainName?.english || `Apartment #${apt.id}`,
+                        }));
+                      }}
+                    />
+                  </FormField>
+                )}
 
                 <FormField label={t('contracts.labels.district')}>
                   <Input 
@@ -341,6 +416,92 @@ export default function CreateContract() {
                     className="h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md"
                   />
                 </FormField>
+
+                {(formData.type === 'apartment_partial_sale' || formData.type === 'land_partnership') && (
+                  <>
+                    <FormField label={t('contracts.labels.deedDate')}>
+                      <Input 
+                        placeholder="١٤٤٧/٠١/٠١"
+                        value={formData.deedDate}
+                        onChange={(e) => setFormData({ ...formData, deedDate: e.target.value })}
+                        className="h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md"
+                      />
+                    </FormField>
+
+                    {formData.type === 'apartment_partial_sale' && (
+                      <FormField label={t('contracts.labels.sharePercentage')}>
+                        <Input 
+                          type="number"
+                          placeholder="25"
+                          value={formData.sharePercentage}
+                          onChange={(e) => setFormData({ ...formData, sharePercentage: e.target.value })}
+                          className="h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md"
+                        />
+                      </FormField>
+                    )}
+                  </>
+                )}
+
+                {formData.type === 'land_partnership' && (
+                  <>
+                    <FormField label={t('contracts.labels.landValue')}>
+                      <Input 
+                        type="number"
+                        placeholder="2000000"
+                        value={formData.landValue}
+                        onChange={(e) => setFormData({ ...formData, landValue: e.target.value })}
+                        className="h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md"
+                      />
+                    </FormField>
+
+                    <FormField label={t('contracts.labels.landValueText')}>
+                      <Input 
+                        placeholder={t('contracts.labels.landValueText')}
+                        value={formData.landValueText}
+                        onChange={(e) => setFormData({ ...formData, landValueText: e.target.value })}
+                        className="h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md"
+                      />
+                    </FormField>
+
+                    <FormField label={t('contracts.labels.investmentAmount')}>
+                      <Input 
+                        type="number"
+                        placeholder="500000"
+                        value={formData.investmentAmount}
+                        onChange={(e) => setFormData({ ...formData, investmentAmount: e.target.value })}
+                        className="h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md"
+                      />
+                    </FormField>
+
+                    <FormField label={t('contracts.labels.investmentAmountText')}>
+                      <Input 
+                        placeholder={t('contracts.labels.investmentAmountText')}
+                        value={formData.investmentAmountText}
+                        onChange={(e) => setFormData({ ...formData, investmentAmountText: e.target.value })}
+                        className="h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md"
+                      />
+                    </FormField>
+
+                    <FormField label={t('contracts.labels.totalContractValue')}>
+                      <Input 
+                        type="number"
+                        placeholder="500000"
+                        value={formData.totalContractValue}
+                        onChange={(e) => setFormData({ ...formData, totalContractValue: e.target.value })}
+                        className="h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md"
+                      />
+                    </FormField>
+
+                    <FormField label={t('contracts.labels.totalContractValueText')}>
+                      <Input 
+                        placeholder={t('contracts.labels.totalContractValueText')}
+                        value={formData.totalContractValueText}
+                        onChange={(e) => setFormData({ ...formData, totalContractValueText: e.target.value })}
+                        className="h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md"
+                      />
+                    </FormField>
+                  </>
+                )}
               </div>
             </FormSection>
 
@@ -362,9 +523,20 @@ export default function CreateContract() {
                       <SelectValue placeholder={t('contracts.placeholders.selectPaymentType')} />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="عربون">عربون</SelectItem>
-                      <SelectItem value="دفعة مقدمة">دفعة مقدمة</SelectItem>
-                      <SelectItem value="كامل المبلغ">كامل المبلغ</SelectItem>
+                    {(formData.type === 'apartment_partial_sale' || formData.type === 'land_partnership') ? (
+                        <>
+                          <SelectItem value="تحويل بنكي">تحويل بنكي</SelectItem>
+                          <SelectItem value="نقدي">نقدي</SelectItem>
+                          <SelectItem value="شيك">شيك</SelectItem>
+                          {formData.type === 'land_partnership' && <SelectItem value="الدفعة الأولى">الدفعة الأولى</SelectItem>}
+                        </>
+                      ) : (
+                        <>
+                          <SelectItem value="عربون">عربون</SelectItem>
+                          <SelectItem value="دفعة مقدمة">دفعة مقدمة</SelectItem>
+                          <SelectItem value="كامل المبلغ">كامل المبلغ</SelectItem>
+                        </>
+                      )}
                     </SelectContent>
                   </Select>
                 </FormField>
@@ -379,30 +551,34 @@ export default function CreateContract() {
                   />
                 </FormField>
 
-                <FormField label={t('contracts.labels.referenceType')}>
-                  <Select 
-                    value={formData.referenceType} 
-                    onValueChange={(val) => setFormData({ ...formData, referenceType: val })}
-                  >
-                    <SelectTrigger className="h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md">
-                      <SelectValue placeholder={t('contracts.placeholders.selectReferenceType')} />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="حوالة بنكية">حوالة بنكية</SelectItem>
-                      <SelectItem value="نقدي">نقدي</SelectItem>
-                      <SelectItem value="شيك">شيك</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </FormField>
+                {formData.type === 'apartment_sale' && (
+                  <>
+                    <FormField label={t('contracts.labels.referenceType')}>
+                      <Select 
+                        value={formData.referenceType} 
+                        onValueChange={(val) => setFormData({ ...formData, referenceType: val })}
+                      >
+                        <SelectTrigger className="h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md">
+                          <SelectValue placeholder={t('contracts.placeholders.selectReferenceType')} />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="حوالة بنكية">حوالة بنكية</SelectItem>
+                          <SelectItem value="نقدي">نقدي</SelectItem>
+                          <SelectItem value="شيك">شيك</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </FormField>
 
-                <FormField label={t('contracts.labels.referenceNumber')}>
-                  <Input 
-                    placeholder="TXN123456789"
-                    value={formData.paymentReferenceNumber}
-                    onChange={(e) => setFormData({ ...formData, paymentReferenceNumber: e.target.value })}
-                    className="h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md"
-                  />
-                </FormField>
+                    <FormField label={t('contracts.labels.referenceNumber')}>
+                      <Input 
+                        placeholder="TXN123456789"
+                        value={formData.paymentReferenceNumber}
+                        onChange={(e) => setFormData({ ...formData, paymentReferenceNumber: e.target.value })}
+                        className="h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md"
+                      />
+                    </FormField>
+                  </>
+                )}
 
                 <FormField label={t('contracts.labels.delayPenalty')}>
                   <Input 
@@ -423,6 +599,50 @@ export default function CreateContract() {
                     className="h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md"
                   />
                 </FormField>
+
+                {(formData.type === 'apartment_partial_sale' || formData.type === 'land_partnership') && (
+                  <>
+                    {formData.type === 'apartment_partial_sale' && (
+                      <FormField label={t('contracts.labels.penaltyText')}>
+                        <Input 
+                          placeholder={t('contracts.labels.penaltyText')}
+                          value={formData.penaltyText}
+                          onChange={(e) => setFormData({ ...formData, penaltyText: e.target.value })}
+                          className="h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md"
+                        />
+                      </FormField>
+                    )}
+
+                    <FormField label={t('contracts.labels.paidAmountText')}>
+                      <Input 
+                        placeholder={t('contracts.labels.paidAmountText')}
+                        value={formData.paidAmountText}
+                        onChange={(e) => setFormData({ ...formData, paidAmountText: e.target.value })}
+                        className="h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md"
+                      />
+                    </FormField>
+
+                    <FormField label={t('contracts.labels.transferNumber')}>
+                      <Input 
+                        placeholder={t('contracts.labels.transferNumber')}
+                        value={formData.transferNumber}
+                        onChange={(e) => setFormData({ ...formData, transferNumber: e.target.value })}
+                        className="h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md"
+                      />
+                    </FormField>
+
+                    {formData.type === 'apartment_partial_sale' && (
+                      <FormField label={t('contracts.labels.maintenanceFeeText')}>
+                        <Input 
+                          placeholder={t('contracts.labels.maintenanceFeeText')}
+                          value={formData.maintenanceFeeText}
+                          onChange={(e) => setFormData({ ...formData, maintenanceFeeText: e.target.value })}
+                          className="h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md"
+                        />
+                      </FormField>
+                    )}
+                  </>
+                )}
               </div>
             </FormSection>
 

@@ -16,8 +16,6 @@ import { Shell } from '../../components/shared/Shell';
 import { 
   FileText,
   Plus,
-  Eye,
-  Pencil,
   Sparkles,
   Download,
   Calendar,
@@ -155,10 +153,12 @@ export default function Contracts() {
           </div>
           <div>
             <p className="text-sm font-medium text-gray-900 dark:text-white">
-              {i18n.language === 'ar' ? c.apartment?.mainName?.arabic : c.apartment?.mainName?.english}
+              {c.apartment 
+                ? (i18n.language === 'ar' ? c.apartment?.mainName?.arabic : c.apartment?.mainName?.english)
+                : t('common.noData')}
             </p>
             <p className="text-xs text-gray-500 dark:text-gray-400">
-              {c.district}, {c.contractCity}
+              {c.district || c.projectDistrict}, {c.contractCity}
             </p>
           </div>
         </div>
@@ -211,16 +211,7 @@ export default function Contracts() {
               <Download className="w-4 h-4" />
             </a>
           )}
-          <Link href={`/contracts/${c.id}`}>
-            <button className="p-2 hover:bg-[#F5F1ED] dark:hover:bg-gray-800 rounded-lg text-gray-400 hover:text-[#4A1B1B] dark:hover:text-[#B39371] transition-colors" title={t('common.view')}>
-              <Eye className="w-4 h-4" />
-            </button>
-          </Link>
-          <Link href={`/contracts/${c.id}/edit`}>
-            <button className="p-2 hover:bg-[#F5F1ED] dark:hover:bg-gray-800 rounded-lg text-gray-400 hover:text-[#4A1B1B] dark:hover:text-[#B39371] transition-colors" title={t('common.edit')}>
-              <Pencil className="w-4 h-4" />
-            </button>
-          </Link>
+         
           <button 
             onClick={() => {
               setSelectedContractId(c.id);

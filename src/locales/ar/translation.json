@@ -897,7 +897,20 @@
       "propertySection": "تفاصيل العقار",
       "propertySectionDesc": "بيانات الوحدة السكنية والموقع الجغرافي",
       "financialSection": "التفاصيل المالية",
-      "financialSectionDesc": "المبالغ المدفوعة وطرق السداد"
+      "financialSectionDesc": "المبالغ المدفوعة وطرق السداد",
+      "buyerTitle": "لقب المشتري",
+      "deedDate": "تاريخ الصك",
+      "sharePercentage": "نسبة الحصة",
+      "penaltyText": "مبلغ الغرامة نصاً",
+      "paidAmountText": "المبلغ المدفوع نصاً",
+      "transferNumber": "رقم التحويل",
+      "maintenanceFeeText": "رسوم الصيانة نصاً",
+      "landValue": "قيمة الأرض",
+      "landValueText": "قيمة الأرض نصاً",
+      "investmentAmount": "مبلغ الاستثمار",
+      "investmentAmountText": "مبلغ الاستثمار نصاً",
+      "totalContractValue": "إجمالي قيمة العقد",
+      "totalContractValueText": "إجمالي قيمة العقد نصاً"
     },
     "placeholders": {
       "search": "البحث في العقود حسب النوع، العميل، أو الحي...",
@@ -908,7 +921,9 @@
       "selectReferenceType": "اختر نوع المرجع"
     },
     "types": {
-      "apartment_sale": "بيع وحدة سكنية"
+      "apartment_sale": "بيع وحدة سكنية",
+      "apartment_partial_sale": "بيع جزء من وحدة سكنية",
+      "land_partnership": "شراكة أرض"
     },
     "empty": {
       "title": "لم يتم العثور على عقود",

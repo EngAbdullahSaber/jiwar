@@ -897,7 +897,20 @@
       "propertySection": "Property Details",
       "propertySectionDesc": "Apartment unit data and geographic location",
       "financialSection": "Financial Details",
-      "financialSectionDesc": "Payment amounts and recovery terms"
+      "financialSectionDesc": "Payment amounts and recovery terms",
+      "buyerTitle": "Buyer Title",
+      "deedDate": "Deed Date",
+      "sharePercentage": "Share Percentage",
+      "penaltyText": "Penalty Text",
+      "paidAmountText": "Paid Amount Text",
+      "transferNumber": "Transfer Number",
+      "maintenanceFeeText": "Maintenance Fee Text",
+      "landValue": "Land Value",
+      "landValueText": "Land Value Text",
+      "investmentAmount": "Investment Amount",
+      "investmentAmountText": "Investment Amount Text",
+      "totalContractValue": "Total Contract Value",
+      "totalContractValueText": "Total Contract Value Text"
     },
     "placeholders": {
       "search": "Search contracts by type, client, or district...",
@@ -908,7 +921,9 @@
       "selectReferenceType": "Select reference type"
     },
     "types": {
-      "apartment_sale": "Apartment Sale"
+      "apartment_sale": "Apartment Sale",
+      "apartment_partial_sale": "Apartment Partial Sale",
+      "land_partnership": "Land Partnership"
     },
     "empty": {
       "title": "No contracts found",
