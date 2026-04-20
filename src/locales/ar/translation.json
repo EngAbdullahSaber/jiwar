@@ -934,6 +934,33 @@
     "deleteError": "فشل في حذف العقد",
     "successCreate": "تم إنشاء العقد بنجاح",
     "errorCreate": "فشل في إنشاء العقد"
+  },
+  "dashboard": {
+    "title": "نظرة عامة",
+    "subtitle": "مرحباً بعودتك، إليك ما يحدث في نظامك.",
+    "stats": {
+      "totalProjects": "إجمالي المشاريع",
+      "totalContracts": "إجمالي العقود",
+      "availableApartments": "الوحدات المتاحة",
+      "notAvailable": "غير متاح"
+    },
+    "salesTrends": {
+      "title": "اتجهات المبيعات",
+      "subtitle": "تحليلات الأداء الشهري لعام 2025/2026",
+      "last6Months": "آخر 6 أشهر",
+      "contracts": "عقود"
+    },
+    "latestTransactions": {
+      "title": "أحدث عمليات البيع",
+      "viewAll": "عرض جميع السجلات",
+      "customer": "العميل",
+      "apartmentName": "اسم الوحدة",
+      "amountSar": "المبلغ (ر.س)",
+      "status": "الحالة",
+      "date": "التاريخ",
+      "paid": "تم الدفع",
+      "noTransactions": "لم يتم العثور على عمليات بيع مؤخراً."
+    }
   }
 }
 

@@ -7,34 +7,50 @@ import {
   ResponsiveContainer,
   Cell
 } from 'recharts';
+import { format, parseISO } from 'date-fns';
+import { useTranslation } from 'react-i18next';
 
-const data = [
-  { name: 'JAN', value: 30 },
-  { name: 'FEB', value: 45 },
-  { name: 'MAR', value: 35 },
-  { name: 'APR', value: 55 },
-  { name: 'MAY', value: 65 },
-  { name: 'JUN', value: 80 },
-];
+interface SalesTrendsChartProps {
+  data?: {
+    month: string;
+    count: number;
+  }[];
+}
 
 const colors = ['#A88686', '#8E6B6B', '#A88686', '#A88686', '#A88686', '#4A1B1B'];
 
-export function SalesTrendsChart() {
+export function SalesTrendsChart({ data: rawData }: SalesTrendsChartProps) {
+  const { t } = useTranslation();
+  const chartData = rawData?.map(item => {
+    try {
+      const date = parseISO(`${item.month}-01`);
+      return {
+        name: format(date, 'MMM').toUpperCase(),
+        value: item.count
+      };
+    } catch {
+      return {
+        name: item.month,
+        value: item.count
+      };
+    }
+  }) || [];
+
   return (
-    <div className="bg-card p-8 rounded-[32px] shadow-sm border border-border h-[400px]">
+    <div className="bg-card p-8 rounded-md shadow-sm border border-border h-[400px]">
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h2 className="text-xl font-bold text-foreground">Sales Trends</h2>
-          <p className="text-sm text-muted-foreground mt-1">Monthly performance analytics for 2024</p>
+          <h2 className="text-xl font-bold text-foreground">{t('dashboard.salesTrends.title')}</h2>
+          <p className="text-sm text-muted-foreground mt-1">{t('dashboard.salesTrends.subtitle')}</p>
         </div>
-        <div className="bg-muted px-4 py-2 rounded-xl text-sm font-medium text-muted-foreground border border-border">
-          Last 6 Months
+        <div className="bg-muted px-4 py-2 rounded-md text-sm font-medium text-muted-foreground border border-border">
+          {t('dashboard.salesTrends.last6Months')}
         </div>
       </div>
       
       <div className="h-[280px] w-full">
         <ResponsiveContainer width="100%" height="100%">
-          <BarChart data={data}>
+          <BarChart data={chartData}>
             <CartesianGrid vertical={false} strokeDasharray="3 3" stroke="currentColor" className="text-border" opacity={0.5} />
             <XAxis 
               dataKey="name" 
@@ -49,8 +65,8 @@ export function SalesTrendsChart() {
               content={({ active, payload }) => {
                 if (active && payload && payload.length) {
                   return (
-                    <div className="bg-card p-3 shadow-xl rounded-xl border border-border">
-                      <p className="text-sm font-bold text-foreground">{payload[0].value}%</p>
+                    <div className="bg-card p-3 shadow-xl rounded-md border border-border">
+                      <p className="text-sm font-bold text-foreground">{payload[0].value} {t('dashboard.salesTrends.contracts')}</p>
                     </div>
                   );
                 }
@@ -58,7 +74,7 @@ export function SalesTrendsChart() {
               }}
             />
             <Bar dataKey="value" radius={[8, 8, 0, 0]} barSize={90}>
-              {data.map((_, index) => (
+              {chartData.map((_, index) => (
                 <Cell key={`cell-${index}`} fill={colors[index % colors.length]} />
               ))}
             </Bar>

@@ -934,6 +934,33 @@
     "deleteError": "Failed to delete contract",
     "successCreate": "Contract created successfully",
     "errorCreate": "Failed to create contract"
+  },
+  "dashboard": {
+    "title": "General Overview",
+    "subtitle": "Welcome back, here's what's happening in your system.",
+    "stats": {
+      "totalProjects": "Total Projects",
+      "totalContracts": "Total Contracts",
+      "availableApartments": "Available Apartments",
+      "notAvailable": "Not Available"
+    },
+    "salesTrends": {
+      "title": "Sales Trends",
+      "subtitle": "Monthly performance analytics for 2025/2026",
+      "last6Months": "Last 6 Months",
+      "contracts": "Contracts"
+    },
+    "latestTransactions": {
+      "title": "Latest Sales Transactions",
+      "viewAll": "View All Records",
+      "customer": "Customer",
+      "apartmentName": "Apartment Name",
+      "amountSar": "Amount (SAR)",
+      "status": "Status",
+      "date": "Date",
+      "paid": "PAID",
+      "noTransactions": "No recent transactions found."
+    }
   }
 }
 

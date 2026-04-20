@@ -12,13 +12,13 @@ interface StatCardProps {
 
 export function StatCard({ label, value, change, icon: Icon, iconBg, iconColor }: StatCardProps) {
   return (
-    <div className="bg-card p-6 rounded-[24px] shadow-sm border border-border flex flex-col gap-4">
+    <div className="bg-card p-6 rounded-md shadow-sm border border-border flex flex-col gap-4">
       <div className="flex items-start justify-between">
-        <div className={cn("p-2.5 rounded-xl", iconBg || "bg-muted")}>
+        <div className={cn("p-2.5 rounded-md", iconBg || "bg-muted")}>
           <Icon className={cn("w-5 h-5", iconColor || "text-primary")} />
         </div>
         {change && (
-          <span className="text-xs font-bold text-green-500 bg-green-500/10 px-2 py-1 rounded-full">
+          <span className="text-xs font-bold text-green-500 bg-green-500/10 px-2 py-1 rounded-md">
             {change}
           </span>
         )}
