@@ -70,6 +70,12 @@ interface Client {
     id: number;
     email: string;
   };
+  updatedBy: {
+    id: number;
+    email: string;
+  } | null;
+  activeContract: number;
+  totalValution: number;
 }
 
 interface ClientResponse {
@@ -191,7 +197,7 @@ export default function Clients() {
           <div className="flex items-center gap-1.5 text-xs text-gray-600 dark:text-gray-300">
             <MapPin className="w-3 h-3 text-gray-400" />
             <span>
-              {client.city?.name[isRtl ? 'arabic' : 'english']}, {client.country?.name[isRtl ? 'arabic' : 'english']}
+              {client.city?.name?.[isRtl ? 'arabic' : 'english'] || '—'}, {client.country?.name?.[isRtl ? 'arabic' : 'english'] || '—'}
             </span>
           </div>
           {client.physicalAddress && (
@@ -203,11 +209,31 @@ export default function Clients() {
       )
     },
     {
+      header: t('contracts.title') || 'Contracts',
+      cell: (client) => (
+        <div className="flex flex-col gap-1">
+          <div className="flex items-center gap-1.5">
+            <Badge variant="outline" className={cn(
+              "px-2 py-0 text-[10px] font-medium rounded-full",
+              client.activeContract > 0 
+                ? "bg-emerald-50 text-emerald-600 border-emerald-100" 
+                : "bg-gray-50 text-gray-400 border-gray-100"
+            )}>
+              {client.activeContract} {isRtl ? 'عقود' : 'Contracts'}
+            </Badge>
+          </div>
+          <div className="text-[11px] font-bold text-[#B39371]">
+            {client.totalValution?.toLocaleString()} {t('common.sar')}
+          </div>
+        </div>
+      )
+    },
+    {
       header: t('clients.bank'),
       cell: (client) => (
         <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300">
           <Building2 className="w-3.5 h-3.5 text-gray-400" />
-          {client.bank?.name[isRtl ? 'arabic' : 'english'] || '—'}
+          {client.bank?.name?.[isRtl ? 'arabic' : 'english'] || '—'}
         </div>
       )
     },

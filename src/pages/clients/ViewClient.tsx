@@ -14,8 +14,7 @@ import {
   FileText,
   AlertCircle,
   BadgeCheck,
-  Calendar,
-  Hash,
+   Hash,
   Landmark,
   Wallet,
   Receipt,
@@ -40,6 +39,20 @@ interface CommonEntity {
   name: { arabic: string; english: string };
 }
 
+interface Contract {
+  id: number;
+  type: string;
+  contractDate: string;
+  pdfUrl: string;
+  apartment: {
+    id: number;
+    mainName: { arabic: string; english: string };
+  };
+  totalValue: number;
+  totalPaid: number;
+  remaining: number;
+}
+
 interface Client {
   id: number;
   fullName: string;
@@ -56,6 +69,11 @@ interface Client {
   city: CommonEntity | null;
   bank: CommonEntity | null;
   createdBy: { id: number; email: string };
+  updatedBy: { id: number; email: string } | null;
+  totalPaid: number;
+  totalRemaining: number;
+  apartmentsCount: number;
+  contracts: Contract[];
 }
 
 interface Payment {
@@ -344,25 +362,21 @@ export default function ViewClient() {
             className="grid grid-cols-1 sm:grid-cols-3 gap-4"
           >
             <StatCard
-              icon={Calendar}
-              label={isRtl ? 'تاريخ الانضمام' : 'Member Since'}
-              value={formatDate(client.createdAt)}
+              icon={FileText}
+              label={isRtl ? 'الوحدات السكنية' : 'Apartments'}
+              value={client.apartmentsCount || 0}
               color="bg-gradient-to-br from-blue-500 to-blue-600"
             />
             <StatCard
               icon={Wallet}
-              label={isRtl ? 'عدد الدفعات' : 'Total Payments'}
-              value={paymentsLoading ? '...' : payments.length}
+              label={isRtl ? 'إجمالي المدفوع' : 'Total Paid'}
+              value={`${client.totalPaid?.toLocaleString()} ${t('common.sar')}`}
               color="bg-gradient-to-br from-emerald-500 to-emerald-600"
             />
             <StatCard
               icon={Receipt}
-              label={isRtl ? 'إجمالي المدفوع' : 'Amount Paid'}
-              value={
-                paymentsLoading
-                  ? '...'
-                  : `${payments.reduce((s, p) => s + p.amount, 0).toLocaleString()} ${t('common.sar')}`
-              }
+              label={isRtl ? 'إجمالي المتبقي' : 'Total Remaining'}
+              value={`${client.totalRemaining?.toLocaleString()} ${t('common.sar')}`}
               color="bg-gradient-to-br from-[#4A1B1B] to-[#6B2727]"
             />
           </motion.div>
@@ -399,7 +413,7 @@ export default function ViewClient() {
                 <InfoField
                   icon={Building2}
                   label={t('clients.bank')}
-                  value={client.bank?.name[isRtl ? 'arabic' : 'english']}
+                  value={client.bank?.name?.[isRtl ? 'arabic' : 'english']}
                 />
               </div>
             </div>
@@ -414,12 +428,12 @@ export default function ViewClient() {
                 <InfoField
                   icon={MapPin}
                   label={t('clients.country')}
-                  value={client.country?.name[isRtl ? 'arabic' : 'english']}
+                  value={client.country?.name?.[isRtl ? 'arabic' : 'english']}
                 />
                 <InfoField
                   icon={MapPin}
                   label={t('clients.city')}
-                  value={client.city?.name[isRtl ? 'arabic' : 'english']}
+                  value={client.city?.name?.[isRtl ? 'arabic' : 'english']}
                 />
                 <InfoField icon={FileText} label={t('clients.address')} value={client.physicalAddress} />
               </div>
@@ -427,6 +441,90 @@ export default function ViewClient() {
           </motion.div>
 
           {/* ── Payment History ─────────────────────────────────────────────── */}
+          <motion.div
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.12 }}
+            className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 overflow-hidden"
+          >
+            <div className="flex items-center justify-between p-6 border-b border-gray-100 dark:border-gray-800">
+              <h2 className="text-sm font-semibold text-gray-900 dark:text-white flex items-center gap-2">
+                <FileText className="w-4 h-4 text-[#B39371]" />
+                {t('contracts.title')}
+              </h2>
+            </div>
+
+            {(!client.contracts || client.contracts.length === 0) ? (
+              <div className="p-12 text-center">
+                <div className="w-12 h-12 rounded-xl bg-gray-100 dark:bg-gray-800 flex items-center justify-center mx-auto mb-3">
+                  <FileText className="w-6 h-6 text-gray-400" />
+                </div>
+                <p className="text-sm text-gray-500 dark:text-gray-400">
+                  {isRtl ? 'لا توجد عقود مسجّلة' : 'No contracts recorded'}
+                </p>
+              </div>
+            ) : (
+              <div className="divide-y divide-gray-100 dark:divide-gray-800">
+                {client.contracts.map((contract, idx) => (
+                  <motion.div
+                    key={contract.id}
+                    initial={{ opacity: 0, x: -10 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: idx * 0.04 }}
+                    className="px-6 py-4 hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors"
+                  >
+                    <div className="flex items-center justify-between mb-2">
+                      <div className="flex items-center gap-3">
+                        <div className="w-9 h-9 rounded-lg bg-blue-50 dark:bg-blue-500/10 flex items-center justify-center flex-shrink-0">
+                          <Landmark className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+                        </div>
+                        <div>
+                          <p className="text-sm font-medium text-gray-900 dark:text-white">
+                            {contract.apartment.mainName[isRtl ? 'arabic' : 'english']}
+                          </p>
+                          <p className="text-[11px] text-gray-400 mt-0.5">
+                            {t(`contracts.types.${contract.type}`)} · {formatDate(contract.contractDate)}
+                          </p>
+                        </div>
+                      </div>
+                      {contract.pdfUrl && (
+                        <a
+                          href={`${import.meta.env.VITE_API_BASE_URL}/${contract.pdfUrl}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="p-1.5 text-gray-400 hover:text-[#B39371] hover:bg-[#B39371]/10 rounded-lg transition-all"
+                        >
+                          <Eye className="w-4 h-4" />
+                        </a>
+                      )}
+                    </div>
+                    <div className="grid grid-cols-3 gap-4 mt-3 pt-3 border-t border-gray-50 dark:border-gray-800/50">
+                      <div>
+                        <p className="text-[10px] text-gray-400 uppercase tracking-wider">{isRtl ? 'القيمة' : 'Value'}</p>
+                        <p className="text-xs font-semibold text-gray-700 dark:text-gray-300">
+                          {contract.totalValue.toLocaleString()} <span className="text-[10px] font-normal">{t('common.sar')}</span>
+                        </p>
+                      </div>
+                      <div>
+                        <p className="text-[10px] text-gray-400 uppercase tracking-wider">{isRtl ? 'المدفوع' : 'Paid'}</p>
+                        <p className="text-xs font-semibold text-emerald-600 dark:text-emerald-400">
+                          {contract.totalPaid.toLocaleString()} <span className="text-[10px] font-normal">{t('common.sar')}</span>
+                        </p>
+                      </div>
+                      <div>
+                        <p className="text-[10px] text-gray-400 uppercase tracking-wider">{isRtl ? 'المتبقي' : 'Remaining'}</p>
+                        <p className="text-xs font-semibold text-amber-600 dark:text-amber-400">
+                          {contract.remaining.toLocaleString()} <span className="text-[10px] font-normal">{t('common.sar')}</span>
+                        </p>
+                      </div>
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+            )}
+          </motion.div>
+
+          {/* ── Payment History ────────────────────────────────────────────────── */}
           <motion.div
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
@@ -530,6 +628,11 @@ export default function ViewClient() {
                 <span>
                   {isRtl ? 'آخر تحديث:' : 'Last updated:'}{' '}
                   <span className="font-medium text-gray-600 dark:text-gray-300">{formatDate(client.updatedAt)}</span>
+                  {client.updatedBy && (
+                    <span className="ml-1 text-[10px] text-gray-400">
+                      ({client.updatedBy.email})
+                    </span>
+                  )}
                 </span>
               </>
             )}
