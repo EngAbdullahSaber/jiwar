@@ -39,6 +39,7 @@ interface PaginatedSelectProps {
   error?: string;
   helperText?: string;
   initialLabel?: string;
+  extraParams?: Record<string, any>;
 }
 
 export function PaginatedSelect({
@@ -56,6 +57,7 @@ export function PaginatedSelect({
   error,
   helperText,
   initialLabel,
+  extraParams,
 }: PaginatedSelectProps) {
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState('');
@@ -96,6 +98,7 @@ export function PaginatedSelect({
           page: pageParam,
           pageSize: 10,
           search: debouncedSearch || undefined,
+          ...extraParams,
         },
       });
       return res.data;

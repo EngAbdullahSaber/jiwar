@@ -81,7 +81,16 @@ interface Payment {
   amount: number;
   paymentDate: string;
   receipt: string[];
-  apartment?: { id: number; mainName: { arabic: string; english: string } };
+  clientId: number;
+  createdAt: string;
+  contract: any | null;
+  apartment?: {
+    id: number;
+    mainName: { arabic: string; english: string };
+    floorNumber: number;
+    buildingOrBlock: string;
+    size: string;
+  };
 }
 
 interface ClientResponse {
@@ -91,8 +100,10 @@ interface ClientResponse {
 
 interface PaymentsResponse {
   code: number;
+  message: { arabic: string; english: string };
   data: Payment[];
   totalItems: number;
+  totalPages: number;
 }
 
 // ─── Small info card ──────────────────────────────────────────────────────────
@@ -193,7 +204,14 @@ export default function ViewClient() {
   const { data: paymentsResp, isLoading: paymentsLoading } = useQuery<PaymentsResponse>({
     queryKey: ['client-payments', id],
     queryFn: async () => {
-      const res = await api.get('/client-payment', { params: { clientId: id } });
+      const res = await api.get('/client-payment', {
+        params: {
+          clientId: id,
+          page: 1,
+          pageSize: 10,
+          sortOption: 'newest'
+        }
+      });
       return res.data;
     },
     enabled: !!id,
@@ -580,7 +598,17 @@ export default function ViewClient() {
                             ? payment.apartment.mainName[isRtl ? 'arabic' : 'english']
                             : `${isRtl ? 'دفعة' : 'Payment'} #${payment.id}`}
                         </p>
-                        <p className="text-xs text-gray-400 mt-0.5">{formatDate(payment.paymentDate)}</p>
+                        <div className="flex items-center gap-2 mt-0.5">
+                          <p className="text-[11px] text-gray-400">{formatDate(payment.paymentDate)}</p>
+                          {payment.apartment && (
+                            <>
+                              <span className="text-[10px] text-gray-300">|</span>
+                              <p className="text-[11px] text-gray-400">
+                                {isRtl ? 'بناء' : 'Bldg'}: {payment.apartment.buildingOrBlock} · {isRtl ? 'دور' : 'Floor'}: {payment.apartment.floorNumber}
+                              </p>
+                            </>
+                          )}
+                        </div>
                       </div>
                     </div>
 

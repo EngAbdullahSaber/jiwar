@@ -49,7 +49,7 @@ export function AddClientPaymentDialog({
     paymentDate: new Date().toISOString().split('T')[0],
     amount: '',
     receipt: [] as string[],
-    apartmentId: ''
+    contractId: ''
   });
 
   // Reset form when dialog closes
@@ -59,7 +59,7 @@ export function AddClientPaymentDialog({
         paymentDate: new Date().toISOString().split('T')[0],
         amount: '',
         receipt: [] as string[],
-        apartmentId: ''
+        contractId: ''
       });
     }
   }, [isOpen]);
@@ -83,7 +83,7 @@ export function AddClientPaymentDialog({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formData.amount || !formData.apartmentId) {
+    if (!formData.amount || !formData.contractId) {
       toast.error(t('common.fillRequiredFields'));
       return;
     }
@@ -94,7 +94,7 @@ export function AddClientPaymentDialog({
       ...formData,
       amount: parseFloat(formData.amount),
       clientId: clientId,
-      apartmentId: parseInt(formData.apartmentId),
+      contractId: parseInt(formData.contractId),
     });
   };
 
@@ -163,18 +163,20 @@ export function AddClientPaymentDialog({
                      />
                    </div>
 
-                   {/* Apartment */}
+                   {/* Contract */}
                    <div className="md:col-span-2 space-y-2">
                      <PaginatedSelect
-                       label={t('payments.apartment')}
-                       apiEndpoint="/apartment"
-                       queryKey="apartments"
-                       value={formData.apartmentId}
-                       onChange={(val) => setFormData(prev => ({ ...prev, apartmentId: val }))}
-                       placeholder={isRtl ? 'اختر الشقة...' : 'Select Apartment...'}
+                       label={isRtl ? 'العقد' : 'Contract'}
+                       apiEndpoint="/contract"
+                       queryKey="contracts"
+                       extraParams={{ clientId, sortOption: 'newest' }}
+                       value={formData.contractId}
+                       onChange={(val) => setFormData(prev => ({ ...prev, contractId: val }))}
+                       placeholder={isRtl ? 'اختر العقد...' : 'Select Contract...'}
                        mapResponseToOptions={(data: any) => data.data.map((item: any) => ({
                          value: item.id,
-                         label: `${item.mainName[isRtl ? 'arabic' : 'english']} - ${item.secondaryName[isRtl ? 'arabic' : 'english']}`,
+                         label: `${isRtl ? 'عقد' : 'Contract'} #${item.id} - ${item.apartment?.mainName?.[isRtl ? 'arabic' : 'english'] || ''}`,
+                         description: `${t(`contracts.types.${item.type}`)} ${item.totalContractValue ? `· ${item.totalContractValue.toLocaleString()} ${t('common.sar')}` : ''}`,
                          icon: <Building className="w-4 h-4" />
                        }))}
                      />

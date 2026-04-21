@@ -101,7 +101,7 @@ export default function CreateSalesman() {
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8 pb-32">
           
           {/* Header Section */}
-          <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 p-6 shadow-sm overflow-hidden relative group">
+          <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 p-6 shadow-sm  relative group">
             <div className="absolute top-0 right-0 w-48 h-48 bg-gradient-to-br from-[#4A1B1B]/5 to-transparent rounded-full -translate-y-1/2 translate-x-1/2 blur-3xl" />
             
             <div className="flex items-center gap-6 relative z-10">
@@ -139,7 +139,7 @@ export default function CreateSalesman() {
             <motion.div 
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 overflow-hidden shadow-sm"
+              className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800  shadow-sm"
             >
               <div className="p-6 border-b border-gray-100 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-800/50">
                 <div className="flex items-center gap-4">
@@ -230,7 +230,7 @@ export default function CreateSalesman() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 }}
-              className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 overflow-hidden shadow-sm"
+              className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800  shadow-sm"
             >
               <div className="p-6 border-b border-gray-100 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-800/50">
                 <div className="flex items-center gap-4">
@@ -349,7 +349,7 @@ export default function CreateSalesman() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
-              className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 overflow-hidden shadow-sm"
+              className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800  shadow-sm"
             >
               <div className="p-6 border-b border-gray-100 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-800/50">
                 <div className="flex items-center gap-4">
