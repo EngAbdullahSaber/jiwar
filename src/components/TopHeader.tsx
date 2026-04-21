@@ -1,20 +1,17 @@
-import { Search, Globe, Bell, ChevronDown, ChevronRight, Moon, Sun, LogOut } from 'lucide-react';
+import { Search, Globe, ChevronDown, ChevronRight, Moon, Sun, LogOut } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useState, useEffect, useRef } from "react";
-import { cn } from "@/lib/utils";
-import { useTranslation } from "react-i18next";
+ import { useTranslation } from "react-i18next";
 import { useLocation } from "wouter";
 
 export function TopHeader() {
   const [searchFocused, setSearchFocused] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
-  const [notifOpen, setNotifOpen] = useState(false);
-  const { t, i18n } = useTranslation();
+   const { t, i18n } = useTranslation();
   const [theme, setTheme] = useState<'light' | 'dark'>('dark');
   const [mounted, setMounted] = useState(false);
   const profileRef = useRef<HTMLDivElement>(null);
-  const notifRef = useRef<HTMLDivElement>(null);
-  const [location] = useLocation();
+   const [location] = useLocation();
 
   const getPageTitle = () => {
     const path = location.split('/')[1];
@@ -54,8 +51,7 @@ export function TopHeader() {
   useEffect(() => {
     function handleClick(e: MouseEvent) {
       if (profileRef.current && !profileRef.current.contains(e.target as Node)) setProfileOpen(false);
-      if (notifRef.current && !notifRef.current.contains(e.target as Node)) setNotifOpen(false);
-    }
+     }
     document.addEventListener('mousedown', handleClick);
     return () => document.removeEventListener('mousedown', handleClick);
   }, []);
@@ -76,11 +72,7 @@ export function TopHeader() {
     window.location.replace('/');
   };
 
-  const notifications = [
-    { id: 1, title: "New report available", desc: "Q2 performance report is ready", time: "2m ago", unread: true },
-    { id: 2, title: "Meeting reminder", desc: "Team sync in 30 minutes", time: "28m ago", unread: true },
-    { id: 3, title: "Task completed", desc: "Data export finished successfully", time: "1h ago", unread: false },
-  ];
+ 
 
   return (
     <>
@@ -390,7 +382,7 @@ export function TopHeader() {
           {/* Profile */}
           <div ref={profileRef} style={{ position: "relative" }}>
             <button
-              onClick={() => { setProfileOpen(v => !v); setNotifOpen(false); }}
+              onClick={() => { setProfileOpen(v => !v);   }}
               style={{
                 display: "flex", alignItems: "center", gap: "9px",
                 background: "transparent",
