@@ -334,7 +334,7 @@ export function TopHeader() {
           </button>
 
           {/* Notifications */}
-          <div ref={notifRef} style={{ position: "relative" }}>
+          {/* <div ref={notifRef} style={{ position: "relative" }}>
             <button
               className="th-icon-btn"
               onClick={() => { setNotifOpen(v => !v); setProfileOpen(false); }}
@@ -382,7 +382,7 @@ export function TopHeader() {
                 </div>
               </div>
             )}
-          </div>
+          </div> */}
 
           {/* Divider */}
           <div style={{ width: "1px", height: "20px", background: "var(--th-divider)", margin: "0 6px" }} />
@@ -396,7 +396,7 @@ export function TopHeader() {
                 background: "transparent",
                 border: "none",
                 cursor: "pointer",
-                padding: "4px 6px 4px 4px",
+                padding: "4px 8px",
                 borderRadius: "10px",
                 transition: "background 0.15s",
               }}
@@ -420,20 +420,21 @@ export function TopHeader() {
                   }}>AZ</AvatarFallback>
                 </Avatar>
                 <span style={{
-                  position: "absolute", bottom: 0, right: 0,
+                  position: "absolute", bottom: 0, 
+                  [i18n.language === 'ar' ? 'left' : 'right']: 0,
                   width: 8, height: 8,
                   borderRadius: "50%",
                   background: "#22c55e",
                   border: "1.5px solid var(--th-bg)",
-                }} />
+                } as any} />
               </div>
 
-              <div style={{ textAlign: "left" }}>
+              <div style={{ textAlign: i18n.language === 'ar' ? 'right' : 'left' }}>
                 <p style={{ margin: 0, fontSize: "13px", fontWeight: 500, color: "var(--th-text-primary)", lineHeight: 1.3, whiteSpace: "nowrap" }}>
-                  Ahmed Al-Zahrani
+                  {t('topHeader.userName')}
                 </p>
                 <p style={{ margin: 0, fontSize: "11px", color: "var(--th-text-muted)", lineHeight: 1.3 }}>
-                  Senior Manager
+                  {t('topHeader.userRole')}
                 </p>
               </div>
 
@@ -447,7 +448,10 @@ export function TopHeader() {
             </button>
 
             {profileOpen && (
-              <div className="th-dropdown" style={{ width: 220, right: 0 }}>
+              <div className="th-dropdown" style={{ 
+                width: 170, 
+                [i18n.language === 'ar' ? 'left' : 'right']: -20 
+              } as any}>
                 {/* User card */}
                 <div style={{
                   padding: "14px",
@@ -455,21 +459,29 @@ export function TopHeader() {
                   display: "flex",
                   alignItems: "center",
                   gap: "10px",
-                }}>
+                  flexDirection: i18n.language === 'ar' ? 'row-reverse' : 'row',
+                } as any}>
                   <Avatar style={{ width: 38, height: 38, border: "1.5px solid var(--th-accent-faint)", borderRadius: "50%", flexShrink: 0 }}>
                     <AvatarImage src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=100&auto=format&fit=crop" />
                     <AvatarFallback style={{ background: "var(--th-accent-bg)", color: "var(--th-accent)", fontSize: "12px", fontWeight: 600 }}>AZ</AvatarFallback>
                   </Avatar>
-                  <div>
-                    <p style={{ margin: 0, fontSize: "13px", fontWeight: 500, color: "var(--th-text-primary)", lineHeight: 1.4 }}>Ahmed Al-Zahrani</p>
-                    <p style={{ margin: 0, fontSize: "11.5px", color: "var(--th-text-muted)" }}>Senior Manager</p>
+                  <div style={{ textAlign: i18n.language === 'ar' ? 'right' : 'left', flex: 1 }}>
+                    <p style={{ margin: 0, fontSize: "13px", fontWeight: 500, color: "var(--th-text-primary)", lineHeight: 1.4 }}>{t('topHeader.userName')}</p>
+                    <p style={{ margin: 0, fontSize: "11.5px", color: "var(--th-text-muted)" }}>{t('topHeader.userRole')}</p>
                   </div>
                 </div>
 
                 <div style={{ padding: "6px" }}>
-                  <div className="th-menu-item danger" style={{ borderRadius: 8 }} onClick={handleSignOut}>
+                  <div className="th-menu-item danger" style={{ 
+                    borderRadius: 8,
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '8px',
+                    flexDirection: i18n.language === 'ar' ? 'row-reverse' : 'row',
+                    justifyContent: 'start'
+                  } as any} onClick={handleSignOut}>
                     <LogOut style={{ width: 14, height: 14, flexShrink: 0 }} />
-                    {t('topHeader.signOut')}
+                    <span style={{ flex: 1, textAlign: i18n.language === 'ar' ? 'right' : 'left' }}>{t('topHeader.signOut')}</span>
                   </div>
                 </div>
               </div>
@@ -480,4 +492,4 @@ export function TopHeader() {
       </header>
     </>
   );
-}
+}

@@ -83,7 +83,7 @@ const DatePicker: React.FC<DatePickerProps> = ({
   }, [value, mode]);
 
   return (
-    <div className="relative group w-full">
+    <div className={cn("relative group w-full", className)}>
       <Calendar className="absolute left-4 rtl:left-auto rtl:right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 group-focus-within:text-[#B39371] transition-colors pointer-events-none z-10" />
       <input
         ref={inputRef}
@@ -92,8 +92,7 @@ const DatePicker: React.FC<DatePickerProps> = ({
         placeholder={placeholder}
         className={cn(
           "w-full h-12 pl-11 rtl:pl-4 rtl:pr-11 rounded-xl bg-gray-50 dark:bg-gray-800/50 border border-gray-100 dark:border-gray-800 focus:bg-white dark:focus:bg-gray-800 outline-none focus:ring-2 focus:ring-[#B39371]/10 transition-all font-medium text-sm text-gray-900 dark:text-white dark:placeholder-gray-500",
-          mode === 'range' ? "text-[13px]" : "text-sm",
-          className
+          mode === 'range' ? "text-[13px]" : "text-sm"
         )}
       />
     </div>

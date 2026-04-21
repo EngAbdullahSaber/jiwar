@@ -137,7 +137,7 @@ export default function Clients() {
     {
       type: 'search',
       label: t('common.search'),
-      placeholder: t('topHeader.searchPlaceholder'),
+      placeholder: t('clients.placeholders.search'),
       key: 'search'
     },
     {

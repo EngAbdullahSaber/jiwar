@@ -5,6 +5,7 @@
     "cancel": "إلغاء",
     "actions": "إجراءات",
     "edit": "تعديل",
+    "saving": "جاري الحفظ...",
     "delete": "حذف",
     "loading": "جاري التحميل...",
     "processing": "جاري المعالجة...",
@@ -63,7 +64,9 @@
     "viewAll": "عرض الكل",
     "viewProfile": "عرض الملف الشخصي",
     "accountSettings": "إعدادات الحساب",
-    "signOut": "تسجيل الخروج"
+    "signOut": "تسجيل الخروج",
+    "userName": "أحمد الزهراني",
+    "userRole": "مدير أول"
   },
   "users": {
     "title": "إدارة المستخدمين",
@@ -159,6 +162,7 @@
       "legalIdentityDesc": "للأفراد، استخدم رقم الإقامة/الهوية الوطنية. للشركات، استخدم رقم السجل التجاري."
     },
     "placeholders": {
+      "search": "ابحث باستخدام اسم العميل",
       "fullName": "مثال: أحمد الرشيد",
       "phone": "+966 5x xxx xxxx",
       "email": "client@example.com",

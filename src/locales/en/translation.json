@@ -3,6 +3,7 @@
     "search": "Search...",
     "save": "Save",
     "cancel": "Cancel",
+    "saving": "Saving...",
     "actions": "Actions",
     "edit": "Edit",
     "delete": "Delete",
@@ -63,7 +64,9 @@
     "viewAll": "View all",
     "viewProfile": "View Profile",
     "accountSettings": "Account Settings",
-    "signOut": "Sign Out"
+    "signOut": "Sign Out",
+    "userName": "Ahmed Al-Zahrani",
+    "userRole": "Senior Manager"
   },
   "users": {
     "title": "User Management",
@@ -159,6 +162,7 @@
       "legalIdentityDesc": "For individuals, use Iqama/National ID. For companies, use Commercial Registration number."
     },
     "placeholders": {
+      "search": "Search using client name",
       "fullName": "e.g. Ahmed Al-Rashid",
       "phone": "+966 5x xxx xxxx",
       "email": "client@example.com",

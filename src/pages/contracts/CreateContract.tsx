@@ -29,6 +29,7 @@ import toast from 'react-hot-toast';
 import { cn } from '@/lib/utils';
 import { motion } from 'framer-motion';
 import DatePicker from '../../components/shared/DatePicker';
+import HijriDatePicker from '../../components/shared/HijriDatePicker';
 
 // Form Section Component
 const FormSection = ({ icon: Icon, title, description, children, delay = 0 }: any) => (
@@ -257,7 +258,7 @@ export default function CreateContract() {
               description={t('contracts.labels.basicInfoDesc')}
               delay={0.1}
             >
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full">
                 
                 <FormField label={t('contracts.labels.type')} required>
                   <Select 
@@ -290,16 +291,15 @@ export default function CreateContract() {
                   <DatePicker 
                     value={formData.contractDate}
                     onChange={(date) => setFormData({ ...formData, contractDate: date })}
-                    className="h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md"
+                    className="w-full h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md"
                   />
                 </FormField>
 
                 <FormField label={t('contracts.labels.hijriDate')}>
-                  <Input 
-                    placeholder="١٤٤٦/٠٩/٠١"
+                  <HijriDatePicker 
                     value={formData.hijriDate}
-                    onChange={(e) => setFormData({ ...formData, hijriDate: e.target.value })}
-                    className="h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md"
+                    onChange={(date) => setFormData({ ...formData, hijriDate: date })}
+                    className="w-full h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md"
                   />
                 </FormField>
 
@@ -321,7 +321,7 @@ export default function CreateContract() {
               description={t('contracts.labels.clientSectionDesc')}
               delay={0.2}
             >
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full">
                 
                 <FormField label={t('contracts.labels.client')} required>
                   <PaginatedSelect
@@ -343,6 +343,7 @@ export default function CreateContract() {
 
                 <FormField label={t('contracts.labels.nationalId')}>
                   <Input 
+                    type="number"
                     placeholder="1234567890"
                     value={formData.nationalId}
                     onChange={(e) => setFormData({ ...formData, nationalId: e.target.value })}
@@ -359,7 +360,7 @@ export default function CreateContract() {
               description={t('contracts.labels.propertySectionDesc')}
               delay={0.3}
             >
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full">
                 
                 {formData.type !== 'land_partnership' && (
                   <FormField label={t('contracts.labels.apartment')} required>
@@ -401,6 +402,7 @@ export default function CreateContract() {
 
                 <FormField label={t('contracts.labels.plotNumber')}>
                   <Input 
+                    type="number"
                     placeholder="١٢٣"
                     value={formData.plotNumber}
                     onChange={(e) => setFormData({ ...formData, plotNumber: e.target.value })}
@@ -410,6 +412,7 @@ export default function CreateContract() {
 
                 <FormField label={t('contracts.labels.deedNumber')}>
                   <Input 
+                    type="number"
                     placeholder="٤٥٦٧٨٩"
                     value={formData.deedNumber}
                     onChange={(e) => setFormData({ ...formData, deedNumber: e.target.value })}
@@ -420,11 +423,10 @@ export default function CreateContract() {
                 {(formData.type === 'apartment_partial_sale' || formData.type === 'land_partnership') && (
                   <>
                     <FormField label={t('contracts.labels.deedDate')}>
-                      <Input 
-                        placeholder="١٤٤٧/٠١/٠١"
+                      <DatePicker 
                         value={formData.deedDate}
-                        onChange={(e) => setFormData({ ...formData, deedDate: e.target.value })}
-                        className="h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md"
+                        onChange={(date) => setFormData({ ...formData, deedDate: date })}
+                        className="w-full h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md"
                       />
                     </FormField>
 
@@ -512,7 +514,7 @@ export default function CreateContract() {
               description={t('contracts.labels.financialSectionDesc')}
               delay={0.4}
             >
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full">
                 
                 <FormField label={t('contracts.labels.paymentType')}>
                    <Select 
@@ -624,6 +626,7 @@ export default function CreateContract() {
 
                     <FormField label={t('contracts.labels.transferNumber')}>
                       <Input 
+                        type="number"
                         placeholder={t('contracts.labels.transferNumber')}
                         value={formData.transferNumber}
                         onChange={(e) => setFormData({ ...formData, transferNumber: e.target.value })}

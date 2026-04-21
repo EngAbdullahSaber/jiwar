@@ -391,3 +391,7 @@
   width: 16px !important;
   fill: #6b7280 !important;
 }
+
+.flatpickr-wrapper {
+  width: 100% !important;
+}
