@@ -80,7 +80,7 @@ export default function ProjectProfile() {
     return (
       <Shell>
         <div className="flex items-center justify-center min-h-screen">
-          <p className="text-red-500 font-bold">Failed to load project details.</p>
+          <p className="text-red-500 font-bold">{t('projects.errors.loadDetails') || 'Failed to load project details.'}</p>
         </div>
       </Shell>
     );
@@ -131,7 +131,7 @@ export default function ProjectProfile() {
             </div>
             
             <Badge className={cn("px-4 py-1.5 rounded-md uppercase tracking-widest text-[10px] font-bold border-none", getStatusColor(project.status))}>
-              {project.status}
+              {t(`projects.statuses.${project.status.toLowerCase()}`)}
             </Badge>
           </div>
 
@@ -143,18 +143,18 @@ export default function ProjectProfile() {
               <section className="bg-white dark:bg-gray-900 p-8 rounded-md shadow-sm border border-gray-100 dark:border-gray-800 space-y-6">
                 <div className="flex items-center gap-3">
                   <div className="w-1.5 h-6 bg-[#4A1B1B] dark:bg-[#B39371] rounded-md" />
-                  <h2 className="text-sm font-bold text-gray-900 dark:text-gray-100 uppercase tracking-widest">{t('templates.sections.visualAssets')}</h2>
+                  <h2 className="text-sm font-bold text-gray-900 dark:text-gray-100 uppercase tracking-widest">{t('projects.media.visualAssets')}</h2>
                 </div>
                 <div className="grid grid-cols-12 gap-4 aspect-video sm:aspect-[21/9]">
                   <div className="col-span-12 sm:col-span-4 grid grid-cols-3 sm:grid-cols-1 gap-4">
-                    <img src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=600&auto=format&fit=crop" className="w-full h-full object-cover rounded-md shadow-sm hover:scale-105 transition-transform" alt="Gallery 1" />
-                    <img src="https://images.unsplash.com/photo-1600566753376-12c8ab7fb75b?q=80&w=600&auto=format&fit=crop" className="w-full h-full object-cover rounded-md shadow-sm hover:scale-105 transition-transform" alt="Gallery 2" />
-                    <img src="https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?q=80&w=600&auto=format&fit=crop" className="w-full h-full object-cover rounded-md shadow-sm hover:scale-105 transition-transform" alt="Gallery 3" />
+                    <img src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=600&auto=format&fit=crop" className="w-full h-full object-cover rounded-md shadow-sm hover:scale-105 transition-transform" alt={t('projects.media.visualAssets')} />
+                    <img src="https://images.unsplash.com/photo-1600566753376-12c8ab7fb75b?q=80&w=600&auto=format&fit=crop" className="w-full h-full object-cover rounded-md shadow-sm hover:scale-105 transition-transform" alt={t('projects.media.visualAssets')} />
+                    <img src="https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?q=80&w=600&auto=format&fit=crop" className="w-full h-full object-cover rounded-md shadow-sm hover:scale-105 transition-transform" alt={t('projects.media.visualAssets')} />
                   </div>
                   <div className="col-span-12 sm:col-span-8 relative group overflow-hidden rounded-md">
-                    <img src="https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?q=80&w=1200&auto=format&fit=crop" className="w-full h-full object-cover shadow-md border-4 border-white dark:border-gray-800 transition-transform duration-700 group-hover:scale-110" alt="Main Gallery" />
+                    <img src="https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?q=80&w=1200&auto=format&fit=crop" className="w-full h-full object-cover shadow-md border-4 border-white dark:border-gray-800 transition-transform duration-700 group-hover:scale-110" alt={t('projects.media.visualAssets')} />
                     <button className="absolute bottom-6 right-6 px-6 py-3 bg-black/60 dark:bg-gray-900/80 backdrop-blur-md text-white rounded-md text-xs font-bold hover:bg-black transition-all flex items-center gap-2 shadow-xl border border-white/10">
-                       <Maximize2 className="w-4 h-4" /> {t('apartments.fullScreenPreview')}
+                       <Maximize2 className="w-4 h-4" /> {t('common.details')}
                     </button>
                   </div>
                 </div>
@@ -192,7 +192,7 @@ export default function ProjectProfile() {
                             </h3>
                             <div className="flex items-center gap-3 mt-1">
                               <span className="text-[10px] font-bold text-[#B39371] bg-[#B39371]/10 px-2 py-0.5 rounded uppercase tracking-wider">
-                                {stage.estimateCost.toLocaleString()} SAR
+                                {stage.estimateCost.toLocaleString()} {t('common.sar')}
                               </span>
                             </div>
                            </div>
@@ -213,7 +213,7 @@ export default function ProjectProfile() {
                                       {isRtl ? child.name.arabic : child.name.english}
                                     </p>
                                     <p className="text-[10px] text-gray-400 dark:text-gray-500 font-medium">
-                                      {child.estimateCost.toLocaleString()} SAR
+                                      {child.estimateCost.toLocaleString()} {t('common.sar')}
                                     </p>
                                   </div>
                                 </div>
@@ -281,9 +281,9 @@ export default function ProjectProfile() {
                   {[
                     { label: t('projects.labels.projectId'), value: project.id },
                     { label: t('projects.profile.internalId'), value: project.projectIdentity },
-                    { label: t('projects.profile.legalityRecord'), value: project.legality ? (isRtl ? project.legality.name.arabic : project.legality.name.english) : 'None' },
+                    { label: t('projects.profile.legalityRecord'), value: project.legality ? (isRtl ? project.legality.name.arabic : project.legality.name.english) : t('common.noData') },
                     { label: t('materials.createdAt'), value: formattedDate(project.createdAt) },
-                    { label: t('projects.labels.status'), value: project.status },
+                    { label: t('projects.labels.status'), value: t(`projects.statuses.${project.status.toLowerCase()}`) },
                   ].map((item, idx) => (
                     <div key={idx} className="space-y-2 group">
                       <p className="text-[10px] font-bold text-gray-400 dark:text-gray-600 uppercase tracking-widest group-hover:text-[#B39371] transition-colors">{item.label}</p>
@@ -306,13 +306,13 @@ export default function ProjectProfile() {
                 <div className="space-y-8 relative z-10">
                   <div className="space-y-1">
                     <p className="text-[10px] font-bold text-white/40 uppercase tracking-widest">{t('projects.profile.estCost')}</p>
-                    <p className="text-3xl font-bold bg-gradient-to-r from-white to-gray-400 bg-clip-text text-transparent">SAR {totalEstimate.toLocaleString()}</p>
+                    <p className="text-3xl font-bold bg-gradient-to-r from-white to-gray-400 bg-clip-text text-transparent">{t('common.sar')} {totalEstimate.toLocaleString()}</p>
                   </div>
                   
                   <div className="space-y-4">
                     <div className="flex justify-between items-center text-[10px] font-bold text-white/40 uppercase tracking-widest">
                        <span>{t('projects.profile.liquidity')}</span>
-                       <span className="text-[#B39371]">100% Secure</span>
+                       <span className="text-[#B39371]">{t('common.available')}</span>
                     </div>
                     <div className="h-1.5 w-full bg-white/5 rounded-md overflow-hidden">
                        <div className="h-full bg-[#B39371] w-[100%]" />
@@ -327,7 +327,7 @@ export default function ProjectProfile() {
                     <div className="text-right">
                        <p className="text-[10px] font-bold text-white/40 uppercase tracking-widest mb-1">{t('projects.profile.avgPerStage')}</p>
                        <p className="text-xs font-bold text-[#B39371]">
-                         SAR {project.stages.length > 0 ? (totalEstimate / project.stages.length).toLocaleString() : '0'}
+                         {t('common.sar')} {project.stages.length > 0 ? (totalEstimate / project.stages.length).toLocaleString() : '0'}
                        </p>
                     </div>
                   </div>
