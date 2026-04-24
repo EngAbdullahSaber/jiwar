@@ -41,6 +41,32 @@
     "active": "نشط",
     "inactive": "غير نشط"
   },
+  "dashboard": {
+    "title": "لوحة القيادة العامة",
+    "subtitle": "نظرة شاملة على مشاريعك العقارية وعمليات المبيعات",
+    "stats": {
+      "totalProjects": "إجمالي المشاريع",
+      "totalContracts": "إجمالي العقود",
+      "availableApartments": "الوحدات المتاحة",
+      "notAvailable": "الوحدات المحجوزة"
+    },
+    "salesTrends": {
+      "title": "أداء المبيعات الشهري",
+      "subtitle": "تتبع حجم العقود عبر جميع المشاريع",
+      "last6Months": "آخر 6 أشهر",
+      "contracts": "عقود"
+    },
+    "latestTransactions": {
+      "title": "النشاط المالي الأخير",
+      "customer": "العميل",
+      "apartmentName": "اسم الوحدة",
+      "amountSar": "المبلغ (ر.س)",
+      "status": "الحالة",
+      "date": "تاريخ الدفع",
+      "paid": "مدفوع",
+      "noTransactions": "لم يتم العثور على عمليات أخيرة"
+    }
+  },
   "sidebar": {
     "navigation": "الملاحة",
     "dashboard": "لوحة القيادة",
@@ -57,7 +83,36 @@
     "materials": "المشتريات",
     "countries": "الدول",
     "cities": "المدن",
-    "banks": "البنوك"
+    "banks": "البنوك",
+    "financeDashboard": "لوحة البيانات المالية"
+  },
+  "financeDashboard": {
+    "title": "لوحة البيانات المالية",
+    "description": "نظرة شاملة على أداء المبيعات والمؤشرات المالية",
+    "stats": {
+      "totalSales": "إجمالي قيمة المبيعات",
+      "totalPaid": "إجمالي المبالغ المحصلة",
+      "totalSalesmen": "إجمالي المندوبين",
+      "avgSales": "متوسط المبيعات لكل مندوب"
+    },
+    "charts": {
+      "topSalesmen": "أفضل 5 مندوبين حسب الأداء",
+      "salesVsPaid": "قيمة المبيعات مقابل المبالغ المحصلة"
+    },
+    "topContracts": {
+      "title": "عقود القيمة الأعلى",
+      "subtitle": "أعلى العمليات الفردية من حيث القيمة",
+      "contractValue": "قيمة العقد",
+      "apartment": "الوحدة",
+      "project": "المشروع"
+    },
+    "salesmenTable": {
+      "title": "أداء فريق المبيعات",
+      "fullName": "اسم المندوب",
+      "totalSales": "إجمالي المبيعات",
+      "totalPaid": "إجمالي المحصل",
+      "collected": "نسبة التحصيل"
+    }
   },
   "topHeader": {
     "searchPlaceholder": "ابحث عن المشاريع، المبيعات، أو العملاء...",
@@ -600,6 +655,15 @@
       "percentage": "نسبة مئوية",
       "fixed": "مبلغ ثابت"
     }
+  },
+  "auth": {
+    "forgotPassword": "نسيت كلمة المرور؟",
+    "password": "كلمة المرور",
+    "email": "البريد الإلكتروني",
+    "loginTitle": "مرحباً بك مجدداً",
+    "loginSubtitle": "يرجى إدخل بياناتك لتسجيل الدخول إلى حسابك",
+    "signIn": "تسجيل الدخول",
+    "copyright": "© 2024 جوار. جميع الحقوق محفوظة."
   },
   "contracts": {
     "title": "العقود",

@@ -4,11 +4,14 @@ import { EyeIcon, EyeOffIcon, LockIcon, UserIcon } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { LanguageSwitcher } from "@/components/shared/LanguageSwitcher";
 import toast from "react-hot-toast";
+import { useAppDispatch } from "@/hooks/useRedux";
+import { setCredentials } from "@/redux/slices/authSlice";
 import api from "@/lib/api";
 import "./auth.css";
 
 export const Login = (): JSX.Element => {
   const { t } = useTranslation();
+  const dispatch = useAppDispatch();
   const [, setLocation] = useLocation();
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState("");
@@ -31,10 +34,12 @@ export const Login = (): JSX.Element => {
       });
 
       const responseData = response.data;
-      const token = responseData.token || responseData.data?.token;
+      const user = responseData.data;
+      const token = user?.token;
       
       if (token) {
         localStorage.setItem("token", token);
+        dispatch(setCredentials({ user }));
       }
       
       toast.success(t("common.success"));

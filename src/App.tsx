@@ -62,6 +62,7 @@ import Salesman from "@/pages/salesman/Salesman";
 import CreateSalesman from "@/pages/salesman/CreateSalesman";
 import UpdateSalesman from "@/pages/salesman/UpdateSalesman";
 import ViewSalesman from "@/pages/salesman/ViewSalesman";
+import FinanceDashboard from "@/pages/finance/FinanceDashboard";
 
 import { useLocation } from "wouter";
 
@@ -185,6 +186,10 @@ function Router() {
       </Route>
       <Route path="/banks/:id/edit">
         <ProtectedRoute component={UpdateBank} />
+      </Route>
+      
+      <Route path="/finance-dashboard">
+        <ProtectedRoute component={FinanceDashboard} />
       </Route>
       
       <Route path="/clients">

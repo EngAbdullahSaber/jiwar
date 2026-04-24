@@ -41,6 +41,32 @@
     "active": "Active",
     "inactive": "Inactive"
   },
+  "dashboard": {
+    "title": "General Dashboard",
+    "subtitle": "Comprehensive overview of your real estate projects and sales operations",
+    "stats": {
+      "totalProjects": "Total Projects",
+      "totalContracts": "Total Contracts",
+      "availableApartments": "Available Units",
+      "notAvailable": "Reserved Units"
+    },
+    "salesTrends": {
+      "title": "Monthly Sales Performance",
+      "subtitle": "Tracking contract volume across all projects",
+      "last6Months": "Past 6 Months",
+      "contracts": "Contracts"
+    },
+    "latestTransactions": {
+      "title": "Recent Financial Activity",
+      "customer": "Customer",
+      "apartmentName": "Unit Name",
+      "amountSar": "Amount (SAR)",
+      "status": "Status",
+      "date": "Payment Date",
+      "paid": "Paid",
+      "noTransactions": "No recent transactions found"
+    }
+  },
   "sidebar": {
     "navigation": "Navigation",
     "dashboard": "Dashboard",
@@ -57,7 +83,36 @@
     "materials": "Purchases",
     "countries": "Countries",
     "cities": "Cities",
-    "banks": "Banks"
+    "banks": "Banks",
+    "financeDashboard": "Finance Dashboard"
+  },
+  "financeDashboard": {
+    "title": "Finance Dashboard",
+    "description": "Comprehensive overview of sales performance and financial metrics",
+    "stats": {
+      "totalSales": "Total Sales Value",
+      "totalPaid": "Total Paid Amount",
+      "totalSalesmen": "Total Salesmen",
+      "avgSales": "Avg Sales per Salesman"
+    },
+    "charts": {
+      "topSalesmen": "Top 5 Salesmen by Performance",
+      "salesVsPaid": "Sales Value vs Paid Amount"
+    },
+    "topContracts": {
+      "title": "Top Value Contracts",
+      "subtitle": "Highest value individual transactions",
+      "contractValue": "Contract Value",
+      "apartment": "Apartment",
+      "project": "Project"
+    },
+    "salesmenTable": {
+      "title": "Sales Team Performance",
+      "fullName": "Salesman Name",
+      "totalSales": "Total Sales",
+      "totalPaid": "Total Paid",
+      "collected": "Collection Rate"
+    }
   },
   "topHeader": {
     "searchPlaceholder": "Search for projects, sales, or clients...",
@@ -600,6 +655,15 @@
         "percentage": "Percentage",
         "fixed": "Fixed"
       }
+    },
+    "auth": {
+      "forgotPassword": "Forgot Password?",
+      "password": "Password",
+      "email": "Email Address",
+      "loginTitle": "Welcome Back",
+      "loginSubtitle": "Please enter your details to sign in to your account",
+      "signIn": "Sign In",
+      "copyright": "© 2024 Jiwar. All rights reserved."
     },
     "contracts": {
       "title": "Contracts",

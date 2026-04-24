@@ -22,6 +22,8 @@ import {
 import { useTranslation } from "react-i18next";
 import { cn } from "@/lib/utils";
 import { useSidebarStore } from "@/hooks/use-sidebar-store";
+import { useAppSelector, useAppDispatch } from "@/hooks/useRedux";
+import { logout } from "@/redux/slices/authSlice";
 
 interface MenuItem {
   icon: any;
@@ -39,7 +41,7 @@ const menuItems: MenuItem[] = [
   { icon: Users,           label: "clients",     path: "/clients",            },
   { icon: UserCircle,      label: "salesTeam",   path: "/salesman",          },
   { icon: FileCheck,       label: "contracts",   path: "/contracts",            },
-  { icon: PieChart,        label: "finance",     path: "/finance-dashboard",  },
+  { icon: PieChart,        label: "financeDashboard",     path: "/finance-dashboard",  },
   { icon: ShieldAlert,     label: "roles",       path: "/roles",              },
   { icon: Users,           label: "users",       path: "/users",              },
   { icon: Layers,          label: "materials",   path: "/materials",          },
@@ -51,8 +53,16 @@ const menuItems: MenuItem[] = [
 export function Sidebar() {
   const { t } = useTranslation();
   const [location] = useLocation();
+  const { user } = useAppSelector((state) => state.auth);
+  const dispatch = useAppDispatch();
   const { isExpanded: expanded, toggle: toggleExpanded } = useSidebarStore();
   const [isDark, setIsDark] = useState(false);
+
+  const handleLogout = () => {
+    dispatch(logout());
+    localStorage.removeItem('token');
+    window.location.replace('/');
+  };
 
   useEffect(() => {
     // Initial check
@@ -471,7 +481,7 @@ export function Sidebar() {
                 fontSize: "12px", fontWeight: 600, color: "#fff",
                 letterSpacing: "0.02em",
               }}>
-                AZ
+                {user?.email?.substring(0, 2).toUpperCase() || 'AZ'}
               </div>
               <span style={{
                 position: "absolute",
@@ -486,10 +496,10 @@ export function Sidebar() {
             {expanded && (
               <div style={{ overflow: "hidden" }}>
                 <p style={{ margin: 0, fontSize: "13px", fontWeight: 500, color: "var(--sb-text-hi)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
-                  Ahmed Al-Zahrani
+                  {user?.email || "Ahmed Al-Zahrani"}
                 </p>
                 <p style={{ margin: 0, fontSize: "11px", color: "var(--sb-text-lo)" }}>
-                  Senior Manager
+                  {user?.role?.name || "Senior Manager"}
                 </p>
               </div>
             )}
@@ -505,6 +515,7 @@ export function Sidebar() {
             <button
               className="sb-action-btn danger"
               style={{ justifyContent: expanded ? "flex-start" : "center" }}
+              onClick={handleLogout}
             >
               <LogOut style={{ width: 14, height: 14, flexShrink: 0 }} />
               {expanded && t('common.signOut')}

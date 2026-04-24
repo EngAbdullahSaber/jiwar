@@ -1,10 +1,14 @@
 import { Search, Globe, ChevronDown, ChevronRight, Moon, Sun, LogOut } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useState, useEffect, useRef } from "react";
- import { useTranslation } from "react-i18next";
+import { useTranslation } from "react-i18next";
 import { useLocation } from "wouter";
+import { useAppSelector, useAppDispatch } from "@/hooks/useRedux";
+import { logout } from "@/redux/slices/authSlice";
 
 export function TopHeader() {
+  const { user } = useAppSelector((state) => state.auth);
+  const dispatch = useAppDispatch();
   const [searchFocused, setSearchFocused] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
    const { t, i18n } = useTranslation();
@@ -68,6 +72,7 @@ export function TopHeader() {
   };
 
   const handleSignOut = () => {
+    dispatch(logout());
     localStorage.removeItem('token');
     window.location.replace('/');
   };
@@ -403,13 +408,13 @@ export function TopHeader() {
                   borderRadius: "50%",
                   flexShrink: 0,
                 }}>
-                  <AvatarImage src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=100&auto=format&fit=crop" />
+                  <AvatarImage src={user?.image} />
                   <AvatarFallback style={{
                     background: "var(--th-accent-bg)",
                     color: "var(--th-accent)",
                     fontSize: "12px",
                     fontWeight: 600,
-                  }}>AZ</AvatarFallback>
+                  }}>{user?.email?.substring(0, 2).toUpperCase() || 'AZ'}</AvatarFallback>
                 </Avatar>
                 <span style={{
                   position: "absolute", bottom: 0, 
@@ -423,10 +428,10 @@ export function TopHeader() {
 
               <div style={{ textAlign: i18n.language === 'ar' ? 'right' : 'left' }}>
                 <p style={{ margin: 0, fontSize: "13px", fontWeight: 500, color: "var(--th-text-primary)", lineHeight: 1.3, whiteSpace: "nowrap" }}>
-                  {t('topHeader.userName')}
+                  {user?.email || t('topHeader.userName')}
                 </p>
                 <p style={{ margin: 0, fontSize: "11px", color: "var(--th-text-muted)", lineHeight: 1.3 }}>
-                  {t('topHeader.userRole')}
+                  {user?.role?.name || t('topHeader.userRole')}
                 </p>
               </div>
 
@@ -454,12 +459,12 @@ export function TopHeader() {
                   flexDirection: i18n.language === 'ar' ? 'row-reverse' : 'row',
                 } as any}>
                   <Avatar style={{ width: 38, height: 38, border: "1.5px solid var(--th-accent-faint)", borderRadius: "50%", flexShrink: 0 }}>
-                    <AvatarImage src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=100&auto=format&fit=crop" />
-                    <AvatarFallback style={{ background: "var(--th-accent-bg)", color: "var(--th-accent)", fontSize: "12px", fontWeight: 600 }}>AZ</AvatarFallback>
+                    <AvatarImage src={user?.image} />
+                    <AvatarFallback style={{ background: "var(--th-accent-bg)", color: "var(--th-accent)", fontSize: "12px", fontWeight: 600 }}>{user?.email?.substring(0, 2).toUpperCase() || 'AZ'}</AvatarFallback>
                   </Avatar>
                   <div style={{ textAlign: i18n.language === 'ar' ? 'right' : 'left', flex: 1 }}>
-                    <p style={{ margin: 0, fontSize: "13px", fontWeight: 500, color: "var(--th-text-primary)", lineHeight: 1.4 }}>{t('topHeader.userName')}</p>
-                    <p style={{ margin: 0, fontSize: "11.5px", color: "var(--th-text-muted)" }}>{t('topHeader.userRole')}</p>
+                    <p style={{ margin: 0, fontSize: "13px", fontWeight: 500, color: "var(--th-text-primary)", lineHeight: 1.4 }}>{user?.email || t('topHeader.userName')}</p>
+                    <p style={{ margin: 0, fontSize: "11.5px", color: "var(--th-text-muted)" }}>{user?.role?.name || t('topHeader.userRole')}</p>
                   </div>
                 </div>
 
