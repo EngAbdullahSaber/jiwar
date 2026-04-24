@@ -35,7 +35,11 @@
     "viewFile": "عرض الملف",
     "updated_at": "آخر تحديث",
     "details": "التفاصيل",
-    "sar": "ر.س"
+    "sar": "ر.س",
+    "units": "وحدات",
+    "by": "بواسطة",
+    "active": "نشط",
+    "inactive": "غير نشط"
   },
   "sidebar": {
     "navigation": "الملاحة",
@@ -525,6 +529,94 @@
     "errors": {
       "create": "فشل تقديم الطلب",
       "update": "فشل تحديث الطلب"
+    }
+  },
+  "salesman": {
+    "title": "مندوبي المبيعات",
+    "description": "إدارة فريق المبيعات وتتبع أدائهم",
+    "create": "إضافة مندوب مبيعات",
+    "fullName": "الاسم الكامل",
+    "email": "البريد الإلكتروني",
+    "phoneNumber": "رقم الهاتف",
+    "agentType": "نوع الوكيل",
+    "paymentType": "نوع الدفع",
+    "commissionBase": "أساس العمولة",
+    "commissionValue": "قيمة العمولة",
+    "targetGoal": "هدف المبيعات",
+    "status": "الحالة",
+    "startDate": "تاريخ البدء",
+    "endDate": "تاريخ الانتهاء",
+    "actions": "الإجراءات",
+    "successCreate": "تم إنشاء مندوب المبيعات بنجاح",
+    "successUpdate": "تم تحديث بيانات مندوب المبيعات بنجاح",
+    "deleteSuccess": "تم حذف مندوب المبيعات بنجاح",
+    "deleteError": "فشل حذف مندوب المبيعات",
+    "loading": "جاري تحميل المندوبين...",
+    "snapshot": "نظرة عامة على المندوب",
+    "performance": "مقاييس الأداء",
+    "contractStats": "إحصائيات العقود",
+    "employmentInfo": "معلومات التوظيف",
+    "commissionDetails": "تفاصيل العمولة",
+    "quickView": "عرض سريع",
+    "viewContracts": "عرض العقود",
+    "hasTarget": "هل لديه هدف؟",
+    "hasTargetDesc": "قم بالتفعيل إذا كان لدى هذا المندوب هدف محدد بعدد الوحدات",
+    "stats": {
+      "totalContracts": "إجمالي العقود",
+      "totalApartmentContracts": "عقود الوحدات",
+      "totalContractValue": "إجمالي قيمة المبيعات",
+      "totalCommission": "إجمالي العمولات"
+    },
+    "empty": {
+      "title": "لم يتم العثور على مندوبين",
+      "description": "لم نتمكن من العثور على أي مندوب مبيعات يطابق معايير البحث الخاصة بك.",
+      "createDescription": "ابدأ ببناء فريق المبيعات الخاص بك عن طريق إضافة أول مندوب مبيعات."
+    },
+    "form": {
+      "basicInfo": "المعلومات الأساسية",
+      "basicInfoDesc": "التفاصيل الشخصية ومعلومات الاتصال",
+      "commissionInfo": "العمولات والأهداف",
+      "commissionInfoDesc": "تحديد كيفية دفع مستحقات هذا المندوب",
+      "scheduleInfo": "جدول التوظيف",
+      "scheduleInfoDesc": "تواريخ العقد والتوافر",
+      "placeholders": {
+        "fullName": "أدخل الاسم الكامل",
+        "email": "email@example.com",
+        "phone": "+966 50 000 0000",
+        "commissionValue": "0.00",
+        "targetGoal": "عدد الوحدات"
+      }
+    },
+    "types": {
+      "internal": "داخلي",
+      "external": "خارجي"
+    },
+    "payments": {
+      "commission": "عمولة",
+      "cash": "نقدي",
+      "installment": "تقسيط"
+    },
+    "bases": {
+      "percentage": "نسبة مئوية",
+      "fixed": "مبلغ ثابت"
+    }
+  },
+  "contracts": {
+    "title": "العقود",
+    "management": "إدارة العقود",
+    "description": "إدارة وتتبع عقود بيع الوحدات العقارية",
+    "add": "إضافة عقد",
+    "labels": {
+      "client": "العميل",
+      "apartment": "الوحدة العقارية",
+      "contractDate": "تاريخ العقد",
+      "paidAmount": "المبلغ المدفوع",
+      "type": "نوع العقد"
+    },
+    "empty": {
+      "title": "لا توجد عقود",
+      "description": "لا توجد عقود تطابق معايير البحث الخاصة بك.",
+      "createFirst": "ابدأ بإنشاء أول عقد لك"
     }
   }
 }

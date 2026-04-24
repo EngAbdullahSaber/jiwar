@@ -35,7 +35,11 @@
     "viewFile": "View File",
     "updated_at": "Last Updated",
     "details": "Details",
-    "sar": "SAR"
+    "sar": "SAR",
+    "units": "Units",
+    "by": "By",
+    "active": "Active",
+    "inactive": "Inactive"
   },
   "sidebar": {
     "navigation": "Navigation",
@@ -526,5 +530,93 @@
       "create": "Failed to submit request",
       "update": "Failed to update request"
     }
-  }
+  },
+    "salesman": {
+      "title": "Salesmen",
+      "description": "Manage your sales team and track their performance",
+      "create": "Create Salesman",
+      "fullName": "Full Name",
+      "email": "Email Address",
+      "phoneNumber": "Phone Number",
+      "agentType": "Agent Type",
+      "paymentType": "Payment Type",
+      "commissionBase": "Commission Base",
+      "commissionValue": "Commission Value",
+      "targetGoal": "Target Goal",
+      "status": "Status",
+      "startDate": "Start Date",
+      "endDate": "End Date",
+      "actions": "Actions",
+      "successCreate": "Salesman created successfully",
+      "successUpdate": "Salesman updated successfully",
+      "deleteSuccess": "Salesman deleted successfully",
+      "deleteError": "Failed to delete salesman",
+      "loading": "Loading salesmen...",
+      "snapshot": "Salesman Snapshot",
+      "performance": "Performance Metrics",
+      "contractStats": "Contract Statistics",
+      "employmentInfo": "Employment Information",
+      "commissionDetails": "Commission Details",
+      "quickView": "Quick View",
+      "viewContracts": "View Contracts",
+      "hasTarget": "Has Target?",
+      "hasTargetDesc": "Toggle if this salesman has a specific apartment target",
+      "stats": {
+        "totalContracts": "Total Contracts",
+        "totalApartmentContracts": "Apartment Contracts",
+        "totalContractValue": "Total Sales Value",
+        "totalCommission": "Total Commission"
+      },
+      "empty": {
+        "title": "No Salesmen Found",
+        "description": "We couldn't find any salesmen matching your criteria.",
+        "createDescription": "Start building your sales team by adding your first salesman."
+      },
+      "form": {
+        "basicInfo": "Basic Information",
+        "basicInfoDesc": "Personal details and contact information",
+        "commissionInfo": "Commission & Targets",
+        "commissionInfoDesc": "Define how this salesman is paid",
+        "scheduleInfo": "Employment Schedule",
+        "scheduleInfoDesc": "Contract dates and availability",
+        "placeholders": {
+          "fullName": "Enter full name",
+          "email": "email@example.com",
+          "phone": "+966 50 000 0000",
+          "commissionValue": "0.00",
+          "targetGoal": "Number of units"
+        }
+      },
+      "types": {
+        "internal": "Internal",
+        "external": "External"
+      },
+      "payments": {
+        "commission": "Commission",
+        "cash": "Cash",
+        "installment": "Installment"
+      },
+      "bases": {
+        "percentage": "Percentage",
+        "fixed": "Fixed"
+      }
+    },
+    "contracts": {
+      "title": "Contracts",
+      "management": "Contract Management",
+      "description": "Manage and track property sale contracts",
+      "add": "Add Contract",
+      "labels": {
+        "client": "Client",
+        "apartment": "Apartment",
+        "contractDate": "Contract Date",
+        "paidAmount": "Paid Amount",
+        "type": "Contract Type"
+      },
+      "empty": {
+        "title": "No Contracts Found",
+        "description": "No contracts match your search criteria.",
+        "createFirst": "Start by creating your first contract"
+      }
+    }
 }

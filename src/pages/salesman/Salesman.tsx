@@ -50,18 +50,34 @@ interface Salesman {
   commissionBase: string;
   commissionValue: number;
   completeTarget: boolean;
-  apartmentTargetGoal: number;
+  apartmentTargetGoal: number | null;
   agentType: string;
   createdAt: string;
   createdBy: {
     id: number;
     email: string;
   };
+  contractsCount: number;
+  apartmentContractsCount: number;
+  totalContractValue: number;
+  totalPaidAmount: number;
+  totalCommission: number;
+}
+
+interface SalesmanStatics {
+  totalContracts: number;
+  totalApartmentContracts: number;
+  totalContractValue: number;
+  totalCommission: number;
+  mostSalesman: any;
 }
 
 interface SalesmanResponse {
   code: number;
-  data: Salesman[];
+  data: {
+    salesmen: Salesman[];
+    statics: SalesmanStatics;
+  };
   totalItems: number;
   totalPages: number;
 }
@@ -139,8 +155,8 @@ export default function SalesmanPage() {
       key: 'agentType',
       options: [
         { value: 'all', label: t('common.all') },
-        { value: 'INTERNAL', label: 'INTERNAL' },
-        { value: 'EXTERNAL', label: 'EXTERNAL' }
+        { value: 'INTERNAL', label: t('salesman.types.internal') },
+        { value: 'EXTERNAL', label: t('salesman.types.external') }
       ]
     },
     {
@@ -150,9 +166,9 @@ export default function SalesmanPage() {
       key: 'paymentType',
       options: [
         { value: 'all', label: t('common.all') },
-        { value: 'CASH', label: 'CASH' },
-        { value: 'INSTALLMENT', label: 'INSTALLMENT' },
-        { value: 'COMMISSION', label: 'COMMISSION' }
+        { value: 'CASH', label: t('salesman.payments.cash') },
+        { value: 'INSTALLMENT', label: t('salesman.payments.installment') },
+        { value: 'COMMISSION', label: t('salesman.payments.commission') }
       ]
     }
   ];
@@ -200,7 +216,7 @@ export default function SalesmanPage() {
               : "bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-500/10 dark:text-amber-400 dark:border-amber-500/20"
           )}
         >
-          {salesman.agentType}
+          {salesman.agentType === 'INTERNAL' ? t('salesman.types.internal') : t('salesman.types.external')}
         </Badge>
       )
     },
@@ -219,8 +235,8 @@ export default function SalesmanPage() {
             <p className="text-sm font-bold text-gray-900 dark:text-white">
               {salesman.commissionValue}
               <span className="text-[10px] text-gray-400 ml-1">
-                {salesman.commissionBase === 'PERCENTAGE' ? '%' : 'SAR'}
-              </span>
+              {salesman.commissionBase === 'PERCENTAGE' ? '%' : t('common.sar')}
+            </span>
             </p>
           </div>
         </div>
@@ -239,7 +255,7 @@ export default function SalesmanPage() {
               "font-bold",
               salesman.completeTarget ? "text-emerald-500" : "text-amber-500"
             )}>
-              {salesman.apartmentTargetGoal} Units
+              {salesman.apartmentTargetGoal} {t('common.units')}
             </span>
           </div>
          
@@ -282,6 +298,12 @@ export default function SalesmanPage() {
               {t('salesman.actions')}
             </DropdownMenuLabel>
             <DropdownMenuSeparator className="bg-gray-100 dark:bg-gray-800" />
+            <Link href={`/salesman/${salesman.id}`}>
+              <DropdownMenuItem className="rounded-lg cursor-pointer py-2 px-3 focus:bg-gray-50 dark:focus:bg-gray-800">
+                <UsersIcon className="w-4 h-4 mr-2 rtl:mr-0 rtl:ml-2 text-gray-400" />
+                <span className="text-xs font-medium">{t('common.details')}</span>
+              </DropdownMenuItem>
+            </Link>
             <Link href={`/salesman/${salesman.id}/edit`}>
               <DropdownMenuItem className="rounded-lg cursor-pointer py-2 px-3 focus:bg-gray-50 dark:focus:bg-gray-800">
                 <Edit className="w-4 h-4 mr-2 rtl:mr-0 rtl:ml-2 text-gray-400" />
@@ -359,6 +381,60 @@ export default function SalesmanPage() {
               </div>
             </div>
           </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {[
+              { 
+                label: t('salesman.stats.totalContracts'), 
+                value: data?.data?.statics?.totalContracts || 0, 
+                icon: Wallet,
+                color: 'text-blue-600',
+                bg: 'bg-blue-50 dark:bg-blue-500/10'
+              },
+              { 
+                label: t('salesman.stats.totalApartmentContracts'), 
+                value: data?.data?.statics?.totalApartmentContracts || 0, 
+                icon: Target,
+                color: 'text-emerald-600',
+                bg: 'bg-emerald-50 dark:bg-emerald-500/10'
+              },
+              { 
+                label: t('salesman.stats.totalContractValue'), 
+                value: `${(data?.data?.statics?.totalContractValue || 0).toLocaleString()} SAR`, 
+                icon: UsersIcon,
+                color: 'text-amber-600',
+                bg: 'bg-amber-50 dark:bg-amber-500/10'
+              },
+              { 
+                label: t('salesman.stats.totalCommission'), 
+                value: `${(data?.data?.statics?.totalCommission || 0).toLocaleString()} SAR`, 
+                icon: Percent,
+                color: 'text-rose-600',
+                bg: 'bg-rose-50 dark:bg-rose-500/10'
+              }
+            ].map((stat, i) => (
+              <motion.div
+                key={i}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: i * 0.1 }}
+                className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 p-6 shadow-sm hover:shadow-md transition-all group"
+              >
+                <div className="flex items-center gap-4">
+                  <div className={cn("p-3 rounded-xl transition-colors", stat.bg)}>
+                    <stat.icon className={cn("w-6 h-6", stat.color)} />
+                  </div>
+                  <div>
+                    <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">
+                      {stat.label}
+                    </p>
+                    <p className="text-xl font-extrabold text-gray-900 dark:text-white">
+                      {stat.value}
+                    </p>
+                  </div>
+                </div>
+              </motion.div>
+            ))}
+          </div>
 
           <div className="space-y-6">
             <FilterBar 
@@ -374,7 +450,7 @@ export default function SalesmanPage() {
             <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 shadow-sm overflow-hidden">
               <DataTable 
                 columns={columns} 
-                data={data?.data || []}
+                data={data?.data?.salesmen || []}
                 isLoading={isLoading}
                 loadingMessage={t('salesman.loading')}
                 currentPage={currentPage}
@@ -387,7 +463,7 @@ export default function SalesmanPage() {
           </div>
 
           {/* Empty State */}
-          {!isLoading && data?.data.length === 0 && (
+          {!isLoading && (!data?.data?.salesmen || data.data.salesmen.length === 0) && (
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}

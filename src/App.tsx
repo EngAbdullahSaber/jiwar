@@ -61,6 +61,7 @@ import Contracts from "@/pages/contracts/Contracts";
 import Salesman from "@/pages/salesman/Salesman";
 import CreateSalesman from "@/pages/salesman/CreateSalesman";
 import UpdateSalesman from "@/pages/salesman/UpdateSalesman";
+import ViewSalesman from "@/pages/salesman/ViewSalesman";
 
 import { useLocation } from "wouter";
 
@@ -141,6 +142,9 @@ function Router() {
       </Route>
       <Route path="/salesman/:id/edit">
         <ProtectedRoute component={UpdateSalesman} />
+      </Route>
+      <Route path="/salesman/:id">
+        <ProtectedRoute component={ViewSalesman} />
       </Route>
       
       <Route path="/roles">

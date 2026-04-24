@@ -215,8 +215,8 @@ export default function CreateSalesman() {
                         value={formData.agentType}
                         onChange={handleChange}
                       >
-                        <option value="INTERNAL">INTERNAL</option>
-                        <option value="EXTERNAL">EXTERNAL</option>
+                        <option value="INTERNAL">{t('salesman.types.internal')}</option>
+                        <option value="EXTERNAL">{t('salesman.types.external')}</option>
                       </select>
                       <ChevronRight className="absolute right-4 rtl:right-auto rtl:left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 group-focus-within:text-[#B39371] rotate-90 transition-colors pointer-events-none" />
                     </div>
@@ -257,9 +257,9 @@ export default function CreateSalesman() {
                           value={formData.paymentType}
                           onChange={handleChange}
                         >
-                          <option value="COMMISSION">COMMISSION</option>
-                          <option value="CASH">CASH</option>
-                          <option value="INSTALLMENT">INSTALLMENT</option>
+                          <option value="COMMISSION">{t('salesman.payments.commission')}</option>
+                          <option value="CASH">{t('salesman.payments.cash')}</option>
+                          <option value="INSTALLMENT">{t('salesman.payments.installment')}</option>
                         </select>
                       <ChevronRight className="absolute right-4 rtl:right-auto rtl:left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 group-focus-within:text-[#B39371] rotate-90 transition-colors pointer-events-none" />
                     </div>
@@ -276,8 +276,8 @@ export default function CreateSalesman() {
                         value={formData.commissionBase}
                         onChange={handleChange}
                       >
-                        <option value="PERCENTAGE">PERCENTAGE</option>
-                        <option value="FIXED">FIXED</option>
+                        <option value="PERCENTAGE">{t('salesman.bases.percentage')}</option>
+                        <option value="FIXED">{t('salesman.bases.fixed')}</option>
                       </select>
                       <ChevronRight className="absolute right-4 rtl:right-auto rtl:left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 group-focus-within:text-[#B39371] rotate-90 transition-colors pointer-events-none" />
                     </div>
@@ -309,8 +309,8 @@ export default function CreateSalesman() {
                         <CheckCircle2 className="w-5 h-5" />
                       </div>
                       <div>
-                        <h3 className="text-sm font-bold text-gray-900 dark:text-white">Has Target?</h3>
-                        <p className="text-[10px] text-gray-500 font-medium">Toggle if this salesman has a specific apartment target </p>
+                        <h3 className="text-sm font-bold text-gray-900 dark:text-white">{t('salesman.hasTarget')}</h3>
+                        <p className="text-[10px] text-gray-500 font-medium">{t('salesman.hasTargetDesc')}</p>
                       </div>
                     </div>
                     <Switch 
