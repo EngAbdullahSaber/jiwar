@@ -114,7 +114,7 @@ export default function ViewApartment() {
   const apartment = response?.data;
 
   const formatDate = (dateString: string) => {
-    if (!dateString) return 'N/A';
+    if (!dateString) return t('common.na');
     try {
       return format(new Date(dateString), 'MMM dd, yyyy');
     } catch (e) {
@@ -167,11 +167,11 @@ export default function ViewApartment() {
       data: [
         { label: t('apartments.labels.majorNameEn'), value: apartment.mainName.english },
         { label: t('apartments.labels.majorNameAr'), value: apartment.mainName.arabic, dir: 'rtl' },
-        { label: t('apartments.labels.secondaryNameEn'), value: apartment.secondaryName.english || 'N/A' },
-        { label: t('apartments.labels.secondaryNameAr'), value: apartment.secondaryName.arabic || 'N/A', dir: 'rtl' },
-        { label: t('apartments.labels.serialNumber'), value: apartment.serialNumber || 'N/A' },
-        { label: t('apartments.labels.accountNumber'), value: apartment.accountNumber || 'N/A' },
-        { label: t('apartments.labels.subscriptionNumber'), value: apartment.subscriptionNumber || 'N/A' },
+        { label: t('apartments.labels.secondaryNameEn'), value: apartment.secondaryName.english || t('common.na') },
+        { label: t('apartments.labels.secondaryNameAr'), value: apartment.secondaryName.arabic || t('common.na'), dir: 'rtl' },
+        { label: t('apartments.labels.serialNumber'), value: apartment.serialNumber || t('common.na') },
+        { label: t('apartments.labels.accountNumber'), value: apartment.accountNumber || t('common.na') },
+        { label: t('apartments.labels.subscriptionNumber'), value: apartment.subscriptionNumber || t('common.na') },
       ]
     },
     {
@@ -179,19 +179,19 @@ export default function ViewApartment() {
       icon: Ruler,
       title: t('apartments.sections.locational'),
       data: [
-        { label: t('apartments.labels.buildingOrBlock'), value: apartment.buildingOrBlock || 'N/A' },
+        { label: t('apartments.labels.buildingOrBlock'), value: apartment.buildingOrBlock || t('common.na') },
         { label: t('apartments.labels.floorNo'), value: apartment.floorNumber },
         { label: t('apartments.labels.size'), value: `${apartment.size} ${t('apartments.labels.sqmLabel')}` },
         { label: t('apartments.labels.meterNumber'), value: apartment.meterNumber || '0' },
         { 
           label: t('apartments.labels.linkedProject'), 
-          value: apartment.project ? (i18n.language === 'ar' ? apartment.project.name.arabic : apartment.project.name.english) : 'N/A',
+          value: apartment.project ? (i18n.language === 'ar' ? apartment.project.name.arabic : apartment.project.name.english) : t('common.na'),
           isLink: !!apartment.project,
           href: apartment.project ? `/projects/${apartment.project.id}` : undefined
         },
         { 
           label: t('apartments.labels.linkedTemplate'), 
-          value: apartment.template ? (i18n.language === 'ar' ? apartment.template.name.arabic : apartment.template.name.english) : 'N/A',
+          value: apartment.template ? (i18n.language === 'ar' ? apartment.template.name.arabic : apartment.template.name.english) : t('common.na'),
           isLink: !!apartment.template,
           href: apartment.template ? `/templates/${apartment.template.id}` : undefined
         },
@@ -216,7 +216,7 @@ export default function ViewApartment() {
 
   const formatPrice = (price: string) => {
     const num = Number(price);
-    return isNaN(num) ? price : num.toLocaleString();
+    return isNaN(num) ? price : num.toLocaleString(i18n.language === 'ar' ? 'ar-SA' : 'en-US');
   };
 
   return (
@@ -432,7 +432,7 @@ export default function ViewApartment() {
                     </div>
                     <div className="space-y-1">
                        <p className="text-[10px] font-bold text-gray-400 uppercase">{t('apartments.requestId')}</p>
-                       <p className="text-sm font-bold text-gray-900 dark:text-white">{apartment.requestNumber || 'PENDING'}</p>
+                       <p className="text-sm font-bold text-gray-900 dark:text-white uppercase">{apartment.requestNumber || t('common.pending' as any) || 'PENDING'}</p>
                     </div>
                     <div className="space-y-1">
                        <p className="text-[10px] font-bold text-gray-400 uppercase">{t('apartments.submission')}</p>

@@ -4,6 +4,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { TopHeader } from '../../components/TopHeader';
 import { Pagination } from '../../components/shared/Pagination';
 import { Shell } from '../../components/shared/Shell';
+import { Can } from '../../components/shared/Can';
 import { 
   Plus, 
   MoreVertical,
@@ -193,17 +194,18 @@ export default function Templates() {
               </div>
               
               <div className="flex items-center gap-4">
-                 
-                <Link href="/templates/new">
-                  <motion.button
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                    className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-[#4A1B1B] to-[#6B2727] text-white rounded-xl text-sm font-medium shadow-lg shadow-[#4A1B1B]/20 hover:shadow-xl transition-all"
-                  >
-                    <Plus className="w-5 h-5" />
-                    {t('templates.create')}
-                  </motion.button>
-                </Link>
+                <Can I="CREATE" a="template">
+                  <Link href="/templates/new">
+                    <motion.button
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-[#4A1B1B] to-[#6B2727] text-white rounded-md text-sm font-medium shadow-lg shadow-[#4A1B1B]/20 hover:shadow-xl transition-all"
+                    >
+                      <Plus className="w-5 h-5" />
+                      {t('templates.create')}
+                    </motion.button>
+                  </Link>
+                </Can>
               </div>
             </div>
           </div>
@@ -272,25 +274,27 @@ export default function Templates() {
             
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-6">
               {/* Create New Template Card */}
-              <Link href="/templates/new">
-                <motion.div 
-                  whileHover={{ y: -4 }}
-                  className="group relative bg-white dark:bg-gray-900 rounded-2xl border-2 border-dashed border-gray-300 dark:border-gray-700 hover:border-[#B39371] transition-all cursor-pointer overflow-hidden h-[450px]"
-                >
-                  <div className="h-full flex flex-col items-center justify-center text-center p-8">
-                    <div className="w-20 h-20 rounded-2xl bg-gray-100 dark:bg-gray-800 group-hover:bg-gradient-to-br group-hover:from-[#4A1B1B] group-hover:to-[#6B2727] transition-all duration-300 flex items-center justify-center mb-6">
-                      <Plus className="w-8 h-8 text-gray-400 group-hover:text-white transition-colors" />
+              <Can I="CREATE" a="template">
+                <Link href="/templates/new">
+                  <motion.div 
+                    whileHover={{ y: -4 }}
+                    className="group relative bg-white dark:bg-gray-900 rounded-md border-2 border-dashed border-gray-300 dark:border-gray-700 hover:border-[#B39371] transition-all cursor-pointer overflow-hidden h-[450px]"
+                  >
+                    <div className="h-full flex flex-col items-center justify-center text-center p-8">
+                      <div className="w-20 h-20 rounded-md bg-gray-100 dark:bg-gray-800 group-hover:bg-gradient-to-br group-hover:from-[#4A1B1B] group-hover:to-[#6B2727] transition-all duration-300 flex items-center justify-center mb-6">
+                        <Plus className="w-8 h-8 text-gray-400 group-hover:text-white transition-colors" />
+                      </div>
+                      <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+                        {t('templates.create')}
+                      </h3>
+                      <p className="text-sm text-gray-500 dark:text-gray-400 max-w-[200px] mx-auto">
+                        {t('templates.createSub')}
+                      </p>
+                      <ArrowRight className="absolute bottom-8 right-8 w-5 h-5 text-[#B39371] opacity-0 group-hover:opacity-100 transition-all transform translate-x-2 group-hover:translate-x-0" />
                     </div>
-                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
-                      {t('templates.create')}
-                    </h3>
-                    <p className="text-sm text-gray-500 dark:text-gray-400 max-w-[200px] mx-auto">
-                      {t('templates.createSub')}
-                    </p>
-                    <ArrowRight className="absolute bottom-8 right-8 w-5 h-5 text-[#B39371] opacity-0 group-hover:opacity-100 transition-all transform translate-x-2 group-hover:translate-x-0" />
-                  </div>
-                </motion.div>
-              </Link>
+                  </motion.div>
+                </Link>
+              </Can>
 
               {isLoading ? (
                 Array.from({ length: 5 }).map((_, i) => (
@@ -338,7 +342,7 @@ export default function Templates() {
                       {template.location && (
                         <Badge className="absolute top-3 right-3 bg-white/90 backdrop-blur-sm text-gray-700 border-0 flex items-center gap-1">
                           <MapPin className="w-3 h-3" />
-                          {template.location}
+                          {t(`templates.${template.location.toLowerCase()}`)}
                         </Badge>
                       )}
                     </div>
@@ -359,7 +363,7 @@ export default function Templates() {
                           <div className="flex items-center justify-center gap-1 text-gray-500 dark:text-gray-400 mb-1">
                             <Maximize2 className="w-4 h-4" />
                           </div>
-                          <p className="text-sm font-medium text-gray-900 dark:text-white">{template.size} m²</p>
+                          <p className="text-sm font-medium text-gray-900 dark:text-white">{template.size} {t('templates.sqm')}</p>
                         </div>
                         <div className="text-center border-x border-gray-100 dark:border-gray-800">
                           <div className="flex items-center justify-center gap-1 text-gray-500 dark:text-gray-400 mb-1">
@@ -418,21 +422,27 @@ export default function Templates() {
                               <MoreVertical className="w-4 h-4" />
                             </button>
                           </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end" className="w-40 rounded-xl">
-                            <Link href={`/templates/${template.id}/edit`}>
-                              <DropdownMenuItem className="gap-2 cursor-pointer rounded-lg">
-                                <Edit className="w-4 h-4" />
-                                <span>{t('common.edit')}</span>
-                              </DropdownMenuItem>
-                            </Link>
-                            <DropdownMenuSeparator />
-                            <DropdownMenuItem 
-                              className="gap-2 cursor-pointer rounded-lg text-red-500 focus:text-red-500 focus:bg-red-50 dark:focus:bg-red-500/10"
-                              onClick={() => setTemplateToDelete(template.id)}
-                            >
-                              <Trash2 className="w-4 h-4" />
-                              <span>{t('common.delete')}</span>
-                            </DropdownMenuItem>
+                          <DropdownMenuContent align="end" className="w-40 rounded-md">
+                            <Can I="UPDATE" a="template">
+                              <Link href={`/templates/${template.id}/edit`}>
+                                <DropdownMenuItem className="gap-2 cursor-pointer rounded-lg">
+                                  <Edit className="w-4 h-4" />
+                                  <span>{t('common.edit')}</span>
+                                </DropdownMenuItem>
+                              </Link>
+                            </Can>
+                            <Can I="DELETE" a="template">
+                              <>
+                                <DropdownMenuSeparator />
+                                <DropdownMenuItem 
+                                  className="gap-2 cursor-pointer rounded-lg text-red-500 focus:text-red-500 focus:bg-red-50 dark:focus:bg-red-500/10"
+                                  onClick={() => setTemplateToDelete(template.id)}
+                                >
+                                  <Trash2 className="w-4 h-4" />
+                                  <span>{t('common.delete')}</span>
+                                </DropdownMenuItem>
+                              </>
+                            </Can>
                           </DropdownMenuContent>
                         </DropdownMenu>
                       </div>

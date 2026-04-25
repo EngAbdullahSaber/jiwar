@@ -8,6 +8,7 @@ import type { Column } from '../../components/shared/DataTable';
 import { FilterBar } from '../../components/shared/FilterBar';
 import type { FilterField } from '../../components/shared/FilterBar';
 import { Shell } from '../../components/shared/Shell';
+import { Can } from '../../components/shared/Can';
 import { 
   Building,
   Plus,
@@ -106,7 +107,7 @@ export default function Banks() {
     {
       type: 'search',
       label: t('banks.title'),
-      placeholder: t('legality.searchPlaceholder'),
+      placeholder: t('banks.searchPlaceholder') || t('legality.searchPlaceholder'),
       key: 'search'
     }
   ];
@@ -161,19 +162,23 @@ export default function Banks() {
       headerClassName: "text-center",
       cell: (b: Bank) => (
         <div className="flex items-center justify-center gap-2">
-          <Link href={`/banks/${b.id}/edit`}>
-            <button className="p-2 hover:bg-[#F5F1ED] dark:hover:bg-gray-800 rounded-lg text-gray-400 hover:text-[#4A1B1B] dark:hover:text-[#B39371] transition-colors" title="Edit">
-              <Pencil className="w-4 h-4" />
+          <Can I="UPDATE" a="bank">
+            <Link href={`/banks/${b.id}/edit`}>
+              <button className="p-2 hover:bg-[#F5F1ED] dark:hover:bg-gray-800 rounded-md text-gray-400 hover:text-[#4A1B1B] dark:hover:text-[#B39371] transition-colors" title={t('common.edit')}>
+                <Pencil className="w-4 h-4" />
+              </button>
+            </Link>
+          </Can>
+          <Can I="DELETE" a="bank">
+            <button 
+              onClick={() => setBankToDelete(b.id)}
+              disabled={deleteMutation.isPending}
+              className="p-2 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-md text-gray-400 hover:text-red-600 transition-colors disabled:opacity-50" 
+              title={t('common.delete')}
+            >
+              <Trash2 className="w-4 h-4" />
             </button>
-          </Link>
-          <button 
-            onClick={() => setBankToDelete(b.id)}
-            disabled={deleteMutation.isPending}
-            className="p-2 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg text-gray-400 hover:text-red-600 transition-colors disabled:opacity-50" 
-            title="Delete"
-          >
-            <Trash2 className="w-4 h-4" />
-          </button>
+          </Can>
         </div>
       )
     }
@@ -193,8 +198,8 @@ export default function Banks() {
             <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
               <div className="flex items-center gap-4">
                 <div className="relative">
-                  <div className="absolute inset-0 bg-gradient-to-r from-[#4A1B1B] to-[#6B2727] rounded-xl blur-lg opacity-50" />
-                  <div className="relative w-14 h-14 rounded-xl bg-gradient-to-br from-[#4A1B1B] to-[#6B2727] shadow-lg flex items-center justify-center">
+                  <div className="absolute inset-0 bg-gradient-to-r from-[#4A1B1B] to-[#6B2727] rounded-md blur-lg opacity-50" />
+                  <div className="relative w-14 h-14 rounded-md bg-gradient-to-br from-[#4A1B1B] to-[#6B2727] shadow-lg flex items-center justify-center">
                     <Building className="w-7 h-7 text-[#B39371]" />
                   </div>
                 </div>
@@ -224,16 +229,18 @@ export default function Banks() {
                   {t('common.refresh')}
                 </Button>
 
-                <Link href="/banks/new">
-                  <motion.button
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                    className="flex items-center gap-2 px-6 py-2.5 bg-gradient-to-r from-[#4A1B1B] to-[#6B2727] text-white rounded-md text-sm font-medium shadow-lg shadow-[#4A1B1B]/20 hover:shadow-xl transition-all"
-                  >
-                    <Plus className="w-5 h-5" />
-                    {t('banks.add')}
-                  </motion.button>
-                </Link>
+                <Can I="CREATE" a="bank">
+                  <Link href="/banks/new">
+                    <motion.button
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      className="flex items-center gap-2 px-6 py-2.5 bg-gradient-to-r from-[#4A1B1B] to-[#6B2727] text-white rounded-md text-sm font-medium shadow-lg shadow-[#4A1B1B]/20 hover:shadow-xl transition-all"
+                    >
+                      <Plus className="w-5 h-5" />
+                      {t('banks.add')}
+                    </motion.button>
+                  </Link>
+                </Can>
               </div>
             </div>
           </div>
@@ -267,9 +274,9 @@ export default function Banks() {
         onClose={() => setBankToDelete(null)}
         onConfirm={handleDelete}
         isDeleting={deleteMutation.isPending}
-        title={t('banks.edit')}
+        title={t('common.delete')}
         description={t('deleteDialog.confirmDescription')}
-        confirmText={t('banks.deleteSuccess')}
+        confirmText={t('common.delete')}
       />
     </Shell>
   );

@@ -335,7 +335,7 @@ export default function CreateContract() {
                       const data = pageData.data || [];
                       return data.map((client: any) => ({
                         value: client.id,
-                        label: client.fullName || `Client #${client.id}`,
+                        label: client.fullName || `${t('contracts.labels.client')} #${client.id}`,
                       }));
                     }}
                   />
@@ -375,7 +375,7 @@ export default function CreateContract() {
                         const data = pageData.data || [];
                         return data.map((apt: any) => ({
                           value: apt.id,
-                          label: i18n.language === 'ar' ? apt.mainName?.arabic : apt.mainName?.english || `Apartment #${apt.id}`,
+                          label: (i18n.language === 'ar' ? apt.mainName?.arabic : apt.mainName?.english) || `${t('contracts.labels.apartment')} #${apt.id}`,
                         }));
                       }}
                     />
@@ -527,16 +527,16 @@ export default function CreateContract() {
                     <SelectContent>
                     {(formData.type === 'apartment_partial_sale' || formData.type === 'land_partnership') ? (
                         <>
-                          <SelectItem value="تحويل بنكي">تحويل بنكي</SelectItem>
-                          <SelectItem value="نقدي">نقدي</SelectItem>
-                          <SelectItem value="شيك">شيك</SelectItem>
-                          {formData.type === 'land_partnership' && <SelectItem value="الدفعة الأولى">الدفعة الأولى</SelectItem>}
+                          <SelectItem value="تحويل بنكي">{t('contracts.paymentMethods.bank_transfer')}</SelectItem>
+                          <SelectItem value="نقدي">{t('contracts.paymentMethods.cash')}</SelectItem>
+                          <SelectItem value="شيك">{t('contracts.paymentMethods.check')}</SelectItem>
+                          {formData.type === 'land_partnership' && <SelectItem value="الدفعة الأولى">{t('contracts.paymentMethods.first_installment')}</SelectItem>}
                         </>
                       ) : (
                         <>
-                          <SelectItem value="عربون">عربون</SelectItem>
-                          <SelectItem value="دفعة مقدمة">دفعة مقدمة</SelectItem>
-                          <SelectItem value="كامل المبلغ">كامل المبلغ</SelectItem>
+                          <SelectItem value="عربون">{t('contracts.paymentMethods.deposit')}</SelectItem>
+                          <SelectItem value="دفعة مقدمة">{t('contracts.paymentMethods.down_payment')}</SelectItem>
+                          <SelectItem value="كامل المبلغ">{t('contracts.paymentMethods.full_amount')}</SelectItem>
                         </>
                       )}
                     </SelectContent>
@@ -564,9 +564,9 @@ export default function CreateContract() {
                           <SelectValue placeholder={t('contracts.placeholders.selectReferenceType')} />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="حوالة بنكية">حوالة بنكية</SelectItem>
-                          <SelectItem value="نقدي">نقدي</SelectItem>
-                          <SelectItem value="شيك">شيك</SelectItem>
+                          <SelectItem value="حوالة بنكية">{t('contracts.paymentMethods.bank_transfer')}</SelectItem>
+                          <SelectItem value="نقدي">{t('contracts.paymentMethods.cash')}</SelectItem>
+                          <SelectItem value="شيك">{t('contracts.paymentMethods.check')}</SelectItem>
                         </SelectContent>
                       </Select>
                     </FormField>

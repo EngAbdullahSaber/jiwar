@@ -97,18 +97,18 @@ const StatCard = ({ icon: Icon, label, value, color, gradient }: any) => (
 const StepTimeline = ({ steps }: { steps: LegalityStep[] }) => {
   const completedCount = steps.filter(s => s.step.isUpdated || !!s.step.toDate).length;
   const totalSteps = steps.length;
-  
+  const { t,  i18n } = useTranslation();
   return (
     <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 p-6">
       <div className="flex items-center justify-between mb-4">
-        <h3 className="text-sm font-semibold text-gray-900 dark:text-white">Progress Timeline</h3>
+        <h3 className="text-sm font-semibold text-gray-900 dark:text-white">{t('legality.profile.timeline')}</h3>
         <span className="text-xs font-medium text-gray-500 dark:text-gray-400">
-          {completedCount}/{totalSteps} Steps Completed
+          {completedCount}/{totalSteps} {t('legality.profile.stepsCompleted')}
         </span>
       </div>
       <div className="space-y-2">
         {steps.map((item, index) => {
-          const isCompleted = item.step.isUpdated || !!item.step.toDate;
+           const isCompleted = item.step.isUpdated || !!item.step.toDate;
           const stepNumber = index + 1;
           
           return (
@@ -128,7 +128,7 @@ const StepTimeline = ({ steps }: { steps: LegalityStep[] }) => {
                   </span>
                   {isCompleted && (
                     <span className="text-[10px] text-emerald-600 dark:text-emerald-400">
-                      {new Date(item.step.toDate!).toLocaleDateString()}
+                      {new Date(item.step.toDate!).toLocaleDateString(i18n.language === 'ar' ? 'ar-SA' : 'en-US')}
                     </span>
                   )}
                 </div>
@@ -149,7 +149,7 @@ const StepTimeline = ({ steps }: { steps: LegalityStep[] }) => {
 
 export default function ViewLegality() {
   const [, params] = useRoute("/legality/:id");
-  const {  i18n } = useTranslation();
+  const {t,  i18n } = useTranslation();
   const id = params?.id;
   const [expandedStep, setExpandedStep] = useState<number | null>(null);
   const [isUpdateDialogOpen, setIsUpdateDialogOpen] = useState(false);
@@ -171,7 +171,7 @@ export default function ViewLegality() {
   };
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
+    return new Date(dateString).toLocaleDateString(i18n.language === 'ar' ? 'ar-SA' : 'en-US', {
       year: 'numeric',
       month: 'short',
       day: 'numeric'
@@ -227,14 +227,14 @@ export default function ViewLegality() {
                 <AlertCircle className="w-10 h-10 text-red-500" />
               </div>
               <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
-                Failed to load legality
+                {t('legality.failedLoad')}
               </h2>
               <p className="text-sm text-gray-500 dark:text-gray-400 mb-8 max-w-md mx-auto">
-                The legality record you're looking for might not exist or there was a connection error.
+                {t('legality.errorDesc')}
               </p>
               <Link href="/legality">
                 <button className="px-6 py-3 bg-gradient-to-r from-[#4A1B1B] to-[#6B2727] text-white rounded-xl text-sm font-medium shadow-lg shadow-[#4A1B1B]/20 hover:shadow-xl transition-all">
-                  Back to List
+                  {t('legality.backToList')}
                 </button>
               </Link>
             </motion.div>
@@ -288,28 +288,28 @@ export default function ViewLegality() {
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             <StatCard
               icon={User}
-              label="Created By"
+              label={t('legality.labels.createdBy')}
               value={legality.createdBy.email.split('@')[0]}
               color="bg-gradient-to-br from-blue-500 to-blue-600"
               gradient="linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)"
             />
             <StatCard
               icon={Calendar}
-              label="Date Created"
+              label={t('legality.labels.createdAt')}
               value={formatDate(legality.createdAt)}
               color="bg-gradient-to-br from-emerald-500 to-emerald-600"
               gradient="linear-gradient(135deg, #10b981 0%, #059669 100%)"
             />
             <StatCard
               icon={Layers}
-              label="Total Steps"
+              label={t('legality.profile.workflowSteps')}
               value={legality.legalitySteps.length}
               color="bg-gradient-to-br from-amber-500 to-amber-600"
               gradient="linear-gradient(135deg, #f59e0b 0%, #d97706 100%)"
             />
             <StatCard
               icon={TrendingUp}
-              label="Progress"
+              label={t('legality.progress')}
               value={`${progress}%`}
               color="bg-gradient-to-br from-purple-500 to-purple-600"
               gradient="linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%)"
@@ -320,15 +320,15 @@ export default function ViewLegality() {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <div className="lg:col-span-2 bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 p-6">
               <div className="flex items-center justify-between mb-4">
-                <h3 className="text-sm font-semibold text-gray-900 dark:text-white">Overall Progress</h3>
+                <h3 className="text-sm font-semibold text-gray-900 dark:text-white">{t('legality.profile.overallProgress')}</h3>
                 <div className="flex items-center gap-3">
                   <span className="flex items-center gap-1 text-xs text-emerald-600 dark:text-emerald-400">
                     <CheckCircle2 className="w-3.5 h-3.5" />
-                    {completedCount} Completed
+                    {completedCount} {t('legality.completed')}
                   </span>
                   <span className="flex items-center gap-1 text-xs text-amber-600 dark:text-amber-400">
                     <Hourglass className="w-3.5 h-3.5" />
-                    {pendingCount} Pending
+                    {pendingCount} {t('legality.pending')}
                   </span>
                 </div>
               </div>
@@ -344,29 +344,29 @@ export default function ViewLegality() {
               </div>
               <div className="flex justify-between mt-2">
                 <span className="text-xs text-gray-500 dark:text-gray-400">0%</span>
-                <span className="text-xs font-medium text-gray-900 dark:text-white">{progress}% Complete</span>
+                <span className="text-xs font-medium text-gray-900 dark:text-white">{progress}% {t('legality.profile.complete')}</span>
                 <span className="text-xs text-gray-500 dark:text-gray-400">100%</span>
               </div>
             </div>
 
             {/* Quick Stats */}
             <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 p-6">
-              <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-4">Quick Overview</h3>
+              <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-4">{t('legality.profile.quickOverview')}</h3>
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
-                  <span className="text-xs text-gray-500 dark:text-gray-400">Standard Steps</span>
+                  <span className="text-xs text-gray-500 dark:text-gray-400">{t('legality.profile.standardSteps')}</span>
                   <span className="text-sm font-medium text-gray-900 dark:text-white">
                     {legality.legalitySteps.filter(s => s.step.isDefault).length}
                   </span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-xs text-gray-500 dark:text-gray-400">Custom Steps</span>
+                  <span className="text-xs text-gray-500 dark:text-gray-400">{t('legality.profile.customSteps')}</span>
                   <span className="text-sm font-medium text-gray-900 dark:text-white">
                     {legality.legalitySteps.filter(s => !s.step.isDefault).length}
                   </span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-xs text-gray-500 dark:text-gray-400">With Attachments</span>
+                  <span className="text-xs text-gray-500 dark:text-gray-400">{t('legality.profile.withAttachments')}</span>
                   <span className="text-sm font-medium text-gray-900 dark:text-white">
                     {legality.legalitySteps.filter(s => s.step.files?.length > 0).length}
                   </span>
@@ -380,10 +380,10 @@ export default function ViewLegality() {
             <div className="flex items-center justify-between">
               <h2 className="text-lg font-semibold text-gray-900 dark:text-white flex items-center gap-2">
                 <Layers className="w-5 h-5 text-[#B39371]" />
-                Workflow Steps
+                {t('legality.profile.workflowSteps')}
               </h2>
               <span className="text-xs text-gray-500 dark:text-gray-400">
-                Click on any step to view details
+                {t('legality.profile.clickToView')}
               </span>
             </div>
 
@@ -426,7 +426,7 @@ export default function ViewLegality() {
                             </h3>
                             {step.isDefault && (
                               <Badge variant="secondary" className="text-[10px] px-1.5 py-0.5 bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400">
-                                Default
+                                {t('legality.profile.default')}
                               </Badge>
                             )}
                           </div>
@@ -456,7 +456,7 @@ export default function ViewLegality() {
                               : "bg-amber-50 text-amber-700 dark:bg-amber-500/10 dark:text-amber-400"
                           )}
                         >
-                          {isCompleted ? 'Completed' : 'Pending'}
+                          {isCompleted ? t('legality.completed') : t('legality.pending')}
                         </Badge>
 
                         {/* Edit Button */}
@@ -502,12 +502,12 @@ export default function ViewLegality() {
                                   : "bg-amber-100 text-amber-700 dark:bg-amber-500/10 dark:text-amber-400"
                               )}>
                                 {isCompleted
-                                  ? <><CheckCircle2 className="w-3.5 h-3.5" /> {i18n.language === 'ar' ? 'مكتمل' : 'Completed'}</>
-                                  : <><Clock className="w-3.5 h-3.5" /> {i18n.language === 'ar' ? 'قيد الانتظار' : 'Pending'}</>}
+                                  ? <><CheckCircle2 className="w-3.5 h-3.5" /> {t('legality.completed')}</>
+                                  : <><Clock className="w-3.5 h-3.5" /> {t('legality.pending')}</>}
                               </div>
                               {step.isDefault && (
                                 <span className="text-[10px] font-medium text-gray-400 bg-gray-100 dark:bg-gray-800 px-2 py-0.5 rounded-full">
-                                  {i18n.language === 'ar' ? 'افتراضي' : 'Default Step'}
+                                  {t('legality.profile.default')}
                                 </span>
                               )}
                             </div>
@@ -516,7 +516,7 @@ export default function ViewLegality() {
                             {step.details && (
                               <div>
                                 <h4 className="text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">
-                                  {i18n.language === 'ar' ? 'الوصف' : 'Description'}
+                                  {t('common.details')}
                                 </h4>
                                 <p className="text-sm text-gray-700 dark:text-gray-300">
                                   {step.details}
@@ -529,7 +529,7 @@ export default function ViewLegality() {
                               <div className="grid grid-cols-3 gap-4">
                                 {step.fromDate && (
                                   <div>
-                                    <p className="text-xs text-gray-500 dark:text-gray-400">{i18n.language === 'ar' ? 'تاريخ البداية' : 'Start Date'}</p>
+                                    <p className="text-xs text-gray-500 dark:text-gray-400">{t('legality.profile.startedAt')}</p>
                                     <p className="text-sm font-medium text-gray-900 dark:text-white">
                                       {formatDate(step.fromDate)}
                                     </p>
@@ -537,7 +537,7 @@ export default function ViewLegality() {
                                 )}
                                 {step.toDate && (
                                   <div>
-                                    <p className="text-xs text-gray-500 dark:text-gray-400">{i18n.language === 'ar' ? 'تاريخ الانتهاء' : 'End Date'}</p>
+                                    <p className="text-xs text-gray-500 dark:text-gray-400">{t('legality.profile.completedAt')}</p>
                                     <p className="text-sm font-medium text-gray-900 dark:text-white">
                                       {formatDate(step.toDate)}
                                     </p>
@@ -545,7 +545,7 @@ export default function ViewLegality() {
                                 )}
                                 {step.amount && (
                                   <div>
-                                    <p className="text-xs text-gray-500 dark:text-gray-400">{i18n.language === 'ar' ? 'المبلغ' : 'Amount'}</p>
+                                    <p className="text-xs text-gray-500 dark:text-gray-400">{t('legality.materials.cost')}</p>
                                     <p className="text-sm font-medium text-[#B39371]">
                                       {step.amount.toLocaleString()} SAR
                                     </p>
@@ -559,7 +559,7 @@ export default function ViewLegality() {
                               <div>
                                 <h4 className="text-xs font-medium text-gray-500 dark:text-gray-400 mb-2 flex items-center gap-1">
                                   <Paperclip className="w-3.5 h-3.5" />
-                                  {i18n.language === 'ar' ? 'المرفقات' : 'Attachments'} ({step.files.length})
+                                  {t('legality.labels.attachments')} ({step.files.length})
                                 </h4>
                                 <div className="grid grid-cols-2 gap-2">
                                   {step.files.map((file, idx) => (
@@ -586,16 +586,14 @@ export default function ViewLegality() {
                               <div className="flex flex-col items-center justify-center py-4 text-center">
                                 <Info className="w-8 h-8 text-gray-300 dark:text-gray-600 mb-2" />
                                 <p className="text-xs text-gray-400 dark:text-gray-500">
-                                  {i18n.language === 'ar'
-                                    ? 'لم يتم إضافة تفاصيل لهذه الخطوة بعد'
-                                    : 'No details have been added to this step yet'}
+                                  {t('legality.profile.noDetails')}
                                 </p>
                                 <button
                                   onClick={(e) => { e.stopPropagation(); setSelectedStepData(item); setIsUpdateDialogOpen(true); }}
                                   className="mt-3 text-xs font-medium text-[#B39371] hover:text-[#8B6951] flex items-center gap-1 transition-colors"
                                 >
                                   <Edit className="w-3 h-3" />
-                                  {i18n.language === 'ar' ? 'إضافة تفاصيل' : 'Add details'}
+                                  {t('legality.profile.addDetails')}
                                 </button>
                               </div>
                             )}

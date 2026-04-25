@@ -85,13 +85,13 @@ export default function UpdateClient() {
       return response.data;
     },
     onSuccess: () => {
-      toast.success(isRtl ? 'تم تحديث العميل بنجاح' : 'Client updated successfully');
+      toast.success(t('clients.success.update'));
       queryClient.invalidateQueries({ queryKey: ['clients'] });
       queryClient.invalidateQueries({ queryKey: ['client', clientId] });
       setLocation('/clients');
     },
     onError: (error: any) => {
-      toast.error(error.response?.data?.message?.english || 'Failed to update client');
+      toast.error(error.response?.data?.message?.[isRtl ? 'arabic' : 'english'] || t('clients.errors.update'));
     }
   });
 
@@ -150,11 +150,11 @@ export default function UpdateClient() {
                 <div className="flex items-center gap-2 mb-1">
                   <Sparkles className="w-4 h-4 text-[#B39371]" />
                   <p className="text-xs font-medium text-[#B39371] uppercase tracking-wider">
-                    Relationship Management
+                    {t('clients.relationshipManagement')}
                   </p>
                 </div>
                 <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-                  {t('common.edit')} {t('sidebar.clients')}
+                  {t('clients.edit')}
                 </h1>
                 <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
                   {t('clients.description')}
@@ -178,8 +178,8 @@ export default function UpdateClient() {
                     </div>
                   </div>
                   <div>
-                    <h2 className="text-xl font-bold text-gray-900 dark:text-white">{t('legality.basicInfo')}</h2>
-                    <p className="text-sm text-gray-500 dark:text-gray-400">Update the details for this client record</p>
+                    <h2 className="text-xl font-bold text-gray-900 dark:text-white">{t('clients.personalInfo')}</h2>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">{t('clients.essentialDetails')}</p>
                   </div>
                </div>
             </div>
@@ -193,12 +193,12 @@ export default function UpdateClient() {
                   <div className="space-y-2.5">
                     <Label className="text-sm font-semibold text-gray-700 dark:text-gray-300">{t('clients.fullName')}</Label>
                     <div className="relative group">
-                      <UserIcon className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 group-focus-within:text-[#B39371] transition-colors" />
+                      <UserIcon className="absolute left-4 rtl:left-auto rtl:right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 group-focus-within:text-[#B39371] transition-colors" />
                       <Input
                         name="fullName"
                         required
-                        placeholder="e.g. Ahmed Al-Rashid"
-                        className="h-12 pl-11 rounded-xl bg-gray-50 dark:bg-gray-800/50 border-gray-100 dark:border-gray-700 focus:bg-white dark:focus:bg-gray-800 focus:ring-2 focus:ring-[#B39371]/10 transition-all"
+                        placeholder={t('clients.placeholders.fullName')}
+                        className="h-12 pl-11 rtl:pl-4 rtl:pr-11 rounded-xl bg-gray-50 dark:bg-gray-800/50 border-gray-100 dark:border-gray-700 focus:bg-white dark:focus:bg-gray-800 focus:ring-2 focus:ring-[#B39371]/10 transition-all"
                         value={formData.fullName}
                         onChange={handleChange}
                       />
@@ -219,7 +219,7 @@ export default function UpdateClient() {
                         <option value="individual">{t('clients.individual')}</option>
                         <option value="corporate">{t('clients.company')}</option>
                       </select>
-                      <ChevronRightIcon className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 group-focus-within:text-[#B39371] rotate-90" />
+                      <ChevronRightIcon className="absolute right-4 rtl:right-auto rtl:left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 group-focus-within:text-[#B39371] rotate-90" />
                     </div>
                   </div>
 
@@ -227,12 +227,12 @@ export default function UpdateClient() {
                   <div className="space-y-2.5">
                     <Label className="text-sm font-semibold text-gray-700 dark:text-gray-300">{t('clients.phoneNumber')}</Label>
                     <div className="relative group">
-                      <Phone className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 group-focus-within:text-[#B39371] transition-colors" />
+                      <Phone className="absolute left-4 rtl:left-auto rtl:right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 group-focus-within:text-[#B39371] transition-colors" />
                       <Input
                         name="phoneNumber"
                         required
-                        placeholder="+966 5x xxx xxxx"
-                        className="h-12 pl-11 rounded-xl bg-gray-50 dark:bg-gray-800/50 border-gray-100 dark:border-gray-700 focus:bg-white dark:focus:bg-gray-800 focus:ring-2 focus:ring-[#B39371]/10 transition-all"
+                        placeholder={t('clients.placeholders.phone')}
+                        className="h-12 pl-11 rtl:pl-4 rtl:pr-11 rounded-xl bg-gray-50 dark:bg-gray-800/50 border-gray-100 dark:border-gray-700 focus:bg-white dark:focus:bg-gray-800 focus:ring-2 focus:ring-[#B39371]/10 transition-all"
                         value={formData.phoneNumber}
                         onChange={handleChange}
                       />
@@ -243,12 +243,12 @@ export default function UpdateClient() {
                   <div className="space-y-2.5">
                     <Label className="text-sm font-semibold text-gray-700 dark:text-gray-300">{t('clients.email')}</Label>
                     <div className="relative group">
-                      <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 group-focus-within:text-[#B39371] transition-colors" />
+                      <Mail className="absolute left-4 rtl:left-auto rtl:right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 group-focus-within:text-[#B39371] transition-colors" />
                       <Input
                         name="email"
                         type="email"
-                        placeholder="client@example.com"
-                        className="h-12 pl-11 rounded-xl bg-gray-50 dark:bg-gray-800/50 border-gray-100 dark:border-gray-700 focus:bg-white dark:focus:bg-gray-800 focus:ring-2 focus:ring-[#B39371]/10 transition-all"
+                        placeholder={t('clients.placeholders.email')}
+                        className="h-12 pl-11 rtl:pl-4 rtl:pr-11 rounded-xl bg-gray-50 dark:bg-gray-800/50 border-gray-100 dark:border-gray-700 focus:bg-white dark:focus:bg-gray-800 focus:ring-2 focus:ring-[#B39371]/10 transition-all"
                         value={formData.email}
                         onChange={handleChange}
                       />
@@ -259,11 +259,11 @@ export default function UpdateClient() {
                   <div className="space-y-2.5">
                     <Label className="text-sm font-semibold text-gray-700 dark:text-gray-300">{t('clients.vatNumber')}</Label>
                     <div className="relative group">
-                      <Hash className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 group-focus-within:text-[#B39371] transition-colors" />
+                      <Hash className="absolute left-4 rtl:left-auto rtl:right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 group-focus-within:text-[#B39371] transition-colors" />
                       <Input
                         name="vatNumber"
-                        placeholder="VAT123456789"
-                        className="h-12 pl-11 rounded-xl bg-gray-50 dark:bg-gray-800/50 border-gray-100 dark:border-gray-700 focus:bg-white dark:focus:bg-gray-800 focus:ring-2 focus:ring-[#B39371]/10 transition-all"
+                        placeholder={t('clients.placeholders.vat')}
+                        className="h-12 pl-11 rtl:pl-4 rtl:pr-11 rounded-xl bg-gray-50 dark:bg-gray-800/50 border-gray-100 dark:border-gray-700 focus:bg-white dark:focus:bg-gray-800 focus:ring-2 focus:ring-[#B39371]/10 transition-all"
                         value={formData.vatNumber}
                         onChange={handleChange}
                       />
@@ -274,11 +274,11 @@ export default function UpdateClient() {
                   <div className="space-y-2.5">
                     <Label className="text-sm font-semibold text-gray-700 dark:text-gray-300">{t('clients.iqama')}</Label>
                     <div className="relative group">
-                      <CreditCard className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 group-focus-within:text-[#B39371] transition-colors" />
+                      <CreditCard className="absolute left-4 rtl:left-auto rtl:right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 group-focus-within:text-[#B39371] transition-colors" />
                       <Input
                         name="iqama"
-                        placeholder="1234567890"
-                        className="h-12 pl-11 rounded-xl bg-gray-50 dark:bg-gray-800/50 border-gray-100 dark:border-gray-700 focus:bg-white dark:focus:bg-gray-800 focus:ring-2 focus:ring-[#B39371]/10 transition-all"
+                        placeholder={t('clients.placeholders.iqama')}
+                        className="h-12 pl-11 rtl:pl-4 rtl:pr-11 rounded-xl bg-gray-50 dark:bg-gray-800/50 border-gray-100 dark:border-gray-700 focus:bg-white dark:focus:bg-gray-800 focus:ring-2 focus:ring-[#B39371]/10 transition-all"
                         value={formData.iqama}
                         onChange={handleChange}
                       />
@@ -289,11 +289,11 @@ export default function UpdateClient() {
                   <div className="md:col-span-2 space-y-2.5">
                     <Label className="text-sm font-semibold text-gray-700 dark:text-gray-300">{t('clients.iban')}</Label>
                     <div className="relative group">
-                      <Building2 className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 group-focus-within:text-[#B39371] transition-colors" />
+                      <Building2 className="absolute left-4 rtl:left-auto rtl:right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 group-focus-within:text-[#B39371] transition-colors" />
                       <Input
                         name="iban"
-                        placeholder="SA0000000000000000000000"
-                        className="h-12 pl-11 rounded-xl bg-gray-50 dark:bg-gray-800/50 border-gray-100 dark:border-gray-700 focus:bg-white dark:focus:bg-gray-800 focus:ring-2 focus:ring-[#B39371]/10 transition-all"
+                        placeholder={t('clients.placeholders.iban')}
+                        className="h-12 pl-11 rtl:pl-4 rtl:pr-11 rounded-xl bg-gray-50 dark:bg-gray-800/50 border-gray-100 dark:border-gray-700 focus:bg-white dark:focus:bg-gray-800 focus:ring-2 focus:ring-[#B39371]/10 transition-all"
                         value={formData.iban}
                         onChange={handleChange}
                       />
@@ -308,7 +308,7 @@ export default function UpdateClient() {
                       queryKey="countries"
                       value={formData.countryId}
                       onChange={(val) => setFormData(prev => ({ ...prev, countryId: val, cityId: '' }))}
-                      placeholder={isRtl ? 'اختر الدولة...' : 'Select Country...'}
+                      placeholder={t('clients.placeholders.selectCountry')}
                       mapResponseToOptions={(data: any) => data.data.map((item: any) => ({
                         value: item.id,
                         label: item.name[isRtl ? 'arabic' : 'english'],
@@ -325,7 +325,7 @@ export default function UpdateClient() {
                       queryKey={`cities-${formData.countryId}`}
                       value={formData.cityId}
                       onChange={(val) => setFormData(prev => ({ ...prev, cityId: val }))}
-                      placeholder={isRtl ? 'اختر المدينة...' : 'Select City...'}
+                      placeholder={t('clients.placeholders.selectCity')}
                       disabled={!formData.countryId}
                       mapResponseToOptions={(data: any) => data.data.map((item: any) => ({
                         value: item.id,
@@ -343,7 +343,7 @@ export default function UpdateClient() {
                       queryKey="banks"
                       value={formData.bankId}
                       onChange={(val) => setFormData(prev => ({ ...prev, bankId: val }))}
-                      placeholder={isRtl ? 'اختر البنك...' : 'Select Bank...'}
+                      placeholder={t('clients.placeholders.selectBank')}
                       mapResponseToOptions={(data: any) => data.data.map((item: any) => ({
                         value: item.id,
                         label: item.name[isRtl ? 'arabic' : 'english'],
@@ -356,12 +356,12 @@ export default function UpdateClient() {
                   <div className="md:col-span-2 space-y-2.5">
                     <Label className="text-sm font-semibold text-gray-700 dark:text-gray-300">{t('clients.address')}</Label>
                     <div className="relative group">
-                      <MapPin className="absolute left-4 top-6 -translate-y-1/2 w-4 h-4 text-gray-400 group-focus-within:text-[#B39371] transition-colors" />
+                      <MapPin className="absolute left-4 rtl:left-auto rtl:right-4 top-6 -translate-y-1/2 w-4 h-4 text-gray-400 group-focus-within:text-[#B39371] transition-colors" />
                       <textarea
                         name="physicalAddress"
                         rows={3}
-                        placeholder="e.g. 123 King Fahd Road, Riyadh"
-                        className="w-full pl-11 pt-3 rounded-xl bg-gray-50 dark:bg-gray-800/50 border border-gray-100 dark:border-gray-700 text-sm font-medium text-gray-700 dark:text-gray-300 outline-none focus:bg-white dark:focus:bg-gray-800 focus:ring-2 focus:ring-[#B39371]/10 transition-all resize-none"
+                        placeholder={t('clients.placeholders.address')}
+                        className="w-full pl-11 pr-4 rtl:pl-4 rtl:pr-11 pt-3 rounded-xl bg-gray-50 dark:bg-gray-800/50 border border-gray-100 dark:border-gray-700 text-sm font-medium text-gray-700 dark:text-gray-300 outline-none focus:bg-white dark:focus:bg-gray-800 focus:ring-2 focus:ring-[#B39371]/10 transition-all resize-none"
                         value={formData.physicalAddress}
                         onChange={handleChange}
                       />

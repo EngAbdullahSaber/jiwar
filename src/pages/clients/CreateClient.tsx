@@ -58,12 +58,12 @@ export default function CreateClient() {
       return response.data;
     },
     onSuccess: () => {
-      toast.success(isRtl ? 'تم إنشاء العميل بنجاح' : 'Client created successfully');
+      toast.success(t('clients.success.create'));
       queryClient.invalidateQueries({ queryKey: ['clients'] });
       setLocation('/clients');
     },
     onError: (error: any) => {
-      toast.error(error.response?.data?.message?.english || 'Failed to create client');
+      toast.error(error.response?.data?.message?.[isRtl ? 'arabic' : 'english'] || t('clients.errors.create'));
     }
   });
 
@@ -139,7 +139,7 @@ export default function CreateClient() {
                     </div>
                   </div>
                   <div>
-                    <h2 className="text-xl font-bold text-gray-900 dark:text-white">{t('legality.basicInfo')}</h2>
+                    <h2 className="text-xl font-bold text-gray-900 dark:text-white">{t('clients.personalInfo')}</h2>
                     <p className="text-sm text-gray-500 dark:text-gray-400">{t('clients.essentialDetails')}</p>
                   </div>
                </div>

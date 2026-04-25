@@ -20,6 +20,7 @@ import {
 } from 'lucide-react';
 import { Link } from "wouter";
 import { Shell } from '../../components/shared/Shell';
+import { Can } from '../../components/shared/Can';
 import { useQuery } from '@tanstack/react-query';
 import api from '@/lib/api';
 import { motion } from 'framer-motion';
@@ -113,7 +114,7 @@ export default function Legality() {
     return { key: 'pending', label: t('legality.pending'), ...statusMap.pending };
   };
 
-  const fmtDate = (d: string) => new Date(d).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+  const fmtDate = (d: string) => new Date(d).toLocaleDateString(i18n.language === 'ar' ? 'ar-SA' : 'en-US', { year: 'numeric', month: 'short', day: 'numeric' });
 
   const lang = i18n.language === 'ar' ? 'arabic' : 'english';
 
@@ -143,16 +144,18 @@ export default function Legality() {
             </div>
 
             {/* CTA */}
-            <Link href="/legality/new">
-              <motion.button
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.97 }}
-                className="inline-flex items-center gap-2 h-9 px-5 bg-[#1C1917] dark:bg-white text-white dark:text-[#1C1917] rounded-lg text-[13px] font-semibold shadow-sm hover:opacity-90 transition-opacity"
-              >
-                <PlusCircle className="w-4 h-4" />
-                {t('legality.create')}
-              </motion.button>
-            </Link>
+            <Can I="CREATE" a="legality">
+              <Link href="/legality/new">
+                <motion.button
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.97 }}
+                  className="inline-flex items-center gap-2 h-9 px-5 bg-[#1C1917] dark:bg-white text-white dark:text-[#1C1917] rounded-lg text-[13px] font-semibold shadow-sm hover:opacity-90 transition-opacity"
+                >
+                  <PlusCircle className="w-4 h-4" />
+                  {t('legality.create')}
+                </motion.button>
+              </Link>
+            </Can>
           </div>
         </header>
 
@@ -167,7 +170,7 @@ export default function Legality() {
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#A8A29E]" />
               <input
                 type="text"
-                placeholder={t('legality.searchPlaceholder') || 'Search legalities…'}
+                placeholder={t('legality.searchPlaceholder')}
                 className="w-full pl-9 pr-4 h-9 rounded-lg bg-[#F7F6F3] dark:bg-[#0E0E0F] text-[13px] font-medium text-[#1C1917] dark:text-white placeholder:text-[#A8A29E] border border-transparent focus:border-[#1C1917]/20 dark:focus:border-white/20 focus:outline-none transition-colors"
                 value={searchValue}
                 onChange={e => setSearchValue(e.target.value)}
@@ -181,10 +184,10 @@ export default function Legality() {
                 onChange={e => setFilterStatus(e.target.value)}
                 className="h-9 pl-3 pr-8 rounded-lg bg-[#F7F6F3] dark:bg-[#0E0E0F] text-[13px] font-medium text-[#1C1917] dark:text-white border border-transparent focus:border-[#1C1917]/20 dark:focus:border-white/20 focus:outline-none appearance-none cursor-pointer transition-colors"
               >
-                <option value="all">{t('legality.allStatus') || 'All status'}</option>
-                <option value="completed">{t('legality.completed') || 'Completed'}</option>
-                <option value="inProgress">{t('legality.inProgress') || 'In Progress'}</option>
-                <option value="pending">{t('legality.pending') || 'Pending'}</option>
+                <option value="all">{t('legality.allStatus')}</option>
+                <option value="completed">{t('legality.completed')}</option>
+                <option value="inProgress">{t('legality.inProgress')}</option>
+                <option value="pending">{t('legality.pending')}</option>
               </select>
               <ChevronDown className="absolute right-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[#A8A29E] pointer-events-none" />
             </div>
@@ -194,21 +197,23 @@ export default function Legality() {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
 
             {/* New card */}
-            <Link href="/legality/new">
-              <motion.div
-                whileHover={{ scale: 1.015 }}
-                whileTap={{ scale: 0.99 }}
-                className="group h-full min-h-[220px] rounded-xl border-2 border-dashed border-[#D6D3D1] dark:border-[#3F3F46] hover:border-[#1C1917] dark:hover:border-white transition-colors flex flex-col items-center justify-center gap-3 cursor-pointer"
-              >
-                <div className="w-10 h-10 rounded-lg bg-[#F7F6F3] dark:bg-[#27272A] group-hover:bg-[#1C1917] dark:group-hover:bg-white transition-colors flex items-center justify-center">
-                  <PlusCircle className="w-5 h-5 text-[#A8A29E] group-hover:text-white dark:group-hover:text-[#1C1917] transition-colors" />
-                </div>
-                <div className="text-center">
-                  <p className="text-[13px] font-semibold text-[#1C1917] dark:text-white">{t('legality.newLegality') || 'New Legality'}</p>
-                  <p className="text-[11px] text-[#A8A29E] mt-0.5">{t('legality.startWorkflow') || 'Start a new workflow'}</p>
-                </div>
-              </motion.div>
-            </Link>
+            <Can I="CREATE" a="legality">
+              <Link href="/legality/new">
+                <motion.div
+                  whileHover={{ scale: 1.015 }}
+                  whileTap={{ scale: 0.99 }}
+                  className="group h-full min-h-[220px] rounded-xl border-2 border-dashed border-[#D6D3D1] dark:border-[#3F3F46] hover:border-[#1C1917] dark:hover:border-white transition-colors flex flex-col items-center justify-center gap-3 cursor-pointer"
+                >
+                  <div className="w-10 h-10 rounded-lg bg-[#F7F6F3] dark:bg-[#27272A] group-hover:bg-[#1C1917] dark:group-hover:bg-white transition-colors flex items-center justify-center">
+                    <PlusCircle className="w-5 h-5 text-[#A8A29E] group-hover:text-white dark:group-hover:text-[#1C1917] transition-colors" />
+                  </div>
+                  <div className="text-center">
+                    <p className="text-[13px] font-semibold text-[#1C1917] dark:text-white">{t('legality.newLegality')}</p>
+                    <p className="text-[11px] text-[#A8A29E] mt-0.5">{t('legality.startWorkflow')}</p>
+                  </div>
+                </motion.div>
+              </Link>
+            </Can>
 
             {/* Skeletons */}
             {isLoading && Array.from({ length: 3 }).map((_, i) => (
@@ -263,14 +268,14 @@ export default function Legality() {
                       </span>
                       <span className="inline-flex items-center gap-1 text-[11px] font-medium text-[#78716C] dark:text-[#A8A29E]">
                         <Layers className="w-3 h-3" />
-                        {item.legalitySteps.length} {t('legality.steps') || 'steps'}
+                        {item.legalitySteps.length} {t('legality.steps')}
                       </span>
                     </div>
 
                     {/* Progress */}
                     <div className="space-y-1.5">
                       <div className="flex justify-between text-[11px]">
-                        <span className="font-medium text-[#78716C] dark:text-[#A8A29E]">{t('legality.progress') || 'Progress'}</span>
+                        <span className="font-medium text-[#78716C] dark:text-[#A8A29E]">{t('legality.progress')}</span>
                         <span className="font-bold text-[#1C1917] dark:text-white font-mono">{progress}%</span>
                       </div>
                       <div className="h-1.5 bg-[#F7F6F3] dark:bg-[#27272A] rounded-full overflow-hidden">
@@ -297,12 +302,14 @@ export default function Legality() {
 
                     {/* Footer */}
                     <div className="mt-auto pt-4 border-t border-[#F7F6F3] dark:border-[#27272A] flex items-center justify-between">
-                      <Link href={`/legality/${item.id}`}>
-                        <button className="inline-flex items-center gap-1.5 text-[12px] font-semibold text-[#1C1917] dark:text-white hover:opacity-70 transition-opacity">
-                          {t('legality.viewDetails') || 'View details'}
-                          <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
-                        </button>
-                      </Link>
+                      <Can I="READ" a="legality">
+                        <Link href={`/legality/${item.id}`}>
+                          <button className="inline-flex items-center gap-1.5 text-[12px] font-semibold text-[#1C1917] dark:text-white hover:opacity-70 transition-opacity">
+                            {t('legality.viewDetails')}
+                            <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
+                          </button>
+                        </Link>
+                      </Can>
                       <div className="w-7 h-7 rounded-full bg-[#1C1917] dark:bg-white flex items-center justify-center text-[10px] font-bold text-white dark:text-[#1C1917]">
                         {item.createdBy.email.substring(0, 2).toUpperCase()}
                       </div>
@@ -317,12 +324,12 @@ export default function Legality() {
           {data && data.totalPages > 1 && (
             <div className="bg-white dark:bg-[#18181B] rounded-xl border border-black/[0.06] dark:border-white/[0.06] px-5 py-3 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <p className="text-[12px] text-[#78716C] dark:text-[#A8A29E]">
-                Showing{' '}
+                {t('common.showing')}{' '}
                 <span className="font-semibold text-[#1C1917] dark:text-white">
                   {(currentPage - 1) * pageSize + 1}–{Math.min(currentPage * pageSize, data.totalItems)}
                 </span>{' '}
-                of{' '}
-                <span className="font-semibold text-[#1C1917] dark:text-white">{data.totalItems}</span> results
+                {t('common.of')}{' '}
+                <span className="font-semibold text-[#1C1917] dark:text-white">{data.totalItems}</span> {t('common.results')}
               </p>
               <Pagination
                 currentPage={currentPage}
@@ -343,7 +350,7 @@ export default function Legality() {
                 <FileText className="w-5 h-5 text-[#A8A29E]" />
               </div>
               <div>
-                <h3 className="text-[15px] font-semibold text-[#1C1917] dark:text-white">{t('legality.noLegalities') || 'No legalities found'}</h3>
+                <h3 className="text-[15px] font-semibold text-[#1C1917] dark:text-white">{t('legality.noLegalities')}</h3>
                 <p className="text-[12px] text-[#A8A29E] mt-1 max-w-xs">
                   {searchValue || filterStatus !== 'all' ? t('legality.adjustSearch') : t('legality.getStarted')}
                 </p>

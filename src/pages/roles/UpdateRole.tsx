@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react';
 import { useLocation, useParams } from "wouter";
+import { useTranslation, Trans } from "react-i18next";
 import { TopHeader } from '../../components/TopHeader';
 import { Shell } from '../../components/shared/Shell';
 import { 
   Shield, 
- 
   ArrowLeft,
   Search,
   LayoutGrid,
@@ -65,19 +65,27 @@ interface RoleDataResponse {
   data: Role;
 }
 
-const RESOURCE_CONFIG: Record<string, { name: string, description: string, icon: any }> = {
-  user: { name: 'Users Management', description: 'Manage system users and their account settings', icon: Users },
-  role: { name: 'Roles & Permissions', description: 'Define access levels and system permissions', icon: Shield },
-  legality: { name: 'Legality & Compliance', description: 'Manage legal documents and compliance records', icon: LayoutGrid },
-  template: { name: 'Templates & Modules', description: 'System templates and module configurations', icon: ClipboardList },
-  projects: { name: 'Projects', description: 'Site planning, timelines, and floorplans', icon: LayoutGrid },
-  sales: { name: 'Sales', description: 'Inventory booking and contract management', icon: ClipboardList },
-  clients: { name: 'Clients', description: 'Lead nurturing and customer support tickets', icon: Users },
-  financials: { name: 'Financials', description: 'Invoicing, budgeting, and payroll processing', icon: Wallet },
-  contracts: { name: 'Contracts', description: 'On-site logs, materials, and labor management', icon: FileText },
+const RESOURCE_ICONS: Record<string, any> = {
+  user: Users,
+  role: Shield,
+  legality: LayoutGrid,
+  template: ClipboardList,
+  project: LayoutGrid,
+  apartment: LayoutGrid,
+  client: Users,
+  'client-payment': Wallet,
+  salesman: Users,
+  contract: FileText,
+  statics: ClipboardList,
+  country: LayoutGrid,
+  bank: Wallet,
+  city: LayoutGrid,
+  material: ClipboardList,
+  'role-permission': Settings
 };
 
 export default function UpdateRole() {
+  const { t } = useTranslation();
   const { id } = useParams();
   const [, setLocation] = useLocation();
   const queryClient = useQueryClient();
@@ -142,20 +150,20 @@ export default function UpdateRole() {
       return response.data;
     },
     onSuccess: () => {
-      toast.success('Role updated successfully');
+      toast.success(t('common.success'));
       queryClient.invalidateQueries({ queryKey: ['roles'] });
       queryClient.invalidateQueries({ queryKey: ['role', id] });
       setLocation('/roles');
     },
     onError: (error: any) => {
-      toast.error(error.response?.data?.message?.english || 'Failed to update role');
+      toast.error(error.response?.data?.message?.english || t('common.error'));
     }
   });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.name) {
-      toast.error('Role name is required');
+      toast.error(t('common.fillRequiredFields'));
       return;
     }
 
@@ -164,7 +172,7 @@ export default function UpdateRole() {
       .map(([id]) => parseInt(id));
 
     if (permissionIds.length === 0) {
-      toast.error('Please select at least one permission');
+      toast.error(t('roles.onePermissionRequired'));
       return;
     }
 
@@ -195,32 +203,36 @@ export default function UpdateRole() {
           
           {/* Detailed Hero Header */}
           <div className="bg-white dark:bg-gray-900 rounded-md border border-gray-200 dark:border-gray-800 p-8 shadow-sm relative overflow-hidden">
-            <div className="absolute top-0 right-0 w-96 h-96 bg-[#B39371]/5 rounded-full -mr-48 -mt-48 blur-3xl opacity-50" />
+            <div className="absolute top-0 right-0 w-96 h-96 bg-[#B39371]/5 rounded-md -mr-48 -mt-48 blur-3xl opacity-50" />
             <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
               <div className="flex items-center gap-6">
-                <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#4A1B1B] to-[#6B2727] shadow-xl flex items-center justify-center border border-white/10 rotate-3">
+                <div className="w-16 h-16 rounded-md bg-gradient-to-br from-[#4A1B1B] to-[#6B2727] shadow-xl flex items-center justify-center border border-white/10 rotate-3">
                   <Shield className="w-8 h-8 text-[#B39371]" />
                 </div>
                 <div>
                   <div className="flex items-center gap-2 mb-1.5">
                     <div className="flex items-center gap-1.5 text-xs font-bold text-[#B39371] uppercase tracking-widest">
                       <Settings className="w-3.5 h-3.5" />
-                      Protocol Update
+                      {t('roles.protocolUpdate')}
                     </div>
                   </div>
-                  <h1 className="text-3xl font-black text-gray-900 dark:text-white tracking-tight">Modify Security Role</h1>
+                  <h1 className="text-3xl font-black text-gray-900 dark:text-white tracking-tight">{t('roles.modifyRole')}</h1>
                   <p className="text-sm text-gray-500 dark:text-gray-400 mt-1 max-w-lg leading-relaxed">
-                    Update clearance levels for <span className="text-[#B39371] font-bold">"{roleData?.data.name}"</span> and refine access across system modules.
+                    <Trans 
+                      i18nKey="roles.updateDescription" 
+                      values={{ name: roleData?.data.name }}
+                      components={[<span className="text-[#B39371] font-bold" />]}
+                    />
                   </p>
                 </div>
               </div>
               <Button 
                 variant="outline" 
                 onClick={() => setLocation('/roles')}
-                className="h-11 rounded-xl px-6 border-gray-200 text-gray-500 hover:text-gray-900 dark:hover:text-white dark:border-gray-800 transition-all font-bold gap-2"
+                className="h-11 rounded-md px-6 border-gray-200 text-gray-500 hover:text-gray-900 dark:hover:text-white dark:border-gray-800 transition-all font-bold gap-2"
               >
                 <ArrowLeft className="w-4 h-4" />
-                Return to Registry
+                {t('roles.returnRegistry')}
               </Button>
             </div>
           </div>
@@ -232,35 +244,35 @@ export default function UpdateRole() {
                 <motion.div 
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
-                  className="bg-white dark:bg-gray-900 rounded-3xl border border-gray-100 dark:border-gray-800 p-8 shadow-sm sticky top-8"
+                  className="bg-white dark:bg-gray-900 rounded-md border border-gray-100 dark:border-gray-800 p-8 shadow-sm sticky top-8"
                 >
                   <div className="flex items-center gap-3 mb-8">
-                    <div className="w-10 h-10 rounded-xl bg-[#4A1B1B]/5 dark:bg-white/5 flex items-center justify-center text-[#4A1B1B] dark:text-[#B39371]">
+                    <div className="w-10 h-10 rounded-md bg-[#4A1B1B]/5 dark:bg-white/5 flex items-center justify-center text-[#4A1B1B] dark:text-[#B39371]">
                       <Fingerprint className="w-5 h-5" />
                     </div>
                     <div>
-                      <h2 className="text-lg font-bold text-gray-900 dark:text-white">Role Identity</h2>
-                      <p className="text-[11px] text-gray-400 font-medium">Core identifier for the role</p>
+                      <h2 className="text-lg font-bold text-gray-900 dark:text-white">{t('roles.roleIdentity')}</h2>
+                      <p className="text-[11px] text-gray-400 font-medium">{t('roles.coreIdentifier')}</p>
                     </div>
                   </div>
 
                   <div className="space-y-6">
                     <div className="space-y-2">
-                      <Label className="text-xs font-black text-gray-400 uppercase tracking-widest px-1">Role Identifier</Label>
+                      <Label className="text-xs font-black text-gray-400 uppercase tracking-widest px-1">{t('roles.roleIdentifier')}</Label>
                       <Input 
-                        placeholder="e.g. Lead Architect" 
-                        className="h-12 rounded-xl bg-gray-50 dark:bg-gray-800/50 border-gray-100 dark:border-gray-800 focus:bg-white dark:focus:bg-gray-800 focus:ring-4 focus:ring-[#B39371]/10 transition-all font-bold placeholder:font-normal"
+                        placeholder={t('roles.roleNamePlaceholder')}
+                        className="h-12 rounded-md bg-gray-50 dark:bg-gray-800/50 border-gray-100 dark:border-gray-800 focus:bg-white dark:focus:bg-gray-800 focus:ring-4 focus:ring-[#B39371]/10 transition-all font-bold placeholder:font-normal"
                         value={formData.name}
                         onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
                         required
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label className="text-xs font-black text-gray-400 uppercase tracking-widest px-1">Deployment Memo</Label>
+                      <Label className="text-xs font-black text-gray-400 uppercase tracking-widest px-1">{t('roles.deploymentMemo')}</Label>
                       <textarea 
-                        placeholder="Detailed description of role responsibilities..." 
+                        placeholder={t('roles.roleDescriptionPlaceholder')}
                         rows={4}
-                        className="w-full p-4 rounded-xl bg-gray-50 dark:bg-gray-800/50 border border-gray-100 dark:border-gray-800 focus:bg-white dark:focus:bg-gray-800 focus:ring-4 focus:ring-[#B39371]/10 transition-all font-medium text-sm placeholder:font-normal resize-none"
+                        className="w-full p-4 rounded-md bg-gray-50 dark:bg-gray-800/50 border border-gray-100 dark:border-gray-800 focus:bg-white dark:focus:bg-gray-800 focus:ring-4 focus:ring-[#B39371]/10 transition-all font-medium text-sm placeholder:font-normal resize-none"
                         value={formData.description}
                         onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
                       />
@@ -268,16 +280,16 @@ export default function UpdateRole() {
                   </div>
 
                   <div className="mt-8 pt-8 border-t border-gray-50 dark:border-gray-800 space-y-4">
-                    <div className="flex items-start gap-3 p-4 bg-emerald-50 dark:bg-emerald-500/5 rounded-2xl border border-emerald-100 dark:border-emerald-500/10">
+                    <div className="flex items-start gap-3 p-4 bg-emerald-50 dark:bg-emerald-500/5 rounded-md border border-emerald-100 dark:border-emerald-500/10">
                       <CheckCircle2 className="w-4 h-4 text-emerald-500 mt-0.5 shrink-0" />
                       <p className="text-[11px] text-emerald-700 dark:text-emerald-400 font-medium leading-relaxed">
-                        Security changes are deployed instantly across all associated accounts.
+                        {t('roles.securityChangesInstant')}
                       </p>
                     </div>
-                    <div className="flex items-start gap-3 p-4 bg-amber-50 dark:bg-amber-500/5 rounded-2xl border border-amber-100 dark:border-amber-500/10">
+                    <div className="flex items-start gap-3 p-4 bg-amber-50 dark:bg-amber-500/5 rounded-md border border-amber-100 dark:border-amber-500/10">
                       <AlertCircle className="w-4 h-4 text-amber-500 mt-0.5 shrink-0" />
                       <p className="text-[11px] text-amber-700 dark:text-amber-400 font-medium leading-relaxed">
-                        Modifying core permissions may affect system stability. Verify before committing.
+                        {t('roles.modifyingCoreStability')}
                       </p>
                     </div>
                   </div>
@@ -290,24 +302,24 @@ export default function UpdateRole() {
                   initial={{ opacity: 0, x: 20 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: 0.1 }}
-                  className="bg-white dark:bg-gray-900 rounded-3xl border border-gray-100 dark:border-gray-800 shadow-sm overflow-hidden"
+                  className="bg-white dark:bg-gray-900 rounded-md border border-gray-100 dark:border-gray-800 shadow-sm overflow-hidden"
                 >
                   <div className="p-8 pb-4 border-b border-gray-50 dark:border-gray-800">
                     <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
                       <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#4A1B1B] to-[#6B2727] flex items-center justify-center text-[#B39371] shadow-lg">
+                        <div className="w-10 h-10 rounded-md bg-gradient-to-br from-[#4A1B1B] to-[#6B2727] flex items-center justify-center text-[#B39371] shadow-lg">
                           <LayoutGrid className="w-5 h-5" />
                         </div>
                         <div>
-                          <h2 className="text-xl font-black text-gray-900 dark:text-white tracking-tight">Access Matrix</h2>
-                          <p className="text-xs text-gray-400 font-medium">Update granular permissions per module</p>
+                          <h2 className="text-xl font-black text-gray-900 dark:text-white tracking-tight">{t('roles.accessMatrix')}</h2>
+                          <p className="text-xs text-gray-400 font-medium">{t('roles.togglePermissions')}</p>
                         </div>
                       </div>
                       <div className="relative w-full md:w-72">
                         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                         <Input 
-                          placeholder="Search modules..." 
-                          className="h-10 pl-9 rounded-xl bg-gray-50 dark:bg-gray-800/50 border-none text-sm font-medium"
+                          placeholder={t('roles.searchModules')}
+                          className="h-10 pl-9 rounded-md bg-gray-50 dark:bg-gray-800/50 border-none text-sm font-medium"
                           value={searchValue}
                           onChange={(e) => setSearchValue(e.target.value)}
                         />
@@ -319,32 +331,31 @@ export default function UpdateRole() {
                     <Table>
                       <TableHeader className="bg-gray-50/50 dark:bg-white/5">
                         <TableRow className="border-b border-gray-100 dark:border-gray-800">
-                          <TableHead className="w-[350px] text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] h-12 px-8">Component Module</TableHead>
-                          <TableHead className="text-center text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] h-12 w-24">Read</TableHead>
-                          <TableHead className="text-center text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] h-12 w-24">Create</TableHead>
-                          <TableHead className="text-center text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] h-12 w-24">Edit</TableHead>
-                          <TableHead className="text-center text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] h-12 w-24">Delete</TableHead>
+                          <TableHead className="w-[350px] text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] h-12 px-8">{t('roles.componentModule')}</TableHead>
+                          <TableHead className="text-center text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] h-12 w-24">{t('roles.read')}</TableHead>
+                          <TableHead className="text-center text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] h-12 w-24">{t('roles.createPerm')}</TableHead>
+                          <TableHead className="text-center text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] h-12 w-24">{t('roles.edit')}</TableHead>
+                          <TableHead className="text-center text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] h-12 w-24">{t('roles.delete')}</TableHead>
                         </TableRow>
                       </TableHeader>
                       <TableBody>
                         {permissionsLoading ? (
                           Array.from({ length: 6 }).map((_, i) => (
                              <TableRow key={i} className="animate-pulse h-20 border-b border-gray-50 dark:border-gray-800/50">
-                                <TableCell className="px-8"><div className="h-10 bg-gray-100 dark:bg-gray-800 rounded-xl w-64" /></TableCell>
-                                <TableCell><div className="h-5 w-5 bg-gray-100 dark:bg-gray-800 rounded mx-auto" /></TableCell>
-                                <TableCell><div className="h-5 w-5 bg-gray-100 dark:bg-gray-800 rounded mx-auto" /></TableCell>
-                                <TableCell><div className="h-5 w-5 bg-gray-100 dark:bg-gray-800 rounded mx-auto" /></TableCell>
-                                <TableCell><div className="h-5 w-5 bg-gray-100 dark:bg-gray-800 rounded mx-auto" /></TableCell>
+                                <TableCell className="px-8"><div className="h-10 bg-gray-100 dark:bg-gray-800 rounded-md w-64" /></TableCell>
+                                <TableCell><div className="h-5 w-5 bg-gray-100 dark:bg-gray-800 rounded-md mx-auto" /></TableCell>
+                                <TableCell><div className="h-5 w-5 bg-gray-100 dark:bg-gray-800 rounded-md mx-auto" /></TableCell>
+                                <TableCell><div className="h-5 w-5 bg-gray-100 dark:bg-gray-800 rounded-md mx-auto" /></TableCell>
+                                <TableCell><div className="h-5 w-5 bg-gray-100 dark:bg-gray-800 rounded-md mx-auto" /></TableCell>
                              </TableRow>
                           ))
                         ) : (
                           <AnimatePresence>
                             {permissionsData?.data.filter(p => 
                               p.resource.toLowerCase().includes(searchValue.toLowerCase()) ||
-                              (RESOURCE_CONFIG[p.resource]?.name.toLowerCase().includes(searchValue.toLowerCase()) ?? false)
+                              (t(`roles.resources.${p.resource}`).toLowerCase().includes(searchValue.toLowerCase()) ?? false)
                             ).map((perm, idx) => {
-                              const config = RESOURCE_CONFIG[perm.resource] || { name: perm.resource, description: 'Module access', icon: Shield };
-                              const Icon = config.icon;
+                              const Icon = RESOURCE_ICONS[perm.resource] || Shield;
                               const matrixRow = matrix[perm.id] || { READ: false, CREATE: false, UPDATE: false, DELETE: false };
                               
                               return (
@@ -357,12 +368,16 @@ export default function UpdateRole() {
                                 >
                                   <TableCell className="px-8">
                                     <div className="flex items-center gap-4">
-                                      <div className="w-12 h-12 rounded-2xl bg-gray-100 dark:bg-white/5 flex items-center justify-center text-gray-400 group-hover:bg-[#4A1B1B]/10 group-hover:text-[#4A1B1B] dark:group-hover:bg-[#B39371]/20 dark:group-hover:text-[#B39371] transition-all border border-transparent group-hover:border-[#4A1B1B]/10 dark:group-hover:border-[#B39371]/30">
+                                      <div className="w-12 h-12 rounded-md bg-gray-100 dark:bg-white/5 flex items-center justify-center text-gray-400 group-hover:bg-[#4A1B1B]/10 group-hover:text-[#4A1B1B] dark:group-hover:bg-[#B39371]/20 dark:group-hover:text-[#B39371] transition-all border border-transparent group-hover:border-[#4A1B1B]/10 dark:group-hover:border-[#B39371]/30">
                                         <Icon className="w-6 h-6" />
                                       </div>
                                       <div className="space-y-0.5">
-                                        <p className="text-sm font-black text-gray-900 dark:text-white uppercase tracking-tight">{config.name}</p>
-                                        <p className="text-[11px] text-gray-400 dark:text-gray-500 font-medium line-clamp-1">{config.description}</p>
+                                        <p className="text-sm font-black text-gray-900 dark:text-white uppercase tracking-tight">
+                                          {t(`roles.resources.${perm.resource}`, { defaultValue: perm.resource })}
+                                        </p>
+                                        <p className="text-[11px] text-gray-400 dark:text-gray-500 font-medium line-clamp-1">
+                                          {t(`roles.resourceDescriptions.${perm.resource}`, { defaultValue: 'Module access' })}
+                                        </p>
                                       </div>
                                     </div>
                                   </TableCell>
@@ -372,10 +387,10 @@ export default function UpdateRole() {
                                         <Checkbox 
                                           checked={matrixRow.READ}
                                           onCheckedChange={() => togglePermission(perm.id, 'READ')}
-                                          className="w-6 h-6 rounded-lg border-gray-200 dark:border-gray-700 data-[state=checked]:bg-[#B39371] data-[state=checked]:border-[#B39371] transition-all hover:scale-110 active:scale-90"
+                                          className="w-6 h-6 rounded-md border-gray-200 dark:border-gray-700 data-[state=checked]:bg-[#B39371] data-[state=checked]:border-[#B39371] transition-all hover:scale-110 active:scale-90"
                                         />
                                       ) : (
-                                        <span className="w-1.5 h-1.5 rounded-full bg-gray-200 dark:bg-gray-800" />
+                                        <span className="w-1.5 h-1.5 rounded-md bg-gray-200 dark:bg-gray-800" />
                                       )}
                                     </div>
                                   </TableCell>
@@ -385,10 +400,10 @@ export default function UpdateRole() {
                                         <Checkbox 
                                           checked={matrixRow.CREATE}
                                           onCheckedChange={() => togglePermission(perm.id, 'CREATE')}
-                                          className="w-6 h-6 rounded-lg border-gray-200 dark:border-gray-700 data-[state=checked]:bg-[#B39371] data-[state=checked]:border-[#B39371] transition-all hover:scale-110 active:scale-90"
+                                          className="w-6 h-6 rounded-md border-gray-200 dark:border-gray-700 data-[state=checked]:bg-[#B39371] data-[state=checked]:border-[#B39371] transition-all hover:scale-110 active:scale-90"
                                         />
                                       ) : (
-                                        <span className="w-1.5 h-1.5 rounded-full bg-gray-200 dark:bg-gray-800" />
+                                        <span className="w-1.5 h-1.5 rounded-md bg-gray-200 dark:bg-gray-800" />
                                       )}
                                     </div>
                                   </TableCell>
@@ -398,10 +413,10 @@ export default function UpdateRole() {
                                         <Checkbox 
                                           checked={matrixRow.UPDATE}
                                           onCheckedChange={() => togglePermission(perm.id, 'UPDATE')}
-                                          className="w-6 h-6 rounded-lg border-gray-200 dark:border-gray-700 data-[state=checked]:bg-[#B39371] data-[state=checked]:border-[#B39371] transition-all hover:scale-110 active:scale-90"
+                                          className="w-6 h-6 rounded-md border-gray-200 dark:border-gray-700 data-[state=checked]:bg-[#B39371] data-[state=checked]:border-[#B39371] transition-all hover:scale-110 active:scale-90"
                                         />
                                       ) : (
-                                        <span className="w-1.5 h-1.5 rounded-full bg-gray-200 dark:bg-gray-800" />
+                                        <span className="w-1.5 h-1.5 rounded-md bg-gray-200 dark:bg-gray-800" />
                                       )}
                                     </div>
                                   </TableCell>
@@ -411,10 +426,10 @@ export default function UpdateRole() {
                                         <Checkbox 
                                           checked={matrixRow.DELETE}
                                           onCheckedChange={() => togglePermission(perm.id, 'DELETE')}
-                                          className="w-6 h-6 rounded-lg border-gray-200 dark:border-gray-700 data-[state=checked]:bg-[#B39371] data-[state=checked]:border-[#B39371] transition-all hover:scale-110 active:scale-90"
+                                          className="w-6 h-6 rounded-md border-gray-200 dark:border-gray-700 data-[state=checked]:bg-[#B39371] data-[state=checked]:border-[#B39371] transition-all hover:scale-110 active:scale-90"
                                         />
                                       ) : (
-                                        <span className="w-1.5 h-1.5 rounded-full bg-gray-200 dark:bg-gray-800" />
+                                        <span className="w-1.5 h-1.5 rounded-md bg-gray-200 dark:bg-gray-800" />
                                       )}
                                     </div>
                                   </TableCell>
@@ -431,30 +446,30 @@ export default function UpdateRole() {
                   <div className="p-8 bg-gray-50/50 dark:bg-white/5 border-t border-gray-100 dark:border-gray-800 flex items-center justify-between gap-6">
                     <div className="flex items-center gap-3 text-gray-400">
                       <Info className="w-4 h-4" />
-                      <p className="text-[10px] font-bold uppercase tracking-widest">Protocol modification authorization</p>
+                      <p className="text-[10px] font-bold uppercase tracking-widest">{t('roles.protocolModificationAuth')}</p>
                     </div>
                     <div className="flex items-center gap-4">
                       <Button
                         type="button"
                         variant="ghost"
                         onClick={() => setLocation('/roles')}
-                        className="h-12 px-8 rounded-xl font-bold text-gray-400 hover:text-gray-900 dark:hover:text-white transition-all"
+                        className="h-12 px-8 rounded-md font-bold text-gray-400 hover:text-gray-900 dark:hover:text-white transition-all"
                       >
-                        Cancel Update
+                        {t('roles.cancelUpdate')}
                       </Button>
                       <Button
                         type="submit"
                         disabled={updateMutation.isPending}
-                        className="h-12 px-10 rounded-xl bg-gradient-to-r from-[#4A1B1B] to-[#6B2727] hover:from-[#6B2727] hover:to-[#4A1B1B] text-white font-bold shadow-2xl shadow-[#4A1B1B]/30 flex items-center gap-3 transition-all active:scale-[0.98] min-w-[220px]"
+                        className="h-12 px-10 rounded-md bg-gradient-to-r from-[#4A1B1B] to-[#6B2727] hover:from-[#6B2727] hover:to-[#4A1B1B] text-white font-bold shadow-2xl shadow-[#4A1B1B]/30 flex items-center gap-3 transition-all active:scale-[0.98] min-w-[220px]"
                       >
                         {updateMutation.isPending ? (
                           <>
                             <Loader2 className="w-5 h-5 animate-spin" />
-                            Updating registry...
+                            {t('roles.updatingRegistry')}
                           </>
                         ) : (
                           <>
-                            <span>Commit Modifications</span>
+                            <span>{t('roles.commitModifications')}</span>
                             <Sparkles className="w-4 h-4 text-[#B39371]" />
                           </>
                         )}

@@ -48,17 +48,17 @@ export default function UpdateLegality() {
           <div className="p-10 space-y-10">
             
             <div>
-              <h2 className="text-2xl font-black text-[#4A1B1B] dark:text-white font-outfit uppercase tracking-tight">Step Details</h2>
-              <p className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em] mt-2">Choose a step, provide details, and attach any required documents.</p>
+              <h2 className="text-2xl font-black text-[#4A1B1B] dark:text-white font-outfit uppercase tracking-tight">{t('legality.stepDetails')}</h2>
+              <p className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em] mt-2">{t('legality.stepDetailsDesc')}</p>
             </div>
 
             <div className="space-y-8">
               {/* Step Selection */}
               <div className="space-y-4">
-                <label className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em] ml-1">Step</label>
+                <label className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em] ml-1">{t('legality.profile.step')}</label>
                 <Select>
                   <SelectTrigger className="w-full bg-light dark:bg-dark/50 border-2 border-zinc-200 dark:border-white/5 h-16 rounded-2xl focus:ring-4 focus:ring-[#B39371]/10 focus:border-[#B39371]/50 transition-all text-[#4A1B1B] dark:text-white font-black px-6">
-                    <SelectValue placeholder="Select a Step" />
+                    <SelectValue placeholder={t('legality.selectStep')} />
                   </SelectTrigger>
                   <SelectContent className="rounded-[1.5rem] border-zinc-200 dark:border-white/10 shadow-2xl bg-white dark:bg-gray-900">
                     <SelectItem value="step1" className="focus:bg-[#B39371]/10 focus:text-[#4A1B1B] dark:focus:text-white font-black">Purchase & Title Transfer</SelectItem>
@@ -72,23 +72,23 @@ export default function UpdateLegality() {
 
               {/* Details Textarea */}
               <div className="space-y-4">
-                <label className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em] ml-1">Details</label>
+                <label className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em] ml-1">{t('common.details')}</label>
                 <Textarea 
-                  placeholder="Enter details here..."
+                  placeholder={t('legality.enterDetails')}
                   className="min-h-[220px] bg-light dark:bg-dark/50 border-2 border-zinc-200 dark:border-white/5 rounded-[2rem] p-8 focus-visible:ring-4 focus-visible:ring-[#B39371]/10 focus-visible:border-[#B39371]/50 transition-all resize-none text-[#4A1B1B] dark:text-white font-bold text-lg placeholder:text-zinc-400 dark:placeholder:text-zinc-600"
                 />
               </div>
 
               {/* Upload Section */}
               <div className="space-y-4">
-                <label className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em] ml-1">Upload Documents</label>
+                <label className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em] ml-1">{t('legality.uploadDocs')}</label>
                 <div className="group relative w-full py-20 bg-light dark:bg-dark/20 border-3 border-dashed border-zinc-200 dark:border-white/5 rounded-[3rem] flex flex-col items-center justify-center gap-6 transition-all hover:border-[#B39371]/50 hover:bg-light/50 dark:hover:bg-dark/40 cursor-pointer overflow-hidden shadow-inner">
                   <div className="w-20 h-20 bg-gradient-to-br from-white to-zinc-50 dark:from-dark dark:to-zinc-900 rounded-[2rem] shadow-2xl flex items-center justify-center text-[#B39371] group-hover:scale-110 group-hover:bg-gradient-to-br group-hover:from-[#4A1B1B] group-hover:to-[#6B2727] group-hover:text-white transition-all duration-500">
                     <UploadCloud className="w-10 h-10" />
                   </div>
                   <div className="text-center">
-                    <p className="text-lg font-black text-[#4A1B1B] dark:text-white font-outfit uppercase tracking-tight">Click to upload or drag and drop</p>
-                    <p className="text-[10px] text-muted-foreground mt-2 uppercase tracking-[0.2em] font-black">PDF, JPG, or PNG (Max 5MB)</p>
+                    <p className="text-lg font-black text-[#4A1B1B] dark:text-white font-outfit uppercase tracking-tight">{t('legality.uploadDesc')}</p>
+                    <p className="text-[10px] text-muted-foreground mt-2 uppercase tracking-[0.2em] font-black">{t('legality.uploadLimit')}</p>
                   </div>
                 </div>
               </div>
@@ -101,7 +101,7 @@ export default function UpdateLegality() {
               onClick={() => setLocation('/legality')}
               className="px-10 py-4 rounded-2xl text-xs font-black text-[#4A1B1B] dark:text-muted-foreground hover:bg-muted dark:hover:bg-white/5 transition-all uppercase tracking-widest"
             >
-              Cancel
+              {t('common.cancel')}
             </button>
             <button 
               className="px-12 py-4 bg-gradient-to-br from-[#4A1B1B] to-[#6B2727] text-white rounded-2xl text-xs font-black shadow-2xl shadow-[#4A1B1B]/30 hover:shadow-black/40 transition-all flex items-center gap-3 group uppercase tracking-widest"
@@ -120,8 +120,8 @@ export default function UpdateLegality() {
                   <FileText className="w-7 h-7" />
                 </div>
                 <div>
-                  <p className="text-sm font-black text-[#4A1B1B] dark:text-white uppercase tracking-tight">Compliance_Report.pdf</p>
-                  <p className="text-[10px] text-muted-foreground font-black uppercase tracking-[0.2em] mt-1">2.1 MB • Just now</p>
+                  <p className="text-sm font-black text-[#4A1B1B] dark:text-white uppercase tracking-tight">{t('legality.labels.recordId')}_Report.pdf</p>
+                  <p className="text-[10px] text-muted-foreground font-black uppercase tracking-[0.2em] mt-1">2.1 MB • {t('common.justNow' as any) || 'Just now'}</p>
                 </div>
               </div>
               <div className="w-3 h-3 rounded-full bg-emerald-500 animate-pulse shadow-lg shadow-emerald-500/50"></div>

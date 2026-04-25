@@ -13,6 +13,7 @@ import { toast } from 'react-hot-toast';
 
 import { Link } from "wouter";
 import { Shell } from '../../components/shared/Shell';
+import { Can } from '../../components/shared/Can';
 import { 
   FileText,
   Plus,
@@ -183,7 +184,7 @@ export default function Contracts() {
           <span className="text-sm font-bold text-[#4A1B1B] dark:text-[#B39371]">
             {c.paidAmount.toLocaleString()} {t('common.sar')}
           </span>
-          <span className="text-xs text-gray-500 dark:text-gray-400">{c.paymentType}</span>
+          <span className="text-xs text-gray-500 dark:text-gray-400">{t(`contracts.paymentMethods.${c.paymentType}`)}</span>
         </div>
       )
     },
@@ -201,27 +202,31 @@ export default function Contracts() {
       cell: (c) => (
         <div className="flex items-center justify-center gap-2">
           {c.pdfUrl && (
-            <a 
-              href={`${import.meta.env.VITE_API_BASE_URL}/${c.pdfUrl}`} 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="p-2 hover:bg-[#F5F1ED] dark:hover:bg-gray-800 rounded-lg text-gray-400 hover:text-[#4A1B1B] dark:hover:text-[#B39371] transition-colors"
-              title={t('common.download')}
-            >
-              <Download className="w-4 h-4" />
-            </a>
+            <Can I="READ" a="contract">
+              <a 
+                href={`${import.meta.env.VITE_API_BASE_URL}/${c.pdfUrl}`} 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="p-2 hover:bg-[#F5F1ED] dark:hover:bg-gray-800 rounded-md text-gray-400 hover:text-[#4A1B1B] dark:hover:text-[#B39371] transition-colors"
+                title={t('common.download')}
+              >
+                <Download className="w-4 h-4" />
+              </a>
+            </Can>
           )}
          
-          <button 
-            onClick={() => {
-              setSelectedContractId(c.id);
-              setDeleteDialogOpen(true);
-            }} 
-            className="p-2 hover:bg-red-50 dark:hover:bg-red-950/30 rounded-lg text-gray-400 hover:text-red-600 transition-colors" 
-            title={t('common.delete')}
-          >
-            <Trash2 className="w-4 h-4" />
-          </button>
+          <Can I="DELETE" a="contract">
+            <button 
+              onClick={() => {
+                setSelectedContractId(c.id);
+                setDeleteDialogOpen(true);
+              }} 
+              className="p-2 hover:bg-red-50 dark:hover:bg-red-950/30 rounded-md text-gray-400 hover:text-red-600 transition-colors" 
+              title={t('common.delete')}
+            >
+              <Trash2 className="w-4 h-4" />
+            </button>
+          </Can>
         </div>
       )
     }
@@ -248,8 +253,8 @@ export default function Contracts() {
             <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
               <div className="flex items-center gap-4">
                 <div className="relative">
-                  <div className="absolute inset-0 bg-gradient-to-r from-[#4A1B1B] to-[#6B2727] rounded-xl blur-lg opacity-50" />
-                  <div className="relative w-14 h-14 rounded-xl bg-gradient-to-br from-[#4A1B1B] to-[#6B2727] shadow-lg flex items-center justify-center">
+                  <div className="absolute inset-0 bg-gradient-to-r from-[#4A1B1B] to-[#6B2727] rounded-md blur-lg opacity-50" />
+                  <div className="relative w-14 h-14 rounded-md bg-gradient-to-br from-[#4A1B1B] to-[#6B2727] shadow-lg flex items-center justify-center">
                     <FileText className="w-7 h-7 text-[#B39371]" />
                   </div>
                 </div>
@@ -270,16 +275,18 @@ export default function Contracts() {
               </div>
 
               <div className="flex items-center gap-4">
-                <Link href="/contracts/new">
-                  <motion.button
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                    className="flex items-center gap-2 px-6 py-2.5 bg-gradient-to-r from-[#4A1B1B] to-[#6B2727] text-white rounded-md text-sm font-medium shadow-lg shadow-[#4A1B1B]/20 hover:shadow-xl transition-all"
-                  >
-                    <Plus className="w-5 h-5" />
-                    {t('contracts.add')}
-                  </motion.button>
-                </Link>
+                <Can I="CREATE" a="contract">
+                  <Link href="/contracts/new">
+                    <motion.button
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      className="flex items-center gap-2 px-6 py-2.5 bg-gradient-to-r from-[#4A1B1B] to-[#6B2727] text-white rounded-md text-sm font-medium shadow-lg shadow-[#4A1B1B]/20 hover:shadow-xl transition-all"
+                    >
+                      <Plus className="w-5 h-5" />
+                      {t('contracts.add')}
+                    </motion.button>
+                  </Link>
+                </Can>
               </div>
             </div>
           </div>
@@ -291,7 +298,7 @@ export default function Contracts() {
               label={t('contracts.title')}
               value={(response?.totalItems || 0).toLocaleString()}
               subValue={t('contracts.description')}
-              color="from-amber-500 to-amber-600"
+              color="from-[#4A1B1B] to-[#6B2727]"
             />
             {/* Add more stats if needed based on data */}
           </div>

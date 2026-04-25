@@ -43,7 +43,7 @@ interface DefaultStepsResponse {
 }
 
 export default function CreateLegality() {
-  const { t } = useTranslation();
+  const { t,  i18n } = useTranslation();
   const [, setLocation] = useLocation();
   const queryClient = useQueryClient();
   const [formData, setFormData] = useState({
@@ -88,7 +88,7 @@ export default function CreateLegality() {
       setLocation('/legality');
     },
     onError: (error: any) => {
-      toast.error(error.response?.data?.message?.english || 'Failed to create legality', {
+      toast.error(error.response?.data?.message?.[i18n.language === 'ar' ? 'arabic' : 'english'] || t('common.error'), {
         icon: '❌',
         style: {
           borderRadius: '1rem',
@@ -210,7 +210,7 @@ export default function CreateLegality() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-2">
                     <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                      {t('legality.name')} (English) <span className="text-red-500">*</span>
+                      {t('legality.name')} ({t('common.english' as any) || 'English'}) <span className="text-red-500">*</span>
                     </label>
                     <Input 
                       value={formData.nameEn}
@@ -221,12 +221,12 @@ export default function CreateLegality() {
                   </div>
                   <div className="space-y-2">
                     <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                      {t('legality.name')} (Arabic) <span className="text-red-500">*</span>
+                      {t('legality.name')} ({t('common.arabic' as any) || 'Arabic'}) <span className="text-red-500">*</span>
                     </label>
                     <Input 
                       value={formData.nameAr}
                       onChange={(e) => setFormData(prev => ({ ...prev, nameAr: e.target.value }))}
-                      placeholder="مثال: تدقيق الامتثال السنوي 2024" 
+                      placeholder={t('legality.namePlaceholderAr') || "مثال: تدقيق الامتثال السنوي 2024"} 
                       dir="rtl"
                       className="bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 h-12 rounded-xl focus:ring-2 focus:ring-[#B39371]/20 focus:border-[#B39371] transition-all text-right"
                     />

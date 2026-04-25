@@ -170,7 +170,7 @@ export default function CreateBank() {
                   value={formData.countryId}
                   onChange={(value) => setFormData({ ...formData, countryId: value })}
                   placeholder={t('cities.selectCountry')}
-                  searchPlaceholder={t('legality.searchPlaceholder')}
+                  searchPlaceholder={t('countries.searchPlaceholder')}
                   mapResponseToOptions={(data: any) => 
                     data.data.map((country: any) => ({
                       value: country.id,
@@ -187,7 +187,7 @@ export default function CreateBank() {
                     <div className="relative">
                       <Type className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                       <Input 
-                        placeholder="e.g. Al-Ahli Bank"
+                        placeholder={t('banks.nameEnPlaceholder')}
                         value={formData.name.english}
                         onChange={(e) => setFormData({ 
                           ...formData, 
@@ -204,7 +204,7 @@ export default function CreateBank() {
                     <div className="relative">
                       <Type className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                       <Input 
-                        placeholder="e.g. البنك الأهلي"
+                        placeholder={t('banks.nameArPlaceholder')}
                         value={formData.name.arabic}
                         onChange={(e) => setFormData({ 
                           ...formData, 

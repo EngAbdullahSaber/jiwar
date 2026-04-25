@@ -4,15 +4,13 @@ import {
   Dialog, 
   DialogContent, 
 } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import api from '@/lib/api';
 import { toast } from "react-hot-toast";
 import { 
-  Loader2, 
-  Mail, 
+   Mail, 
   Shield, 
   User as UserIcon, 
   Sparkles,
@@ -23,6 +21,7 @@ import {
 import { motion, AnimatePresence } from 'framer-motion';
 import { PaginatedSelect } from '@/components/shared/PaginatedSelect';
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { FormActions } from '@/components/shared/FormActions';
 import { cn } from '@/lib/utils';
 
 interface Role {
@@ -91,7 +90,7 @@ export function UpdateUserDialog({ user, open, onOpenChange }: UpdateUserDialogP
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[500px] p-0 border-none bg-white dark:bg-gray-950 shadow-2xl rounded-3xl overflow-hidden">
+      <DialogContent className="sm:max-w-[500px] p-0 border-none bg-white dark:bg-gray-950 shadow-2xl rounded-md overflow-hidden">
         <AnimatePresence>
           {open && (
             <motion.div
@@ -106,7 +105,7 @@ export function UpdateUserDialog({ user, open, onOpenChange }: UpdateUserDialogP
                 <div className="absolute bottom-0 left-0 rtl:left-auto rtl:right-0 w-32 h-32 bg-[#B39371]/10 rounded-full -ml-10 rtl:-ml-0 rtl:-mr-10 -mb-10 blur-2xl" />
                 
                 <div className="relative z-10 flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-2xl bg-white/10 backdrop-blur-md flex items-center justify-center border border-white/20">
+                  <div className="w-12 h-12 rounded-md bg-white/10 backdrop-blur-md flex items-center justify-center border border-white/20">
                     <UserIcon className="w-6 h-6 text-[#B39371]" />
                   </div>
                   <div>
@@ -121,7 +120,7 @@ export function UpdateUserDialog({ user, open, onOpenChange }: UpdateUserDialogP
 
               {/* User Profile Summary */}
               <div className="px-8 -mt-6 relative z-20">
-                <div className="bg-white dark:bg-gray-900 rounded-2xl p-4 shadow-xl border border-gray-100 dark:border-gray-800 flex items-center gap-4">
+                <div className="bg-white dark:bg-gray-900 rounded-md p-4 shadow-xl border border-gray-100 dark:border-gray-800 flex items-center gap-4">
                   <Avatar className="w-14 h-14 border-4 border-white dark:border-gray-950 shadow-lg">
                     <AvatarFallback className="bg-gradient-to-br from-[#B39371] to-[#C4A484] text-white text-lg font-black">
                       {user?.email.substring(0, 2).toUpperCase()}
@@ -158,7 +157,7 @@ export function UpdateUserDialog({ user, open, onOpenChange }: UpdateUserDialogP
                 <div className="space-y-5">
                   <div className="space-y-2">
                     <div className="flex items-center justify-between">
-                      <Label htmlFor="email" className="text-xs font-bold text-gray-500 uppercase tracking-wider">{t('users.emailAddress')}</Label>
+                      <Label htmlFor="email" className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">{t('users.emailAddress')}</Label>
                       <Fingerprint className="w-3.5 h-3.5 text-gray-300" />
                     </div>
                     <div className="relative group">
@@ -171,7 +170,7 @@ export function UpdateUserDialog({ user, open, onOpenChange }: UpdateUserDialogP
                         type="email"
                         required
                         placeholder={t('users.placeholders.email')}
-                        className="h-12 pl-12 rtl:pl-4 rtl:pr-12 rounded-xl bg-gray-50 dark:bg-gray-900 border-gray-100 dark:border-gray-800 focus:bg-white dark:focus:bg-gray-900 focus:ring-4 focus:ring-[#B39371]/10 focus:border-[#B39371]/50 transition-all font-semibold text-gray-700 dark:text-gray-200"
+                        className="h-12 pl-12 rtl:pl-4 rtl:pr-12 rounded-md bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700 focus:bg-gray-50 dark:focus:bg-gray-800 focus:ring-4 focus:ring-[#B39371]/10 focus:border-[#B39371]/50 transition-all font-semibold text-gray-700 dark:text-gray-200"
                         value={formData.email}
                         onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
                       />
@@ -180,7 +179,7 @@ export function UpdateUserDialog({ user, open, onOpenChange }: UpdateUserDialogP
 
                   <div className="space-y-2">
                     <div className="flex items-center justify-between">
-                      <Label htmlFor="roleId" className="text-xs font-bold text-gray-500 uppercase tracking-wider">{t('users.role')}</Label>
+                      <Label htmlFor="roleId" className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">{t('users.role')}</Label>
                       <Shield className="w-3.5 h-3.5 text-gray-300" />
                     </div>
                     <PaginatedSelect
@@ -190,7 +189,9 @@ export function UpdateUserDialog({ user, open, onOpenChange }: UpdateUserDialogP
                       onChange={handleRoleChange}
                       placeholder={t('users.assignRole')}
                       searchPlaceholder={t('users.searchRoles')}
-                      mapResponseToOptions={(res) => res.data.map((role: any) => ({
+                      mapResponseToOptions={(res) => res.data
+                        .filter((role: any) => role.id !== 5 && role.id !== 6)
+                        .map((role: any) => ({
                         value: role.id.toString(),
                         label: role.name,
                         description: role.description,
@@ -200,32 +201,14 @@ export function UpdateUserDialog({ user, open, onOpenChange }: UpdateUserDialogP
                   </div>
                 </div>
 
-                <div className="pt-4 flex items-center gap-3">
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    onClick={() => onOpenChange(false)}
-                    className="flex-1 h-12 rounded-xl font-bold text-gray-400 hover:text-gray-900 hover:bg-gray-100 dark:hover:bg-gray-900 transition-all underline decoration-gray-200"
-                  >
-                    {t('users.discard')}
-                  </Button>
-                  <Button
-                    type="submit"
-                    disabled={updateMutation.isPending}
-                    className="flex-[2] h-12 rounded-xl bg-gradient-to-r from-[#4A1B1B] to-[#6B2727] hover:from-[#6B2727] hover:to-[#4A1B1B] text-white font-bold shadow-xl shadow-[#4A1B1B]/20 transition-all active:scale-[0.98]"
-                  >
-                    {updateMutation.isPending ? (
-                      <div className="flex items-center gap-2">
-                        <Loader2 className="w-4 h-4 animate-spin" />
-                        <span>{t('users.applyingChanges')}</span>
-                      </div>
-                    ) : (
-                      <div className="flex items-center gap-2">
-                        <span>{t('users.saveChanges')}</span>
-                      </div>
-                    )}
-                  </Button>
-                </div>
+                <FormActions
+                  onCancel={() => onOpenChange(false)}
+                  isSubmitting={updateMutation.isPending}
+                  submitText={t('users.saveChanges')}
+                  submittingText={t('users.applyingChanges')}
+                  cancelText={t('users.discard')}
+                  className="mt-4 shadow-none border-0 bg-transparent"
+                />
               </form>
             </motion.div>
           )}

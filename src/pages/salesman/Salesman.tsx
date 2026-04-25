@@ -16,6 +16,7 @@ import {
 } from 'lucide-react';
 import { Link } from "wouter";
 import { Shell } from '../../components/shared/Shell';
+import { Can } from '../../components/shared/Can';
 import { useQuery } from '@tanstack/react-query';
 import api from '@/lib/api';
 import { motion } from 'framer-motion';
@@ -293,30 +294,36 @@ export default function SalesmanPage() {
               <MoreVertical className="h-4 w-4 text-gray-400" />
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-48 rounded-xl border-gray-200 dark:border-gray-800 shadow-xl p-1">
+          <DropdownMenuContent align="end" className="w-48 rounded-md border-gray-200 dark:border-gray-800 shadow-xl p-1">
             <DropdownMenuLabel className="px-3 py-2 text-[10px] font-bold text-gray-400 uppercase tracking-widest">
               {t('salesman.actions')}
             </DropdownMenuLabel>
             <DropdownMenuSeparator className="bg-gray-100 dark:bg-gray-800" />
-            <Link href={`/salesman/${salesman.id}`}>
-              <DropdownMenuItem className="rounded-lg cursor-pointer py-2 px-3 focus:bg-gray-50 dark:focus:bg-gray-800">
-                <UsersIcon className="w-4 h-4 mr-2 rtl:mr-0 rtl:ml-2 text-gray-400" />
-                <span className="text-xs font-medium">{t('common.details')}</span>
+            <Can I="READ" a="salesman">
+              <Link href={`/salesman/${salesman.id}`}>
+                <DropdownMenuItem className="rounded-lg cursor-pointer py-2 px-3 focus:bg-gray-50 dark:focus:bg-gray-800">
+                  <UsersIcon className="w-4 h-4 mr-2 rtl:mr-0 rtl:ml-2 text-gray-400" />
+                  <span className="text-xs font-medium">{t('common.details')}</span>
+                </DropdownMenuItem>
+              </Link>
+            </Can>
+            <Can I="UPDATE" a="salesman">
+              <Link href={`/salesman/${salesman.id}/edit`}>
+                <DropdownMenuItem className="rounded-lg cursor-pointer py-2 px-3 focus:bg-gray-50 dark:focus:bg-gray-800">
+                  <Edit className="w-4 h-4 mr-2 rtl:mr-0 rtl:ml-2 text-gray-400" />
+                  <span className="text-xs font-medium">{t('common.edit')}</span>
+                </DropdownMenuItem>
+              </Link>
+            </Can>
+            <Can I="DELETE" a="salesman">
+              <DropdownMenuItem 
+                className="rounded-lg cursor-pointer py-2 px-3 focus:bg-rose-50 dark:focus:bg-rose-900/10 text-rose-600"
+                onClick={() => handleDelete(salesman.id)}
+              >
+                <Trash2 className="w-4 h-4 mr-2 rtl:mr-0 rtl:ml-2" />
+                <span className="text-xs font-medium">{t('common.delete')}</span>
               </DropdownMenuItem>
-            </Link>
-            <Link href={`/salesman/${salesman.id}/edit`}>
-              <DropdownMenuItem className="rounded-lg cursor-pointer py-2 px-3 focus:bg-gray-50 dark:focus:bg-gray-800">
-                <Edit className="w-4 h-4 mr-2 rtl:mr-0 rtl:ml-2 text-gray-400" />
-                <span className="text-xs font-medium">{t('common.edit')}</span>
-              </DropdownMenuItem>
-            </Link>
-            <DropdownMenuItem 
-              className="rounded-lg cursor-pointer py-2 px-3 focus:bg-rose-50 dark:focus:bg-rose-900/10 text-rose-600"
-              onClick={() => handleDelete(salesman.id)}
-            >
-              <Trash2 className="w-4 h-4 mr-2 rtl:mr-0 rtl:ml-2" />
-              <span className="text-xs font-medium">{t('common.delete')}</span>
-            </DropdownMenuItem>
+            </Can>
           </DropdownMenuContent>
         </DropdownMenu>
       )
@@ -331,14 +338,14 @@ export default function SalesmanPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
           
           {/* Header Section */}
-          <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 p-8 shadow-sm overflow-hidden relative group">
+          <div className="bg-white dark:bg-gray-900 rounded-md border border-gray-200 dark:border-gray-800 p-8 shadow-sm overflow-hidden relative group">
             <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-[#4A1B1B]/5 to-transparent rounded-full -translate-y-1/2 translate-x-1/2 blur-3xl group-hover:bg-[#4A1B1B]/10 transition-all duration-500" />
             
             <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-8 relative z-10">
               <div className="flex items-center gap-6">
                 <div className="relative">
-                  <div className="absolute inset-0 bg-gradient-to-r from-[#4A1B1B] to-[#6B2727] rounded-2xl blur-xl opacity-20 group-hover:opacity-40 transition-opacity" />
-                  <div className="relative w-16 h-16 rounded-2xl bg-gradient-to-br from-[#4A1B1B] to-[#6B2727] shadow-lg flex items-center justify-center border border-white/10">
+                  <div className="absolute inset-0 bg-gradient-to-r from-[#4A1B1B] to-[#6B2727] rounded-md blur-xl opacity-20 group-hover:opacity-40 transition-opacity" />
+                  <div className="relative w-16 h-16 rounded-md bg-gradient-to-br from-[#4A1B1B] to-[#6B2727] shadow-lg flex items-center justify-center border border-white/10">
                     <UsersIcon className="w-8 h-8 text-[#B39371]" />
                   </div>
                 </div>
@@ -361,23 +368,25 @@ export default function SalesmanPage() {
               <div className="flex items-center gap-4">
                 <Button
                   variant="outline"
-                  className="h-11 px-6 rounded-xl border-gray-200 dark:border-gray-800 text-gray-600 dark:text-gray-300 hover:text-gray-900 hover:bg-gray-50 dark:hover:bg-gray-800 transition-all font-semibold text-sm shadow-sm"
+                  className="h-11 px-6 rounded-md border-gray-200 dark:border-gray-800 text-gray-600 dark:text-gray-300 hover:text-gray-900 hover:bg-gray-50 dark:hover:bg-gray-800 transition-all font-semibold text-sm shadow-sm"
                   onClick={() => refetch()}
                 >
                   <RefreshCw className="w-4 h-4 mr-2 rtl:mr-0 rtl:ml-2 group-hover:rotate-180 transition-transform duration-500" />
                   {t('common.refresh')}
                 </Button>
                 
-                <Link href="/salesman/new">
-                  <motion.button
-                    whileHover={{ scale: 1.02, translateY: -2 }}
-                    whileTap={{ scale: 0.98 }}
-                    className="flex items-center gap-2 px-8 py-3 bg-gradient-to-r from-[#4A1B1B] to-[#6B2727] text-white rounded-xl text-sm font-bold shadow-xl shadow-[#4A1B1B]/20 hover:shadow-2xl hover:shadow-[#4A1B1B]/30 transition-all border border-white/10"
-                  >
-                    <Plus className="w-5 h-5" />
-                    {t('salesman.create')}
-                  </motion.button>
-                </Link>
+                <Can I="CREATE" a="salesman">
+                  <Link href="/salesman/new">
+                    <motion.button
+                      whileHover={{ scale: 1.02, translateY: -2 }}
+                      whileTap={{ scale: 0.98 }}
+                      className="flex items-center gap-2 px-8 py-3 bg-gradient-to-r from-[#4A1B1B] to-[#6B2727] text-white rounded-md text-sm font-bold shadow-xl shadow-[#4A1B1B]/20 hover:shadow-2xl hover:shadow-[#4A1B1B]/30 transition-all border border-white/10"
+                    >
+                      <Plus className="w-5 h-5" />
+                      {t('salesman.create')}
+                    </motion.button>
+                  </Link>
+                </Can>
               </div>
             </div>
           </div>

@@ -278,7 +278,7 @@ export default function UpdateMaterial() {
                   <div className="relative">
                     <Layers className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 rtl:left-auto rtl:right-3" />
                     <Input 
-                      placeholder="e.g. Steel Beams"
+                      placeholder={t('materials.namePlaceholder') || "e.g. Steel Beams"}
                       value={formData.name}
                       onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                       className="pl-10 rtl:pl-3 rtl:pr-10 h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md"
@@ -309,7 +309,7 @@ export default function UpdateMaterial() {
             <FormSection 
               icon={Building2}
               title={t('materials.supplier')}
-              description={t('materials.supplierDesc') || "Enter supplier contact and financial details"}
+              description={t('materials.supplierDesc')}
               delay={0.15}
             >
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -319,7 +319,7 @@ export default function UpdateMaterial() {
                   <div className="relative">
                     <Building2 className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 rtl:left-auto rtl:right-3" />
                     <Input 
-                      placeholder="e.g. Al-Rajhi Materials"
+                      placeholder={t('materials.supplierPlaceholder') || "e.g. Al-Rajhi Materials"}
                       value={supplierData.name}
                       onChange={(e) => setSupplierData({ ...supplierData, name: e.target.value })}
                       className="pl-10 rtl:pl-3 rtl:pr-10 h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md"
@@ -373,7 +373,7 @@ export default function UpdateMaterial() {
                   <div className="relative">
                     <Scale className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 rtl:left-auto rtl:right-3" />
                     <Input 
-                      placeholder="e.g. 100 tons"
+                      placeholder={t('materials.quantityPlaceholder') || "e.g. 100 tons"}
                       value={supplierData.quantityText}
                       onChange={(e) => setSupplierData({ ...supplierData, quantityText: e.target.value })}
                       className="pl-10 rtl:pl-3 rtl:pr-10 h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md"
@@ -450,7 +450,7 @@ export default function UpdateMaterial() {
                     )}
                     <FileUpload
                       multiple
-                      label={t('materials.addMoreDocs') || "Add More Supplier Documents"}
+                      label={t('materials.addMoreDocs')}
                       accept=".pdf,.jpg,.jpeg,.png,.doc,.docx"
                       maxSizeMB={10}
                       onUploadSuccess={(url) => setSupplierDocuments((prev) => [...prev, url])}

@@ -115,14 +115,14 @@ export function AddClientPaymentDialog({
                   <div className="flex items-center gap-2 mb-1">
                     <Sparkles className="w-3.5 h-3.5 text-[#B39371]" />
                     <p className="text-[10px] font-bold text-[#B39371] uppercase tracking-[0.2em]">
-                      {isRtl ? 'معاملة مالية' : 'Financial Transaction'}
+                      {t('payments.financialTransaction')}
                     </p>
                   </div>
                   <DialogTitle className="text-2xl font-bold text-gray-900 dark:text-white">
                     {t('payments.addPayment')}
                   </DialogTitle>
                   <DialogDescription className="text-sm text-gray-500 mt-1 italic">
-                    {isRtl ? `تسجيل دفعة لـ: ${clientName}` : `Record a payment for: ${clientName}`}
+                    {t('payments.recordPaymentFor', { name: clientName })}
                   </DialogDescription>
                 </div>
               </div>
@@ -166,16 +166,16 @@ export function AddClientPaymentDialog({
                    {/* Contract */}
                    <div className="md:col-span-2 space-y-2">
                      <PaginatedSelect
-                       label={isRtl ? 'العقد' : 'Contract'}
+                       label={t('contracts.labels.client')}
                        apiEndpoint="/contract"
                        queryKey="contracts"
                        extraParams={{ clientId, sortOption: 'newest' }}
                        value={formData.contractId}
                        onChange={(val) => setFormData(prev => ({ ...prev, contractId: val }))}
-                       placeholder={isRtl ? 'اختر العقد...' : 'Select Contract...'}
+                       placeholder={t('contracts.placeholders.select')}
                        mapResponseToOptions={(data: any) => data.data.map((item: any) => ({
                          value: item.id,
-                         label: `${isRtl ? 'عقد' : 'Contract'} #${item.id} - ${item.apartment?.mainName?.[isRtl ? 'arabic' : 'english'] || ''}`,
+                         label: `${t('contracts.title')} #${item.id} - ${item.apartment?.mainName?.[isRtl ? 'arabic' : 'english'] || ''}`,
                          description: `${t(`contracts.types.${item.type}`)} ${item.totalContractValue ? `· ${item.totalContractValue.toLocaleString()} ${t('common.sar')}` : ''}`,
                          icon: <Building className="w-4 h-4" />
                        }))}
@@ -193,7 +193,7 @@ export function AddClientPaymentDialog({
                         onUploadMultipleSuccess={(urls) => setFormData(prev => ({ ...prev, receipt: [...prev.receipt, ...urls] }))}
                         onUploadSuccess={(url) => setFormData(prev => ({ ...prev, receipt: [...prev.receipt, url] }))}
                         label=""
-                        helperText={isRtl ? 'ارفع إيصال الدفع (PDF, JPG, PNG)' : 'Upload payment receipt (PDF, JPG, PNG)'}
+                        helperText={t('payments.receiptHelper')}
                         maxSizeMB={5}
                         accept=".pdf,.jpg,.jpeg,.png"
                         multiple={true}

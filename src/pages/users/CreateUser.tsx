@@ -5,41 +5,31 @@ import { TopHeader } from '../../components/TopHeader';
 import { Shell } from '../../components/shared/Shell';
 import { 
   Users as UsersIcon, 
-  ChevronRight, 
   UserPlus, 
   Mail, 
   Lock, 
   User as UserIcon,
-  Loader2,
-  ArrowLeft,
+   ArrowLeft,
   CheckCircle2,
   AlertCircle,
-  Sparkles
+  Sparkles,
+  Shield
 } from 'lucide-react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import api from '@/lib/api';
 import { motion } from 'framer-motion';
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "react-hot-toast";
 import { Link } from 'wouter';
-
-interface Role {
-  id: number;
-  name: string;
-  description: string;
-}
-
-interface RoleResponse {
-  code: number;
-  data: Role[];
-  totalItems: number;
-}
+import { PaginatedSelect } from '@/components/shared/PaginatedSelect';
+import { FormActions } from '@/components/shared/FormActions';
 
 export default function CreateUser() {
   const [, setLocation] = useLocation();
   const queryClient = useQueryClient();
+  const { t } = useTranslation();
+  
   const [formData, setFormData] = useState({
     fullName: '',
     email: '',
@@ -47,19 +37,6 @@ export default function CreateUser() {
     confirmPassword: '',
     roleId: ''
   });
-
-  // Fetch roles for the dropdown
-  const { data: rolesData, isLoading: rolesLoading } = useQuery<RoleResponse>({
-    queryKey: ['roles'],
-    queryFn: async () => {
-      const response = await api.get('/role-permission', {
-        params: { page: 1, pageSize: 50 }
-      });
-      return response.data;
-    }
-  });
-
-  const { t } = useTranslation();
 
   const createMutation = useMutation({
     mutationFn: async (userData: any) => {
@@ -96,9 +73,13 @@ export default function CreateUser() {
     });
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleRoleChange = (value: string) => {
+    setFormData(prev => ({ ...prev, roleId: value }));
   };
 
   return (
@@ -141,39 +122,38 @@ export default function CreateUser() {
           </div>
 
           {/* Form Card */}
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="bg-white dark:bg-gray-900 rounded-md border border-gray-200 dark:border-gray-800 overflow-hidden"
-          >
-            <div className="p-6 border-b border-gray-100 dark:border-gray-800 bg-gradient-to-r from-gray-50/50 to-white dark:from-gray-800/50 dark:to-gray-900">
-               <div className="flex items-center gap-4">
-                  <div className="relative">
-                    <div className="absolute inset-0 bg-gradient-to-r from-[#4A1B1B] to-[#6B2727] rounded-md blur-lg opacity-20" />
-                    <div className="relative w-12 h-12 rounded-xl bg-gradient-to-br from-[#4A1B1B] to-[#6B2727] shadow-lg flex items-center justify-center">
-                      <UsersIcon className="w-6 h-6 text-[#B39371]" />
+          <form onSubmit={handleSubmit} className="space-y-8">
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="bg-white dark:bg-gray-900 rounded-md border border-gray-200 dark:border-gray-800  "
+            >
+              <div className="p-6 border-b border-gray-100 dark:border-gray-800 bg-gradient-to-r from-gray-50/50 to-white dark:from-gray-800/50 dark:to-gray-900">
+                 <div className="flex items-center gap-4">
+                    <div className="relative">
+                      <div className="absolute inset-0 bg-gradient-to-r from-[#4A1B1B] to-[#6B2727] rounded-md blur-lg opacity-20" />
+                      <div className="relative w-12 h-12 rounded-md bg-gradient-to-br from-[#4A1B1B] to-[#6B2727] shadow-lg flex items-center justify-center">
+                        <UsersIcon className="w-6 h-6 text-[#B39371]" />
+                      </div>
                     </div>
-                  </div>
-                  <div>
-                    <h2 className="text-xl font-bold text-gray-900 dark:text-white">{t('users.accountInfo')}</h2>
-                    <p className="text-sm text-gray-500 dark:text-gray-400">{t('users.accountInfoDesc')}</p>
-                  </div>
-               </div>
-            </div>
-            
-            <div className="p-8 lg:p-12 space-y-10">
-
-              <form onSubmit={handleSubmit} className="space-y-8">
+                    <div>
+                      <h2 className="text-xl font-bold text-gray-900 dark:text-white">{t('users.accountInfo')}</h2>
+                      <p className="text-sm text-gray-500 dark:text-gray-400">{t('users.accountInfoDesc')}</p>
+                    </div>
+                 </div>
+              </div>
+              
+              <div className="p-8 lg:p-12 space-y-10">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
                   {/* Full Name */}
                   <div className="space-y-2.5">
-                    <Label className="text-sm font-semibold text-gray-700">{t('users.fullName')}</Label>
+                    <Label className="text-sm font-semibold text-gray-700 dark:text-gray-300">{t('users.fullName')}</Label>
                     <div className="relative group">
                       <UserIcon className="absolute left-4 rtl:left-auto rtl:right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 group-focus-within:text-[#B39371] transition-colors" />
                       <Input
                         name="fullName"
                         placeholder={t('users.placeholders.fullName')}
-                        className="h-12 pl-11 rtl:pl-4 rtl:pr-11 rounded-xl bg-gray-50 border-gray-100 focus:bg-white focus:ring-2 focus:ring-[#B39371]/10 transition-all"
+                        className="h-12 pl-11 rtl:pl-4 rtl:pr-11 rounded-md bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700 focus:bg-gray-50 dark:focus:bg-gray-800 focus:ring-2 focus:ring-[#B39371]/10 transition-all"
                         value={formData.fullName}
                         onChange={handleChange}
                       />
@@ -182,7 +162,7 @@ export default function CreateUser() {
 
                   {/* Work Email */}
                   <div className="space-y-2.5">
-                    <Label className="text-sm font-semibold text-gray-700">{t('users.workEmail')}</Label>
+                    <Label className="text-sm font-semibold text-gray-700 dark:text-gray-300">{t('users.workEmail')}</Label>
                     <div className="relative group">
                       <Mail className="absolute left-4 rtl:left-auto rtl:right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 group-focus-within:text-[#B39371] transition-colors" />
                       <Input
@@ -190,7 +170,7 @@ export default function CreateUser() {
                         type="email"
                         required
                         placeholder={t('users.placeholders.email')}
-                        className="h-12 pl-11 rtl:pl-4 rtl:pr-11 rounded-xl bg-gray-50 border-gray-100 focus:bg-white focus:ring-2 focus:ring-[#B39371]/10 transition-all"
+                        className="h-12 pl-11 rtl:pl-4 rtl:pr-11 rounded-md bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700 focus:bg-gray-50 dark:focus:bg-gray-800 focus:ring-2 focus:ring-[#B39371]/10 transition-all"
                         value={formData.email}
                         onChange={handleChange}
                       />
@@ -199,7 +179,7 @@ export default function CreateUser() {
 
                   {/* Password */}
                   <div className="space-y-2.5">
-                    <Label className="text-sm font-semibold text-gray-700">{t('users.password')}</Label>
+                    <Label className="text-sm font-semibold text-gray-700 dark:text-gray-300">{t('users.password')}</Label>
                     <div className="relative group">
                       <Lock className="absolute left-4 rtl:left-auto rtl:right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 group-focus-within:text-[#B39371] transition-colors" />
                       <Input
@@ -207,7 +187,7 @@ export default function CreateUser() {
                         type="password"
                         required
                         placeholder={t('users.placeholders.password')}
-                        className="h-12 pl-11 rtl:pl-4 rtl:pr-11 rounded-xl bg-gray-50 border-gray-100 focus:bg-white focus:ring-2 focus:ring-[#B39371]/10 transition-all"
+                        className="h-12 pl-11 rtl:pl-4 rtl:pr-11 rounded-md bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700 focus:bg-gray-50 dark:focus:bg-gray-800 focus:ring-2 focus:ring-[#B39371]/10 transition-all"
                         value={formData.password}
                         onChange={handleChange}
                       />
@@ -216,7 +196,7 @@ export default function CreateUser() {
 
                   {/* Confirm Password */}
                   <div className="space-y-2.5">
-                    <Label className="text-sm font-semibold text-gray-700">{t('users.confirmPassword')}</Label>
+                    <Label className="text-sm font-semibold text-gray-700 dark:text-gray-300">{t('users.confirmPassword')}</Label>
                     <div className="relative group">
                       <Lock className="absolute left-4 rtl:left-auto rtl:right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 group-focus-within:text-[#B39371] transition-colors" />
                       <Input
@@ -224,7 +204,7 @@ export default function CreateUser() {
                         type="password"
                         required
                         placeholder={t('users.placeholders.password')}
-                        className="h-12 pl-11 rtl:pl-4 rtl:pr-11 rounded-xl bg-gray-50 border-gray-100 focus:bg-white focus:ring-2 focus:ring-[#B39371]/10 transition-all"
+                        className="h-12 pl-11 rtl:pl-4 rtl:pr-11 rounded-md bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700 focus:bg-gray-50 dark:focus:bg-gray-800 focus:ring-2 focus:ring-[#B39371]/10 transition-all"
                         value={formData.confirmPassword}
                         onChange={handleChange}
                       />
@@ -233,69 +213,41 @@ export default function CreateUser() {
 
                   {/* Role Assignment */}
                   <div className="md:col-span-2 space-y-2.5">
-                    <Label className="text-sm font-semibold text-gray-700">{t('users.roleAssignment')}</Label>
-                    <div className="relative group">
-                      <select
-                        name="roleId"
-                        required
-                        className="w-full h-12 px-4 rounded-xl bg-gray-50 border border-gray-100 text-sm font-medium text-gray-700 outline-none focus:bg-white focus:ring-2 focus:ring-[#B39371]/10 transition-all appearance-none cursor-pointer"
-                        value={formData.roleId}
-                        onChange={handleChange}
-                      >
-                        <option value="">{t('users.selectRole')}</option>
-                        {rolesData?.data.map((role) => (
-                          <option key={role.id} value={role.id}>
-                            {role.name} - {role.description}
-                          </option>
-                        ))}
-                      </select>
-                      <ChevronRight className="absolute right-4 rtl:right-auto rtl:left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 group-focus-within:text-[#B39371] rotate-90" />
-                    </div>
-                    {rolesLoading && (
-                      <div className="flex items-center gap-2 text-[10px] text-gray-400 px-2 mt-1">
-                        <Loader2 className="w-3 h-3 animate-spin" />
-                        <span>{t('users.fetchingRoles')}</span>
-                      </div>
-                    )}
+                    <Label className="text-sm font-semibold text-gray-700 dark:text-gray-300">{t('users.roleAssignment')}</Label>
+                    <PaginatedSelect
+                      apiEndpoint="/role-permission"
+                      queryKey="roles"
+                      value={formData.roleId}
+                      onChange={handleRoleChange}
+                      placeholder={t('users.selectRole')}
+                      searchPlaceholder={t('users.searchRoles')}
+                      mapResponseToOptions={(res) => res.data
+                        .filter((role: any) => role.id !== 5 && role.id !== 6)
+                        .map((role: any) => ({
+                          value: role.id.toString(),
+                          label: role.name,
+                          description: role.description,
+                          icon: <Shield className="w-4 h-4" />
+                        }))}
+                    />
                   </div>
                 </div>
+              </div>
+            </motion.div>
 
-                {/* Submit Actions */}
-                <div className="pt-8 flex items-center justify-end gap-4 border-t border-gray-100 dark:border-gray-800 mt-12">
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    onClick={() => setLocation('/users')}
-                    className="h-12 px-8 rounded-md font-medium text-gray-500 hover:text-gray-900 dark:hover:text-white transition-all underline decoration-gray-200"
-                  >
-                    {t('common.cancel')}
-                  </Button>
-                  <Button
-                    type="submit"
-                    disabled={createMutation.isPending}
-                    className="h-12 px-10 rounded-md bg-gradient-to-r from-[#4A1B1B] to-[#6B2727] hover:from-[#6B2727] hover:to-[#4A1B1B] text-white font-bold shadow-lg shadow-[#4A1B1B]/20 flex items-center gap-2 transition-all min-w-[180px]"
-                  >
-                    {createMutation.isPending ? (
-                      <>
-                        <Loader2 className="w-4 h-4 animate-spin" />
-                        {t('users.creating')}
-                      </>
-                    ) : (
-                      <>
-                        <UserPlus className="w-4 h-4" />
-                        {t('users.create')}
-                      </>
-                    )}
-                  </Button>
-                </div>
-              </form>
-            </div>
-          </motion.div>
+            <FormActions
+              onCancel={() => setLocation('/users')}
+              isSubmitting={createMutation.isPending}
+              submitText={t('users.create')}
+              submittingText={t('users.creating')}
+              submitIcon={<UserPlus className="w-4 h-4" />}
+            />
+          </form>
 
           {/* Guidelines */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
              <div className="p-6 bg-emerald-50 dark:bg-emerald-500/5 rounded-md border border-emerald-100 dark:border-emerald-500/20 flex items-start gap-4 transition-all hover:shadow-md">
-                <div className="w-10 h-10 rounded-xl bg-emerald-500/10 flex items-center justify-center text-emerald-600 flex-shrink-0">
+                <div className="w-10 h-10 rounded-md bg-emerald-500/10 flex items-center justify-center text-emerald-600 flex-shrink-0">
                   <CheckCircle2 className="w-6 h-6" />
                 </div>
                 <div className="space-y-1">
@@ -304,7 +256,7 @@ export default function CreateUser() {
                 </div>
              </div>
              <div className="p-6 bg-amber-50 dark:bg-amber-500/5 rounded-md border border-amber-100 dark:border-amber-500/20 flex items-start gap-4 transition-all hover:shadow-md">
-                <div className="w-10 h-10 rounded-xl bg-amber-500/10 flex items-center justify-center text-amber-600 flex-shrink-0">
+                <div className="w-10 h-10 rounded-md bg-amber-500/10 flex items-center justify-center text-amber-600 flex-shrink-0">
                   <AlertCircle className="w-6 h-6" />
                 </div>
                 <div className="space-y-1">

@@ -37,7 +37,7 @@ interface UpdateStepDialogProps {
 }
 
 export function UpdateStepDialog({ isOpen, onClose, legalityId, stepData }: UpdateStepDialogProps) {
-  const { t } = useTranslation();
+  const { t,  i18n } = useTranslation();
   const queryClient = useQueryClient();
   
   const isDefault = stepData?.step?.isDefault !== false; // disabled when isDefault is true or undefined
@@ -80,7 +80,7 @@ export function UpdateStepDialog({ isOpen, onClose, legalityId, stepData }: Upda
       onClose();
     },
     onError: (error: any) => {
-      toast.error(error.response?.data?.message?.english || 'Failed to update step', {
+      toast.error(error.response?.data?.message?.[i18n.language === 'ar' ? 'arabic' : 'english'] || t('common.error'), {
         icon: '❌',
         style: { borderRadius: '1rem', background: '#ef4444', color: '#fff' }
       });

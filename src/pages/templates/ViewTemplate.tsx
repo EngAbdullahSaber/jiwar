@@ -117,7 +117,7 @@ const FeatureCard = ({ icon: Icon, label, active, delay = 0 }: any) => (
         <div>
           <p className="text-sm font-medium text-gray-900 dark:text-white">{label}</p>
           <p className="text-xs text-gray-500 dark:text-gray-400">
-            {active ? 'Available' : 'Not available'}
+            {active ? t('templates.available') : t('templates.notAvailable')}
           </p>
         </div>
       </div>
@@ -233,7 +233,7 @@ export default function ViewTemplate() {
     { key: 'guestMajlis', label: t('templates.amenities.guestMajlis'), icon: Coffee, active: template.guestMajlis },
     { key: 'kitchen', label: t('templates.amenities.kitchen'), icon: Utensils, active: template.kitchen },
     { key: 'balconyAccess', label: t('templates.amenities.balcony'), icon: Wind, active: template.balconyAccess },
-    { key: 'rooftop', label: t('templates.amenities.rooftop') || "Rooftop", icon: Home, active: template.rooftop }
+    { key: 'rooftop', label: t('templates.amenities.rooftop'), icon: Home, active: template.rooftop }
   ];
 
   const getPlaceholderImage = (id: number) => {
@@ -413,27 +413,27 @@ export default function ViewTemplate() {
                 {template.maidRoom > 0 && (
                   <StatCard 
                     icon={Users} 
-                    label={t('templates.labels.maidRoom') || "Maid Room"} 
+                    label={t('templates.labels.maidRoom')} 
                     value={`${template.maidRoom} ${t('templates.sqm')}`}
-                    subValue={t('templates.labels.maidRoom') || "Maid Room"}
+                    subValue={t('templates.labels.maidRoom')}
                     delay={0.3}
                   />
                 )}
                 {template.clothsRoom > 0 && (
                   <StatCard 
                     icon={Layers} 
-                    label={t('templates.labels.clothsRoom') || "Cloths Room"} 
+                    label={t('templates.labels.clothsRoom')} 
                     value={`${template.clothsRoom} ${t('templates.sqm')}`}
-                    subValue={t('templates.labels.clothsRoom') || "Cloths Room"}
+                    subValue={t('templates.labels.clothsRoom')}
                     delay={0.35}
                   />
                 )}
                 {template.driverRoom > 0 && (
                   <StatCard 
                     icon={Building2} 
-                    label={t('templates.labels.driverRoom') || "Driver Room"} 
+                    label={t('templates.labels.driverRoom')} 
                     value={`${template.driverRoom} ${t('templates.sqm')}`}
-                    subValue={t('templates.labels.driverRoom') || "Driver Room"}
+                    subValue={t('templates.labels.driverRoom')}
                     delay={0.4}
                   />
                 )}
@@ -541,8 +541,8 @@ export default function ViewTemplate() {
               >
                 <div className="flex items-center gap-4">
                   <div className="flex-1">
-                    <h4 className="text-lg font-semibold mb-1">Ready to Use</h4>
-                    <p className="text-sm text-white/80">This template is verified and ready for project allocation.</p>
+                    <h4 className="text-lg font-semibold mb-1">{t('templates.readyToUse')}</h4>
+                    <p className="text-sm text-white/80">{t('templates.readyToUseDesc')}</p>
                   </div>
                   <div className="w-12 h-12 bg-white/20 rounded-xl backdrop-blur-sm flex items-center justify-center">
                     <CheckCircle className="w-6 h-6" />

@@ -17,6 +17,7 @@ import {
 } from 'lucide-react';
 import { Link } from "wouter";
 import { Shell } from '../../components/shared/Shell';
+import { Can } from '../../components/shared/Can';
 import { useQuery } from '@tanstack/react-query';
 import api from '@/lib/api';
 import { motion } from 'framer-motion';
@@ -97,7 +98,9 @@ export default function Users() {
       key: 'role',
       apiEndpoint: '/role-permission',
       queryKey: 'roles-filter',
-      mapResponseToOptions: (res) => res.data.map((role: any) => ({
+      mapResponseToOptions: (res) => res.data
+        .filter((role: any) => role.id !== 5 && role.id !== 6)
+        .map((role: any) => ({
         value: role.id.toString(),
         label: role.name,
         description: role.description
@@ -171,7 +174,7 @@ export default function Users() {
             <Icon className="w-3.5 h-3.5 text-gray-400 group-hover:text-inherit transition-colors" />
             <Badge 
               variant="outline"
-              className={cn("px-2.5 py-1 text-xs font-semibold rounded-lg border shadow-sm transition-all", config.color)}
+              className={cn("px-2.5 py-1 text-xs font-semibold rounded-md border shadow-sm transition-all", config.color)}
             >
               {user.role.name}
             </Badge>
@@ -208,24 +211,30 @@ export default function Users() {
               <MoreVertical className="h-4 w-4 text-gray-400" />
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-40 rounded-xl">
+          <DropdownMenuContent align="end" className="w-40 rounded-md">
             <DropdownMenuLabel className="text-xs font-medium text-gray-400">{t('users.actions')}</DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuItem 
-              className="rounded-lg cursor-pointer"
-              onClick={() => {
-                setSelectedUser(user);
-                setIsUpdateDialogOpen(true);
-              }}
-            >
-              <Edit className="w-3.5 h-3.5 mr-2 rtl:mr-0 rtl:ml-2 text-gray-400" />
-              <span className="text-xs">{t('users.edit')}</span>
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem className="rounded-lg cursor-pointer text-red-600">
-              <Trash2 className="w-3.5 h-3.5 mr-2 rtl:mr-0 rtl:ml-2" />
-              <span className="text-xs">{t('users.delete')}</span>
-            </DropdownMenuItem>
+            <Can I="UPDATE" a="user">
+              <DropdownMenuItem 
+                className="rounded-lg cursor-pointer"
+                onClick={() => {
+                  setSelectedUser(user);
+                  setIsUpdateDialogOpen(true);
+                }}
+              >
+                <Edit className="w-3.5 h-3.5 mr-2 rtl:mr-0 rtl:ml-2 text-gray-400" />
+                <span className="text-xs">{t('users.edit')}</span>
+              </DropdownMenuItem>
+            </Can>
+            <Can I="DELETE" a="user">
+              <>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem className="rounded-lg cursor-pointer text-red-600">
+                  <Trash2 className="w-3.5 h-3.5 mr-2 rtl:mr-0 rtl:ml-2" />
+                  <span className="text-xs">{t('users.delete')}</span>
+                </DropdownMenuItem>
+              </>
+            </Can>
           </DropdownMenuContent>
         </DropdownMenu>
       )
@@ -244,8 +253,8 @@ export default function Users() {
             <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
               <div className="flex items-center gap-4">
                 <div className="relative">
-                  <div className="absolute inset-0 bg-gradient-to-r from-[#4A1B1B] to-[#6B2727] rounded-xl blur-lg opacity-50" />
-                  <div className="relative w-14 h-14 rounded-xl bg-gradient-to-br from-[#4A1B1B] to-[#6B2727] shadow-lg flex items-center justify-center">
+                  <div className="absolute inset-0 bg-gradient-to-r from-[#4A1B1B] to-[#6B2727] rounded-md blur-lg opacity-50" />
+                  <div className="relative w-14 h-14 rounded-md bg-gradient-to-br from-[#4A1B1B] to-[#6B2727] shadow-lg flex items-center justify-center">
                     <UsersIcon className="w-7 h-7 text-[#B39371]" />
                   </div>
                 </div>
@@ -275,16 +284,18 @@ export default function Users() {
                   {t('users.refresh')}
                 </Button>
                 
-                <Link href="/users/new">
-                  <motion.button
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                    className="flex items-center gap-2 px-6 py-2.5 bg-gradient-to-r from-[#4A1B1B] to-[#6B2727] text-white rounded-md text-sm font-medium shadow-lg shadow-[#4A1B1B]/20 hover:shadow-xl transition-all"
-                  >
-                    <Plus className="w-5 h-5" />
-                    {t('users.create')}
-                  </motion.button>
-                </Link>
+                <Can I="CREATE" a="user">
+                  <Link href="/users/new">
+                    <motion.button
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      className="flex items-center gap-2 px-6 py-2.5 bg-gradient-to-r from-[#4A1B1B] to-[#6B2727] text-white rounded-md text-sm font-medium shadow-lg shadow-[#4A1B1B]/20 hover:shadow-xl transition-all"
+                    >
+                      <Plus className="w-5 h-5" />
+                      {t('users.create')}
+                    </motion.button>
+                  </Link>
+                </Can>
               </div>
             </div>
           </div>

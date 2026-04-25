@@ -29,6 +29,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Link } from "wouter";
 import { StatCard } from '../../components/shared/StatCard';
+import { Can } from '../../components/shared/Can';
 import { DeleteDialog } from '../../components/shared/DeleteDialog';
 import { toast } from 'react-hot-toast';
 import {
@@ -161,16 +162,18 @@ export default function Roles() {
                   {t('common.refresh')}
                 </Button>
 
-                <Link href="/roles/new">
-                  <motion.button
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                    className="flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-[#4A1B1B] to-[#6B2727] text-white rounded-md text-sm font-medium shadow-lg shadow-[#4A1B1B]/20 hover:shadow-xl transition-all"
-                  >
-                    <Plus className="w-4 h-4" />
-                    {t('roles.create')}
-                  </motion.button>
-                </Link>
+                <Can I="CREATE" a="role-permission">
+                  <Link href="/roles/new">
+                    <motion.button
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      className="flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-[#4A1B1B] to-[#6B2727] text-white rounded-md text-sm font-medium shadow-lg shadow-[#4A1B1B]/20 hover:shadow-xl transition-all"
+                    >
+                      <Plus className="w-4 h-4" />
+                      {t('roles.create')}
+                    </motion.button>
+                  </Link>
+                </Can>
               </div>
             </div>
           </div>
@@ -274,25 +277,31 @@ export default function Roles() {
                               <MoreVertical className="w-4 h-4" />
                             </Button>
                           </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end" className="w-44 rounded-xl">
+                          <DropdownMenuContent align="end" className="w-44 rounded-md">
                             <DropdownMenuLabel className="text-xs font-medium text-gray-400">
                               {t('common.actions')}
                             </DropdownMenuLabel>
                             <DropdownMenuSeparator />
-                            <Link href={`/roles/${role.id}/edit`}>
-                              <DropdownMenuItem className="cursor-pointer rounded-lg gap-2">
-                                <Edit className="w-3.5 h-3.5 text-gray-400" />
-                                <span className="text-xs">{t('common.edit')}</span>
-                              </DropdownMenuItem>
-                            </Link>
-                            <DropdownMenuSeparator />
-                            <DropdownMenuItem
-                              className="cursor-pointer rounded-lg gap-2 text-red-600 focus:text-red-700"
-                              onClick={() => setRoleToDelete(role.id)}
-                            >
-                              <Trash2 className="w-3.5 h-3.5" />
-                              <span className="text-xs">{t('common.delete')}</span>
-                            </DropdownMenuItem>
+                            <Can I="UPDATE" a="role-permission">
+                              <Link href={`/roles/${role.id}/edit`}>
+                                <DropdownMenuItem className="cursor-pointer rounded-lg gap-2">
+                                  <Edit className="w-3.5 h-3.5 text-gray-400" />
+                                  <span className="text-xs">{t('common.edit')}</span>
+                                </DropdownMenuItem>
+                              </Link>
+                            </Can>
+                            <Can I="DELETE" a="role-permission">
+                              <>
+                                <DropdownMenuSeparator />
+                                <DropdownMenuItem
+                                  className="cursor-pointer rounded-lg gap-2 text-red-600 focus:text-red-700"
+                                  onClick={() => setRoleToDelete(role.id)}
+                                >
+                                  <Trash2 className="w-3.5 h-3.5" />
+                                  <span className="text-xs">{t('common.delete')}</span>
+                                </DropdownMenuItem>
+                              </>
+                            </Can>
                           </DropdownMenuContent>
                         </DropdownMenu>
                       </div>

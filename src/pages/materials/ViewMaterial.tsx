@@ -364,14 +364,14 @@ export default function ViewMaterial() {
                     <DetailRow 
                       icon={DollarSign} 
                       label={t('materials.price')} 
-                      value={material.supplier.price ? `${material.supplier.price.toLocaleString()} ${t('common.sar') || 'SAR'}` : '—'} 
+                      value={material.supplier.price ? `${material.supplier.price.toLocaleString()} ${t('common.sar')}` : '—'} 
                     />
                     {material.supplier.editPrice && (
                       <>
                         <DetailRow 
                           icon={DollarSign} 
                           label={t('materials.editPrice')} 
-                          value={`${material.supplier.editPrice.toLocaleString()} ${t('common.sar') || 'SAR'}`} 
+                          value={`${material.supplier.editPrice.toLocaleString()} ${t('common.sar')}`} 
                         />
                         <DetailRow 
                           icon={Calendar} 

@@ -351,7 +351,7 @@ export default function UpdateTemplate() {
               <div className="space-y-6">
                 {/* Rooms Grid */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                  <FormField label={t('templates.labels.maidRoom') || "Maid Room"} error={errors.maidRoom?.message}>
+                  <FormField label={t('templates.labels.maidRoom')} error={errors.maidRoom?.message}>
                     <Input 
                       type="number"
                       step="0.01"
@@ -360,7 +360,7 @@ export default function UpdateTemplate() {
                       className="h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-xl px-4"
                     />
                   </FormField>
-                  <FormField label={t('templates.labels.clothsRoom') || "Cloths Room"} error={errors.clothsRoom?.message}>
+                  <FormField label={t('templates.labels.clothsRoom')} error={errors.clothsRoom?.message}>
                     <Input 
                       type="number"
                       step="0.01"
@@ -369,7 +369,7 @@ export default function UpdateTemplate() {
                       className="h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-xl px-4"
                     />
                   </FormField>
-                  <FormField label={t('templates.labels.driverRoom') || "Driver Room"} error={errors.driverRoom?.message}>
+                  <FormField label={t('templates.labels.driverRoom')} error={errors.driverRoom?.message}>
                     <Input 
                       type="number"
                       step="0.01"
@@ -440,7 +440,7 @@ export default function UpdateTemplate() {
                 {/* Radio Options */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {/* Balcony Access */}
-                  <FormField label="Balcony Access">
+                  <FormField label={t('templates.amenities.balcony')}>
                     <RadioGroup 
                       defaultValue={templateData?.balconyAccess ? 'true' : 'false'}
                       onValueChange={(val) => setValue('balconyAccess', val === 'true')}
@@ -448,6 +448,7 @@ export default function UpdateTemplate() {
                     >
                       {['Yes', 'No'].map((option) => {
                         const value = option === 'Yes' ? 'true' : 'false';
+                        const label = option === 'Yes' ? t('common.yes' as any) || 'Yes' : t('common.no' as any) || 'No';
                         return (
                           <div key={option} className="flex items-center">
                             <RadioGroupItem 
@@ -464,7 +465,7 @@ export default function UpdateTemplate() {
                                   : "bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:border-[#B39371]/30"
                               )}
                             >
-                              {option}
+                              {label}
                             </Label>
                           </div>
                         );
@@ -473,7 +474,7 @@ export default function UpdateTemplate() {
                   </FormField>
 
                   {/* Location */}
-                  <FormField label="Location">
+                  <FormField label={t('templates.location')}>
                     <RadioGroup 
                       defaultValue={templateData?.location || 'FRONT'}
                       onValueChange={(val) => setValue('location', val as 'FRONT' | 'BACK')}
@@ -513,7 +514,7 @@ export default function UpdateTemplate() {
                       { key: 'familyLounge', label: t('templates.amenities.familyLounge'), icon: '🛋️' },
                       { key: 'guestMajlis', label: t('templates.amenities.guestMajlis'), icon: '🕌' },
                       { key: 'kitchen', label: t('templates.amenities.kitchen'), icon: '🍳' },
-                      { key: 'rooftop', label: t('templates.amenities.rooftop') || "Rooftop", icon: '🏠' }
+                      { key: 'rooftop', label: t('templates.amenities.rooftop'), icon: '🏠' }
                     ].map((feature) => (
                       <motion.div
                         key={feature.key}

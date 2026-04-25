@@ -1,7 +1,9 @@
 import { useEffect, useState } from "react";
 import { useLocation } from "wouter";
+import { useTranslation } from "react-i18next";
 
 export const Loading = (): JSX.Element => {
+  const { t } = useTranslation();
   const [, setLocation] = useLocation();
   const [progress, setProgress] = useState(0);
   const [phase, setPhase] = useState(0);
@@ -266,7 +268,7 @@ export const Loading = (): JSX.Element => {
               src="/figmaAssets/layer-1.png"
             />
             <div className="logo-divider" />
-            <span className="tagline">Property Management System</span>
+            <span className="tagline">{t("loading.tagline")}</span>
           </div>
 
           <div className="progress-wrap">
@@ -281,7 +283,7 @@ export const Loading = (): JSX.Element => {
             </div>
 
             <span className="status-text">
-              {progress < 40 ? 'Initializing' : progress < 80 ? 'Loading Assets' : 'Ready'}
+              {progress < 40 ? t("loading.initializing") : progress < 80 ? t("loading.loadingAssets") : t("loading.ready")}
             </span>
           </div>
         </div>

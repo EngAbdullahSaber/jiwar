@@ -12,6 +12,7 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Link } from "wouter";
 import { Shell } from '../../components/shared/Shell';
+import { Can } from '../../components/shared/Can';
 import { 
   Building2, 
   MapPin, 
@@ -225,26 +226,32 @@ export default function Projects() {
       headerClassName: "text-center",
       cell: (p) => (
         <div className="flex items-center justify-center gap-2">
-          <Link href={`/projects/${p.id}`}>
-            <button className="p-2 hover:bg-[#F5F1ED] dark:hover:bg-gray-800 rounded-lg text-gray-400 hover:text-[#4A1B1B] dark:hover:text-[#B39371] transition-colors" title="View Profile">
-              <Eye className="w-4 h-4" />
-            </button>
-          </Link>
-          <Link href={`/projects/${p.id}/stages`}>
-            <button className="p-2 hover:bg-[#F5F1ED] dark:hover:bg-gray-800 rounded-lg text-gray-400 hover:text-[#4A1B1B] dark:hover:text-[#B39371] transition-colors" title="Manage Stages">
-              <Layers className="w-4 h-4" />
-            </button>
-          </Link>
-          <Link href={`/projects/${p.id}/media`}>
-            <button className="p-2 hover:bg-[#F5F1ED] dark:hover:bg-gray-800 rounded-lg text-gray-400 hover:text-[#B39371] transition-colors" title="Add Media">
-              <FolderOpen className="w-4 h-4" />
-            </button>
-          </Link>
-          <Link href={`/projects/${p.id}/edit`}>
-            <button className="p-2 hover:bg-[#F5F1ED] dark:hover:bg-gray-800 rounded-lg text-gray-400 hover:text-[#4A1B1B] dark:hover:text-[#B39371] transition-colors" title="Edit">
-              <Pencil className="w-4 h-4" />
-            </button>
-          </Link>
+          <Can I="READ" a="project">
+            <Link href={`/projects/${p.id}`}>
+              <button className="p-2 hover:bg-[#F5F1ED] dark:hover:bg-gray-800 rounded-md text-gray-400 hover:text-[#4A1B1B] dark:hover:text-[#B39371] transition-colors" title="View Profile">
+                <Eye className="w-4 h-4" />
+              </button>
+            </Link>
+          </Can>
+          <Can I="UPDATE" a="project">
+            <>
+              <Link href={`/projects/${p.id}/stages`}>
+                <button className="p-2 hover:bg-[#F5F1ED] dark:hover:bg-gray-800 rounded-md text-gray-400 hover:text-[#4A1B1B] dark:hover:text-[#B39371] transition-colors" title="Manage Stages">
+                  <Layers className="w-4 h-4" />
+                </button>
+              </Link>
+              <Link href={`/projects/${p.id}/media`}>
+                <button className="p-2 hover:bg-[#F5F1ED] dark:hover:bg-gray-800 rounded-md text-gray-400 hover:text-[#B39371] transition-colors" title="Add Media">
+                  <FolderOpen className="w-4 h-4" />
+                </button>
+              </Link>
+              <Link href={`/projects/${p.id}/edit`}>
+                <button className="p-2 hover:bg-[#F5F1ED] dark:hover:bg-gray-800 rounded-md text-gray-400 hover:text-[#4A1B1B] dark:hover:text-[#B39371] transition-colors" title="Edit">
+                  <Pencil className="w-4 h-4" />
+                </button>
+              </Link>
+            </>
+          </Can>
         </div>
       )
     }
@@ -262,12 +269,12 @@ export default function Projects() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
           
           {/* Header Section */}
-          <div className="bg-white dark:bg-gray-900 rounded-[28px] border border-gray-100 dark:border-gray-800 p-6 shadow-sm">
+          <div className="bg-white dark:bg-gray-900 rounded-md border border-gray-100 dark:border-gray-800 p-6 shadow-sm">
             <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
               <div className="flex items-center gap-5">
                 <div className="relative">
-                  <div className="absolute inset-0 bg-gradient-to-r from-[#4A1B1B] to-[#6B2727] rounded-2xl blur-lg opacity-30" />
-                  <div className="relative w-16 h-16 rounded-2xl bg-gradient-to-br from-[#4A1B1B] to-[#6B2727] shadow-xl flex items-center justify-center">
+                  <div className="absolute inset-0 bg-gradient-to-r from-[#4A1B1B] to-[#6B2727] rounded-md blur-lg opacity-30" />
+                  <div className="relative w-16 h-16 rounded-md bg-gradient-to-br from-[#4A1B1B] to-[#6B2727] shadow-xl flex items-center justify-center">
                     <Building2 className="w-8 h-8 text-[#B39371]" />
                   </div>
                 </div>
@@ -288,16 +295,18 @@ export default function Projects() {
               </div>
 
               <div className="flex items-center gap-4">
-                <Link href="/projects/new">
-                  <motion.button
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                    className="flex items-center gap-2 px-8 py-3 bg-gradient-to-r from-[#4A1B1B] to-[#6B2727] text-white rounded-2xl text-sm font-bold shadow-xl shadow-[#4A1B1B]/20 hover:shadow-2xl transition-all"
-                  >
-                    <Plus className="w-5 h-5" />
-                    {t('projects.create')}
-                  </motion.button>
-                </Link>
+                <Can I="CREATE" a="project">
+                  <Link href="/projects/new">
+                    <motion.button
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      className="flex items-center gap-2 px-8 py-3 bg-gradient-to-r from-[#4A1B1B] to-[#6B2727] text-white rounded-md text-sm font-bold shadow-xl shadow-[#4A1B1B]/20 hover:shadow-2xl transition-all"
+                    >
+                      <Plus className="w-5 h-5" />
+                      {t('projects.create')}
+                    </motion.button>
+                  </Link>
+                </Can>
               </div>
             </div>
           </div>

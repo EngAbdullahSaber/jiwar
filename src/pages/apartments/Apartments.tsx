@@ -11,6 +11,7 @@ import type { FilterField } from '../../components/shared/FilterBar';
 
 import { Link } from "wouter";
 import { Shell } from '../../components/shared/Shell';
+import { Can } from '../../components/shared/Can';
 import { 
   Building,
   Plus,
@@ -146,16 +147,20 @@ export default function Apartments() {
       headerClassName: "text-center",
       cell: (a) => (
         <div className="flex items-center justify-center gap-2">
-          <Link href={`/apartments/${a.id}`}>
-            <button className="p-2 hover:bg-[#F5F1ED] dark:hover:bg-gray-800 rounded-lg text-gray-400 hover:text-[#4A1B1B] dark:hover:text-[#B39371] transition-colors" title={t('common.view')}>
-              <Eye className="w-4 h-4" />
-            </button>
-          </Link>
-          <Link href={`/apartments/${a.id}/edit`}>
-            <button className="p-2 hover:bg-[#F5F1ED] dark:hover:bg-gray-800 rounded-lg text-gray-400 hover:text-[#4A1B1B] dark:hover:text-[#B39371] transition-colors" title={t('common.edit')}>
-              <Pencil className="w-4 h-4" />
-            </button>
-          </Link>
+          <Can I="READ" a="apartment">
+            <Link href={`/apartments/${a.id}`}>
+              <button className="p-2 hover:bg-[#F5F1ED] dark:hover:bg-gray-800 rounded-md text-gray-400 hover:text-[#4A1B1B] dark:hover:text-[#B39371] transition-colors" title={t('common.view')}>
+                <Eye className="w-4 h-4" />
+              </button>
+            </Link>
+          </Can>
+          <Can I="UPDATE" a="apartment">
+            <Link href={`/apartments/${a.id}/edit`}>
+              <button className="p-2 hover:bg-[#F5F1ED] dark:hover:bg-gray-800 rounded-md text-gray-400 hover:text-[#4A1B1B] dark:hover:text-[#B39371] transition-colors" title={t('common.edit')}>
+                <Pencil className="w-4 h-4" />
+              </button>
+            </Link>
+          </Can>
         </div>
       )
     }
@@ -176,8 +181,8 @@ export default function Apartments() {
             <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
               <div className="flex items-center gap-4">
                 <div className="relative">
-                  <div className="absolute inset-0 bg-gradient-to-r from-[#4A1B1B] to-[#6B2727] rounded-xl blur-lg opacity-50" />
-                  <div className="relative w-14 h-14 rounded-xl bg-gradient-to-br from-[#4A1B1B] to-[#6B2727] shadow-lg flex items-center justify-center">
+                  <div className="absolute inset-0 bg-gradient-to-r from-[#4A1B1B] to-[#6B2727] rounded-md blur-lg opacity-50" />
+                  <div className="relative w-14 h-14 rounded-md bg-gradient-to-br from-[#4A1B1B] to-[#6B2727] shadow-lg flex items-center justify-center">
                     <Building className="w-7 h-7 text-[#B39371]" />
                   </div>
                 </div>
@@ -198,16 +203,18 @@ export default function Apartments() {
               </div>
 
               <div className="flex items-center gap-4">
-                <Link href="/apartments/new">
-                  <motion.button
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                    className="flex items-center gap-2 px-6 py-2.5 bg-gradient-to-r from-[#4A1B1B] to-[#6B2727] text-white rounded-md text-sm font-medium shadow-lg shadow-[#4A1B1B]/20 hover:shadow-xl transition-all"
-                  >
-                    <Plus className="w-5 h-5" />
-                    {t('apartments.add')}
-                  </motion.button>
-                </Link>
+                <Can I="CREATE" a="apartment">
+                  <Link href="/apartments/new">
+                    <motion.button
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      className="flex items-center gap-2 px-6 py-2.5 bg-gradient-to-r from-[#4A1B1B] to-[#6B2727] text-white rounded-md text-sm font-medium shadow-lg shadow-[#4A1B1B]/20 hover:shadow-xl transition-all"
+                    >
+                      <Plus className="w-5 h-5" />
+                      {t('apartments.add')}
+                    </motion.button>
+                  </Link>
+                </Can>
               </div>
             </div>
           </div>

@@ -5,6 +5,9 @@ import { Toaster as HotToaster } from "react-hot-toast";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { useEffect } from "react";
+import { ShieldAlert, ArrowLeft } from "lucide-react";
+import { useTranslation } from "react-i18next";
+import { useAppSelector } from "@/hooks/useRedux";
 import NotFound from "@/pages/not-found";
 
 import { NewPassword } from "@/pages/auth-pages/NewPassword";
@@ -66,13 +69,43 @@ import FinanceDashboard from "@/pages/finance/FinanceDashboard";
 
 import { useLocation } from "wouter";
 
-function ProtectedRoute({ component: Component, ...rest }: any) {
+function ProtectedRoute({ component: Component, resource, action = 'READ', ...rest }: any) {
   const token = localStorage.getItem("token");
+  const { user } = useAppSelector((state: any) => state.auth);
   const [, setLocation] = useLocation();
+  const { t } = useTranslation();
 
   if (!token) {
     setLocation("/");
     return null;
+  }
+
+  if (resource) {
+    const permission = user?.role?.permissions?.find((p: any) => p.resource === resource);
+    if (!permission?.actions?.includes(action)) {
+      return (
+        <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-950 p-4">
+          <div className="max-w-md w-full bg-white dark:bg-gray-900 rounded-3xl shadow-2xl border border-gray-100 dark:border-gray-800 p-10 text-center">
+            <div className="w-20 h-20 bg-red-50 dark:bg-red-500/10 rounded-2xl flex items-center justify-center mx-auto mb-6">
+              <ShieldAlert className="w-10 h-10 text-red-500" />
+            </div>
+            <h1 className="text-2xl font-black text-gray-900 dark:text-white mb-2">
+              {t('common.accessDenied')}
+            </h1>
+            <p className="text-gray-500 dark:text-gray-400 mb-8">
+              {t('common.accessDeniedDesc')}
+            </p>
+            <button 
+              onClick={() => setLocation('/dashboard')}
+              className="w-full h-12 flex items-center justify-center gap-2 bg-gray-900 dark:bg-white text-white dark:text-gray-900 rounded-xl font-bold transition-all hover:scale-[1.02] active:scale-[0.98]"
+            >
+              <ArrowLeft className="w-4 h-4 rtl:rotate-180" />
+              {t('common.goDashboard')}
+            </button>
+          </div>
+        </div>
+      );
+    }
   }
 
   return <Component {...rest} />;
@@ -103,157 +136,157 @@ function Router() {
       </Route>
       
       <Route path="/templates">
-        <ProtectedRoute component={Templates} />
+        <ProtectedRoute component={Templates} resource="template" />
       </Route>
       <Route path="/templates/new">
-        <ProtectedRoute component={CreateTemplate} />
+        <ProtectedRoute component={CreateTemplate} resource="template" action="CREATE" />
       </Route>
       <Route path="/templates/:id">
-        <ProtectedRoute component={ViewTemplate} />
+        <ProtectedRoute component={ViewTemplate} resource="template" />
       </Route>
       <Route path="/templates/:id/edit">
-        <ProtectedRoute component={UpdateTemplate} />
+        <ProtectedRoute component={UpdateTemplate} resource="template" action="UPDATE" />
       </Route>
       
       <Route path="/legality">
-        <ProtectedRoute component={Legality} />
+        <ProtectedRoute component={Legality} resource="legality" />
       </Route>
       <Route path="/legality/new">
-        <ProtectedRoute component={CreateLegality} />
+        <ProtectedRoute component={CreateLegality} resource="legality" action="CREATE" />
       </Route>
       <Route path="/legality/:id">
-        <ProtectedRoute component={ViewLegality} />
+        <ProtectedRoute component={ViewLegality} resource="legality" />
       </Route>
       <Route path="/legality/:id/edit">
-        <ProtectedRoute component={UpdateLegality} />
+        <ProtectedRoute component={UpdateLegality} resource="legality" action="UPDATE" />
       </Route>
       
       <Route path="/users">
-        <ProtectedRoute component={Users} />
+        <ProtectedRoute component={Users} resource="user" />
       </Route>
       <Route path="/users/new">
-        <ProtectedRoute component={CreateUser} />
+        <ProtectedRoute component={CreateUser} resource="user" action="CREATE" />
       </Route>
       
       <Route path="/salesman">
-        <ProtectedRoute component={Salesman} />
+        <ProtectedRoute component={Salesman} resource="salesman" />
       </Route>
       <Route path="/salesman/new">
-        <ProtectedRoute component={CreateSalesman} />
+        <ProtectedRoute component={CreateSalesman} resource="salesman" action="CREATE" />
       </Route>
       <Route path="/salesman/:id/edit">
-        <ProtectedRoute component={UpdateSalesman} />
+        <ProtectedRoute component={UpdateSalesman} resource="salesman" action="UPDATE" />
       </Route>
       <Route path="/salesman/:id">
-        <ProtectedRoute component={ViewSalesman} />
+        <ProtectedRoute component={ViewSalesman} resource="salesman" />
       </Route>
       
       <Route path="/roles">
-        <ProtectedRoute component={Roles} />
+        <ProtectedRoute component={Roles} resource="role-permission" />
       </Route>
       <Route path="/roles/new">
-        <ProtectedRoute component={CreateRole} />
+        <ProtectedRoute component={CreateRole} resource="role-permission" action="CREATE" />
       </Route>
       <Route path="/roles/:id/edit">
-        <ProtectedRoute component={UpdateRole} />
+        <ProtectedRoute component={UpdateRole} resource="role-permission" action="UPDATE" />
       </Route>
       
       <Route path="/countries">
-        <ProtectedRoute component={Countries} />
+        <ProtectedRoute component={Countries} resource="country" />
       </Route>
       <Route path="/countries/new">
-        <ProtectedRoute component={CreateCountry} />
+        <ProtectedRoute component={CreateCountry} resource="country" action="CREATE" />
       </Route>
       <Route path="/countries/:id/edit">
-        <ProtectedRoute component={UpdateCountry} />
+        <ProtectedRoute component={UpdateCountry} resource="country" action="UPDATE" />
       </Route>
       
       <Route path="/cities">
-        <ProtectedRoute component={Cities} />
+        <ProtectedRoute component={Cities} resource="city" />
       </Route>
       <Route path="/cities/new">
-        <ProtectedRoute component={CreateCity} />
+        <ProtectedRoute component={CreateCity} resource="city" action="CREATE" />
       </Route>
       <Route path="/cities/:id/edit">
-        <ProtectedRoute component={UpdateCity} />
+        <ProtectedRoute component={UpdateCity} resource="city" action="UPDATE" />
       </Route>
       
       <Route path="/banks">
-        <ProtectedRoute component={Banks} />
+        <ProtectedRoute component={Banks} resource="bank" />
       </Route>
       <Route path="/banks/new">
-        <ProtectedRoute component={CreateBank} />
+        <ProtectedRoute component={CreateBank} resource="bank" action="CREATE" />
       </Route>
       <Route path="/banks/:id/edit">
-        <ProtectedRoute component={UpdateBank} />
+        <ProtectedRoute component={UpdateBank} resource="bank" action="UPDATE" />
       </Route>
       
       <Route path="/finance-dashboard">
-        <ProtectedRoute component={FinanceDashboard} />
+        <ProtectedRoute component={FinanceDashboard} resource="finance" />
       </Route>
       
       <Route path="/clients">
-        <ProtectedRoute component={Clients} />
+        <ProtectedRoute component={Clients} resource="client" />
       </Route>
       <Route path="/clients/new">
-        <ProtectedRoute component={CreateClient} />
+        <ProtectedRoute component={CreateClient} resource="client" action="CREATE" />
       </Route>
       <Route path="/clients/:id/edit">
-        <ProtectedRoute component={UpdateClient} />
+        <ProtectedRoute component={UpdateClient} resource="client" action="UPDATE" />
       </Route>
       <Route path="/clients/:id">
-        <ProtectedRoute component={ViewClient} />
+        <ProtectedRoute component={ViewClient} resource="client" />
       </Route>
       
       <Route path="/contracts">
-        <ProtectedRoute component={Contracts} />
+        <ProtectedRoute component={Contracts} resource="contract" />
       </Route>
       <Route path="/contracts/new">
-        <ProtectedRoute component={CreateContract} />
+        <ProtectedRoute component={CreateContract} resource="contract" action="CREATE" />
       </Route>
-
+ 
       <Route path="/projects">
-        <ProtectedRoute component={Projects} />
+        <ProtectedRoute component={Projects} resource="project" />
       </Route>
       <Route path="/apartments">
-        <ProtectedRoute component={Apartments} />
+        <ProtectedRoute component={Apartments} resource="apartment" />
       </Route>
       <Route path="/apartments/new">
-        <ProtectedRoute component={CreateApartment} />
+        <ProtectedRoute component={CreateApartment} resource="apartment" action="CREATE" />
       </Route>
       <Route path="/apartments/:id">
-        <ProtectedRoute component={ViewApartment} />
+        <ProtectedRoute component={ViewApartment} resource="apartment" />
       </Route>
       <Route path="/apartments/:id/edit">
-        <ProtectedRoute component={UpdateApartment} />
+        <ProtectedRoute component={UpdateApartment} resource="apartment" action="UPDATE" />
       </Route>
       <Route path="/projects/new">
-        <ProtectedRoute component={CreateProject} />
+        <ProtectedRoute component={CreateProject} resource="project" action="CREATE" />
       </Route>
       <Route path="/projects/:id/edit">
-        <ProtectedRoute component={UpdateProject} />
+        <ProtectedRoute component={UpdateProject} resource="project" action="UPDATE" />
       </Route>
       <Route path="/projects/:id">
-        <ProtectedRoute component={ProjectProfile} />
+        <ProtectedRoute component={ProjectProfile} resource="project" />
       </Route>
       <Route path="/projects/:id/media">
-        <ProtectedRoute component={AddProjectMedia} />
+        <ProtectedRoute component={AddProjectMedia} resource="project" action="UPDATE" />
       </Route>
       <Route path="/projects/:id/stages">
-        <ProtectedRoute component={AddProjectStage} />
+        <ProtectedRoute component={AddProjectStage} resource="project" action="UPDATE" />
       </Route>
       
       <Route path="/materials">
-        <ProtectedRoute component={Materials} />
+        <ProtectedRoute component={Materials} resource="material" />
       </Route>
       <Route path="/materials/new">
-        <ProtectedRoute component={CreateMaterial} />
+        <ProtectedRoute component={CreateMaterial} resource="material" action="CREATE" />
       </Route>
       <Route path="/materials/:id/edit">
-        <ProtectedRoute component={UpdateMaterial} />
+        <ProtectedRoute component={UpdateMaterial} resource="material" action="UPDATE" />
       </Route>
       <Route path="/materials/:id">
-        <ProtectedRoute component={ViewMaterial} />
+        <ProtectedRoute component={ViewMaterial} resource="material" />
       </Route>
 
       <Route path="/loading">

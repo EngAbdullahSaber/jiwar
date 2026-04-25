@@ -179,7 +179,7 @@ export default function ViewClient() {
     } else {
       await navigator.clipboard.writeText(text);
       // toast would require import; a simple alert is fine as fallback
-      alert(isRtl ? 'تم نسخ البيانات' : 'Copied to clipboard');
+      alert(t('common.copiedToClipboard'));
     }
   };
 
@@ -255,14 +255,14 @@ export default function ViewClient() {
               <AlertCircle className="w-8 h-8 text-red-500" />
             </div>
             <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
-              {isRtl ? 'تعذّر تحميل بيانات العميل' : 'Failed to load client'}
+              {t('clients.errors.load')}
             </h2>
             <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">
-              {isRtl ? 'ربما لا يوجد هذا العميل أو حدث خطأ في الاتصال.' : 'The client may not exist or there was a connection error.'}
+              {t('clients.errors.notFound')}
             </p>
             <Link href="/clients">
               <button className="px-6 py-2.5 bg-gradient-to-r from-[#4A1B1B] to-[#6B2727] text-white rounded-xl text-sm font-medium shadow-lg shadow-[#4A1B1B]/20">
-                {isRtl ? 'العودة للقائمة' : 'Back to Clients'}
+                {t('common.backToList')}
               </button>
             </Link>
           </motion.div>
@@ -309,7 +309,7 @@ export default function ViewClient() {
                   <div className="flex items-center gap-2 mb-0.5">
                     <Sparkles className="w-3.5 h-3.5 text-[#B39371]" />
                     <p className="text-xs font-semibold text-[#B39371] uppercase tracking-wider">
-                      {isRtl ? 'ملف العميل' : 'Client Profile'}
+                      {t('clients.clientProfile')}
                     </p>
                   </div>
                   <h1 className="text-2xl font-bold text-gray-900 dark:text-white leading-tight">
@@ -329,7 +329,7 @@ export default function ViewClient() {
                 {/* ── Quick contact buttons ── */}
                 <a
                   href={`tel:${client.phoneNumber}`}
-                  title={isRtl ? 'اتصال' : 'Call'}
+                  title={t('common.call')}
                   className="inline-flex items-center justify-center w-9 h-9 rounded-xl bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-100 dark:border-blue-500/20 hover:bg-blue-100 dark:hover:bg-blue-500/20 transition-all"
                 >
                   <PhoneCall className="w-4 h-4" />
@@ -339,7 +339,7 @@ export default function ViewClient() {
                   href={`https://wa.me/${client.phoneNumber.replace(/\D/g, '')}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  title={isRtl ? 'واتساب' : 'WhatsApp'}
+                  title={t('common.whatsapp')}
                   className="inline-flex items-center justify-center w-9 h-9 rounded-xl bg-[#25D366]/10 text-[#25D366] border border-[#25D366]/20 hover:bg-[#25D366]/20 transition-all"
                 >
                   <MessageCircle className="w-4 h-4" />
@@ -347,7 +347,7 @@ export default function ViewClient() {
 
                 <button
                   onClick={() => handleShare(client)}
-                  title={isRtl ? 'مشاركة' : 'Share'}
+                  title={t('common.share')}
                   className="inline-flex items-center justify-center w-9 h-9 rounded-xl bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400 border border-gray-200 dark:border-gray-700 hover:bg-gray-200 dark:hover:bg-gray-700 transition-all"
                 >
                   <Share2 className="w-4 h-4" />
@@ -381,19 +381,19 @@ export default function ViewClient() {
           >
             <StatCard
               icon={FileText}
-              label={isRtl ? 'الوحدات السكنية' : 'Apartments'}
+              label={t('sidebar.apartments')}
               value={client.apartmentsCount || 0}
               color="bg-gradient-to-br from-blue-500 to-blue-600"
             />
             <StatCard
               icon={Wallet}
-              label={isRtl ? 'إجمالي المدفوع' : 'Total Paid'}
+              label={t('clients.totalPaid')}
               value={`${client.totalPaid?.toLocaleString()} ${t('common.sar')}`}
               color="bg-gradient-to-br from-emerald-500 to-emerald-600"
             />
             <StatCard
               icon={Receipt}
-              label={isRtl ? 'إجمالي المتبقي' : 'Total Remaining'}
+              label={t('clients.totalRemaining')}
               value={`${client.totalRemaining?.toLocaleString()} ${t('common.sar')}`}
               color="bg-gradient-to-br from-[#4A1B1B] to-[#6B2727]"
             />
@@ -410,7 +410,7 @@ export default function ViewClient() {
             <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 p-6 space-y-4">
               <h2 className="text-sm font-semibold text-gray-900 dark:text-white flex items-center gap-2">
                 <User className="w-4 h-4 text-[#B39371]" />
-                {isRtl ? 'المعلومات الشخصية' : 'Personal Info'}
+                {t('clients.personalInfo')}
               </h2>
               <div className="grid grid-cols-1 gap-3">
                 <InfoField icon={Phone} label={t('clients.phoneNumber')} value={client.phoneNumber} />
@@ -423,7 +423,7 @@ export default function ViewClient() {
             <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 p-6 space-y-4">
               <h2 className="text-sm font-semibold text-gray-900 dark:text-white flex items-center gap-2">
                 <CreditCard className="w-4 h-4 text-[#B39371]" />
-                {isRtl ? 'المعلومات المالية' : 'Financial Info'}
+                {t('clients.financialInfo')}
               </h2>
               <div className="grid grid-cols-1 gap-3">
                 <InfoField icon={BadgeCheck} label={t('clients.vatNumber')} value={client.vatNumber} accent />
@@ -478,7 +478,7 @@ export default function ViewClient() {
                   <FileText className="w-6 h-6 text-gray-400" />
                 </div>
                 <p className="text-sm text-gray-500 dark:text-gray-400">
-                  {isRtl ? 'لا توجد عقود مسجّلة' : 'No contracts recorded'}
+                  {t('clients.noContracts')}
                 </p>
               </div>
             ) : (
@@ -518,19 +518,19 @@ export default function ViewClient() {
                     </div>
                     <div className="grid grid-cols-3 gap-4 mt-3 pt-3 border-t border-gray-50 dark:border-gray-800/50">
                       <div>
-                        <p className="text-[10px] text-gray-400 uppercase tracking-wider">{isRtl ? 'القيمة' : 'Value'}</p>
+                        <p className="text-[10px] text-gray-400 uppercase tracking-wider">{t('common.value')}</p>
                         <p className="text-xs font-semibold text-gray-700 dark:text-gray-300">
                           {contract.totalValue.toLocaleString()} <span className="text-[10px] font-normal">{t('common.sar')}</span>
                         </p>
                       </div>
                       <div>
-                        <p className="text-[10px] text-gray-400 uppercase tracking-wider">{isRtl ? 'المدفوع' : 'Paid'}</p>
+                        <p className="text-[10px] text-gray-400 uppercase tracking-wider">{t('common.paid')}</p>
                         <p className="text-xs font-semibold text-emerald-600 dark:text-emerald-400">
                           {contract.totalPaid.toLocaleString()} <span className="text-[10px] font-normal">{t('common.sar')}</span>
                         </p>
                       </div>
                       <div>
-                        <p className="text-[10px] text-gray-400 uppercase tracking-wider">{isRtl ? 'المتبقي' : 'Remaining'}</p>
+                        <p className="text-[10px] text-gray-400 uppercase tracking-wider">{t('common.remaining')}</p>
                         <p className="text-xs font-semibold text-amber-600 dark:text-amber-400">
                           {contract.remaining.toLocaleString()} <span className="text-[10px] font-normal">{t('common.sar')}</span>
                         </p>
@@ -552,7 +552,7 @@ export default function ViewClient() {
             <div className="flex items-center justify-between p-6 border-b border-gray-100 dark:border-gray-800">
               <h2 className="text-sm font-semibold text-gray-900 dark:text-white flex items-center gap-2">
                 <Wallet className="w-4 h-4 text-[#B39371]" />
-                {isRtl ? 'سجل الدفعات' : 'Payment History'}
+                {t('clients.paymentHistory')}
               </h2>
               <button
                 onClick={() => setPaymentDialogOpen(true)}
@@ -575,7 +575,7 @@ export default function ViewClient() {
                   <Receipt className="w-6 h-6 text-gray-400" />
                 </div>
                 <p className="text-sm text-gray-500 dark:text-gray-400">
-                  {isRtl ? 'لا توجد دفعات مسجّلة بعد' : 'No payments recorded yet'}
+                  {t('clients.noPayments')}
                 </p>
               </div>
             ) : (
@@ -596,7 +596,7 @@ export default function ViewClient() {
                         <p className="text-sm font-medium text-gray-900 dark:text-white">
                           {payment.apartment
                             ? payment.apartment.mainName[isRtl ? 'arabic' : 'english']
-                            : `${isRtl ? 'دفعة' : 'Payment'} #${payment.id}`}
+                            : `${t('common.payment')} #${payment.id}`}
                         </p>
                         <div className="flex items-center gap-2 mt-0.5">
                           <p className="text-[11px] text-gray-400">{formatDate(payment.paymentDate)}</p>
@@ -604,7 +604,7 @@ export default function ViewClient() {
                             <>
                               <span className="text-[10px] text-gray-300">|</span>
                               <p className="text-[11px] text-gray-400">
-                                {isRtl ? 'بناء' : 'Bldg'}: {payment.apartment.buildingOrBlock} · {isRtl ? 'دور' : 'Floor'}: {payment.apartment.floorNumber}
+                                {t('common.bldg')}: {payment.apartment.buildingOrBlock} · {t('common.floor')}: {payment.apartment.floorNumber}
                               </p>
                             </>
                           )}
@@ -622,7 +622,7 @@ export default function ViewClient() {
                           target="_blank"
                           rel="noopener noreferrer"
                           className="p-1.5 text-gray-400 hover:text-[#B39371] hover:bg-[#B39371]/10 rounded-lg transition-all"
-                          title={isRtl ? 'عرض الإيصال' : 'View Receipt'}
+                          title={t('common.viewReceipt')}
                         >
                           <Eye className="w-4 h-4" />
                         </a>
@@ -642,19 +642,19 @@ export default function ViewClient() {
             className="flex flex-wrap items-center gap-4 text-xs text-gray-400 px-1"
           >
             <span>
-              {isRtl ? 'أنشئ بواسطة:' : 'Created by:'}{' '}
+              {t('common.createdBy')}:{' '}
               <span className="font-medium text-gray-600 dark:text-gray-300">{client.createdBy.email}</span>
             </span>
             <span>·</span>
             <span>
-              {isRtl ? 'تاريخ الإنشاء:' : 'Created:'}{' '}
+              {t('common.createdAt')}:{' '}
               <span className="font-medium text-gray-600 dark:text-gray-300">{formatDate(client.createdAt)}</span>
             </span>
             {client.updatedAt && (
               <>
                 <span>·</span>
                 <span>
-                  {isRtl ? 'آخر تحديث:' : 'Last updated:'}{' '}
+                  {t('common.lastUpdated')}:{' '}
                   <span className="font-medium text-gray-600 dark:text-gray-300">{formatDate(client.updatedAt)}</span>
                   {client.updatedBy && (
                     <span className="ml-1 text-[10px] text-gray-400">

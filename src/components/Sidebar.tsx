@@ -29,25 +29,26 @@ interface MenuItem {
   icon: any;
   label: string;
   path: string;
+  resource?: string;
   badge?: string | number;
 }
 
 const menuItems: MenuItem[] = [
-  { icon: LayoutDashboard, label: "dashboard",   path: "/dashboard",          },
-  { icon: Gavel,           label: "legality",    path: "/legality",           },
-  { icon: Briefcase,       label: "projects",    path: "/projects",           },
-  { icon: FileText,        label: "templates",   path: "/templates",          },
-  { icon: Home,            label: "apartments",  path: "/apartments",         },
-  { icon: Users,           label: "clients",     path: "/clients",            },
-  { icon: UserCircle,      label: "salesTeam",   path: "/salesman",          },
-  { icon: FileCheck,       label: "contracts",   path: "/contracts",            },
-  { icon: PieChart,        label: "financeDashboard",     path: "/finance-dashboard",  },
-  { icon: ShieldAlert,     label: "roles",       path: "/roles",              },
-  { icon: Users,           label: "users",       path: "/users",              },
-  { icon: Layers,          label: "materials",   path: "/materials",          },
-  { icon: Globe,           label: "countries",   path: "/countries",          },
-  { icon: Building2,       label: "cities",      path: "/cities",             },
-  { icon: Building,        label: "banks",       path: "/banks",              },
+  { icon: LayoutDashboard, label: "dashboard",   path: "/dashboard",                              },
+  { icon: Gavel,           label: "legality",    path: "/legality",           resource: "legality" },
+  { icon: Briefcase,       label: "projects",    path: "/projects",           resource: "project"  },
+  { icon: FileText,        label: "templates",   path: "/templates",          resource: "template" },
+  { icon: Home,            label: "apartments",  path: "/apartments",         resource: "apartment"},
+  { icon: Users,           label: "clients",     path: "/clients",            resource: "client"   },
+  { icon: UserCircle,      label: "salesTeam",   path: "/salesman",           resource: "salesman" },
+  { icon: FileCheck,       label: "contracts",   path: "/contracts",          resource: "contract" },
+  { icon: PieChart,        label: "financeDashboard",     path: "/finance-dashboard",  resource: "finance" },
+  { icon: ShieldAlert,     label: "roles",       path: "/roles",              resource: "role-permission" },
+  { icon: Users,           label: "users",       path: "/users",              resource: "user"     },
+  { icon: Layers,          label: "materials",   path: "/materials",          resource: "material" },
+  { icon: Globe,           label: "countries",   path: "/countries",          resource: "country"  },
+  { icon: Building2,       label: "cities",      path: "/cities",             resource: "city"     },
+  { icon: Building,        label: "banks",       path: "/banks",              resource: "bank"     },
 ];
 
 export function Sidebar() {
@@ -57,6 +58,15 @@ export function Sidebar() {
   const dispatch = useAppDispatch();
   const { isExpanded: expanded, toggle: toggleExpanded } = useSidebarStore();
   const [isDark, setIsDark] = useState(false);
+
+  const filteredMenuItems = menuItems.filter(item => {
+    // Dashboard is usually always visible
+    if (!item.resource) return true;
+    
+    // Check if user has permission for this resource
+    const permission = user?.role?.permissions?.find(p => p.resource === item.resource);
+    return permission?.actions?.includes('READ');
+  });
 
   const handleLogout = () => {
     dispatch(logout());
@@ -390,7 +400,7 @@ export function Sidebar() {
               }}>{t('sidebar.navigation')}</p>
 
           <nav style={{ display: "flex", flexDirection: "column", gap: 2 }}>
-            {menuItems.map((item) => {
+            {filteredMenuItems.map((item) => {
               const isActive =
                 location === item.path ||
                 (item.path !== "/" && location.startsWith(item.path));

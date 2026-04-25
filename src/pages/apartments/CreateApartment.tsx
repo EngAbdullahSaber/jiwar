@@ -478,7 +478,7 @@ export default function CreateApartment() {
                     defaultValue={formData.projectSakPdfUrl}
                     accept=".pdf"
                     maxSizeMB={20}
-                    helperText="Upload Project Sak (PDF)"
+                    helperText={t('apartments.placeholders.uploadProjectSak')}
                   />
                 </FormField>
 
@@ -488,7 +488,7 @@ export default function CreateApartment() {
                     defaultValue={formData.apartmentSakPdfUrl}
                     accept=".pdf"
                     maxSizeMB={20}
-                    helperText="Upload Apartment Sak (PDF)"
+                    helperText={t('apartments.placeholders.uploadApartmentSak')}
                   />
                 </FormField>
 
@@ -498,7 +498,7 @@ export default function CreateApartment() {
                     defaultValue={formData.apartmentSubDivisionPdfUrl}
                     accept=".pdf"
                     maxSizeMB={20}
-                    helperText="Upload Sub Division (PDF)"
+                    helperText={t('apartments.placeholders.uploadSubDivision')}
                   />
                 </FormField>
               </div>

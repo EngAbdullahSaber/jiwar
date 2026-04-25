@@ -17,6 +17,7 @@ import {
 } from 'lucide-react';
 import { Link } from "wouter";
 import { Shell } from '../../components/shared/Shell';
+import { Can } from '../../components/shared/Can';
 import { useQuery } from '@tanstack/react-query';
 import api from '@/lib/api';
 import { motion } from 'framer-motion';
@@ -116,14 +117,14 @@ export default function Clients() {
       await api.delete(`/client/${id}`);
     },
     onSuccess: () => {
-      toast.success(isRtl ? 'تم حذف العميل بنجاح' : 'Client deleted successfully', {
+      toast.success(t('clients.success.delete'), {
         style: { borderRadius: '1rem', background: '#4A1B1B', color: '#fff' }
       });
       queryClient.invalidateQueries({ queryKey: ['clients'] });
       setClientToDelete(null);
     },
     onError: (error: any) => {
-      toast.error(error.response?.data?.message?.english || 'Failed to delete client');
+      toast.error(error.response?.data?.message?.[isRtl ? 'arabic' : 'english'] || t('clients.errors.delete'));
     }
   });
 
@@ -146,7 +147,7 @@ export default function Clients() {
       placeholder: t('clients.type'),
       key: 'type',
       options: [
-        { value: 'all', label: isRtl ? 'الكل' : 'All Types' },
+        { value: 'all', label: t('common.all') },
         { value: 'individual', label: t('clients.individual') },
         { value: 'corporate', label: t('clients.company') }
       ]
@@ -219,7 +220,7 @@ export default function Clients() {
                 ? "bg-emerald-50 text-emerald-600 border-emerald-100" 
                 : "bg-gray-50 text-gray-400 border-gray-100"
             )}>
-              {client.activeContract} {isRtl ? 'عقود' : 'Contracts'}
+              {client.activeContract} {t('contracts.title')}
             </Badge>
           </div>
           <div className="text-[11px] font-bold text-[#B39371]">
@@ -248,39 +249,53 @@ export default function Clients() {
               <MoreVertical className="h-4 w-4 text-gray-400" />
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-40 rounded-xl">
+          <DropdownMenuContent align="end" className="w-40 rounded-md">
             <DropdownMenuLabel className="text-xs font-medium text-gray-400">
               {t('common.actions')}
             </DropdownMenuLabel>
-            <Link href={`/clients/${client.id}`}>
-              <DropdownMenuItem className="rounded-lg cursor-pointer">
-                <Eye className="w-3.5 h-3.5 mr-2 rtl:ml-2 rtl:mr-0 text-gray-400" />
-                <span className="text-xs">{t('common.details')}</span>
-              </DropdownMenuItem>
-            </Link>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem 
-              className="rounded-lg cursor-pointer text-emerald-600 focus:text-emerald-700"
-              onClick={() => setPaymentClient({ id: client.id, name: client.fullName })}
-            >
-              <CreditCard className="w-3.5 h-3.5 mr-2 rtl:ml-2 rtl:mr-0" />
-              <span className="text-xs">{t('payments.addPayment')}</span>
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <Link href={`/clients/${client.id}/edit`}>
-              <DropdownMenuItem className="rounded-lg cursor-pointer">
-                <Edit className="w-3.5 h-3.5 mr-2 rtl:ml-2 rtl:mr-0 text-gray-400" />
-                <span className="text-xs">{t('common.edit')}</span>
-              </DropdownMenuItem>
-            </Link>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem 
-              className="rounded-lg cursor-pointer text-red-600"
-              onClick={() => setClientToDelete(client.id)}
-            >
-              <Trash2 className="w-3.5 h-3.5 mr-2 rtl:ml-2 rtl:mr-0" />
-              <span className="text-xs">{t('common.delete')}</span>
-            </DropdownMenuItem>
+            <Can I="READ" a="client">
+              <Link href={`/clients/${client.id}`}>
+                <DropdownMenuItem className="rounded-lg cursor-pointer">
+                  <Eye className="w-3.5 h-3.5 mr-2 rtl:ml-2 rtl:mr-0 text-gray-400" />
+                  <span className="text-xs">{t('common.details')}</span>
+                </DropdownMenuItem>
+              </Link>
+            </Can>
+            <Can I="CREATE" a="finance">
+              <>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem 
+                  className="rounded-lg cursor-pointer text-emerald-600 focus:text-emerald-700"
+                  onClick={() => setPaymentClient({ id: client.id, name: client.fullName })}
+                >
+                  <CreditCard className="w-3.5 h-3.5 mr-2 rtl:ml-2 rtl:mr-0" />
+                  <span className="text-xs">{t('payments.addPayment')}</span>
+                </DropdownMenuItem>
+              </>
+            </Can>
+            <Can I="UPDATE" a="client">
+              <>
+                <DropdownMenuSeparator />
+                <Link href={`/clients/${client.id}/edit`}>
+                  <DropdownMenuItem className="rounded-lg cursor-pointer">
+                    <Edit className="w-3.5 h-3.5 mr-2 rtl:ml-2 rtl:mr-0 text-gray-400" />
+                    <span className="text-xs">{t('common.edit')}</span>
+                  </DropdownMenuItem>
+                </Link>
+              </>
+            </Can>
+            <Can I="DELETE" a="client">
+              <>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem 
+                  className="rounded-lg cursor-pointer text-red-600"
+                  onClick={() => setClientToDelete(client.id)}
+                >
+                  <Trash2 className="w-3.5 h-3.5 mr-2 rtl:ml-2 rtl:mr-0" />
+                  <span className="text-xs">{t('common.delete')}</span>
+                </DropdownMenuItem>
+              </>
+            </Can>
           </DropdownMenuContent>
         </DropdownMenu>
       )
@@ -330,16 +345,18 @@ export default function Clients() {
                   {t('common.refresh')}
                 </Button>
                 
-                <Link href="/clients/new">
-                  <motion.button
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                    className="flex items-center gap-2 px-6 py-2.5 bg-gradient-to-r from-[#4A1B1B] to-[#6B2727] text-white rounded-md text-sm font-medium shadow-lg shadow-[#4A1B1B]/20 hover:shadow-xl transition-all"
-                  >
-                    <Plus className="w-5 h-5" />
-                    {t('clients.create')}
-                  </motion.button>
-                </Link>
+                <Can I="CREATE" a="client">
+                  <Link href="/clients/new">
+                    <motion.button
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      className="flex items-center gap-2 px-6 py-2.5 bg-gradient-to-r from-[#4A1B1B] to-[#6B2727] text-white rounded-md text-sm font-medium shadow-lg shadow-[#4A1B1B]/20 hover:shadow-xl transition-all"
+                    >
+                      <Plus className="w-5 h-5" />
+                      {t('clients.create')}
+                    </motion.button>
+                  </Link>
+                </Can>
               </div>
             </div>
           </div>
