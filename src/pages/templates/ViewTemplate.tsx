@@ -94,8 +94,10 @@ const StatCard = ({ icon: Icon, label, value, subValue, delay = 0 }: any) => (
 );
 
 // Feature Card Component
-const FeatureCard = ({ icon: Icon, label, active, delay = 0 }: any) => (
-  <motion.div
+const FeatureCard = ({ icon: Icon, label, active, delay = 0 }: any) => {
+  const { t } = useTranslation();
+  return (
+    <motion.div
     initial={{ opacity: 0, scale: 0.95 }}
     animate={{ opacity: 1, scale: 1 }}
     transition={{ delay }}
@@ -135,7 +137,8 @@ const FeatureCard = ({ icon: Icon, label, active, delay = 0 }: any) => (
       />
     )}
   </motion.div>
-);
+  );
+};
 
 // Detail Item Component
 const DetailItem = ({ icon: Icon, label, value }: any) => (
