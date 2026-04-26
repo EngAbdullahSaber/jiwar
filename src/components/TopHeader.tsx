@@ -1,27 +1,66 @@
-import { Search, Globe, ChevronDown, ChevronRight, Moon, Sun, LogOut } from 'lucide-react';
+import { Search, Globe, ChevronDown, ChevronRight, Moon, Sun, LogOut, Loader2, User, Building2, Briefcase, FileText, Users, UserCircle, FileCheck, Layers, MapPin, Building } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useState, useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { useLocation } from "wouter";
 import { useAppSelector, useAppDispatch } from "@/hooks/useRedux";
 import { logout } from "@/redux/slices/authSlice";
+import api from '@/lib/api';
+
+const TYPE_ICONS: Record<string, any> = {
+  user: User,
+  project: Briefcase,
+  template: FileText,
+  salesman: UserCircle,
+  client: Users,
+  apartment: Building2,
+  legality: FileCheck,
+  material: Layers,
+  contract: FileCheck,
+  city: MapPin,
+  country: Globe,
+  bank: Building
+};
+
+const TYPE_ROUTES: Record<string, string> = {
+  user: '/users',
+  project: '/projects',
+  template: '/templates',
+  salesman: '/salesman',
+  client: '/clients',
+  apartment: '/apartments',
+  legality: '/legality',
+  material: '/materials',
+  contract: '/contracts',
+  city: '/cities',
+  country: '/countries',
+  bank: '/banks',
+  'finance-dashboard': '/finance-dashboard',
+  'resources-dashboard': '/dashboard'
+};
 
 export function TopHeader() {
   const { user } = useAppSelector((state) => state.auth);
   const dispatch = useAppDispatch();
   const [searchFocused, setSearchFocused] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
-   const { t, i18n } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [theme, setTheme] = useState<'light' | 'dark'>('dark');
   const [mounted, setMounted] = useState(false);
   const profileRef = useRef<HTMLDivElement>(null);
-   const [location] = useLocation();
+  const searchRef = useRef<HTMLDivElement>(null);
+  const [, setLocation] = useLocation();
+  const [currentLocation] = useLocation();
+
+  const [searchQuery, setSearchQuery] = useState('');
+  const [searchResults, setSearchResults] = useState<any[]>([]);
+  const [isSearching, setIsSearching] = useState(false);
+  const [showResults, setShowResults] = useState(false);
 
   const getPageTitle = () => {
-    const path = location.split('/')[1];
+    const path = currentLocation.split('/')[1];
     if (!path) return t('topHeader.overview');
     
-    // Convert path to capitalized words (e.g., 'sales-team' -> 'Sales Team')
     const fallbackTitle = path.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
 
     const titles: Record<string, string> = {
@@ -55,10 +94,41 @@ export function TopHeader() {
   useEffect(() => {
     function handleClick(e: MouseEvent) {
       if (profileRef.current && !profileRef.current.contains(e.target as Node)) setProfileOpen(false);
-     }
+      if (searchRef.current && !searchRef.current.contains(e.target as Node)) setShowResults(false);
+    }
     document.addEventListener('mousedown', handleClick);
     return () => document.removeEventListener('mousedown', handleClick);
   }, []);
+
+  useEffect(() => {
+    const delayDebounceFn = setTimeout(async () => {
+      if (searchQuery.length >= 2) {
+        setIsSearching(true);
+        try {
+          const response = await api.get(`/statics/search?search=${searchQuery}`);
+          setSearchResults(response.data.data || []);
+          setShowResults(true);
+        } catch (error) {
+          console.error("Search error:", error);
+        } finally {
+          setIsSearching(false);
+        }
+      } else {
+        setSearchResults([]);
+        setShowResults(false);
+      }
+    }, 400);
+
+    return () => clearTimeout(delayDebounceFn);
+  }, [searchQuery]);
+
+  const handleResultClick = (result: any) => {
+    const basePath = TYPE_ROUTES[result.type] || '/dashboard';
+    const path = (result.type === 'user' || result.type === 'contract') ? basePath : `${basePath}/${result.id}`;
+    setLocation(path);
+    setShowResults(false);
+    setSearchQuery('');
+  };
 
   const toggleLanguage = () => {
     i18n.changeLanguage(i18n.language === 'en' ? 'ar' : 'en');
@@ -74,10 +144,8 @@ export function TopHeader() {
   const handleSignOut = () => {
     dispatch(logout());
     localStorage.removeItem('token');
-    window.location.replace('/');
+    setLocation('/');
   };
-
- 
 
   return (
     <>
@@ -109,6 +177,67 @@ export function TopHeader() {
         .th-search-input:focus {
           border-color: var(--th-accent-faint);
           box-shadow: 0 0 0 3px var(--th-accent-glow);
+        }
+
+        .th-search-dropdown {
+          position: absolute;
+          top: calc(100% + 8px);
+          left: 0;
+          right: 0;
+          background: var(--th-dropdown-bg);
+          border: 1px solid var(--th-border-strong);
+          border-radius: 12px;
+          box-shadow: 0 10px 40px var(--th-shadow-strong);
+          z-index: 100;
+          max-height: 400px;
+          overflow-y: auto;
+          padding: 6px;
+        }
+
+        .th-search-item {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          padding: 8px 12px;
+          border-radius: 8px;
+          cursor: pointer;
+          transition: background 0.15s;
+        }
+
+        .th-search-item:hover {
+          background: var(--th-bg-hover);
+        }
+
+        .th-search-item-icon {
+          width: 32px;
+          height: 32px;
+          border-radius: 8px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          background: var(--th-accent-bg);
+          color: var(--th-accent);
+          flex-shrink: 0;
+        }
+
+        .th-search-item-info {
+          flex: 1;
+          min-width: 0;
+        }
+
+        .th-search-item-name {
+          font-size: 13px;
+          font-weight: 600;
+          color: var(--th-text-primary);
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+
+        .th-search-item-type {
+          font-size: 11px;
+          color: var(--th-text-muted);
+          text-transform: capitalize;
         }
 
         .th-icon-btn {
@@ -276,23 +405,40 @@ export function TopHeader() {
           <div style={{ width: "1px", height: "18px", background: "var(--th-divider)", flexShrink: 0 }} />
 
           {/* Search */}
-          <div style={{ position: "relative", maxWidth: "450px", flex: 1 }}>
+          <div ref={searchRef} style={{ position: "relative", maxWidth: "450px", flex: 1 }}>
             <Search style={{
-              position: "absolute", left: 11, top: "50%", transform: "translateY(-50%)",
+              position: "absolute", [i18n.language === 'ar' ? 'right' : 'left']: 11, top: "50%", transform: "translateY(-50%)",
               width: 14, height: 14,
               color: searchFocused ? "var(--th-accent)" : "var(--th-text-muted)",
               transition: "color 0.15s",
               pointerEvents: "none",
-            }} />
+            } as any} />
             <input
               className="th-search-input"
               type="text"
               placeholder={t('topHeader.searchPlaceholder') || "Search…"}
-              onFocus={() => setSearchFocused(true)}
+              style={{
+                 paddingLeft: i18n.language === 'ar' ? '10px' : '36px',
+                 paddingRight: i18n.language === 'ar' ? '36px' : '10px',
+                 textAlign: i18n.language === 'ar' ? 'right' : 'left'
+              }}
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              onFocus={() => {
+                setSearchFocused(true);
+                if (searchResults.length > 0) setShowResults(true);
+              }}
               onBlur={() => setSearchFocused(false)}
             />
+            {isSearching && (
+              <Loader2 className="animate-spin" style={{
+                position: "absolute", [i18n.language === 'ar' ? 'left' : 'right']: 40, top: "50%", transform: "translateY(-50%)",
+                width: 14, height: 14,
+                color: "var(--th-accent)",
+              } as any} />
+            )}
             <kbd style={{
-              position: "absolute", right: 10, top: "50%", transform: "translateY(-50%)",
+              position: "absolute", [i18n.language === 'ar' ? 'left' : 'right']: 10, top: "50%", transform: "translateY(-50%)",
               display: "flex", alignItems: "center",
               padding: "2px 5px",
               fontSize: "10px",
@@ -301,18 +447,55 @@ export function TopHeader() {
               border: "1px solid var(--th-border)",
               borderRadius: "5px",
               fontFamily: "inherit",
-              opacity: searchFocused ? 0 : 1,
+              opacity: searchFocused || searchQuery ? 0 : 1,
               transition: "opacity 0.15s",
               pointerEvents: "none",
               letterSpacing: "0.01em",
-            }}>⌘K</kbd>
+            } as any}>⌘K</kbd>
+
+            {/* Results Dropdown */}
+            {showResults && searchResults.length > 0 && (
+              <div className="th-search-dropdown">
+                {searchResults.map((result, idx) => {
+                  const Icon = TYPE_ICONS[result.type] || Search;
+                  const name = typeof result.name === 'object' 
+                    ? (i18n.language === 'ar' ? result.name.arabic : result.name.english)
+                    : result.name;
+                  
+                  return (
+                    <div 
+                      key={`${result.type}-${result.id}-${idx}`}
+                      className="th-search-item"
+                      onClick={() => handleResultClick(result)}
+                      style={{ flexDirection: i18n.language === 'ar' ? 'row-reverse' : 'row' } as any}
+                    >
+                      <div className="th-search-item-icon">
+                        {result.image ? (
+                           <img src={`${api.defaults.baseURL?.replace('/api', '')}/${result.image}`} alt="" className="w-full h-full object-cover rounded-md" />
+                        ) : (
+                          <Icon size={16} />
+                        )}
+                      </div>
+                      <div className="th-search-item-info" style={{ textAlign: i18n.language === 'ar' ? 'right' : 'left' }}>
+                        <div className="th-search-item-name">{name}</div>
+                        <div className="th-search-item-type">{t(`sidebar.${result.type}`, { defaultValue: result.type }) as string}</div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+            
+            {showResults && searchQuery.length >= 2 && searchResults.length === 0 && !isSearching && (
+              <div className="th-search-dropdown" style={{ padding: '20px', textAlign: 'center', fontSize: '13px', color: 'var(--th-text-muted)' }}>
+                {t('common.noResults', 'No results found')}
+              </div>
+            )}
           </div>
         </div>
 
         {/* RIGHT ── Actions */}
         <div style={{ display: "flex", alignItems: "center", gap: "4px", flexShrink: 0 }}>
-
-   
 
           {/* Divider */}
           <div style={{ width: "1px", height: "20px", background: "var(--th-divider)", margin: "0 6px" }} />
@@ -330,66 +513,17 @@ export function TopHeader() {
             )}
           </button>
 
-          {/* Notifications */}
-          {/* <div ref={notifRef} style={{ position: "relative" }}>
-            <button
-              className="th-icon-btn"
-              onClick={() => { setNotifOpen(v => !v); setProfileOpen(false); }}
-              style={{ color: notifOpen ? "var(--th-accent)" : undefined }}
-            >
-              <Bell style={{ width: 15, height: 15 }} />
-              <span style={{
-                position: "absolute", top: 7, right: 7,
-                width: 6, height: 6,
-                borderRadius: "50%",
-                background: "#ef4444",
-                border: "1.5px solid var(--th-bg)",
-              }} />
-            </button>
-
-            {notifOpen && (
-              <div className="th-dropdown" style={{ width: 300, right: 0 }}>
-                <div style={{
-                  padding: "12px 14px 10px",
-                  borderBottom: "1px solid var(--th-border)",
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                }}>
-                  <span style={{ fontSize: "13px", fontWeight: 500, color: "var(--th-text-primary)" }}>{t('topHeader.notifications')}</span>
-                  <span style={{
-                    fontSize: "11px",
-                    color: "var(--th-accent)",
-                    cursor: "pointer",
-                    fontWeight: 500,
-                  }}>{t('topHeader.markAllRead')}</span>
-                </div>
-                {notifications.map((n) => (
-                  <div key={n.id} className="th-menu-item" style={{ gap: "12px", padding: "10px 14px", alignItems: "flex-start" }}>
-                    <span className={cn("th-notif-dot", !n.unread && "read")} style={{ marginTop: 5 }} />
-                    <div style={{ flex: 1, minWidth: 0 }}>
-                      <p style={{ margin: 0, fontSize: "13px", fontWeight: n.unread ? 500 : 400, color: "var(--th-text-primary)", lineHeight: 1.4 }}>{n.title}</p>
-                      <p style={{ margin: "2px 0 0", fontSize: "12px", color: "var(--th-text-muted)", lineHeight: 1.4 }}>{n.desc}</p>
-                    </div>
-                    <span style={{ fontSize: "11px", color: "var(--th-text-muted)", flexShrink: 0, marginTop: 2 }}>{n.time}</span>
-                  </div>
-                ))}
-                <div style={{ padding: "8px 14px", borderTop: "1px solid var(--th-border)" }}>
-                  <span style={{ fontSize: "12px", color: "var(--th-accent)", cursor: "pointer", fontWeight: 500 }}>{t('topHeader.viewAll')} →</span>
-                </div>
-              </div>
-            )}
-          </div> */}
-
           {/* Divider */}
           <div style={{ width: "1px", height: "20px", background: "var(--th-divider)", margin: "0 6px" }} />
 
           {/* Profile */}
           <div ref={profileRef} style={{ position: "relative" }}>
             <button
-              onClick={() => { setProfileOpen(v => !v);   }}
+              onClick={() => { setProfileOpen(v => !v); }}
               style={{
-                display: "flex", alignItems: "center", gap: "9px",
+                display: "flex",
+                alignItems: "center",
+                gap: "9px",
                 background: "transparent",
                 border: "none",
                 cursor: "pointer",
@@ -417,15 +551,18 @@ export function TopHeader() {
                   }}>{user?.email?.substring(0, 2).toUpperCase() || 'AZ'}</AvatarFallback>
                 </Avatar>
                 <span style={{
-                  position: "absolute", bottom: 0, 
-                  [i18n.language === 'ar' ? 'left' : 'right']: 0,
-                  width: 8, height: 8,
+                  position: "absolute",
+                  bottom: 1,
+                  right: 1,
+                  width: 9,
+                  height: 9,
                   borderRadius: "50%",
                   background: "#22c55e",
-                  border: "1.5px solid var(--th-bg)",
-                } as any} />
+                  border: "2px solid var(--th-bg)",
+                }} />
               </div>
 
+              {/* User Info */}
               <div style={{ textAlign: i18n.language === 'ar' ? 'right' : 'left' }}>
                 <p style={{ margin: 0, fontSize: "13px", fontWeight: 500, color: "var(--th-text-primary)", lineHeight: 1.3, whiteSpace: "nowrap" }}>
                   {user?.email || t('topHeader.userName')}
@@ -446,45 +583,64 @@ export function TopHeader() {
 
             {profileOpen && (
               <div className="th-dropdown" style={{ 
-                width: 170, 
-                [i18n.language === 'ar' ? 'left' : 'right']: -20 
+                width: 240, 
+                right: 0 
               } as any}>
                 {/* User card */}
                 <div style={{
-                  padding: "14px",
+                  padding: "16px",
                   borderBottom: "1px solid var(--th-border)",
                   display: "flex",
                   alignItems: "center",
-                  gap: "10px",
+                  gap: "12px",
                   flexDirection: i18n.language === 'ar' ? 'row-reverse' : 'row',
+                  background: 'var(--th-bg-hover)',
                 } as any}>
-                  <Avatar style={{ width: 38, height: 38, border: "1.5px solid var(--th-accent-faint)", borderRadius: "50%", flexShrink: 0 }}>
+                  <Avatar style={{ width: 42, height: 42, border: "1.5px solid var(--th-accent-faint)", borderRadius: "50%", flexShrink: 0 }}>
                     <AvatarImage src={user?.image} />
-                    <AvatarFallback style={{ background: "var(--th-accent-bg)", color: "var(--th-accent)", fontSize: "12px", fontWeight: 600 }}>{user?.email?.substring(0, 2).toUpperCase() || 'AZ'}</AvatarFallback>
+                    <AvatarFallback style={{ background: "var(--th-accent-bg)", color: "var(--th-accent)", fontSize: "14px", fontWeight: 600 }}>{user?.email?.substring(0, 2).toUpperCase() || 'AZ'}</AvatarFallback>
                   </Avatar>
-                  <div style={{ textAlign: i18n.language === 'ar' ? 'right' : 'left', flex: 1 }}>
-                    <p style={{ margin: 0, fontSize: "13px", fontWeight: 500, color: "var(--th-text-primary)", lineHeight: 1.4 }}>{user?.email || t('topHeader.userName')}</p>
-                    <p style={{ margin: 0, fontSize: "11.5px", color: "var(--th-text-muted)" }}>{user?.role?.name || t('topHeader.userRole')}</p>
+                  <div style={{ textAlign: i18n.language === 'ar' ? 'right' : 'left', flex: 1, minWidth: 0 }}>
+                    <p style={{ 
+                      margin: 0, 
+                      fontSize: "14px", 
+                      fontWeight: 600, 
+                      color: "var(--th-text-primary)", 
+                      lineHeight: 1.2,
+                      whiteSpace: 'nowrap',
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis'
+                    }}>
+                      {user?.email || t('topHeader.userName')}
+                    </p>
+                    <p style={{ margin: "2px 0 0", fontSize: "12px", color: "var(--th-text-muted)", fontWeight: 500 }}>
+                      {user?.role?.name || t('topHeader.userRole')}
+                    </p>
                   </div>
                 </div>
 
-                <div style={{ padding: "6px" }}>
-                  <div className="th-menu-item danger" style={{ 
-                    borderRadius: 8,
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '8px',
-                    flexDirection: i18n.language === 'ar' ? 'row-reverse' : 'row',
-                    justifyContent: 'start'
-                  } as any} onClick={handleSignOut}>
-                    <LogOut style={{ width: 14, height: 14, flexShrink: 0 }} />
+                <div style={{ padding: "8px" }}>
+                  <div 
+                    className="th-menu-item danger" 
+                    style={{ 
+                      borderRadius: 10,
+                      padding: '10px 12px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '10px',
+                      flexDirection: i18n.language === 'ar' ? 'row-reverse' : 'row',
+                      justifyContent: 'start',
+                      fontWeight: 500
+                    } as any} 
+                    onClick={handleSignOut}
+                  >
+                    <LogOut style={{ width: 16, height: 16, flexShrink: 0 }} />
                     <span style={{ flex: 1, textAlign: i18n.language === 'ar' ? 'right' : 'left' }}>{t('topHeader.signOut')}</span>
                   </div>
                 </div>
               </div>
             )}
           </div>
-
         </div>
       </header>
     </>

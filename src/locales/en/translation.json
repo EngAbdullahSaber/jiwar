@@ -288,7 +288,11 @@
       "bank": "Banks",
       "city": "Cities",
       "material": "Materials",
-      "role-permission": "Role Permissions"
+      "role-permission": "Role Permissions",
+      "RESOURCES-DASHBOARD": "Resources Dashboard",
+      "FINANCE-DASHBOARD": "Finance Dashboard",
+      "resources-dashboard": "Resources Dashboard",
+      "finance-dashboard": "Finance Dashboard"
     },
     "resourceDescriptions": {
       "user": "Manage system users and their account settings",
@@ -306,7 +310,11 @@
       "bank": "Manage banking institutions",
       "city": "Manage operational cities",
       "material": "Track materials and inventory",
-      "role-permission": "Configure fine-grained role permissions"
+      "role-permission": "Configure fine-grained role permissions",
+      "RESOURCES-DASHBOARD": "Track system resources and availability",
+      "FINANCE-DASHBOARD": "View financial statistics and metrics",
+      "resources-dashboard": "Track system resources and availability",
+      "finance-dashboard": "View financial statistics and metrics"
     },
     "modules": {
       "dashboard": "Dashboard",

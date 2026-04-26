@@ -85,16 +85,36 @@ export default function CreateRole() {
     }
   });
 
-  const [matrix, setMatrix] = useState<Record<number, Record<string, boolean>>>({});
+  const [selectedIds, setSelectedIds] = useState<number[]>([]);
 
-  const togglePermission = (permissionId: number, action: string) => {
-    setMatrix(prev => ({
-      ...prev,
-      [permissionId]: {
-        ...(prev[permissionId] || { VIEW: false, CREATE: false, UPDATE: false, DELETE: false }),
-        [action]: !prev[permissionId]?.[action]
-      }
-    }));
+  // Group permissions by resource for display
+  const groupedPermissions = permissionsData?.data.reduce((acc, p) => {
+    let resource = p.resource;
+    let action = p.actions[0]; // The backend sends one action per entry in this format
+
+    if (resource.includes(':')) {
+      const parts = resource.split(':');
+      resource = parts[1];
+    }
+
+    if (!acc[resource]) {
+      acc[resource] = {
+        resource,
+        actions: {} as Record<string, number>
+      };
+    }
+    acc[resource].actions[action] = p.id;
+    return acc;
+  }, {} as Record<string, { resource: string, actions: Record<string, number> }>);
+
+  const modules = groupedPermissions ? Object.values(groupedPermissions) : [];
+
+  const togglePermission = (permissionId: number) => {
+    setSelectedIds(prev => 
+      prev.includes(permissionId) 
+        ? prev.filter(id => id !== permissionId)
+        : [...prev, permissionId]
+    );
   };
 
   const createMutation = useMutation({
@@ -119,11 +139,7 @@ export default function CreateRole() {
       return;
     }
 
-    const permissionIds = Object.entries(matrix)
-      .filter(([_, actions]) => Object.values(actions).some(v => v))
-      .map(([id]) => parseInt(id));
-
-    if (permissionIds.length === 0) {
+    if (selectedIds.length === 0) {
       toast.error(t('roles.onePermissionRequired'));
       return;
     }
@@ -131,7 +147,7 @@ export default function CreateRole() {
     createMutation.mutate({
       name: formData.name,
       description: formData.description,
-      permissionIds: permissionIds
+      permissionIds: selectedIds
     });
   };
 
@@ -288,16 +304,15 @@ export default function CreateRole() {
                           ))
                         ) : (
                           <AnimatePresence>
-                            {permissionsData?.data.filter(p => 
-                              p.resource.toLowerCase().includes(searchValue.toLowerCase()) ||
-                              (t(`roles.resources.${p.resource}`).toLowerCase().includes(searchValue.toLowerCase()) ?? false)
-                            ).map((perm, idx) => {
-                              const Icon = RESOURCE_ICONS[perm.resource] || Shield;
-                              const matrixRow = matrix[perm.id] || { READ: false, CREATE: false, UPDATE: false, DELETE: false };
+                            {modules.filter(m => 
+                              m.resource.toLowerCase().includes(searchValue.toLowerCase()) ||
+                              (t(`roles.resources.${m.resource}`).toLowerCase().includes(searchValue.toLowerCase()) ?? false)
+                            ).map((module, idx) => {
+                              const Icon = RESOURCE_ICONS[module.resource] || Shield;
                               
                               return (
                                 <motion.tr 
-                                  key={perm.id}
+                                  key={module.resource}
                                   initial={{ opacity: 0, y: 10 }}
                                   animate={{ opacity: 1, y: 0 }}
                                   transition={{ delay: idx * 0.03 }}
@@ -310,20 +325,20 @@ export default function CreateRole() {
                                       </div>
                                       <div className="space-y-0.5">
                                         <p className="text-sm font-black text-gray-900 dark:text-white uppercase tracking-tight">
-                                          {t(`roles.resources.${perm.resource}`, { defaultValue: perm.resource })}
+                                          {t(`roles.resources.${module.resource}`, { defaultValue: module.resource })}
                                         </p>
                                         <p className="text-[11px] text-gray-400 dark:text-gray-500 font-medium line-clamp-1">
-                                          {t(`roles.resourceDescriptions.${perm.resource}`, { defaultValue: 'Module access' })}
+                                          {t(`roles.resourceDescriptions.${module.resource}`, { defaultValue: 'Module access' })}
                                         </p>
                                       </div>
                                     </div>
                                   </TableCell>
                                   <TableCell className="text-center">
                                     <div className="flex justify-center">
-                                      {perm.actions.includes('READ') ? (
+                                      {module.actions.READ ? (
                                         <Checkbox 
-                                          checked={matrixRow.READ}
-                                          onCheckedChange={() => togglePermission(perm.id, 'READ')}
+                                          checked={selectedIds.includes(module.actions.READ)}
+                                          onCheckedChange={() => togglePermission(module.actions.READ)}
                                           className="w-6 h-6 rounded-md border-gray-200 dark:border-gray-700 data-[state=checked]:bg-[#B39371] data-[state=checked]:border-[#B39371] transition-all hover:scale-110 active:scale-90"
                                         />
                                       ) : (
@@ -333,10 +348,10 @@ export default function CreateRole() {
                                   </TableCell>
                                   <TableCell className="text-center">
                                     <div className="flex justify-center">
-                                      {perm.actions.includes('CREATE') ? (
+                                      {module.actions.CREATE ? (
                                         <Checkbox 
-                                          checked={matrixRow.CREATE}
-                                          onCheckedChange={() => togglePermission(perm.id, 'CREATE')}
+                                          checked={selectedIds.includes(module.actions.CREATE)}
+                                          onCheckedChange={() => togglePermission(module.actions.CREATE)}
                                           className="w-6 h-6 rounded-md border-gray-200 dark:border-gray-700 data-[state=checked]:bg-[#B39371] data-[state=checked]:border-[#B39371] transition-all hover:scale-110 active:scale-90"
                                         />
                                       ) : (
@@ -346,10 +361,10 @@ export default function CreateRole() {
                                   </TableCell>
                                   <TableCell className="text-center">
                                     <div className="flex justify-center">
-                                      {perm.actions.includes('UPDATE') ? (
+                                      {module.actions.UPDATE ? (
                                         <Checkbox 
-                                          checked={matrixRow.UPDATE}
-                                          onCheckedChange={() => togglePermission(perm.id, 'UPDATE')}
+                                          checked={selectedIds.includes(module.actions.UPDATE)}
+                                          onCheckedChange={() => togglePermission(module.actions.UPDATE)}
                                           className="w-6 h-6 rounded-lg border-gray-200 dark:border-gray-700 data-[state=checked]:bg-[#B39371] data-[state=checked]:border-[#B39371] transition-all hover:scale-110 active:scale-90"
                                         />
                                       ) : (
@@ -359,10 +374,10 @@ export default function CreateRole() {
                                   </TableCell>
                                   <TableCell className="text-center">
                                     <div className="flex justify-center">
-                                      {perm.actions.includes('DELETE') ? (
+                                      {module.actions.DELETE ? (
                                         <Checkbox 
-                                          checked={matrixRow.DELETE}
-                                          onCheckedChange={() => togglePermission(perm.id, 'DELETE')}
+                                          checked={selectedIds.includes(module.actions.DELETE)}
+                                          onCheckedChange={() => togglePermission(module.actions.DELETE)}
                                           className="w-6 h-6 rounded-md border-gray-200 dark:border-gray-700 data-[state=checked]:bg-[#B39371] data-[state=checked]:border-[#B39371] transition-all hover:scale-110 active:scale-90"
                                         />
                                       ) : (

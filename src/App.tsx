@@ -81,8 +81,13 @@ function ProtectedRoute({ component: Component, resource, action = 'READ', ...re
   }
 
   if (resource) {
-    const permission = user?.role?.permissions?.find((p: any) => p.resource === resource);
-    if (!permission?.actions?.includes(action)) {
+    const hasPermission = user?.role?.permissions?.some((p: any) => {
+      const normalizedResource = p.resource.includes(':') ? p.resource.split(':')[1] : p.resource;
+      return (normalizedResource === resource || p.resource === resource || p.resource === `${action.toLowerCase()}:${resource}`) &&
+             p.actions?.includes(action);
+    });
+
+    if (!hasPermission) {
       return (
         <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-950 p-4">
           <div className="max-w-md w-full bg-white dark:bg-gray-900 rounded-3xl shadow-2xl border border-gray-100 dark:border-gray-800 p-10 text-center">
@@ -132,7 +137,7 @@ function Router() {
       </Route>
       
       <Route path="/dashboard">
-        <ProtectedRoute component={Dashboard} />
+        <ProtectedRoute component={Dashboard}   resource="resources-dashboard"/>
       </Route>
       
       <Route path="/templates">
@@ -222,7 +227,7 @@ function Router() {
       </Route>
       
       <Route path="/finance-dashboard">
-        <ProtectedRoute component={FinanceDashboard} resource="finance" />
+        <ProtectedRoute component={FinanceDashboard} resource="finance-dashboard" />
       </Route>
       
       <Route path="/clients">

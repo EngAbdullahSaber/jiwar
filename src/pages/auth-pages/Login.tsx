@@ -10,7 +10,7 @@ import api from "@/lib/api";
 import "./auth.css";
 
 export const Login = (): JSX.Element => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const dispatch = useAppDispatch();
   const [, setLocation] = useLocation();
   const [showPassword, setShowPassword] = useState(false);
@@ -40,21 +40,64 @@ export const Login = (): JSX.Element => {
       if (token) {
         localStorage.setItem("token", token);
         dispatch(setCredentials({ user }));
+
+        // Find first available path based on permissions
+        const priorityPaths = [
+          { path: "/dashboard", resource: "resources-dashboard" },
+          { path: "/legality", resource: "legality" },
+          { path: "/projects", resource: "project" },
+          { path: "/templates", resource: "template" },
+          { path: "/apartments", resource: "apartment" },
+          { path: "/clients", resource: "client" },
+          { path: "/salesman", resource: "salesman" },
+          { path: "/contracts", resource: "contract" },
+          { path: "/finance-dashboard", resource: "finance-dashboard" },
+          { path: "/finance-dashboard", resource: "statics" },
+          { path: "/roles", resource: "role-permission" },
+          { path: "/users", resource: "user" },
+          { path: "/materials", resource: "material" },
+          { path: "/countries", resource: "country" },
+          { path: "/cities", resource: "city" },
+          { path: "/banks", resource: "bank" },
+        ];
+
+        let nextPath = "/dashboard"; // Default fallback
+        
+        // Find first path user has READ access to
+        const permissions = user?.role?.permissions || [];
+        const firstMatch = priorityPaths.find(p => 
+          permissions.some((perm: any) => {
+            const normalizedResource = perm.resource.includes(':') ? perm.resource.split(':')[1] : perm.resource;
+            return normalizedResource === p.resource && perm.actions?.includes('READ');
+          })
+        );
+
+        if (firstMatch) {
+          nextPath = firstMatch.path;
+        }
+
+        // Store where to go after loading screen
+        localStorage.setItem("nextPath", nextPath);
+        
+        toast.success(t("common.success"));
+        
+        // Delay redirect slightly so toast is visible
+        setTimeout(() => {
+          setLocation("/loading");
+        }, 800);
       }
-      
-      toast.success(t("common.success"));
-      
-      // Store where to go after loading screen
-      localStorage.setItem("nextPath", "/dashboard");
-      
-      // Delay redirect slightly so toast is visible
-      setTimeout(() => {
-        setLocation("/loading");
-      }, 800);
       
     } catch (error: any) {
       console.error("Login error:", error);
-      const errorMessage = error.response?.data?.message || t("common.error");
+      const messageData = error.response?.data?.message;
+      let errorMessage = t("common.error");
+
+      if (typeof messageData === 'object' && messageData !== null) {
+        errorMessage = i18n.language === 'ar' ? messageData.arabic : messageData.english;
+      } else if (typeof messageData === 'string') {
+        errorMessage = messageData;
+      }
+      
       toast.error(errorMessage);
     } finally {
       setIsLoading(false);

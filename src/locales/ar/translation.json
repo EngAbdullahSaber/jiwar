@@ -292,7 +292,11 @@
       "bank": "البنوك",
       "city": "المدن",
       "material": "المواد",
-      "role-permission": "صلاحيات الأدوار"
+      "role-permission": "صلاحيات الأدوار",
+      "RESOURCES-DASHBOARD": "لوحة بيانات الموارد",
+      "FINANCE-DASHBOARD": "لوحة البيانات المالية",
+      "resources-dashboard": "لوحة بيانات الموارد",
+      "finance-dashboard": "لوحة البيانات المالية"
     },
     "resourceDescriptions": {
       "user": "إدارة مستخدمي النظام وإعدادات حساباتهم",
@@ -310,7 +314,11 @@
       "bank": "إدارة المؤسسات المصرفية",
       "city": "إدارة مدن العمليات",
       "material": "تتبع المواد والمخزون",
-      "role-permission": "تكوين أذونات الأدوار التفصيلية"
+      "role-permission": "تكوين أذونات الأدوار التفصيلية",
+      "RESOURCES-DASHBOARD": "تتبع موارد النظام وتوافرها",
+      "FINANCE-DASHBOARD": "عرض الإحصائيات والمؤشرات المالية",
+      "resources-dashboard": "تتبع موارد النظام وتوافرها",
+      "finance-dashboard": "عرض الإحصائيات والمؤشرات المالية"
     },
     "modules": {
       "dashboard": "لوحة القيادة",

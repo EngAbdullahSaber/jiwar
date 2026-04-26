@@ -7,11 +7,10 @@ export const usePermissions = () => {
     // Admin type might have all permissions, but we follow the backend permissions array
     if (!user?.role?.permissions) return false;
     
-    const permission = user.role.permissions.find(
-      (p: any) => p.resource === resource
+    return user.role.permissions.some(
+      (p: any) => (p.resource === resource || p.resource === `${action.toLowerCase()}:${resource}`) &&
+                  p.actions?.includes(action)
     );
-    
-    return permission?.actions?.includes(action) || false;
   };
 
   return { 

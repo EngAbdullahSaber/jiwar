@@ -34,7 +34,7 @@ interface MenuItem {
 }
 
 const menuItems: MenuItem[] = [
-  { icon: LayoutDashboard, label: "dashboard",   path: "/dashboard",                              },
+  { icon: LayoutDashboard, label: "dashboard",   path: "/dashboard",                resource: "resources-dashboard"                },
   { icon: Gavel,           label: "legality",    path: "/legality",           resource: "legality" },
   { icon: Briefcase,       label: "projects",    path: "/projects",           resource: "project"  },
   { icon: FileText,        label: "templates",   path: "/templates",          resource: "template" },
@@ -42,7 +42,7 @@ const menuItems: MenuItem[] = [
   { icon: Users,           label: "clients",     path: "/clients",            resource: "client"   },
   { icon: UserCircle,      label: "salesTeam",   path: "/salesman",           resource: "salesman" },
   { icon: FileCheck,       label: "contracts",   path: "/contracts",          resource: "contract" },
-  { icon: PieChart,        label: "financeDashboard",     path: "/finance-dashboard",  resource: "finance" },
+   { icon: PieChart,        label: "financeDashboard",   path: "/finance-dashboard",  resource: "finance-dashboard" },
   { icon: ShieldAlert,     label: "roles",       path: "/roles",              resource: "role-permission" },
   { icon: Users,           label: "users",       path: "/users",              resource: "user"     },
   { icon: Layers,          label: "materials",   path: "/materials",          resource: "material" },
@@ -53,8 +53,8 @@ const menuItems: MenuItem[] = [
 
 export function Sidebar() {
   const { t } = useTranslation();
-  const [location] = useLocation();
-  const { user } = useAppSelector((state) => state.auth);
+  const [location, setLocation] = useLocation();
+  const { user } = useAppSelector((state: any) => state.auth);
   const dispatch = useAppDispatch();
   const { isExpanded: expanded, toggle: toggleExpanded } = useSidebarStore();
   const [isDark, setIsDark] = useState(false);
@@ -63,15 +63,27 @@ export function Sidebar() {
     // Dashboard is usually always visible
     if (!item.resource) return true;
     
-    // Check if user has permission for this resource
-    const permission = user?.role?.permissions?.find(p => p.resource === item.resource);
-    return permission?.actions?.includes('READ');
+    // Check if user has permission for this resource (supports both raw and normalized formats)
+    const hasPerm = user?.role?.permissions?.some((p:any) => {
+      const normalizedResource = p.resource.includes(':') ? p.resource.split(':')[1] : p.resource;
+      return (normalizedResource === item.resource || p.resource === item.resource || p.resource === `read:${item.resource}`) &&
+             p.actions?.includes('READ');
+    });
+
+    // Special case: fallback to 'statics' for finance-dashboard if needed
+    if (!hasPerm && item.resource === 'finance-dashboard') {
+      return user?.role?.permissions?.some((p: any) => 
+        (p.resource === 'statics' || p.resource === 'read:statics') && p.actions?.includes('READ')
+      ) || false;
+    }
+
+    return hasPerm || false;
   });
 
   const handleLogout = () => {
     dispatch(logout());
     localStorage.removeItem('token');
-    window.location.replace('/');
+    setLocation('/');
   };
 
   useEffect(() => {

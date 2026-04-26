@@ -38,6 +38,37 @@ const initialState: AuthState = {
   decodedInfo: null,
 };
 
+const normalizePermissions = (permissions: Permission[]): Permission[] => {
+  const normalizedMap: Record<string, Permission> = {};
+
+  permissions.forEach((p) => {
+    let resource = p.resource;
+    
+    // Handle action:resource format (e.g., "create:user")
+    if (resource.includes(':')) {
+      const parts = resource.split(':');
+      resource = parts[1];
+    }
+
+    if (!normalizedMap[resource]) {
+      normalizedMap[resource] = {
+        ...p,
+        resource: resource,
+        actions: [...p.actions],
+      };
+    } else {
+      // Merge actions into the existing resource entry
+      p.actions.forEach((a) => {
+        if (!normalizedMap[resource].actions.includes(a)) {
+          normalizedMap[resource].actions.push(a);
+        }
+      });
+    }
+  });
+
+  return Object.values(normalizedMap);
+};
+
 const authSlice = createSlice({
   name: 'auth',
   initialState,
@@ -47,6 +78,12 @@ const authSlice = createSlice({
       action: PayloadAction<{ user: UserData }>
     ) => {
       const { user } = action.payload;
+      
+      // Normalize permissions if they exist
+      if (user?.role?.permissions) {
+        user.role.permissions = normalizePermissions(user.role.permissions);
+      }
+      
       state.user = user;
       state.token = user.token;
       state.isAuthenticated = true;
