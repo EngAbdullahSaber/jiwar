@@ -65,7 +65,8 @@
     "viewReceipt": "View Receipt",
     "createdBy": "Created by",
     "createdAt": "Created",
-    "lastUpdated": "Last updated"
+    "lastUpdated": "Last updated",
+    "id": "ID"
   },
   "dashboard": {
     "title": "General Dashboard",
@@ -105,6 +106,7 @@
     "clients": "Clients",
     "salesTeam": "Sales Team",
     "contracts": "Contracts",
+    "approveContracts": "Approve Contracts",
     "finance": "Finance",
     "materials": "Purchases",
     "countries": "Countries",
@@ -318,6 +320,7 @@
     },
     "modules": {
       "dashboard": "Dashboard",
+      "users": "Users",
       "users": "Users",
       "roles": "Roles",
       "legality": "Legality",
@@ -1121,6 +1124,21 @@
       "title": "No Contracts Found",
       "description": "No contracts match your search criteria.",
       "createFirst": "Start by creating your first contract"
+    },
+    "approveTitle": "Approve Contracts",
+    "approveDescription": "Review and approve pending contracts",
+    "approve": "Approve",
+    "approveSuccess": "Contract approved successfully",
+    "approveError": "Failed to approve contract",
+    "pendingApproval": "Pending Approval",
+    "approveConfirmTitle": "Approve Contract",
+    "approveConfirmDescription": "Are you sure you want to approve this contract? This action will mark the contract as officially approved.",
+    "approving": "Approving...",
+    "steps": {
+      "title": "Next Step",
+      "salesApproval": "Sales Manager Approval",
+      "financeApproval": "Finance Manager Approval",
+      "completed": "Fully Approved"
     }
   },
   "clients": {

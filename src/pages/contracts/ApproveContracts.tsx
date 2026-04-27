@@ -9,6 +9,7 @@ import type { Column } from '../../components/shared/DataTable';
 import { FilterBar } from '../../components/shared/FilterBar';
 import type { FilterField } from '../../components/shared/FilterBar';
 import { DeleteDialog } from '../../components/shared/DeleteDialog';
+import { ConfirmDialog } from '../../components/shared/ConfirmDialog';
 import { toast } from 'react-hot-toast';
 
 import { Link } from "wouter";
@@ -22,7 +23,9 @@ import {
   Calendar,
   User,
   Building2,
-  Trash2
+  Trash2,
+  CheckCircle2,
+  Clock
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { format } from 'date-fns';
@@ -75,7 +78,7 @@ interface ContractsResponse {
   totalPages: number;
 }
 
-export default function Contracts() {
+export default function ApproveContracts() {
   const { t, i18n } = useTranslation();
   const [filters, setFilters] = useState({ search: '' });
   const [currentPage, setCurrentPage] = useState(1);
@@ -83,12 +86,13 @@ export default function Contracts() {
   const queryClient = useQueryClient();
 
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [approveDialogOpen, setApproveDialogOpen] = useState(false);
   const [selectedContractId, setSelectedContractId] = useState<number | null>(null);
 
   const { data: response, isLoading } = useQuery<ContractsResponse>({
-    queryKey: ['contracts', currentPage, pageSize, filters.search],
+    queryKey: ['contracts-approve', currentPage, pageSize, filters.search],
     queryFn: async () => {
-      const res = await api.get('/contract?isApproved=true', {
+      const res = await api.get('/contract?isApproved=false', {
         params: {
           page: currentPage,
           pageSize,
@@ -104,13 +108,29 @@ export default function Contracts() {
       await api.delete(`/contract/${id}`);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['contracts'] });
+      queryClient.invalidateQueries({ queryKey: ['contracts-approve'] });
       toast.success(t('contracts.deleteSuccess'));
       setDeleteDialogOpen(false);
       setSelectedContractId(null);
     },
     onError: () => {
       toast.error(t('contracts.deleteError'));
+    }
+  });
+
+  const { mutate: approveContract, isPending: isApproving } = useMutation({
+    mutationFn: async (id: number) => {
+      await api.patch(`/contract/${id}/approve`);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['contracts-approve'] });
+      queryClient.invalidateQueries({ queryKey: ['contracts'] }); // Also invalidate approved contracts list
+      toast.success(t('contracts.approveSuccess'));
+      setApproveDialogOpen(false);
+      setSelectedContractId(null);
+    },
+    onError: () => {
+      toast.error(t('contracts.approveError'));
     }
   });
 
@@ -227,8 +247,21 @@ export default function Contracts() {
       headerClassName: "text-center",
       cell: (c) => (
         <div className="flex items-center justify-center gap-2">
+          <Can I="UPDATE" a="contract-approval">
+            <button 
+              onClick={() => {
+                setSelectedContractId(c.id);
+                setApproveDialogOpen(true);
+              }} 
+              className="p-2 hover:bg-green-50 dark:hover:bg-green-950/30 rounded-md text-gray-400 hover:text-green-600 transition-colors" 
+              title={t('contracts.approve')}
+            >
+              <CheckCircle2 className="w-4 h-4" />
+            </button>
+          </Can>
+
           {c.pdfUrl && (
-            <Can I="READ" a="contract">
+            <Can I="READ" a="contract-approval">
               <a 
                 href={`${import.meta.env.VITE_API_BASE_URL}/${c.pdfUrl}`} 
                 target="_blank" 
@@ -241,7 +274,7 @@ export default function Contracts() {
             </Can>
           )}
          
-          <Can I="DELETE" a="contract">
+          <Can I="DELETE" a="contract-approval">
             <button 
               onClick={() => {
                 setSelectedContractId(c.id);
@@ -270,6 +303,19 @@ export default function Contracts() {
         onConfirm={() => selectedContractId && deleteContract(selectedContractId)}
         isDeleting={isDeleting}
       />
+
+      <ConfirmDialog
+        isOpen={approveDialogOpen}
+        onClose={() => setApproveDialogOpen(false)}
+        onConfirm={() => selectedContractId && approveContract(selectedContractId)}
+        title={t('contracts.approveConfirmTitle')}
+        description={t('contracts.approveConfirmDescription')}
+        confirmText={t('contracts.approve')}
+        isProcessing={isApproving}
+        processingText={t('contracts.approving')}
+        variant="success"
+        icon={CheckCircle2}
+      />
       
       <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-50 dark:from-gray-950 dark:via-gray-900 dark:to-gray-950">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
@@ -281,7 +327,7 @@ export default function Contracts() {
                 <div className="relative">
                   <div className="absolute inset-0 bg-gradient-to-r from-[#4A1B1B] to-[#6B2727] rounded-md blur-lg opacity-50" />
                   <div className="relative w-14 h-14 rounded-md bg-gradient-to-br from-[#4A1B1B] to-[#6B2727] shadow-lg flex items-center justify-center">
-                    <FileText className="w-7 h-7 text-[#B39371]" />
+                    <CheckCircle2 className="w-7 h-7 text-[#B39371]" />
                   </div>
                 </div>
                 <div>
@@ -292,10 +338,10 @@ export default function Contracts() {
                     </p>
                   </div>
                   <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
-                    {t('contracts.title')}
+                    {t('contracts.approveTitle')}
                   </h1>
                   <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                    {t('contracts.description')}
+                    {t('contracts.approveDescription')}
                   </p>
                 </div>
               </div>
@@ -320,13 +366,12 @@ export default function Contracts() {
           {/* Stats Grid */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <StatCard 
-              icon={FileText}
-              label={t('contracts.title')}
+              icon={Clock}
+              label={t('contracts.pendingApproval')}
               value={(response?.totalItems || 0).toLocaleString()}
-              subValue={t('contracts.description')}
-              color="from-[#4A1B1B] to-[#6B2727]"
+              subValue={t('contracts.approveDescription')}
+              color="from-amber-500 to-amber-600"
             />
-            {/* Add more stats if needed based on data */}
           </div>
 
           {/* Filter Bar */}
@@ -367,16 +412,8 @@ export default function Contracts() {
               <p className="text-sm text-gray-500 dark:text-gray-400 mb-8 max-w-md mx-auto">
                 {filters.search 
                   ? t('contracts.empty.description')
-                  : t('contracts.empty.createFirst')}
+                  : t('contracts.approveDescription')}
               </p>
-              {!filters.search && (
-                <Link href="/contracts/new">
-                  <button className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-[#4A1B1B] to-[#6B2727] text-white rounded-md text-sm font-medium shadow-lg shadow-[#4A1B1B]/20 hover:shadow-xl transition-all">
-                    <Plus className="w-5 h-5" />
-                    {t('contracts.add')}
-                  </button>
-                </Link>
-              )}
             </motion.div>
           )}
         </div>

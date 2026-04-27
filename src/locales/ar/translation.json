@@ -65,7 +65,8 @@
     "viewReceipt": "عرض الإيصال",
     "createdBy": "أنشئ بواسطة",
     "createdAt": "تاريخ الإنشاء",
-    "lastUpdated": "آخر تحديث"
+    "lastUpdated": "آخر تحديث",
+    "id": "المعرف"
   },
   "dashboard": {
     "title": "لوحة القيادة العامة",
@@ -105,6 +106,7 @@
     "clients": "العملاء",
     "salesTeam": "فريق المبيعات",
     "contracts": "العقود",
+    "approveContracts": "اعتماد العقود",
     "finance": "المالية",
     "materials": "المشتريات",
     "countries": "الدول",
@@ -1127,6 +1129,21 @@
       "title": "لم يتم العثور على عقود",
       "description": "لا توجد عقود تطابق معايير البحث الخاصة بك.",
       "createFirst": "ابدأ بإنشاء أول عقد لك"
+    },
+    "approveTitle": "اعتماد العقود",
+    "approveDescription": "مراجعة واعتماد العقود المعلقة",
+    "approve": "اعتماد",
+    "approveSuccess": "تم اعتماد العقد بنجاح",
+    "approveError": "فشل في اعتماد العقد",
+    "pendingApproval": "في انتظار الاعتماد",
+    "approveConfirmTitle": "اعتماد العقد",
+    "approveConfirmDescription": "هل أنت متأكد من رغبتك في اعتماد هذا العقد؟ سيتم وضع علامة على العقد كمعتمد رسمياً.",
+    "approving": "جاري الاعتماد...",
+    "steps": {
+      "title": "الخطوة القادمة",
+      "salesApproval": "اعتماد مدير المبيعات",
+      "financeApproval": "اعتماد المدير المالي",
+      "completed": "معتمد بالكامل"
     }
   },
   "clients": {

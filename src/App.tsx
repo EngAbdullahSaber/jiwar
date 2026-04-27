@@ -59,6 +59,7 @@ import CreateClient from "@/pages/clients/CreateClient";
 import UpdateClient from "@/pages/clients/UpdateClient";
 import ViewClient from "@/pages/clients/ViewClient";
 import Contracts from "@/pages/contracts/Contracts";
+import ApproveContracts from "@/pages/contracts/ApproveContracts";
 
 
 import Salesman from "@/pages/salesman/Salesman";
@@ -245,6 +246,9 @@ function Router() {
       
       <Route path="/contracts">
         <ProtectedRoute component={Contracts} resource="contract" />
+      </Route>
+      <Route path="/approve-contracts">
+        <ProtectedRoute component={ApproveContracts} resource="contract-approval" action="UPDATE" />
       </Route>
       <Route path="/contracts/new">
         <ProtectedRoute component={CreateContract} resource="contract" action="CREATE" />

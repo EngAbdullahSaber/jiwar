@@ -42,6 +42,7 @@ const menuItems: MenuItem[] = [
   { icon: Users,           label: "clients",     path: "/clients",            resource: "client"   },
   { icon: UserCircle,      label: "salesTeam",   path: "/salesman",           resource: "salesman" },
   { icon: FileCheck,       label: "contracts",   path: "/contracts",          resource: "contract" },
+  { icon: FileCheck,       label: "approveContracts", path: "/approve-contracts", resource: "contract-approval" },
    { icon: PieChart,        label: "financeDashboard",   path: "/finance-dashboard",  resource: "finance-dashboard" },
   { icon: ShieldAlert,     label: "roles",       path: "/roles",              resource: "role-permission" },
   { icon: Users,           label: "users",       path: "/users",              resource: "user"     },
