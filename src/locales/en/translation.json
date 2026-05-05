@@ -15,6 +15,7 @@
     "signOut": "Sign Out",
     "refresh": "Refresh",
     "fillRequiredFields": "Please fill in all required fields",
+    "startDateBeforeEndDate": "Start date must be before end date",
     "filters": "Filters",
     "clearAll": "Clear All",
     "activeFilters": "Active Filters",
@@ -143,7 +144,7 @@
     }
   },
   "topHeader": {
-    "searchPlaceholder": "Search for projects, sales, or clients...",
+    "searchPlaceholder": "Search for apartment, sales, or clients...",
     "askAi": "Ask AI",
     "overview": "Overview",
     "notifications": "Notifications",
@@ -320,7 +321,6 @@
     },
     "modules": {
       "dashboard": "Dashboard",
-      "users": "Users",
       "users": "Users",
       "roles": "Roles",
       "legality": "Legality",
@@ -926,6 +926,7 @@
     "commissionValue": "Commission Value",
     "targetGoal": "Target Goal",
     "status": "Status",
+    "password": "Password",
     "startDate": "Start Date",
     "endDate": "End Date",
     "actions": "Actions",
@@ -966,6 +967,7 @@
         "email": "email@example.com",
         "phone": "+966 50 000 0000",
         "commissionValue": "0.00",
+        "password": "••••••••",
         "targetGoal": "Number of units",
         "materialPrice": "0.00",
         "sar": "SAR"
@@ -1151,6 +1153,7 @@
     "fullName": "Full Name",
     "phoneNumber": "Phone Number",
     "email": "Email Address",
+    "password": "Password",
     "vatNumber": "VAT Number",
     "iqama": "Iqama / ID",
     "iban": "IBAN",
@@ -1185,6 +1188,7 @@
       "fullName": "e.g. Ahmed Al-Rashid",
       "phone": "+966 5x xxx xxxx",
       "email": "client@example.com",
+      "password": "••••••••",
       "vat": "VAT123456789",
       "iqama": "1234567890",
       "iban": "SA0000000000000000000000",

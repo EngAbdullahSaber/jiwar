@@ -49,7 +49,8 @@ export default function CreateClient() {
     physicalAddress: '',
     countryId: '',
     cityId: '',
-    bankId: ''
+    bankId: '',
+    password: ''
   });
 
   const createMutation = useMutation({
@@ -211,6 +212,23 @@ export default function CreateClient() {
                         placeholder={t('clients.placeholders.email')}
                         className="h-12 pl-11 rtl:pl-4 rtl:pr-11 rounded-xl bg-gray-50 dark:bg-gray-800/50 border-gray-100 dark:border-gray-700 focus:bg-white dark:focus:bg-gray-800 focus:ring-2 focus:ring-[#B39371]/10 transition-all"
                         value={formData.email}
+                        onChange={handleChange}
+                      />
+                    </div>
+                  </div>
+
+                  {/* Password */}
+                  <div className="space-y-2.5">
+                    <Label className="text-sm font-semibold text-gray-700 dark:text-gray-300">{t('clients.password')}</Label>
+                    <div className="relative group">
+                      <CreditCard className="absolute left-4 rtl:left-auto rtl:right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 group-focus-within:text-[#B39371] transition-colors" />
+                      <Input
+                        name="password"
+                        type="password"
+                        required
+                        placeholder={t('clients.placeholders.password')}
+                        className="h-12 pl-11 rtl:pl-4 rtl:pr-11 rounded-xl bg-gray-50 dark:bg-gray-800/50 border-gray-100 dark:border-gray-700 focus:bg-white dark:focus:bg-gray-800 focus:ring-2 focus:ring-[#B39371]/10 transition-all"
+                        value={formData.password}
                         onChange={handleChange}
                       />
                     </div>

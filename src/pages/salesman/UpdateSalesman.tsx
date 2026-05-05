@@ -17,7 +17,8 @@ import {
   Calendar,
   Sparkles,
   Save,
-  CheckCircle2
+  CheckCircle2,
+  CreditCard
 } from 'lucide-react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import api from '@/lib/api';
@@ -48,7 +49,8 @@ export default function UpdateSalesman() {
     commissionBase: 'PERCENTAGE',
     commissionValue: '',
     apartmentTargetGoal: '',
-    completeTarget: false
+    completeTarget: false,
+    password: ''
   });
 
   // Fetch salesman data
@@ -75,7 +77,8 @@ export default function UpdateSalesman() {
         commissionBase: s.commissionBase || 'PERCENTAGE',
         commissionValue: s.commissionValue?.toString() || '',
         apartmentTargetGoal: s.apartmentTargetGoal?.toString() || '',
-        completeTarget: s.completeTarget || false
+        completeTarget: s.completeTarget || false,
+        password: ''
       });
     }
   }, [salesmanData]);
@@ -100,8 +103,13 @@ export default function UpdateSalesman() {
     e.preventDefault();
     
     // Validation
-    if (!formData.fullName || !formData.email || !formData.phoneNumber) {
+    if (!formData.fullName || !formData.email || !formData.phoneNumber || !formData.startDate || !formData.endDate) {
       toast.error(t('common.fillRequiredFields'));
+      return;
+    }
+
+    if (new Date(formData.startDate) > new Date(formData.endDate)) {
+      toast.error(t('common.startDateBeforeEndDate'));
       return;
     }
 
@@ -109,6 +117,10 @@ export default function UpdateSalesman() {
       ...formData,
       commissionValue: parseFloat(formData.commissionValue) || 0
     };
+
+    if (!payload.password) {
+      delete payload.password;
+    }
 
     // Only send apartmentTargetGoal if toggle is on AND it's a positive number
     if (formData.completeTarget && parseInt(formData.apartmentTargetGoal) > 0) {
@@ -231,6 +243,22 @@ export default function UpdateSalesman() {
                         value={formData.email}
                         onChange={handleChange}
                         required
+                      />
+                    </div>
+                  </div>
+
+                  {/* Password */}
+                  <div className="space-y-2">
+                    <Label className="text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider">{t('salesman.password')}</Label>
+                    <div className="relative group">
+                      <CreditCard className="absolute left-4 rtl:left-auto rtl:right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 group-focus-within:text-[#B39371] transition-colors" />
+                      <Input
+                        name="password"
+                        type="password"
+                        placeholder={t('salesman.form.placeholders.password')}
+                        className="h-12 pl-11 rtl:pl-4 rtl:pr-11 rounded-xl bg-gray-50 dark:bg-gray-800/50 border-gray-100 dark:border-gray-800 focus:bg-white dark:focus:bg-gray-800 transition-all font-medium"
+                        value={formData.password}
+                        onChange={handleChange}
                       />
                     </div>
                   </div>

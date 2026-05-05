@@ -15,6 +15,7 @@
     "signOut": "تسجيل الخروج",
     "refresh": "تحديث",
     "fillRequiredFields": "يرجى ملء جميع الحقول المطلوبة",
+    "startDateBeforeEndDate": "تاريخ البدء يجب أن يكون قبل تاريخ الانتهاء",
     "filters": "المرشحات",
     "clearAll": "مسح الكل",
     "activeFilters": "المرشحات الفعالة",
@@ -143,7 +144,7 @@
     }
   },
   "topHeader": {
-    "searchPlaceholder": "ابحث عن المشاريع، المبيعات، أو العملاء...",
+    "searchPlaceholder": "ابحث عن الوحدات السكنية، المبيعات، أو العملاء...",
     "askAi": "اسأل الذكاء الاصطناعي",
     "overview": "نظرة عامة",
     "notifications": "الإشعارات",
@@ -158,8 +159,8 @@
   "users": {
     "title": "إدارة المستخدمين",
     "description": "الإشراف على الوصول إلى النظام وإدارة بيانات اعتماد المستخدم.",
-    "create": "إنشاء مستخدم", 
-     "successCreate": "تم إنشاء المستخدم بنجاح",
+    "create": "إنشاء مستخدم",
+    "successCreate": "تم إنشاء المستخدم بنجاح",
     "errorCreate": "فشل في إنشاء المستخدم",
     "successUpdate": "تم تحديث المستخدم بنجاح",
     "errorUpdate": "فشل في تحديث المستخدم",
@@ -167,16 +168,12 @@
     "pleaseSelectRole": "يرجى اختيار دور للمستخدم",
     "accountInfo": "هوية الحساب",
     "accountInfoDesc": "تحديد الاعتمادات الأساسية ومستوى التصريح",
-     "workEmail": "بريد العمل",
-   
+    "workEmail": "بريد العمل",
     "fetchingRoles": "جاري مزامنة دليل الأدوار...",
     "creating": "جاري تهيئة الحساب...",
     "searchPlaceholder": "البحث عن المستخدمين بالاسم أو البريد...",
-    
     "allRoles": "جميع الأدوار",
-    
     "loading": "جاري تحميل المستخدمين...",
-   
     "discard": "تجاهل التغييرات",
     "applyingChanges": "جاري تطبيق التعديلات...",
     "saveChanges": "حفظ التغييرات",
@@ -347,7 +344,6 @@
       "export": "تصدير"
     }
   },
-  
   "legality": {
     "title": "إدارة الملفات القانونية",
     "management": "إدارة الملفات القانونية",
@@ -933,6 +929,7 @@
     "commissionValue": "قيمة العمولة",
     "targetGoal": "هدف المبيعات",
     "status": "الحالة",
+    "password": "كلمة المرور",
     "startDate": "تاريخ البدء",
     "endDate": "تاريخ الانتهاء",
     "actions": "الإجراءات",
@@ -973,6 +970,7 @@
         "email": "email@example.com",
         "phone": "+966 50 000 0000",
         "commissionValue": "0.00",
+        "password": "••••••••",
         "targetGoal": "عدد الوحدات"
       }
     },
@@ -1156,6 +1154,7 @@
     "fullName": "الاسم الكامل",
     "phoneNumber": "رقم الهاتف",
     "email": "البريد الإلكتروني",
+    "password": "كلمة المرور",
     "vatNumber": "الرقم الضريبي",
     "iqama": "الإقامة / الهوية",
     "iban": "الآيبان (IBAN)",
@@ -1190,6 +1189,7 @@
       "fullName": "مثال: أحمد الراشد",
       "phone": "+966 5x xxx xxxx",
       "email": "client@example.com",
+      "password": "••••••••",
       "vat": "VAT123456789",
       "iqama": "1234567890",
       "iban": "SA0000000000000000000000",

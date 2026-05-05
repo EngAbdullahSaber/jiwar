@@ -16,7 +16,8 @@ import {
   Wallet,
   Target,
   Calendar,
-  Sparkles
+  Sparkles,
+  CreditCard
 } from 'lucide-react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import api from '@/lib/api';
@@ -46,7 +47,8 @@ export default function CreateSalesman() {
     commissionBase: 'PERCENTAGE',
     commissionValue: '',
     apartmentTargetGoal: '',
-    completeTarget: false
+    completeTarget: false,
+    password: ''
   });
 
   const createMutation = useMutation({
@@ -68,8 +70,13 @@ export default function CreateSalesman() {
     e.preventDefault();
     
     // Validation
-    if (!formData.fullName || !formData.email || !formData.phoneNumber || !formData.startDate || !formData.endDate) {
+    if (!formData.fullName || !formData.email || !formData.phoneNumber || !formData.startDate || !formData.endDate || !formData.password) {
       toast.error(t('common.fillRequiredFields'));
+      return;
+    }
+
+    if (new Date(formData.startDate) > new Date(formData.endDate)) {
+      toast.error(t('common.startDateBeforeEndDate'));
       return;
     }
 
@@ -198,6 +205,23 @@ export default function CreateSalesman() {
                         placeholder={t('salesman.form.placeholders.phone')}
                         className="h-12 pl-11 rtl:pl-4 rtl:pr-11 rounded-xl bg-gray-50 dark:bg-gray-800/50 border-gray-100 dark:border-gray-800 focus:bg-white dark:focus:bg-gray-800 transition-all font-medium"
                         value={formData.phoneNumber}
+                        onChange={handleChange}
+                        required
+                      />
+                    </div>
+                  </div>
+
+                  {/* Password */}
+                  <div className="space-y-2">
+                    <Label className="text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider">{t('salesman.password')}</Label>
+                    <div className="relative group">
+                      <CreditCard className="absolute left-4 rtl:left-auto rtl:right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 group-focus-within:text-[#B39371] transition-colors" />
+                      <Input
+                        name="password"
+                        type="password"
+                        placeholder={t('salesman.form.placeholders.password')}
+                        className="h-12 pl-11 rtl:pl-4 rtl:pr-11 rounded-xl bg-gray-50 dark:bg-gray-800/50 border-gray-100 dark:border-gray-800 focus:bg-white dark:focus:bg-gray-800 transition-all font-medium"
+                        value={formData.password}
                         onChange={handleChange}
                         required
                       />

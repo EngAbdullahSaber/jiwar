@@ -113,10 +113,20 @@ export default function AddProjectStage() {
       return;
     }
 
+    // Check if parent fromDate is before toDate
+    if (phase.fromDate && phase.toDate && new Date(phase.fromDate) > new Date(phase.toDate)) {
+      toast.error(t('common.startDateBeforeEndDate'));
+      return;
+    }
+
     // Check date range rule: sub-tasks must be within parent range
     for (const sub of validSubStages) {
       if (sub.fromDate < phase.fromDate || sub.toDate > phase.toDate) {
         toast.error(t('projects.stages.validation.dateRangeExceeded') || 'Sub-task timeline must be within the stage timeline');
+        return;
+      }
+      if (sub.fromDate && sub.toDate && new Date(sub.fromDate) > new Date(sub.toDate)) {
+        toast.error(t('common.startDateBeforeEndDate'));
         return;
       }
     }

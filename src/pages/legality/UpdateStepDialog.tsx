@@ -90,6 +90,11 @@ export function UpdateStepDialog({ isOpen, onClose, legalityId, stepData }: Upda
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
+    if (formData.fromDate && formData.toDate && new Date(formData.fromDate) > new Date(formData.toDate)) {
+      toast.error(t('common.startDateBeforeEndDate'));
+      return;
+    }
+
     const step: any = {
       id: stepData.step.id,
       details: formData.details,
