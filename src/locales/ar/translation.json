@@ -361,6 +361,7 @@
     "pending": "قيد الانتظار",
     "startWorkflow": "بدء سير عمل جديد",
     "steps": "خطوات",
+    "lastSteps": "آخر الخطوات",
     "progress": "الإنجاز",
     "viewDetails": "عرض التفاصيل",
     "noLegalities": "لم يتم العثور على ملفات قانونية",
@@ -735,7 +736,8 @@
       "available": "متاح",
       "sold": "مباع",
       "reserved": "محجوز",
-      "maintenance": "صيانة"
+      "maintenance": "صيانة",
+      "under_finishing": "تحت التشطيب"
     },
     "success": {
       "create": "تم إنشاء الشقة بنجاح",
@@ -849,71 +851,6 @@
     "errors": {
       "create": "فشل إنشاء النموذج",
       "update": "فشل تحديث النموذج"
-    }
-  },
-  "materials": {
-    "title": "شراء المواد",
-    "management": "المخزون والمشتريات",
-    "description": "تتبع طلبات المواد ومستويات المخزون وتسليمات الموردين",
-    "add": "طلب مواد",
-    "create": "طلب جديد",
-    "edit": "تعديل الطلب",
-    "stats": {
-      "pending": "طلبات معلقة",
-      "delivered": "تم التسليم",
-      "totalValue": "قيمة المشتريات"
-    },
-    "labels": {
-      "materialNameEn": "اسم المادة (بالإنجليزية)",
-      "materialNameAr": "اسم المادة (بالعربية)",
-      "category": "الفئة",
-      "quantity": "الكمية",
-      "unit": "الوحدة",
-      "unitPrice": "سعر الوحدة (ريال)",
-      "totalPrice": "التقدير الإجمالي",
-      "supplier": "المورد المفضل",
-      "urgency": "مستوى الاستعجال",
-      "status": "حالة الطلب",
-      "neededBy": "مطلوب في",
-      "projectId": "للمشروع",
-      "stageId": "للمرحلة"
-    },
-    "placeholders": {
-      "materialNameEn": "مثال: Structural Steel Grade A",
-      "materialNameAr": "مثال: حديد تسليح درجة أ",
-      "quantity": "0",
-      "unitPrice": "0.00",
-      "selectCategory": "اختر الفئة",
-      "selectSupplier": "اختر المورد...",
-      "selectUrgency": "اختر الأولوية"
-    },
-    "categories": {
-      "structural": "هيكلي",
-      "electrical": "كهربائي",
-      "plumbing": "سباكة",
-      "finishing": "تشطيب",
-      "hvac": "تكييف"
-    },
-    "urgency": {
-      "low": "منخفض",
-      "medium": "متوسط",
-      "high": "عالي",
-      "critical": "حرج"
-    },
-    "statuses": {
-      "pending": "في انتظار الموافقة",
-      "approved": "تمت الموافقة",
-      "ordered": "تم الطلب",
-      "received": "تم الاستلام",
-      "rejected": "مرفوض"
-    },
-    "success": {
-      "create": "تم تقديم طلب المواد",
-      "update": "تم تحديث الطلب بنجاح"
-    },
-    "errors": {
-      "create": "فشل تقديم الطلب",
-      "update": "فشل تحديث الطلب"
     }
   },
   "salesman": {
@@ -1294,8 +1231,12 @@
       "draft": "مسودة",
       "ordered": "تم الطلب",
       "received": "تم الاستلام",
+      "not_received": "لم يتم الاستلام",
+      "pass_deadline": "تجاوز الموعد النهائي",
+      "returned": "مرتجع",
+      "cancelled": "ملغي",
       "approved": "معتمد",
-      "finalized": "منتهي",
+      "finalized": "مكتمل",
       "rejected": "مرفوض"
     }
   },

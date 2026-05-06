@@ -27,6 +27,11 @@ import {
   Mail,
   Scale,
   DollarSign,
+  FileText,
+  XCircle,
+  AlertTriangle,
+  RotateCcw,
+  Slash
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
@@ -86,6 +91,26 @@ const StatusBadge = ({ status, type }: { status: string; type: 'request' | 'appr
       color: 'bg-emerald-50 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-400 border-emerald-200 dark:border-emerald-500/20',
       icon: CheckCircle2,
       label: t('materials.statuses.received'),
+    },
+    not_received: {
+      color: 'bg-orange-50 text-orange-700 dark:bg-orange-500/10 dark:text-orange-400 border-orange-200 dark:border-orange-500/20',
+      icon: Slash,
+      label: t('materials.statuses.not_received'),
+    },
+    pass_deadline: {
+      color: 'bg-rose-50 text-rose-700 dark:bg-rose-500/10 dark:text-rose-400 border-rose-200 dark:border-rose-500/20',
+      icon: AlertTriangle,
+      label: t('materials.statuses.pass_deadline'),
+    },
+    returned: {
+      color: 'bg-indigo-50 text-indigo-700 dark:bg-indigo-500/10 dark:text-indigo-400 border-indigo-200 dark:border-indigo-500/20',
+      icon: RotateCcw,
+      label: t('materials.statuses.returned'),
+    },
+    cancelled: {
+      color: 'bg-zinc-50 text-zinc-700 dark:bg-zinc-500/10 dark:text-zinc-400 border-zinc-200 dark:border-zinc-500/20',
+      icon: XCircle,
+      label: t('materials.statuses.cancelled'),
     },
   };
 
@@ -462,7 +487,7 @@ export default function ViewMaterial() {
                             {isImage ? (
                               <Package className="w-4 h-4 text-blue-500" />
                             ) : (
-                              <Paperclip className="w-4 h-4 text-gray-400" />
+                              <FileText className="w-4 h-4 text-red-500" />
                             )}
                           </div>
                           <div className="flex-1 min-w-0">

@@ -23,7 +23,11 @@ import {
   AlertCircle,
   CheckCircle2,
   Clock,
-  Layers
+  Layers,
+  XCircle,
+  AlertTriangle,
+  RotateCcw,
+  Slash
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 
@@ -93,6 +97,30 @@ const StatusBadge = ({ status }: { status: string }) => {
       hover: "hover:bg-red-100 dark:hover:bg-red-500/20",
       icon: AlertCircle,
       label: t('materials.statuses.rejected')
+    },
+    not_received: { 
+      color: "bg-orange-50 text-orange-700 dark:bg-orange-500/10 dark:text-orange-400 border-orange-200 dark:border-orange-500/20", 
+      hover: "hover:bg-orange-100 dark:hover:bg-orange-500/20",
+      icon: Slash,
+      label: t('materials.statuses.not_received')
+    },
+    pass_deadline: { 
+      color: "bg-rose-50 text-rose-700 dark:bg-rose-500/10 dark:text-rose-400 border-rose-200 dark:border-rose-500/20", 
+      hover: "hover:bg-rose-100 dark:hover:bg-rose-500/20",
+      icon: AlertTriangle,
+      label: t('materials.statuses.pass_deadline')
+    },
+    returned: { 
+      color: "bg-indigo-50 text-indigo-700 dark:bg-indigo-500/10 dark:text-indigo-400 border-indigo-200 dark:border-indigo-500/20", 
+      hover: "hover:bg-indigo-100 dark:hover:bg-indigo-500/20",
+      icon: RotateCcw,
+      label: t('materials.statuses.returned')
+    },
+    cancelled: { 
+      color: "bg-zinc-50 text-zinc-700 dark:bg-zinc-500/10 dark:text-zinc-400 border-zinc-200 dark:border-zinc-500/20", 
+      hover: "hover:bg-zinc-100 dark:hover:bg-zinc-500/20",
+      icon: XCircle,
+      label: t('materials.statuses.cancelled')
     }
   };
 
@@ -153,6 +181,10 @@ export default function Materials() {
         { value: 'pending', label: t('materials.statuses.pending') },
         { value: 'ordered', label: t('materials.statuses.ordered') },
         { value: 'received', label: t('materials.statuses.received') },
+        { value: 'not_received', label: t('materials.statuses.not_received') },
+        { value: 'pass_deadline', label: t('materials.statuses.pass_deadline') },
+        { value: 'returned', label: t('materials.statuses.returned') },
+        { value: 'cancelled', label: t('materials.statuses.cancelled') },
       ]
     },
     {

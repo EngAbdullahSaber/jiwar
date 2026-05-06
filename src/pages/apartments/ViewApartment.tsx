@@ -274,6 +274,7 @@ export default function ViewApartment() {
                           "px-4 py-1.5 rounded-md text-[10px] font-black uppercase tracking-[0.2em] shadow-sm",
                           apartment.status === 'available' ? "bg-emerald-50 text-emerald-600 border border-emerald-100" :
                           apartment.status === 'sold' ? "bg-blue-50 text-blue-600 border border-blue-100" :
+                          apartment.status === 'under_finishing' ? "bg-indigo-50 text-indigo-600 border border-indigo-100" :
                           "bg-amber-50 text-amber-600 border border-amber-100"
                         )}>
                           {t(`apartments.statuses.${apartment.status}`)}

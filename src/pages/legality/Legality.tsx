@@ -4,7 +4,6 @@ import { TopHeader } from '../../components/TopHeader';
 import { Pagination } from '../../components/shared/Pagination';
 import { 
   Search,
-  MoreVertical,
   PlusCircle,
   ArrowRight,
   Calendar,
@@ -255,9 +254,6 @@ export default function Legality() {
                           {item.name[lang]}
                         </h3>
                       </div>
-                      <button className="p-1 rounded-md hover:bg-[#F7F6F3] dark:hover:bg-[#27272A] transition-colors flex-shrink-0">
-                        <MoreVertical className="w-4 h-4 text-[#A8A29E]" />
-                      </button>
                     </div>
 
                     {/* Status + steps */}
@@ -286,6 +282,34 @@ export default function Legality() {
                           className={cn('h-full rounded-full bg-gradient-to-r', status.gradient)}
                         />
                       </div>
+                    </div>
+
+                    {/* Last Steps Preview */}
+                    <div className="space-y-2 py-3 border-y border-black/[0.03] dark:border-white/[0.03]">
+                      <div className="flex items-center gap-1.5 mb-1">
+                        <Activity className="w-3 h-3 text-[#A8A29E]" />
+                        <span className="text-[10px] font-bold text-[#A8A29E] uppercase tracking-wider">
+                          {t('legality.lastSteps')}
+                        </span>
+                      </div>
+                      {item.legalitySteps.slice(-2).map((s) => (
+                        <div key={s.id} className="flex items-center justify-between gap-3">
+                          <div className="flex items-center gap-2 min-w-0">
+                            <div className={cn(
+                              "w-1.5 h-1.5 rounded-full shrink-0",
+                              s.step.toDate ? "bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.4)]" : "bg-amber-400 shadow-[0_0_8px_rgba(251,191,36,0.4)]"
+                            )} />
+                            <span className="text-[11px] font-medium text-[#44403C] dark:text-[#D6D3D1] truncate">
+                              {s.step.name[lang]}
+                            </span>
+                          </div>
+                          {s.step.toDate ? (
+                             <CheckCircle2 className="w-3 h-3 text-emerald-500 shrink-0" />
+                          ) : (
+                             <Clock className="w-3 h-3 text-[#A8A29E] shrink-0" />
+                          )}
+                        </div>
+                      ))}
                     </div>
 
                     {/* Meta */}

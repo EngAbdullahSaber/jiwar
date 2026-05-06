@@ -15,8 +15,7 @@ import {
   Phone,
   Mail,
   Scale,
-  DollarSign,
-  Calendar
+  DollarSign
 } from 'lucide-react';
 import { Input } from "@/components/ui/input";
 import {
@@ -30,6 +29,7 @@ import { PaginatedSelect } from '../../components/shared/PaginatedSelect';
 import { FormActions } from '../../components/shared/FormActions';
 import { Shell } from '../../components/shared/Shell';
 import { FileUpload } from '../../components/shared/FileUpload';
+import DatePicker from '../../components/shared/DatePicker';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import api from '@/lib/api';
 import toast from 'react-hot-toast';
@@ -96,7 +96,7 @@ export default function UpdateMaterial() {
 
   const [formData, setFormData] = useState({
     name: "",
-    quantity: 0,
+    quantity: "",
     requestStatus: "",
     approvalStatus: "",
     projectId: ""
@@ -164,7 +164,7 @@ export default function UpdateMaterial() {
       // Create payload dynamically handling required transformations
       const payload: any = {
         ...data,
-        quantity: Number(data.quantity),
+        quantity: data.quantity,
         projectId: Number(data.projectId),
         files: attachments,
         supplier: {
@@ -287,15 +287,13 @@ export default function UpdateMaterial() {
                   </div>
                 </FormField>
 
-                {/* Quantity */}
                 <FormField label={t('materials.quantity')} required>
                   <div className="relative">
                     <Hash className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 rtl:left-auto rtl:right-3" />
                     <Input 
-                      type="number"
-                      min="1"
-                      value={formData.quantity}
-                      onChange={(e) => setFormData({ ...formData, quantity: Number(e.target.value) })}
+                      type="text"
+                       value={formData.quantity}
+                      onChange={(e) => setFormData({ ...formData, quantity: e.target.value })}
                       className="pl-10 rtl:pl-3 rtl:pr-10 h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md"
                       required
                     />
@@ -411,15 +409,11 @@ export default function UpdateMaterial() {
 
                 {/* Edit Price Date */}
                 <FormField label={t('materials.editPriceDate')}>
-                  <div className="relative">
-                    <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 rtl:left-auto rtl:right-3" />
-                    <Input 
-                      type="date"
-                      value={supplierData.editPriceDate}
-                      onChange={(e) => setSupplierData({ ...supplierData, editPriceDate: e.target.value })}
-                      className="pl-10 rtl:pl-3 rtl:pr-10 h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md"
-                    />
-                  </div>
+                  <DatePicker 
+                    value={supplierData.editPriceDate}
+                    onChange={(date) => setSupplierData({ ...supplierData, editPriceDate: date })}
+                    placeholder={t('materials.editPriceDate')}
+                  />
                 </FormField>
 
                 {/* Supplier Documents */}
@@ -451,7 +445,7 @@ export default function UpdateMaterial() {
                     <FileUpload
                       multiple
                       label={t('materials.addMoreDocs')}
-                      accept=".pdf,.jpg,.jpeg,.png,.doc,.docx"
+                      accept=".pdf"
                       maxSizeMB={10}
                       onUploadSuccess={(url) => setSupplierDocuments((prev) => [...prev, url])}
                       onUploadMultipleSuccess={(urls) => setSupplierDocuments((prev) => [...prev, ...urls])}
@@ -484,6 +478,10 @@ export default function UpdateMaterial() {
                       <SelectItem value="pending">{t('materials.statuses.pending')}</SelectItem>
                       <SelectItem value="ordered">{t('materials.statuses.ordered')}</SelectItem>
                       <SelectItem value="received">{t('materials.statuses.received')}</SelectItem>
+                      <SelectItem value="not_received">{t('materials.statuses.not_received')}</SelectItem>
+                      <SelectItem value="pass_deadline">{t('materials.statuses.pass_deadline')}</SelectItem>
+                      <SelectItem value="returned">{t('materials.statuses.returned')}</SelectItem>
+                      <SelectItem value="cancelled">{t('materials.statuses.cancelled')}</SelectItem>
                     </SelectContent>
                   </Select>
                 </FormField>
@@ -560,7 +558,7 @@ export default function UpdateMaterial() {
               <FileUpload
                 multiple
                 label={t('materials.addMore')}
-                accept=".pdf,.jpg,.jpeg,.png,.doc,.docx,.xls,.xlsx"
+                accept=".pdf"
                 maxSizeMB={20}
                 helperText={t('materials.uploadHelper')}
                 onUploadSuccess={(url) => setAttachments((prev) => [...prev, url])}

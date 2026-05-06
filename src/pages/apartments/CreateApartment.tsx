@@ -426,6 +426,7 @@ export default function CreateApartment() {
                       <SelectItem value="sold">{t('apartments.statuses.sold')}</SelectItem>
                       <SelectItem value="reserved">{t('apartments.statuses.reserved')}</SelectItem>
                       <SelectItem value="maintenance">{t('apartments.statuses.maintenance')}</SelectItem>
+                      <SelectItem value="under_finishing">{t('apartments.statuses.under_finishing')}</SelectItem>
                     </SelectContent>
                   </Select>
                 </FormField>
