@@ -14,7 +14,8 @@ import {
   Phone,
   Mail,
   Scale,
-  DollarSign
+  DollarSign,
+  FileText
 } from 'lucide-react';
 import { Input } from "@/components/ui/input";
 import {
@@ -34,6 +35,7 @@ import api from '@/lib/api';
 import toast from 'react-hot-toast';
 import { cn } from '@/lib/utils';
 import { motion } from 'framer-motion';
+import { Textarea } from "@/components/ui/textarea";
 
 // Form Section Component
 const FormSection = ({ icon: Icon, title, description, children, delay = 0 }: any) => (
@@ -95,8 +97,13 @@ export default function CreateMaterial() {
     quantity: "",
     requestStatus: "pending",
     approvalStatus: "draft",
-    projectId: ""
+    projectId: "",
+    notes: "",
+    startDate: "",
+    endDate: ""
   });
+
+  const [errors, setErrors] = useState<Record<string, string>>({});
 
   const [supplierData, setSupplierData] = useState({
     name: "",
@@ -124,7 +131,10 @@ export default function CreateMaterial() {
           price: Number(supplierData.price),
           editPrice: Number(supplierData.editPrice),
           documents: supplierDocuments,
-        }
+        },
+        notes: [data.notes],
+        startDate: data.startDate,
+        endDate: data.endDate
       };
 
       const response = await api.post('/material', payload);
@@ -148,7 +158,22 @@ export default function CreateMaterial() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formData.name || !supplierData.name || !formData.quantity || !formData.projectId) {
+    const newErrors: Record<string, string> = {};
+
+    if (!formData.name) newErrors.name = t('materials.formError');
+    if (!supplierData.name) newErrors.supplierName = t('materials.formError');
+    if (!formData.quantity) newErrors.quantity = t('materials.formError');
+    if (!formData.projectId) newErrors.projectId = t('materials.formError');
+
+    if (formData.startDate && formData.endDate) {
+      if (new Date(formData.startDate) > new Date(formData.endDate)) {
+        newErrors.endDate = t('materials.dateError');
+      }
+    }
+
+    setErrors(newErrors);
+
+    if (Object.keys(newErrors).length > 0) {
       toast.error(t('materials.formError'), { 
         icon: '⚠️',
         style: { borderRadius: '1rem', background: '#ef4444', color: '#fff' } 
@@ -209,31 +234,89 @@ export default function CreateMaterial() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 
                 {/* Material Name */}
-                <FormField label={t('materials.name')} required>
+                <FormField label={t('materials.name')} required error={errors.name}>
                   <div className="relative">
                     <Layers className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 rtl:left-auto rtl:right-3" />
                     <Input 
                       placeholder={t('materials.namePlaceholder') || "e.g. Steel Beams"}
                       value={formData.name}
-                      onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                      onChange={(e) => {
+                        setFormData(prev => ({ ...prev, name: e.target.value }));
+                        if (errors.name) setErrors(prev => {
+                          const { name, ...rest } = prev;
+                          return rest;
+                        });
+                      }}
                       className="pl-10 rtl:pl-3 rtl:pr-10 h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md"
                       required
                     />
                   </div>
                 </FormField>
 
-                <FormField label={t('materials.quantity')} required>
+                {/* Quantity */}
+                <FormField label={t('materials.quantity')} required error={errors.quantity}>
                   <div className="relative">
                     <Hash className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 rtl:left-auto rtl:right-3" />
                     <Input 
                       type="text"
                        value={formData.quantity}
-                      onChange={(e) => setFormData({ ...formData, quantity: e.target.value })}
+                      onChange={(e) => {
+                        setFormData(prev => ({ ...prev, quantity: e.target.value }));
+                        if (errors.quantity) setErrors(prev => {
+                          const { quantity, ...rest } = prev;
+                          return rest;
+                        });
+                      }}
                       className="pl-10 rtl:pl-3 rtl:pr-10 h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md"
                       required
                     />
                   </div>
                 </FormField>
+
+                {/* Start Date */}
+                <FormField label={t('materials.startDate')} error={errors.startDate}>
+                  <DatePicker 
+                    value={formData.startDate}
+                    onChange={(date) => {
+                      setFormData(prev => ({ ...prev, startDate: date }));
+                      if (errors.startDate) setErrors(prev => {
+                        const { startDate, ...rest } = prev;
+                        return rest;
+                      });
+                    }}
+                    placeholder={t('materials.startDate')}
+                  />
+                </FormField>
+
+                {/* End Date */}
+                <FormField label={t('materials.endDate')} error={errors.endDate}>
+                  <DatePicker 
+                    value={formData.endDate}
+                    onChange={(date) => {
+                      setFormData(prev => ({ ...prev, endDate: date }));
+                      if (errors.endDate) setErrors(prev => {
+                        const { endDate, ...rest } = prev;
+                        return rest;
+                      });
+                    }}
+                    placeholder={t('materials.endDate')}
+                  />
+                </FormField>
+
+                {/* Notes */}
+                <div className="md:col-span-2">
+                  <FormField label={t('materials.notes')}>
+                    <div className="relative">
+                      <FileText className="absolute left-3 top-3 w-4 h-4 text-gray-400 rtl:left-auto rtl:right-3" />
+                      <Textarea 
+                        placeholder={t('materials.notes') || "Enter any additional notes..."}
+                        value={formData.notes}
+                        onChange={(e) => setFormData(prev => ({ ...prev, notes: e.target.value }))}
+                        className="pl-10 rtl:pl-3 rtl:pr-10 min-h-[100px] bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md pt-2"
+                      />
+                    </div>
+                  </FormField>
+                </div>
 
               </div>
             </FormSection>
@@ -248,13 +331,19 @@ export default function CreateMaterial() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 
                 {/* Supplier Name */}
-                <FormField label={t('materials.supplierName')} required>
+                <FormField label={t('materials.supplierName')} required error={errors.supplierName}>
                   <div className="relative">
                     <Building2 className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 rtl:left-auto rtl:right-3" />
                     <Input 
                       placeholder={t('materials.supplierPlaceholder') || "e.g. Al-Rajhi Materials"}
                       value={supplierData.name}
-                      onChange={(e) => setSupplierData({ ...supplierData, name: e.target.value })}
+                      onChange={(e) => {
+                        setSupplierData(prev => ({ ...prev, name: e.target.value }));
+                        if (errors.supplierName) setErrors(prev => {
+                          const { supplierName, ...rest } = prev;
+                          return rest;
+                        });
+                      }}
                       className="pl-10 rtl:pl-3 rtl:pr-10 h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md"
                       required
                     />
@@ -269,7 +358,7 @@ export default function CreateMaterial() {
                       type="email"
                       placeholder="supplier@example.com"
                       value={supplierData.email}
-                      onChange={(e) => setSupplierData({ ...supplierData, email: e.target.value })}
+                      onChange={(e) => setSupplierData(prev => ({ ...prev, email: e.target.value }))}
                       className="pl-10 rtl:pl-3 rtl:pr-10 h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md"
                     />
                   </div>
@@ -282,7 +371,7 @@ export default function CreateMaterial() {
                     <Input 
                       placeholder="050XXXXXXXX"
                       value={supplierData.phoneNumber}
-                      onChange={(e) => setSupplierData({ ...supplierData, phoneNumber: e.target.value })}
+                      onChange={(e) => setSupplierData(prev => ({ ...prev, phoneNumber: e.target.value }))}
                       className="pl-10 rtl:pl-3 rtl:pr-10 h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md"
                     />
                   </div>
@@ -295,7 +384,7 @@ export default function CreateMaterial() {
                     <Input 
                       placeholder="055XXXXXXXX"
                       value={supplierData.optionalPhoneNumber}
-                      onChange={(e) => setSupplierData({ ...supplierData, optionalPhoneNumber: e.target.value })}
+                      onChange={(e) => setSupplierData(prev => ({ ...prev, optionalPhoneNumber: e.target.value }))}
                       className="pl-10 rtl:pl-3 rtl:pr-10 h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md"
                     />
                   </div>
@@ -308,7 +397,7 @@ export default function CreateMaterial() {
                     <Input 
                       placeholder={t('materials.quantityPlaceholder') || "e.g. 100 tons"}
                       value={supplierData.quantityText}
-                      onChange={(e) => setSupplierData({ ...supplierData, quantityText: e.target.value })}
+                      onChange={(e) => setSupplierData(prev => ({ ...prev, quantityText: e.target.value }))}
                       className="pl-10 rtl:pl-3 rtl:pr-10 h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md"
                     />
                   </div>
@@ -322,7 +411,7 @@ export default function CreateMaterial() {
                       type="number"
                       placeholder="0.00"
                       value={supplierData.price}
-                      onChange={(e) => setSupplierData({ ...supplierData, price: Number(e.target.value) })}
+                      onChange={(e) => setSupplierData(prev => ({ ...prev, price: Number(e.target.value) }))}
                       className="pl-10 rtl:pl-3 rtl:pr-10 h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md"
                     />
                   </div>
@@ -336,7 +425,7 @@ export default function CreateMaterial() {
                       type="number"
                       placeholder="0.00"
                       value={supplierData.editPrice}
-                      onChange={(e) => setSupplierData({ ...supplierData, editPrice: Number(e.target.value) })}
+                      onChange={(e) => setSupplierData(prev => ({ ...prev, editPrice: Number(e.target.value) }))}
                       className="pl-10 rtl:pl-3 rtl:pr-10 h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md"
                     />
                   </div>
@@ -346,7 +435,7 @@ export default function CreateMaterial() {
                 <FormField label={t('materials.editPriceDate')}>
                   <DatePicker 
                     value={supplierData.editPriceDate}
-                    onChange={(date) => setSupplierData({ ...supplierData, editPriceDate: date })}
+                    onChange={(date) => setSupplierData(prev => ({ ...prev, editPriceDate: date }))}
                     placeholder={t('materials.editPriceDate')}
                   />
                 </FormField>
@@ -381,7 +470,7 @@ export default function CreateMaterial() {
                 <FormField label={t('materials.requestStatus')} required>
                   <Select 
                     value={formData.requestStatus} 
-                    onValueChange={(val) => setFormData({ ...formData, requestStatus: val })}
+                    onValueChange={(val) => setFormData(prev => ({ ...prev, requestStatus: val }))}
                   >
                     <SelectTrigger className="h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md">
                       <SelectValue placeholder={t('materials.requestStatus')} />
@@ -402,7 +491,7 @@ export default function CreateMaterial() {
                 <FormField label={t('materials.approvalStatus')} required>
                   <Select 
                     value={formData.approvalStatus} 
-                    onValueChange={(val) => setFormData({ ...formData, approvalStatus: val })}
+                    onValueChange={(val) => setFormData(prev => ({ ...prev, approvalStatus: val }))}
                   >
                     <SelectTrigger className="h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md">
                       <SelectValue placeholder={t('materials.approvalStatus')} />
@@ -416,12 +505,18 @@ export default function CreateMaterial() {
                 </FormField>
 
                 {/* Linked Project */}
-                <FormField label={t('materials.linkedProject')} required>
+                <FormField label={t('materials.linkedProject')} required error={errors.projectId}>
                   <PaginatedSelect
                     apiEndpoint="/project"
                     queryKey="projects-paginated"
                     value={formData.projectId.toString()}
-                    onChange={(val) => setFormData({ ...formData, projectId: val })}
+                    onChange={(val) => {
+                      setFormData(prev => ({ ...prev, projectId: val }));
+                      if (errors.projectId) setErrors(prev => {
+                        const { projectId, ...rest } = prev;
+                        return rest;
+                      });
+                    }}
                     placeholder={t('materials.linkedProject')}
                     searchPlaceholder={t('common.search')}
                     mapResponseToOptions={(pageData) => {

@@ -13,7 +13,8 @@ import {
   RefreshCw,
   Sparkles,
   Plus,
-  Mail
+  Mail,
+  Phone
 } from 'lucide-react';
 import { Link } from "wouter";
 import { Shell } from '../../components/shared/Shell';
@@ -48,6 +49,7 @@ interface Role {
 interface User {
   id: number;
   email: string;
+  phoneNumber: string;
   isVerified: boolean;
   roleId: number;
   role: Role;
@@ -161,6 +163,15 @@ export default function Users() {
               {user.email}
             </div>
           </div>
+        </div>
+      )
+    },
+    {
+      header: t('users.phoneNumber'),
+      cell: (user) => (
+        <div className="flex items-center gap-1.5 text-xs text-gray-500 font-medium">
+          <Phone className="w-3.5 h-3.5 text-gray-400" />
+          {user.phoneNumber || t('common.na')}
         </div>
       )
     },

@@ -178,7 +178,7 @@ export function PaginatedSelect({
                 <Badge 
                   variant="secondary"
                   className={cn(
-                    "ml-2 text-[10px] px-1.5 py-0.5",
+                    "ms-2 text-[10px] px-1.5 py-0.5",
                     selectedOption.badge.variant === 'success' && "bg-emerald-50 text-emerald-700",
                     selectedOption.badge.variant === 'warning' && "bg-amber-50 text-amber-700",
                     selectedOption.badge.variant === 'danger' && "bg-red-50 text-red-700"
@@ -209,7 +209,7 @@ export function PaginatedSelect({
             <Command shouldFilter={false} className="max-h-[300px]">
               {/* Custom Search Input */}
               <div className="flex items-center border-b border-gray-200 dark:border-gray-700 px-3">
-                <Search className="mr-2 h-4 w-4 shrink-0 text-gray-400" />
+                <Search className="me-2 h-4 w-4 shrink-0 text-gray-400" />
                 <input
                   className="flex h-12 w-full rounded-md bg-transparent py-3 text-sm outline-none placeholder:text-gray-400 dark:placeholder:text-gray-500 disabled:cursor-not-allowed disabled:opacity-50"
                   placeholder={searchPlaceholder}

@@ -179,10 +179,12 @@
     "discard": "Discard Changes",
     "applyingChanges": "Applying modifications...",
     "saveChanges": "Save Changes",
+    "phoneNumber": "Phone Number",
     "placeholders": {
       "fullName": "e.g. John Doe",
       "email": "e.g. john@example.com",
-      "password": "••••••••"
+      "password": "••••••••",
+      "phoneNumber": "e.g. +966 50 000 0000"
     },
     "guidelines": {
       "verification": "Account Verification",
@@ -1181,6 +1183,9 @@
     "quantity": "Quantity",
     "requestStatus": "Request Status",
     "approvalStatus": "Approval Status",
+    "startDate": "Start Date",
+    "endDate": "End Date",
+    "notes": "Notes",
     "allStatus": "All Statuses",
     "materialId": "Material ID",
     "supplier": "Supplier Information",
@@ -1219,6 +1224,7 @@
     "successUpdate": "Material updated successfully",
     "errorUpdate": "Failed to update material",
     "formError": "Please fill in all required fields",
+    "dateError": "End date must be after start date",
     "creating": "Initializing material record...",
     "saving": "Saving modifications...",
     "auditInfo": "Audit Information",

@@ -16,7 +16,8 @@ import {
   Sparkles,
   CheckCircle2,
   XCircle,
-  Fingerprint
+  Fingerprint,
+  Phone
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { PaginatedSelect } from '@/components/shared/PaginatedSelect';
@@ -33,6 +34,7 @@ interface Role {
 interface User {
   id: number;
   email: string;
+  phoneNumber: string;
   isVerified: boolean;
   roleId: number;
   role: Role;
@@ -49,6 +51,7 @@ export function UpdateUserDialog({ user, open, onOpenChange }: UpdateUserDialogP
   const { t } = useTranslation();
   const [formData, setFormData] = useState({
     email: '',
+    phoneNumber: '',
     roleId: ''
   });
 
@@ -56,6 +59,7 @@ export function UpdateUserDialog({ user, open, onOpenChange }: UpdateUserDialogP
     if (user) {
       setFormData({
         email: user.email,
+        phoneNumber: user.phoneNumber || '',
         roleId: user.roleId.toString()
       });
     }
@@ -80,6 +84,7 @@ export function UpdateUserDialog({ user, open, onOpenChange }: UpdateUserDialogP
     e.preventDefault();
     updateMutation.mutate({
       email: formData.email,
+      phoneNumber: formData.phoneNumber,
       roleId: parseInt(formData.roleId)
     });
   };
@@ -173,6 +178,27 @@ export function UpdateUserDialog({ user, open, onOpenChange }: UpdateUserDialogP
                         className="h-12 pl-12 rtl:pl-4 rtl:pr-12 rounded-md bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700 focus:bg-gray-50 dark:focus:bg-gray-800 focus:ring-4 focus:ring-[#B39371]/10 focus:border-[#B39371]/50 transition-all font-semibold text-gray-700 dark:text-gray-200"
                         value={formData.email}
                         onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between">
+                      <Label htmlFor="phoneNumber" className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">{t('users.phoneNumber')}</Label>
+                      <Phone className="w-3.5 h-3.5 text-gray-300" />
+                    </div>
+                    <div className="relative group">
+                      <div className="absolute left-4 rtl:left-auto rtl:right-4 top-1/2 -translate-y-1/2 w-5 h-5 flex items-center justify-center transition-transform group-focus-within:scale-110">
+                        <Phone className="w-4 h-4 text-gray-400 group-focus-within:text-[#B39371] transition-colors" />
+                      </div>
+                      <Input
+                        id="phoneNumber"
+                        name="phoneNumber"
+                        type="tel"
+                        placeholder={t('users.placeholders.phoneNumber')}
+                        className="h-12 pl-12 rtl:pl-4 rtl:pr-12 rounded-md bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700 focus:bg-gray-50 dark:focus:bg-gray-800 focus:ring-4 focus:ring-[#B39371]/10 focus:border-[#B39371]/50 transition-all font-semibold text-gray-700 dark:text-gray-200"
+                        value={formData.phoneNumber}
+                        onChange={(e) => setFormData(prev => ({ ...prev, phoneNumber: e.target.value }))}
                       />
                     </div>
                   </div>

@@ -177,10 +177,12 @@
     "discard": "تجاهل التغييرات",
     "applyingChanges": "جاري تطبيق التعديلات...",
     "saveChanges": "حفظ التغييرات",
+    "phoneNumber": "رقم الهاتف",
     "placeholders": {
       "fullName": "مثال: جون دو",
       "email": "مثال: john@example.com",
-      "password": "••••••••"
+      "password": "••••••••",
+      "phoneNumber": "مثال: 966500000000+"
     },
     "guidelines": {
       "verification": "تحقق من الحساب",
@@ -1179,6 +1181,9 @@
     "quantity": "الكمية",
     "requestStatus": "حالة الطلب",
     "approvalStatus": "حالة الاعتماد",
+    "startDate": "تاريخ البدء",
+    "endDate": "تاريخ الانتهاء",
+    "notes": "ملاحظات",
     "allStatus": "جميع الحالات",
     "materialId": "رقم المادة",
     "supplier": "معلومات المورد",
@@ -1217,6 +1222,7 @@
     "successUpdate": "تم تحديث المادة بنجاح",
     "errorUpdate": "فشل تحديث المادة",
     "formError": "يرجى ملء جميع الحقول المطلوبة",
+    "dateError": "يجب أن يكون تاريخ الانتهاء بعد تاريخ البدء",
     "creating": "جاري تهيئة سجل المادة...",
     "saving": "جاري حفظ التعديلات...",
     "auditInfo": "معلومات التدقيق",

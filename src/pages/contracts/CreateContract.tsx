@@ -249,7 +249,7 @@ export default function CreateContract() {
             </div>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-6">
+          <form onSubmit={handleSubmit} className="space-y-6" dir={i18n.language === 'ar' ? 'rtl' : 'ltr'}>
             
             {/* General Information Section */}
             <FormSection 
@@ -264,8 +264,9 @@ export default function CreateContract() {
                   <Select 
                     value={formData.type} 
                     onValueChange={(val) => setFormData({ ...formData, type: val })}
+                    dir={i18n.language === 'ar' ? 'rtl' : 'ltr'}
                   >
-                    <SelectTrigger className="h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md">
+                    <SelectTrigger className={cn("h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md", i18n.language === 'ar' && "flex-row-reverse text-right")}>
                       <SelectValue placeholder={t('contracts.placeholders.selectType')} />
                     </SelectTrigger>
                     <SelectContent>
@@ -520,8 +521,9 @@ export default function CreateContract() {
                    <Select 
                     value={formData.paymentType} 
                     onValueChange={(val) => setFormData({ ...formData, paymentType: val })}
+                    dir={i18n.language === 'ar' ? 'rtl' : 'ltr'}
                   >
-                    <SelectTrigger className="h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md">
+                    <SelectTrigger className={cn("h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md", i18n.language === 'ar' && "flex-row-reverse text-right")}>
                       <SelectValue placeholder={t('contracts.placeholders.selectPaymentType')} />
                     </SelectTrigger>
                     <SelectContent>
@@ -559,8 +561,9 @@ export default function CreateContract() {
                       <Select 
                         value={formData.referenceType} 
                         onValueChange={(val) => setFormData({ ...formData, referenceType: val })}
+                        dir={i18n.language === 'ar' ? 'rtl' : 'ltr'}
                       >
-                        <SelectTrigger className="h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md">
+                        <SelectTrigger className={cn("h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md", i18n.language === 'ar' && "flex-row-reverse text-right")}>
                           <SelectValue placeholder={t('contracts.placeholders.selectReferenceType')} />
                         </SelectTrigger>
                         <SelectContent>

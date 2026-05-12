@@ -292,21 +292,21 @@ export default function Legality() {
                           {t('legality.lastSteps')}
                         </span>
                       </div>
-                      {item.legalitySteps.slice(-2).map((s) => (
+                      {item.legalitySteps?.slice(-2).map((s) => (
                         <div key={s.id} className="flex items-center justify-between gap-3">
                           <div className="flex items-center gap-2 min-w-0">
                             <div className={cn(
                               "w-1.5 h-1.5 rounded-full shrink-0",
-                              s.step.toDate ? "bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.4)]" : "bg-amber-400 shadow-[0_0_8px_rgba(251,191,36,0.4)]"
+                              s.step?.toDate ? "bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.4)]" : "bg-amber-400 shadow-[0_0_8px_rgba(251,191,36,0.4)]"
                             )} />
                             <span className="text-[11px] font-medium text-[#44403C] dark:text-[#D6D3D1] truncate">
-                              {s.step.name[lang]}
+                              {s.step?.name?.[lang] || 'Unnamed Step'}
                             </span>
                           </div>
-                          {s.step.toDate ? (
-                             <CheckCircle2 className="w-3 h-3 text-emerald-500 shrink-0" />
+                          {s.step?.toDate ? (
+                             <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
                           ) : (
-                             <Clock className="w-3 h-3 text-[#A8A29E] shrink-0" />
+                             <Clock className="w-3.5 h-3.5 text-[#A8A29E] shrink-0" />
                           )}
                         </div>
                       ))}

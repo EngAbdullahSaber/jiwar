@@ -107,8 +107,8 @@ const StepTimeline = ({ steps }: { steps: LegalityStep[] }) => {
         </span>
       </div>
       <div className="space-y-2">
-        {steps.map((item, index) => {
-           const isCompleted = item.step.isUpdated || !!item.step.toDate;
+        {steps?.map((item, index) => {
+           const isCompleted = item.step?.isUpdated || !!item.step?.toDate;
           const stepNumber = index + 1;
           
           return (
@@ -126,9 +126,9 @@ const StepTimeline = ({ steps }: { steps: LegalityStep[] }) => {
                   <span className="text-xs font-medium text-gray-700 dark:text-gray-300">
                     Step {stepNumber}
                   </span>
-                  {isCompleted && (
+                  {isCompleted && item.step?.toDate && (
                     <span className="text-[10px] text-emerald-600 dark:text-emerald-400">
-                      {new Date(item.step.toDate!).toLocaleDateString(i18n.language === 'ar' ? 'ar-SA' : 'en-US')}
+                      {new Date(item.step.toDate).toLocaleDateString(i18n.language === 'ar' ? 'ar-SA' : 'en-US')}
                     </span>
                   )}
                 </div>
@@ -389,9 +389,9 @@ export default function ViewLegality() {
 
             {/* Steps List */}
             <div className="space-y-3">
-              {legality.legalitySteps.map((item, index) => {
+              {legality.legalitySteps?.map((item, index) => {
                 const step = item.step;
-                const isCompleted = step.isUpdated || !!step.toDate;
+                const isCompleted = step?.isUpdated || !!step?.toDate;
                 const isExpanded = expandedStep === item.id;
                 
                 return (
@@ -417,14 +417,14 @@ export default function ViewLegality() {
                         )}>
                           {isCompleted ? <CheckCircle2 className="w-5 h-5" /> : <span className="text-sm font-medium">{index + 1}</span>}
                         </div>
-
+ 
                         {/* Step Info */}
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-2 mb-1">
                             <h3 className="text-sm font-medium text-gray-900 dark:text-white truncate">
-                              {i18n.language === 'ar' ? step.name.arabic : formatStepName(step.name.english)}
+                              {i18n.language === 'ar' ? step?.name?.arabic : formatStepName(step?.name?.english || "")}
                             </h3>
-                            {step.isDefault && (
+                            {step?.isDefault && (
                               <Badge variant="secondary" className="text-[10px] px-1.5 py-0.5 bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400">
                                 {t('legality.profile.default')}
                               </Badge>
@@ -432,12 +432,12 @@ export default function ViewLegality() {
                           </div>
                           
                           <div className="flex items-center gap-3 text-xs">
-                            {step.fromDate && (
+                            {step?.fromDate && (
                               <span className="text-gray-500 dark:text-gray-400">
                                 Started: {formatDate(step.fromDate)}
                               </span>
                             )}
-                            {step.toDate && (
+                            {step?.toDate && (
                               <span className="text-emerald-600 dark:text-emerald-400">
                                 Completed: {formatDate(step.toDate)}
                               </span>
@@ -445,7 +445,7 @@ export default function ViewLegality() {
                           </div>
                         </div>
                       </div>
-
+ 
                       <div className="flex items-center gap-3">
                         {/* Status Badge */}
                         <Badge 
@@ -458,7 +458,7 @@ export default function ViewLegality() {
                         >
                           {isCompleted ? t('legality.completed') : t('legality.pending')}
                         </Badge>
-
+ 
                         {/* Edit Button */}
                         <button
                           onClick={(e) => {
@@ -470,7 +470,7 @@ export default function ViewLegality() {
                         >
                           <Edit className="w-4 h-4" />
                         </button>
-
+ 
                         {/* Expand Icon */}
                         <motion.div
                           animate={{ rotate: isExpanded ? 180 : 0 }}
@@ -481,7 +481,7 @@ export default function ViewLegality() {
                         </motion.div>
                       </div>
                     </div>
-
+ 
                     {/* Expanded Content */}
                     <AnimatePresence>
                       {isExpanded && (
@@ -505,15 +505,15 @@ export default function ViewLegality() {
                                   ? <><CheckCircle2 className="w-3.5 h-3.5" /> {t('legality.completed')}</>
                                   : <><Clock className="w-3.5 h-3.5" /> {t('legality.pending')}</>}
                               </div>
-                              {step.isDefault && (
+                              {step?.isDefault && (
                                 <span className="text-[10px] font-medium text-gray-400 bg-gray-100 dark:bg-gray-800 px-2 py-0.5 rounded-full">
                                   {t('legality.profile.default')}
                                 </span>
                               )}
                             </div>
-
+ 
                             {/* Description */}
-                            {step.details && (
+                            {step?.details && (
                               <div>
                                 <h4 className="text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">
                                   {t('common.details')}
@@ -523,9 +523,9 @@ export default function ViewLegality() {
                                 </p>
                               </div>
                             )}
-
+ 
                             {/* Dates and Amount */}
-                            {(step.fromDate || step.toDate || step.amount) && (
+                            {(step?.fromDate || step?.toDate || step?.amount) && (
                               <div className="grid grid-cols-3 gap-4">
                                 {step.fromDate && (
                                   <div>
@@ -553,16 +553,16 @@ export default function ViewLegality() {
                                 )}
                               </div>
                             )}
-
+ 
                             {/* Files */}
-                            {step.files && step.files.length > 0 && (
+                            {step?.files && step.files.length > 0 && (
                               <div>
                                 <h4 className="text-xs font-medium text-gray-500 dark:text-gray-400 mb-2 flex items-center gap-1">
                                   <Paperclip className="w-3.5 h-3.5" />
                                   {t('legality.labels.attachments')} ({step.files.length})
                                 </h4>
                                 <div className="grid grid-cols-2 gap-2">
-                                  {step.files.map((file, idx) => (
+                                  {step.files.map((file: string, idx: number) => (
                                     <a
                                       key={idx}
                                       href={`${import.meta.env.VITE_API_BASE_URL}/${file}`}
@@ -580,9 +580,9 @@ export default function ViewLegality() {
                                 </div>
                               </div>
                             )}
-
+ 
                             {/* Fallback — nothing to show yet */}
-                            {!step.details && !step.fromDate && !step.toDate && !step.amount && (!step.files || step.files.length === 0) && (
+                            {(!step || (!step.details && !step.fromDate && !step.toDate && !step.amount && (!step.files || step.files.length === 0))) && (
                               <div className="flex flex-col items-center justify-center py-4 text-center">
                                 <Info className="w-8 h-8 text-gray-300 dark:text-gray-600 mb-2" />
                                 <p className="text-xs text-gray-400 dark:text-gray-500">

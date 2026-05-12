@@ -54,11 +54,17 @@ export default function CreateLegality() {
   const [shouldScroll, setShouldScroll] = useState(false);
   const stepsEndRef = useRef<HTMLDivElement>(null);
 
-  const { isLoading: isLoadingDefaults } = useQuery<DefaultStepsResponse>({
+  const { data: defaultStepsResponse, isLoading: isLoadingDefaults } = useQuery<DefaultStepsResponse>({
     queryKey: ['default-steps'],
     queryFn: async () => {
       const response = await api.get('/legality/steps/default');
-      const defaultSteps: WorkflowStep[] = response.data.data.map((step: DefaultStep) => ({
+      return response.data;
+    }
+  });
+
+  useEffect(() => {
+    if (defaultStepsResponse?.data && steps.length === 0) {
+      const defaultSteps: WorkflowStep[] = defaultStepsResponse.data.map((step: DefaultStep) => ({
         id: `default-${step.id}`,
         name: step.name.english.split('_').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' '),
         nameAr: step.name.arabic,
@@ -66,9 +72,8 @@ export default function CreateLegality() {
         isDefault: true
       }));
       setSteps(defaultSteps);
-      return response.data;
     }
-  });
+  }, [defaultStepsResponse, steps.length]);
 
   const createMutation = useMutation({
     mutationFn: async (payload: any) => {
@@ -146,14 +151,19 @@ export default function CreateLegality() {
         arabic: formData.nameAr,
         english: formData.nameEn
       },
-      steps: steps
-        .filter(s => !s.isDefault)
-        .map(s => ({
+      steps: steps.map(s => {
+        if (s.isDefault) {
+          return {
+            stepId: Number(s.id.replace('default-', ''))
+          };
+        }
+        return {
           name: {
             arabic: s.nameAr || s.name,
             english: s.name
           }
-        }))
+        };
+      })
     };
 
     createMutation.mutate(payload);

@@ -13,7 +13,8 @@ import {
   CheckCircle2,
   AlertCircle,
   Sparkles,
-  Shield
+  Shield,
+  Phone
 } from 'lucide-react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import api from '@/lib/api';
@@ -33,6 +34,7 @@ export default function CreateUser() {
   const [formData, setFormData] = useState({
     fullName: '',
     email: '',
+    phoneNumber: '',
     password: '',
     confirmPassword: '',
     roleId: ''
@@ -67,7 +69,9 @@ export default function CreateUser() {
     }
 
     createMutation.mutate({
+      fullName: formData.fullName,
       email: formData.email,
+      phoneNumber: formData.phoneNumber,
       password: formData.password,
       roleId: parseInt(formData.roleId)
     });
@@ -172,6 +176,22 @@ export default function CreateUser() {
                         placeholder={t('users.placeholders.email')}
                         className="h-12 pl-11 rtl:pl-4 rtl:pr-11 rounded-md bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700 focus:bg-gray-50 dark:focus:bg-gray-800 focus:ring-2 focus:ring-[#B39371]/10 transition-all"
                         value={formData.email}
+                        onChange={handleChange}
+                      />
+                    </div>
+                  </div>
+
+                  {/* Phone Number */}
+                  <div className="space-y-2.5">
+                    <Label className="text-sm font-semibold text-gray-700 dark:text-gray-300">{t('users.phoneNumber')}</Label>
+                    <div className="relative group">
+                      <Phone className="absolute left-4 rtl:left-auto rtl:right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 group-focus-within:text-[#B39371] transition-colors" />
+                      <Input
+                        name="phoneNumber"
+                        type="tel"
+                        placeholder={t('users.placeholders.phoneNumber')}
+                        className="h-12 pl-11 rtl:pl-4 rtl:pr-11 rounded-md bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700 focus:bg-gray-50 dark:focus:bg-gray-800 focus:ring-2 focus:ring-[#B39371]/10 transition-all"
+                        value={formData.phoneNumber}
                         onChange={handleChange}
                       />
                     </div>

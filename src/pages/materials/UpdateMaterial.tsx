@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { TopHeader } from '../../components/TopHeader';
 import { Link, useLocation, useRoute } from "wouter";
@@ -15,7 +15,9 @@ import {
   Phone,
   Mail,
   Scale,
-  DollarSign
+  DollarSign,
+  Calendar,
+  FileText
 } from 'lucide-react';
 import { Input } from "@/components/ui/input";
 import {
@@ -35,6 +37,7 @@ import api from '@/lib/api';
 import toast from 'react-hot-toast';
 import { cn } from '@/lib/utils';
 import { motion } from 'framer-motion';
+import { Textarea } from "@/components/ui/textarea";
 
 // Form Section Component
 const FormSection = ({ icon: Icon, title, description, children, delay = 0 }: any) => (
@@ -99,7 +102,10 @@ export default function UpdateMaterial() {
     quantity: "",
     requestStatus: "",
     approvalStatus: "",
-    projectId: ""
+    projectId: "",
+    notes: "",
+    startDate: "",
+    endDate: ""
   });
 
   const [supplierData, setSupplierData] = useState({
@@ -125,15 +131,20 @@ export default function UpdateMaterial() {
     enabled: !!materialId
   });
 
+  const isInitialized = useRef(false);
+
   useEffect(() => {
-    if (materialData?.data) {
+    if (materialData?.data && !isInitialized.current) {
       const m = materialData.data;
       setFormData({
         name: m.name || "",
         quantity: m.quantity || 0,
         requestStatus: m.requestStatus || "pending",
         approvalStatus: m.approvalStatus || "draft",
-        projectId: m.project?.id ? m.project.id.toString() : ""
+        projectId: m.project?.id ? m.project.id.toString() : "",
+        notes: m.notes || "",
+        startDate: m.startDate ? m.startDate.split('T')[0] : "",
+        endDate: m.endDate ? m.endDate.split('T')[0] : ""
       });
       
       if (m.supplier) {
@@ -155,6 +166,8 @@ export default function UpdateMaterial() {
       if (Array.isArray(m.files) && m.files.length > 0) {
         setAttachments(m.files);
       }
+      
+      isInitialized.current = true;
     }
   }, [materialData]);
 
@@ -172,7 +185,10 @@ export default function UpdateMaterial() {
           price: Number(supplierData.price),
           editPrice: Number(supplierData.editPrice),
           documents: supplierDocuments,
-        }
+        },
+        notes: data.notes,
+        startDate: data.startDate,
+        endDate: data.endDate
       };
       
       const response = await api.patch(`/material/${materialId}`, payload);
@@ -280,25 +296,59 @@ export default function UpdateMaterial() {
                     <Input 
                       placeholder={t('materials.namePlaceholder') || "e.g. Steel Beams"}
                       value={formData.name}
-                      onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                      onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
                       className="pl-10 rtl:pl-3 rtl:pr-10 h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md"
                       required
                     />
                   </div>
                 </FormField>
 
+                {/* Quantity */}
                 <FormField label={t('materials.quantity')} required>
                   <div className="relative">
                     <Hash className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 rtl:left-auto rtl:right-3" />
                     <Input 
                       type="text"
                        value={formData.quantity}
-                      onChange={(e) => setFormData({ ...formData, quantity: e.target.value })}
+                      onChange={(e) => setFormData(prev => ({ ...prev, quantity: e.target.value }))}
                       className="pl-10 rtl:pl-3 rtl:pr-10 h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md"
                       required
                     />
                   </div>
                 </FormField>
+
+                {/* Start Date */}
+                <FormField label={t('materials.startDate')}>
+                  <DatePicker 
+                    value={formData.startDate}
+                    onChange={(date) => setFormData(prev => ({ ...prev, startDate: date }))}
+                    placeholder={t('materials.startDate')}
+                  />
+                </FormField>
+
+                {/* End Date */}
+                <FormField label={t('materials.endDate')}>
+                  <DatePicker 
+                    value={formData.endDate}
+                    onChange={(date) => setFormData(prev => ({ ...prev, endDate: date }))}
+                    placeholder={t('materials.endDate')}
+                  />
+                </FormField>
+
+                {/* Notes */}
+                <div className="md:col-span-2">
+                  <FormField label={t('materials.notes')}>
+                    <div className="relative">
+                      <FileText className="absolute left-3 top-3 w-4 h-4 text-gray-400 rtl:left-auto rtl:right-3" />
+                      <Textarea 
+                        placeholder={t('materials.notes') || "Enter any additional notes..."}
+                        value={formData.notes}
+                        onChange={(e) => setFormData(prev => ({ ...prev, notes: e.target.value }))}
+                        className="pl-10 rtl:pl-3 rtl:pr-10 min-h-[100px] bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md pt-2"
+                      />
+                    </div>
+                  </FormField>
+                </div>
 
               </div>
             </FormSection>
@@ -319,7 +369,7 @@ export default function UpdateMaterial() {
                     <Input 
                       placeholder={t('materials.supplierPlaceholder') || "e.g. Al-Rajhi Materials"}
                       value={supplierData.name}
-                      onChange={(e) => setSupplierData({ ...supplierData, name: e.target.value })}
+                      onChange={(e) => setSupplierData(prev => ({ ...prev, name: e.target.value }))}
                       className="pl-10 rtl:pl-3 rtl:pr-10 h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md"
                       required
                     />
@@ -334,7 +384,7 @@ export default function UpdateMaterial() {
                       type="email"
                       placeholder="supplier@example.com"
                       value={supplierData.email}
-                      onChange={(e) => setSupplierData({ ...supplierData, email: e.target.value })}
+                      onChange={(e) => setSupplierData(prev => ({ ...prev, email: e.target.value }))}
                       className="pl-10 rtl:pl-3 rtl:pr-10 h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md"
                     />
                   </div>
@@ -347,7 +397,7 @@ export default function UpdateMaterial() {
                     <Input 
                       placeholder="050XXXXXXXX"
                       value={supplierData.phoneNumber}
-                      onChange={(e) => setSupplierData({ ...supplierData, phoneNumber: e.target.value })}
+                      onChange={(e) => setSupplierData(prev => ({ ...prev, phoneNumber: e.target.value }))}
                       className="pl-10 rtl:pl-3 rtl:pr-10 h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md"
                     />
                   </div>
@@ -360,7 +410,7 @@ export default function UpdateMaterial() {
                     <Input 
                       placeholder="055XXXXXXXX"
                       value={supplierData.optionalPhoneNumber}
-                      onChange={(e) => setSupplierData({ ...supplierData, optionalPhoneNumber: e.target.value })}
+                      onChange={(e) => setSupplierData(prev => ({ ...prev, optionalPhoneNumber: e.target.value }))}
                       className="pl-10 rtl:pl-3 rtl:pr-10 h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md"
                     />
                   </div>
@@ -373,7 +423,7 @@ export default function UpdateMaterial() {
                     <Input 
                       placeholder={t('materials.quantityPlaceholder') || "e.g. 100 tons"}
                       value={supplierData.quantityText}
-                      onChange={(e) => setSupplierData({ ...supplierData, quantityText: e.target.value })}
+                      onChange={(e) => setSupplierData(prev => ({ ...prev, quantityText: e.target.value }))}
                       className="pl-10 rtl:pl-3 rtl:pr-10 h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md"
                     />
                   </div>
@@ -387,7 +437,7 @@ export default function UpdateMaterial() {
                       type="number"
                       placeholder="0.00"
                       value={supplierData.price}
-                      onChange={(e) => setSupplierData({ ...supplierData, price: Number(e.target.value) })}
+                      onChange={(e) => setSupplierData(prev => ({ ...prev, price: Number(e.target.value) }))}
                       className="pl-10 rtl:pl-3 rtl:pr-10 h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md"
                     />
                   </div>
@@ -401,7 +451,7 @@ export default function UpdateMaterial() {
                       type="number"
                       placeholder="0.00"
                       value={supplierData.editPrice}
-                      onChange={(e) => setSupplierData({ ...supplierData, editPrice: Number(e.target.value) })}
+                      onChange={(e) => setSupplierData(prev => ({ ...prev, editPrice: Number(e.target.value) }))}
                       className="pl-10 rtl:pl-3 rtl:pr-10 h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md"
                     />
                   </div>
@@ -411,7 +461,7 @@ export default function UpdateMaterial() {
                 <FormField label={t('materials.editPriceDate')}>
                   <DatePicker 
                     value={supplierData.editPriceDate}
-                    onChange={(date) => setSupplierData({ ...supplierData, editPriceDate: date })}
+                    onChange={(date) => setSupplierData(prev => ({ ...prev, editPriceDate: date }))}
                     placeholder={t('materials.editPriceDate')}
                   />
                 </FormField>
@@ -469,7 +519,7 @@ export default function UpdateMaterial() {
                 <FormField label={t('materials.requestStatus')} required>
                   <Select 
                     value={formData.requestStatus} 
-                    onValueChange={(val) => setFormData({ ...formData, requestStatus: val })}
+                    onValueChange={(val) => setFormData(prev => ({ ...prev, requestStatus: val }))}
                   >
                     <SelectTrigger className="h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md">
                       <SelectValue placeholder={t('materials.requestStatus')} />
@@ -490,7 +540,7 @@ export default function UpdateMaterial() {
                 <FormField label={t('materials.approvalStatus')} required>
                   <Select 
                     value={formData.approvalStatus} 
-                    onValueChange={(val) => setFormData({ ...formData, approvalStatus: val })}
+                    onValueChange={(val) => setFormData(prev => ({ ...prev, approvalStatus: val }))}
                   >
                     <SelectTrigger className="h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md">
                       <SelectValue placeholder={t('materials.approvalStatus')} />
@@ -509,7 +559,7 @@ export default function UpdateMaterial() {
                     apiEndpoint="/project"
                     queryKey="projects-paginated"
                     value={formData.projectId.toString()}
-                    onChange={(val) => setFormData({ ...formData, projectId: val })}
+                    onChange={(val) => setFormData(prev => ({ ...prev, projectId: val }))}
                     placeholder={t('materials.linkedProject')}
                     searchPlaceholder={t('common.search')}
                     mapResponseToOptions={(pageData) => {
