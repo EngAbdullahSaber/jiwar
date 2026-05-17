@@ -40,6 +40,7 @@ interface Apartment {
   buildingOrBlock: string;
   basePrice: string;
   apartmentType: string;
+  streetCount: string;
   isAvailable: boolean;
   serialNumber: string;
   accountNumber: string;
@@ -183,6 +184,7 @@ export default function ViewApartment() {
         { label: t('apartments.labels.floorNo'), value: apartment.floorNumber },
         { label: t('apartments.labels.size'), value: `${apartment.size} ${t('apartments.labels.sqmLabel')}` },
         { label: t('apartments.labels.meterNumber'), value: apartment.meterNumber || '0' },
+        { label: t('apartments.labels.streetCount'), value: apartment.streetCount ? t(`apartments.streetCounts.${apartment.streetCount}`) : t('common.na') },
         { 
           label: t('apartments.labels.linkedProject'), 
           value: apartment.project ? (i18n.language === 'ar' ? apartment.project.name.arabic : apartment.project.name.english) : t('common.na'),
@@ -273,9 +275,9 @@ export default function ViewApartment() {
                         <div className={cn(
                           "px-4 py-1.5 rounded-md text-[10px] font-black uppercase tracking-[0.2em] shadow-sm",
                           apartment.status === 'available' ? "bg-emerald-50 text-emerald-600 border border-emerald-100" :
-                          apartment.status === 'sold' ? "bg-blue-50 text-blue-600 border border-blue-100" :
-                          apartment.status === 'under_finishing' ? "bg-indigo-50 text-indigo-600 border border-indigo-100" :
-                          "bg-amber-50 text-amber-600 border border-amber-100"
+                          apartment.status === 'sold' ? "bg-red-50 text-red-600 border border-red-100" :
+                          apartment.status === 'reserved' ? "bg-amber-50 text-amber-600 border border-amber-100" :
+                          "bg-indigo-50 text-indigo-600 border border-indigo-100"
                         )}>
                           {t(`apartments.statuses.${apartment.status}`)}
                         </div>

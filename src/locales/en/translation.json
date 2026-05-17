@@ -16,6 +16,9 @@
     "refresh": "Refresh",
     "fillRequiredFields": "Please fill in all required fields",
     "startDateBeforeEndDate": "Start date must be before end date",
+    "startDate": "Start Date",
+    "endDate": "End Date",
+    "dateRange": "Date Range",
     "filters": "Filters",
     "clearAll": "Clear All",
     "activeFilters": "Active Filters",
@@ -666,6 +669,7 @@
       "linkedTemplate": "Linked Template",
       "basePrice": "Base Price (SAR)",
       "apartmentType": "Apartment Type",
+      "streetCount": "Street Count",
       "ownerStatus": "Owner Status",
       "status": "Overall Status",
       "requestDate": "Request Date",
@@ -738,8 +742,11 @@
       "available": "Available",
       "sold": "Sold",
       "reserved": "Reserved",
-      "maintenance": "Maintenance",
-      "under_finishing": "Under Finishing"
+      "reselling": "Reselling"
+    },
+    "streetCounts": {
+      "ONE_STREET": "One Street",
+      "TWO_STREET": "Two Streets"
     },
     "success": {
       "create": "Apartment created successfully",

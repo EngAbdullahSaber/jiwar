@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { TopHeader } from '../../components/TopHeader';
 import { Pagination } from '../../components/shared/Pagination';
-import { 
+import {
   Search,
   PlusCircle,
   ArrowRight,
@@ -15,7 +15,8 @@ import {
   Layers,
   Activity,
   ChevronDown,
-  Scale
+  Scale,
+  Pencil
 } from 'lucide-react';
 import { Link } from "wouter";
 import { Shell } from '../../components/shared/Shell';
@@ -326,14 +327,24 @@ export default function Legality() {
 
                     {/* Footer */}
                     <div className="mt-auto pt-4 border-t border-[#F7F6F3] dark:border-[#27272A] flex items-center justify-between">
-                      <Can I="READ" a="legality">
-                        <Link href={`/legality/${item.id}`}>
-                          <button className="inline-flex items-center gap-1.5 text-[12px] font-semibold text-[#1C1917] dark:text-white hover:opacity-70 transition-opacity">
-                            {t('legality.viewDetails')}
-                            <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
-                          </button>
-                        </Link>
-                      </Can>
+                      <div className="flex items-center gap-3">
+                        <Can I="READ" a="legality">
+                          <Link href={`/legality/${item.id}`}>
+                            <button className="inline-flex items-center gap-1.5 text-[12px] font-semibold text-[#1C1917] dark:text-white hover:opacity-70 transition-opacity">
+                              {t('legality.viewDetails')}
+                              <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
+                            </button>
+                          </Link>
+                        </Can>
+                        <Can I="UPDATE" a="legality">
+                          <Link href={`/legality/${item.id}/edit`}>
+                            <button className="inline-flex items-center gap-1.5 text-[12px] font-semibold text-[#B39371] hover:opacity-70 transition-opacity">
+                              <Pencil className="w-3.5 h-3.5" />
+                              {t('common.edit')}
+                            </button>
+                          </Link>
+                        </Can>
+                      </div>
                       <div className="w-7 h-7 rounded-full bg-[#1C1917] dark:bg-white flex items-center justify-center text-[10px] font-bold text-white dark:text-[#1C1917]">
                         {item.createdBy.email.substring(0, 2).toUpperCase()}
                       </div>

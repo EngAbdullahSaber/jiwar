@@ -16,6 +16,9 @@
     "refresh": "تحديث",
     "fillRequiredFields": "يرجى ملء جميع الحقول المطلوبة",
     "startDateBeforeEndDate": "تاريخ البدء يجب أن يكون قبل تاريخ الانتهاء",
+    "startDate": "تاريخ البدء",
+    "endDate": "تاريخ الانتهاء",
+    "dateRange": "نطاق التاريخ",
     "filters": "المرشحات",
     "clearAll": "مسح الكل",
     "activeFilters": "المرشحات الفعالة",
@@ -666,6 +669,7 @@
       "linkedTemplate": "النموذج المرتبط",
       "basePrice": "السعر الأساسي (ريال)",
       "apartmentType": "نوع الشقة",
+      "streetCount": "عدد الشوارع",
       "ownerStatus": "حالة الملكية",
       "status": "الحالة العامة",
       "requestDate": "تاريخ الطلب",
@@ -738,8 +742,11 @@
       "available": "متاح",
       "sold": "مباع",
       "reserved": "محجوز",
-      "maintenance": "صيانة",
-      "under_finishing": "تحت التشطيب"
+      "reselling": "إعادة بيع"
+    },
+    "streetCounts": {
+      "ONE_STREET": "شارع واحد",
+      "TWO_STREET": "شارعين"
     },
     "success": {
       "create": "تم إنشاء الشقة بنجاح",

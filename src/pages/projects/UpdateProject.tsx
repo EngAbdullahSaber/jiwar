@@ -14,13 +14,7 @@ import {
 } from 'lucide-react';
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+ 
 import { Shell } from '../../components/shared/Shell';
 import { PaginatedSelect } from '../../components/shared/PaginatedSelect';
 import { FormActions } from '../../components/shared/FormActions';
@@ -91,7 +85,6 @@ export default function UpdateProject() {
   const [formData, setFormData] = useState({
     name: { arabic: "", english: "" },
     projectIdentity: "",
-    status: "",
     legalityId: "",
     address: "",
     latitude: "24.7136",
@@ -116,7 +109,6 @@ export default function UpdateProject() {
           english: p.name?.english || ""
         },
         projectIdentity: p.projectIdentity || "",
-        status: p.status || "evacuation",
         legalityId: p.legalityId?.toString() || "",
         address: p.address || "",
         latitude: p.latitude?.toString() || "24.7136",
@@ -129,7 +121,6 @@ export default function UpdateProject() {
     mutationFn: async (data: typeof formData) => {
       const payload = {
         name: data.name,
-        status: data.status,
         legalityId: Number(data.legalityId),
         address: data.address,
         latitude: Number(data.latitude),
@@ -241,21 +232,6 @@ export default function UpdateProject() {
                   </div>
                 </FormField>
 
-                {/* Status */}
-                <FormField label={t('projects.labels.status')} required>
-                  <Select 
-                    value={formData.status} 
-                    onValueChange={(val) => setFormData({ ...formData, status: val })}
-                  >
-                    <SelectTrigger className="h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md">
-                      <SelectValue placeholder={t('projects.placeholders.selectStatus')} />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="evacuation">{t('projects.statuses.evacuation')}</SelectItem>
-                      <SelectItem value="demolition">{t('projects.statuses.demolition')}</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </FormField>
 
                 {/* Project Name English */}
                 <FormField label={t('projects.labels.projectNameEn')} required>

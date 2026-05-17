@@ -35,11 +35,11 @@ export interface DashboardResponse {
   data: DashboardData;
 }
 
-export function useDashboardStats() {
+export function useDashboardStats(params?: { startDate?: string; endDate?: string }) {
   return useQuery<DashboardResponse>({
-    queryKey: ['dashboard-stats'],
+    queryKey: ['dashboard-stats', params],
     queryFn: async () => {
-      const response = await api.get('/statics/dashboard');
+      const response = await api.get('/statics/dashboard', { params });
       return response.data;
     },
   });

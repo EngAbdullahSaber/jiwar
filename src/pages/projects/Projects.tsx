@@ -63,70 +63,24 @@ interface ProjectsResponse {
 
 
 
-// Status Badge Component
-const StatusBadge = ({ status }: { status: string }) => {
-  const { t } = useTranslation();
-  const statusConfig: Record<string, { color: string; icon: any; label: string }> = {
-    CONSTRUCTION: { 
-      color: "bg-blue-50 text-blue-700 dark:bg-blue-500/10 dark:text-blue-400 border-blue-200 dark:border-blue-500/20", 
-      icon: Clock,
-      label: t('projects.statuses.construction')
-    },
-    PLANNING: { 
-      color: "bg-gray-50 text-gray-700 dark:bg-gray-500/10 dark:text-gray-400 border-gray-200 dark:border-gray-500/20", 
-      icon: FileText,
-      label: t('projects.statuses.planning')
-    },
-    HANDOVER: { 
-      color: "bg-emerald-50 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-400 border-emerald-200 dark:border-emerald-500/20", 
-      icon: CheckCircle2,
-      label: t('projects.statuses.handover')
-    },
-    "ON HOLD": { 
-      color: "bg-amber-50 text-amber-700 dark:bg-amber-500/10 dark:text-amber-400 border-amber-200 dark:border-amber-500/20", 
-      icon: AlertCircle,
-      label: t('projects.statuses.onhold')
-    },
-    EVACUATION: { 
-      color: "bg-purple-50 text-purple-700 dark:bg-purple-500/10 dark:text-purple-400 border-purple-200 dark:border-purple-500/20", 
-      icon: Home,
-      label: t('projects.statuses.evacuation')
-    },
-    DEMOLITION: { 
-      color: "bg-red-50 text-red-700 dark:bg-red-500/10 dark:text-red-400 border-red-200 dark:border-red-500/20", 
-      icon: TrendingUp,
-      label: t('projects.statuses.demolition')
-    }
-  };
 
-  const config = statusConfig[status.toUpperCase()] || statusConfig.PLANNING;
-  const Icon = config.icon;
-
-  return (
-    <Badge className={cn("rounded-lg px-3 py-1 text-xs font-medium border", config.color)}>
-      <Icon className="w-3.5 h-3.5 mr-1" />
-      {config.label}
-    </Badge>
-  );
-};
 
 
 
 export default function Projects() {
   const { t, i18n } = useTranslation();
-  const [filters, setFilters] = useState({ search: '', status: 'all' });
+  const [filters, setFilters] = useState({ search: '' });
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 10;
 
   const { data: response, isLoading } = useQuery<ProjectsResponse>({
-    queryKey: ['projects', currentPage, pageSize, filters.search, filters.status],
+    queryKey: ['projects', currentPage, pageSize, filters.search],
     queryFn: async () => {
       const res = await api.get('/project', {
         params: {
           page: currentPage,
           pageSize,
-          search: filters.search || undefined,
-          status: filters.status !== 'all' ? filters.status : undefined
+          search: filters.search || undefined
         }
       });
       return res.data;
@@ -139,17 +93,6 @@ export default function Projects() {
       label: t('projects.labels.projectName'),
       placeholder: t('projects.placeholders.search'),
       key: 'search'
-    },
-    {
-      type: 'select',
-      label: t('projects.labels.status'),
-      placeholder: t('projects.statuses.allStatus'),
-      key: 'status',
-      options: [
-        { value: 'all', label: t('projects.statuses.allStatus') },
-        { value: 'EVACUATION', label: t('projects.statuses.evacuation') },
-        { value: 'DEMOLITION', label: t('projects.statuses.demolition') }
-      ]
     }
   ];
 
@@ -181,10 +124,7 @@ export default function Projects() {
         </div>
       )
     },
-    {
-      header: t('projects.labels.status'),
-      cell: (p) => <StatusBadge status={p.status || "PLANNING"} />
-    },
+
     {
       header: t('projects.labels.budget'),
       cell: (p) => (
@@ -312,7 +252,7 @@ export default function Projects() {
           </div>
 
           {/* Stats Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
             <StatCard 
               icon={Building2}
               label={t('projects.stats.totalProjects')}
@@ -328,22 +268,6 @@ export default function Projects() {
               value={`${statics?.totalBudget?.toLocaleString() || "0"} SAR`}
               subValue={t('projects.stats.allPhases')}
               color="from-emerald-500 to-emerald-600"
-            />
-            <StatCard 
-              icon={FileEdit}
-              label={t('projects.stats.evacuationCount')}
-              value={statics?.evacuationCount?.toString() || "0"}
-              subValue={t('projects.stats.totalEvacuations')}
-              color="from-amber-500 to-amber-600"
-              progress={45}
-            />
-            <StatCard 
-              icon={TrendingUp}
-              label={t('projects.stats.demolitionCount')}
-              value={statics?.demolitionCount?.toString() || "0"}
-              subValue={t('projects.stats.inProgress')}
-              color="from-purple-500 to-purple-600"
-              progress={30}
             />
           </div>
 
@@ -383,11 +307,11 @@ export default function Projects() {
                 {t('projects.empty.title')}
               </h3>
               <p className="text-sm text-gray-500 dark:text-gray-400 mb-8 max-w-md mx-auto">
-                {filters.search || filters.status !== 'all' 
+                {filters.search 
                   ? t('projects.empty.description')
                   : t('projects.empty.createFirst')}
               </p>
-              {!filters.search && filters.status === 'all' && (
+              {!filters.search && (
                 <Link href="/projects/new">
                   <button className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-[#4A1B1B] to-[#6B2727] text-white rounded-xl text-sm font-medium shadow-lg shadow-[#4A1B1B]/20 hover:shadow-xl transition-all">
                     <Plus className="w-5 h-5" />

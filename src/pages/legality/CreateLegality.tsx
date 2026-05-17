@@ -151,19 +151,14 @@ export default function CreateLegality() {
         arabic: formData.nameAr,
         english: formData.nameEn
       },
-      steps: steps.map(s => {
-        if (s.isDefault) {
-          return {
-            stepId: Number(s.id.replace('default-', ''))
-          };
-        }
-        return {
+      steps: steps
+        .filter(s => !s.isDefault)
+        .map(s => ({
           name: {
             arabic: s.nameAr || s.name,
             english: s.name
           }
-        };
-      })
+        }))
     };
 
     createMutation.mutate(payload);

@@ -1,4 +1,5 @@
- import { useTranslation } from 'react-i18next';
+import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { TopHeader } from '../../components/TopHeader';
 import { 
   TrendingUp, 
@@ -11,8 +12,11 @@ import {
   Award,
   FileText,
   Building2,
-  RefreshCw
+  RefreshCw,
+   XCircle,
+  Calendar
 } from 'lucide-react';
+import DatePicker from '@/components/shared/DatePicker';
 import { Shell } from '../../components/shared/Shell';
 import { useQuery } from '@tanstack/react-query';
 import api from '@/lib/api';
@@ -71,11 +75,23 @@ interface FinanceStatsResponse {
 export default function FinanceDashboard() {
   const { t, i18n } = useTranslation();
   const isRtl = i18n.language === 'ar';
+  const [dateRange, setDateRange] = useState('');
 
-  const { data, isLoading, refetch } = useQuery<FinanceStatsResponse>({
-    queryKey: ['finance-statistics'],
+  // Extract startDate and endDate from the range string "YYYY-MM-DD to YYYY-MM-DD"
+  let startDate = '';
+  let endDate = '';
+  if (dateRange && dateRange.includes(' to ')) {
+    const parts = dateRange.split(' to ');
+    startDate = parts[0];
+    endDate = parts[1];
+  }
+
+  const { data, isLoading, refetch, isFetching } = useQuery<FinanceStatsResponse>({
+    queryKey: ['finance-statistics', { startDate, endDate }],
     queryFn: async () => {
-      const response = await api.get('/salesman/statistics');
+      const response = await api.get('/salesman/statistics', {
+        params: { startDate, endDate }
+      });
       return response.data;
     }
   });
@@ -187,21 +203,27 @@ export default function FinanceDashboard() {
       <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-50 dark:from-gray-950 dark:via-gray-900 dark:to-gray-950">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
           
-          {/* Header */}
+          {/* Header with Integrated Date Filters */}
           <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 p-8 shadow-sm overflow-hidden relative group">
-            <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-[#4A1B1B]/5 to-transparent rounded-full -translate-y-1/2 translate-x-1/2 blur-3xl group-hover:bg-[#4A1B1B]/10 transition-all duration-500" />
+            <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-[#4A1B1B]/5 to-transparent rounded-full -translate-y-1/2 translate-x-1/2 blur-3xl group-hover:bg-[#4A1B1B]/10 transition-all duration-500 pointer-events-none" />
             
+            {/* Top progress line indicating data refetch */}
+            {isFetching && (
+              <div className="absolute top-0 left-0 right-0 h-[2.5px] bg-gradient-to-r from-transparent via-[#B39371] to-transparent animate-pulse z-20" />
+            )}
+
             <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-8 relative z-10">
+              {/* Title area */}
               <div className="flex items-center gap-6">
-                <div className="relative">
-                  <div className="absolute inset-0 bg-gradient-to-r from-[#4A1B1B] to-[#6B2727] rounded-2xl blur-xl opacity-20 group-hover:opacity-40 transition-opacity" />
+                <div className="relative hidden sm:block">
+                  <div className="absolute inset-0 bg-gradient-to-r from-[#4A1B1B] to-[#6B2727] rounded-2xl blur-xl opacity-20 group-hover:opacity-40 transition-opacity pointer-events-none" />
                   <div className="relative w-16 h-16 rounded-2xl bg-gradient-to-br from-[#4A1B1B] to-[#6B2727] shadow-lg flex items-center justify-center border border-white/10">
                     <PieChartIcon className="w-8 h-8 text-[#B39371]" />
                   </div>
                 </div>
                 <div>
                   <div className="flex items-center gap-2 mb-1.5">
-                    <div className="w-1.5 h-1.5 rounded-full bg-[#B39371]" />
+                    <div className="w-1.5 h-1.5 rounded-full bg-[#B39371] animate-pulse" />
                     <p className="text-[10px] font-bold text-[#B39371] uppercase tracking-[0.2em]">
                       {t('financeDashboard.title')}
                     </p>
@@ -215,13 +237,40 @@ export default function FinanceDashboard() {
                 </div>
               </div>
 
-              <div className="flex items-center gap-4">
+              {/* Date Filters Container */}
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 bg-gray-50/50 dark:bg-gray-800/20 p-3.5 rounded-2xl border border-gray-100 dark:border-gray-800/80 backdrop-blur-sm w-full lg:w-auto">
+                <div className="flex items-center gap-2 text-gray-500 dark:text-gray-400 font-bold text-xs uppercase tracking-wider px-1">
+                  <Calendar className="w-4 h-4 text-[#B39371]" />
+                  <span className="hidden sm:inline">{t('common.filters')}:</span>
+                </div>
+
+                <div className="w-full sm:w-[220px]">
+                  <DatePicker
+                    value={dateRange}
+                    onChange={setDateRange}
+                    mode="range"
+                    placeholder={t('common.dateRange')}
+                  />
+                </div>
+
+                {dateRange && (
+                  <button
+                    onClick={() => setDateRange('')}
+                    className="h-11 px-4 rounded-xl border border-dashed border-red-200 dark:border-red-800/30 text-red-500 hover:text-white hover:bg-red-500 dark:hover:bg-red-600 transition-all duration-300 text-xs font-bold flex items-center justify-center gap-2"
+                  >
+                    <XCircle className="w-4 h-4" />
+                    {t('common.clearAll')}
+                  </button>
+                )}
+
+                <div className="h-8 w-[1px] bg-gray-200 dark:bg-gray-800 hidden sm:block" />
+
                 <Button
                   variant="outline"
-                  className="h-11 px-6 rounded-xl border-gray-200 dark:border-gray-800 text-gray-600 dark:text-gray-300 hover:text-gray-900 hover:bg-gray-50 dark:hover:bg-gray-800 transition-all font-semibold text-sm shadow-sm"
+                  className="h-12 px-5 rounded-xl border-gray-200 dark:border-gray-800 text-gray-600 dark:text-gray-300 hover:text-gray-900 hover:bg-gray-50 dark:hover:bg-gray-800 transition-all font-semibold text-xs shadow-sm flex items-center gap-2"
                   onClick={() => refetch()}
                 >
-                  <RefreshCw className={cn("w-4 h-4 mr-2 rtl:mr-0 rtl:ml-2", isLoading && "animate-spin")} />
+                  <RefreshCw className={cn("w-4 h-4", isLoading && "animate-spin")} />
                   {t('common.refresh')}
                 </Button>
               </div>

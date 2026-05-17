@@ -98,6 +98,7 @@ export default function CreateApartment() {
     buildingOrBlock: "",
     basePrice: "",
     apartmentType: "residential",
+    streetCount: "ONE_STREET",
     isAvailable: true,
     serialNumber: "",
     accountNumber: "",
@@ -321,6 +322,21 @@ export default function CreateApartment() {
                   />
                 </FormField>
 
+                <FormField label={t('apartments.labels.streetCount')}>
+                  <Select 
+                    value={formData.streetCount} 
+                    onValueChange={(val) => setFormData({ ...formData, streetCount: val })}
+                  >
+                    <SelectTrigger className="h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md">
+                      <SelectValue placeholder={t('apartments.placeholders.selectType')} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="ONE_STREET">{t('apartments.streetCounts.ONE_STREET')}</SelectItem>
+                      <SelectItem value="TWO_STREET">{t('apartments.streetCounts.TWO_STREET')}</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </FormField>
+
                 <FormField label={t('apartments.labels.linkedProject')} required>
                   <PaginatedSelect
                     apiEndpoint="/project"
@@ -425,8 +441,7 @@ export default function CreateApartment() {
                       <SelectItem value="available">{t('apartments.statuses.available')}</SelectItem>
                       <SelectItem value="sold">{t('apartments.statuses.sold')}</SelectItem>
                       <SelectItem value="reserved">{t('apartments.statuses.reserved')}</SelectItem>
-                      <SelectItem value="maintenance">{t('apartments.statuses.maintenance')}</SelectItem>
-                      <SelectItem value="under_finishing">{t('apartments.statuses.under_finishing')}</SelectItem>
+                      <SelectItem value="reselling">{t('apartments.statuses.reselling')}</SelectItem>
                     </SelectContent>
                   </Select>
                 </FormField>

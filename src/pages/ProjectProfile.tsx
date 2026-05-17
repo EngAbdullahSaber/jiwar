@@ -95,14 +95,7 @@ export default function ProjectProfile() {
     }
   };
 
-  const getStatusColor = (status: string) => {
-    switch (status.toLowerCase()) {
-      case 'demolition': return 'text-rose-500 bg-rose-50 dark:bg-rose-500/10';
-      case 'construction': return 'text-amber-500 bg-amber-50 dark:bg-amber-500/10';
-      case 'handover': return 'text-emerald-500 bg-emerald-50 dark:bg-emerald-500/10';
-      default: return 'text-blue-500 bg-blue-50 dark:bg-blue-500/10';
-    }
-  };
+
 
   return (
     <Shell>
@@ -129,10 +122,6 @@ export default function ProjectProfile() {
                 <h1 className="text-2xl font-bold text-gray-900 dark:text-white mt-0.5">{isRtl ? project.name.arabic : project.name.english}</h1>
               </div>
             </div>
-            
-            <Badge className={cn("px-4 py-1.5 rounded-md uppercase tracking-widest text-[10px] font-bold border-none", getStatusColor(project.status))}>
-              {t(`projects.statuses.${project.status.toLowerCase()}`)}
-            </Badge>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
@@ -283,11 +272,10 @@ export default function ProjectProfile() {
                     { label: t('projects.profile.internalId'), value: project.projectIdentity },
                     { label: t('projects.profile.legalityRecord'), value: project.legality ? (isRtl ? project.legality.name.arabic : project.legality.name.english) : t('common.noData') },
                     { label: t('materials.createdAt'), value: formattedDate(project.createdAt) },
-                    { label: t('projects.labels.status'), value: t(`projects.statuses.${project.status.toLowerCase()}`) },
                   ].map((item, idx) => (
                     <div key={idx} className="space-y-2 group">
                       <p className="text-[10px] font-bold text-gray-400 dark:text-gray-600 uppercase tracking-widest group-hover:text-[#B39371] transition-colors">{item.label}</p>
-                      <p className={cn("text-sm font-bold text-gray-800 dark:text-gray-200 capitalize", item.label === t('projects.labels.status') && "text-[#B39371]")}>{item.value}</p>
+                      <p className="text-sm font-bold text-gray-800 dark:text-gray-200 capitalize">{item.value}</p>
                     </div>
                   ))}
                 </div>

@@ -258,8 +258,8 @@ export default function ViewLegality() {
           {/* Header with Back Button */}
           <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 p-6 shadow-sm">
             <div className="flex items-center gap-4">
-              <Link 
-                href="/legality" 
+              <Link
+                href="/legality"
                 className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-xl transition-colors"
               >
                 <ArrowLeft className="w-5 h-5 text-gray-500" />
@@ -270,7 +270,7 @@ export default function ViewLegality() {
                   <Gavel className="w-6 h-6 text-[#B39371]" />
                 </div>
               </div>
-              <div>
+              <div className="flex-1">
                 <div className="flex items-center gap-2 mb-1">
                   <Sparkles className="w-4 h-4 text-[#B39371]" />
                   <p className="text-xs font-medium text-[#B39371] uppercase tracking-wider">
@@ -281,6 +281,12 @@ export default function ViewLegality() {
                   {i18n.language === 'ar' ? legality.name.arabic : legality.name.english}
                 </h1>
               </div>
+              <Link href={`/legality/${id}/edit`}>
+                <button className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-[#4A1B1B] to-[#6B2727] text-white rounded-xl text-sm font-medium shadow-lg shadow-[#4A1B1B]/20 hover:shadow-xl transition-all">
+                  <Edit className="w-4 h-4" />
+                  {t('legality.updateLegality')}
+                </button>
+              </Link>
             </div>
           </div>
 
