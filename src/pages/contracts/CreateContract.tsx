@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { TopHeader } from '../../components/TopHeader';
-import { Link, useLocation } from "wouter";
+import { Link, useLocation, useSearch } from "wouter";
 import { 
   FileText,
   ArrowLeft,
@@ -88,7 +88,11 @@ const Label = ({ children, className, ...props }: any) => (
 export default function CreateContract() {
   const [, setLocation] = useLocation();
   const { t, i18n } = useTranslation();
-  
+  const searchString = useSearch();
+  const searchParams = new URLSearchParams(searchString);
+  const preselectedApartmentId = searchParams.get('apartmentId') || '';
+  const preselectedApartmentName = searchParams.get('apartmentName') || '';
+
   const [formData, setFormData] = useState({
     type: "apartment_sale",
     hijriDate: "",
@@ -97,7 +101,7 @@ export default function CreateContract() {
     clientId: "",
     district: "",
     nationalId: "",
-    apartmentId: "",
+    apartmentId: preselectedApartmentId,
     projectDistrict: "",
     plotNumber: "",
     deedNumber: "",
@@ -372,6 +376,7 @@ export default function CreateContract() {
                       onChange={(val) => setFormData({ ...formData, apartmentId: val })}
                       placeholder={t('contracts.placeholders.selectApartment')}
                       searchPlaceholder={t('apartments.placeholders.search')}
+                      initialLabel={preselectedApartmentName}
                       mapResponseToOptions={(pageData) => {
                         const data = pageData.data || [];
                         return data.map((apt: any) => ({

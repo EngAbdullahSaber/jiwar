@@ -2,8 +2,8 @@
 import { useQuery } from '@tanstack/react-query';
 import api from '@/lib/api';
 import { TopHeader } from '../../components/TopHeader';
-import { Link, useRoute } from "wouter";
-import { 
+import { Link, useRoute, useLocation } from "wouter";
+import {
   Building,
   ArrowLeft,
    FileText,
@@ -19,7 +19,8 @@ import {
   Layout,
   ChevronRight,
   ArrowUpRight,
-  Maximize2
+  Maximize2,
+  FilePlus2
 } from 'lucide-react';
 import { Shell } from '../../components/shared/Shell';
 import { cn } from '@/lib/utils';
@@ -101,6 +102,7 @@ interface DataField {
 export default function ViewApartment() {
   const { t, i18n } = useTranslation();
   const [, params] = useRoute("/apartments/:id");
+  const [, setLocation] = useLocation();
   const id = params?.id;
 
   const { data: response, isLoading } = useQuery<ApartmentResponse>({
@@ -245,6 +247,20 @@ export default function ViewApartment() {
             </div>
 
             <div className="flex items-center gap-3">
+              {apartment.status === 'available' && (
+                <motion.button
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  onClick={() => {
+                    const name = i18n.language === 'ar' ? apartment.mainName.arabic : apartment.mainName.english;
+                    setLocation(`/contracts/new?apartmentId=${apartment.id}&apartmentName=${encodeURIComponent(name)}`);
+                  }}
+                  className="px-6 py-2.5 bg-gradient-to-r from-[#4A1B1B] to-[#6B2727] text-white rounded-md text-sm font-bold hover:shadow-lg transition-all flex items-center gap-2 shadow-sm"
+                >
+                  <FilePlus2 className="w-4 h-4" />
+                  {t('contracts.create')}
+                </motion.button>
+              )}
               <Link href={`/apartments/${apartment.id}/edit`}>
                 <motion.button
                   whileHover={{ scale: 1.02 }}
@@ -255,7 +271,6 @@ export default function ViewApartment() {
                   {t('common.edit')}
                 </motion.button>
               </Link>
-              
             </div>
           </div>
 
