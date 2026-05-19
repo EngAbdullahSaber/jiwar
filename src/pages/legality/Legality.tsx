@@ -16,15 +16,18 @@ import {
   Activity,
   ChevronDown,
   Scale,
-  Pencil
+  Pencil,
+  Trash2
 } from 'lucide-react';
 import { Link } from "wouter";
 import { Shell } from '../../components/shared/Shell';
 import { Can } from '../../components/shared/Can';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import api from '@/lib/api';
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
+import toast from 'react-hot-toast';
+import { DeleteDialog } from '../../components/shared/DeleteDialog';
 
 interface LegalityStep {
   id: number;
@@ -83,7 +86,25 @@ export default function Legality() {
   const [currentPage, setCurrentPage] = useState(1);
   const [searchValue, setSearchValue] = useState('');
   const [filterStatus, setFilterStatus] = useState('all');
+  const [legalityToDelete, setLegalityToDelete] = useState<number | null>(null);
   const pageSize = 12;
+  const queryClient = useQueryClient();
+
+  const deleteMutation = useMutation({
+    mutationFn: async (id: number) => {
+      await api.delete(`/legality/${id}`);
+    },
+    onSuccess: () => {
+      toast.success(t('legality.deleteSuccess'), {
+        style: { borderRadius: '1rem', background: '#1C1917', color: '#fff' }
+      });
+      queryClient.invalidateQueries({ queryKey: ['legalities'] });
+      setLegalityToDelete(null);
+    },
+    onError: (error: any) => {
+      toast.error(error.response?.data?.message || t('common.error'));
+    }
+  });
 
   const { data, isLoading } = useQuery<LegalityResponse>({
     queryKey: ['legalities', currentPage, searchValue, filterStatus],
@@ -121,6 +142,16 @@ export default function Legality() {
   return (
     <Shell>
       <TopHeader />
+
+      <DeleteDialog
+        isOpen={legalityToDelete !== null}
+        onClose={() => setLegalityToDelete(null)}
+        onConfirm={() => legalityToDelete && deleteMutation.mutate(legalityToDelete)}
+        isDeleting={deleteMutation.isPending}
+        title={t('common.delete')}
+        description={t('deleteDialog.confirmDescription')}
+        confirmText={t('common.delete')}
+      />
 
       <div className="min-h-screen bg-[#F7F6F3] dark:bg-[#0E0E0F]">
 
@@ -343,6 +374,16 @@ export default function Legality() {
                               {t('common.edit')}
                             </button>
                           </Link>
+                        </Can>
+                        <Can I="DELETE" a="legality">
+                          <button
+                            onClick={() => setLegalityToDelete(item.id)}
+                            disabled={deleteMutation.isPending}
+                            className="inline-flex items-center gap-1.5 text-[12px] font-semibold text-red-500 hover:opacity-70 transition-opacity disabled:opacity-40"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                            {t('common.delete')}
+                          </button>
                         </Can>
                       </div>
                       <div className="w-7 h-7 rounded-full bg-[#1C1917] dark:bg-white flex items-center justify-center text-[10px] font-bold text-white dark:text-[#1C1917]">

@@ -62,20 +62,21 @@ interface CitiesResponse {
 
 export default function Cities() {
   const { t } = useTranslation();
-  const [filters, setFilters] = useState({ search: '' });
+  const [filters, setFilters] = useState({ search: '', countryId: '' });
   const [currentPage, setCurrentPage] = useState(1);
   const [cityToDelete, setCityToDelete] = useState<number | null>(null);
   const pageSize = 10;
   const queryClient = useQueryClient();
 
   const { data: response, isLoading, refetch } = useQuery<CitiesResponse>({
-    queryKey: ['cities', currentPage, pageSize, filters.search],
+    queryKey: ['cities', currentPage, pageSize, filters.search, filters.countryId],
     queryFn: async () => {
       const res = await api.get('/city', {
         params: {
           page: currentPage,
           pageSize,
           search: filters.search || undefined,
+          countryId: filters.countryId || undefined,
         }
       });
       return res.data;
@@ -110,6 +111,22 @@ export default function Cities() {
       label: t('cities.title'),
       placeholder: t('cities.searchPlaceholder') || t('legality.searchPlaceholder'),
       key: 'search'
+    },
+    {
+      type: 'paginated-select',
+      label: t('cities.country'),
+      key: 'countryId',
+      apiEndpoint: '/country',
+      queryKey: 'countries-filter',
+      placeholder: t('cities.selectCountry'),
+      searchPlaceholder: t('countries.searchPlaceholder'),
+      mapResponseToOptions: (data: any) =>
+        data.data.map((country: any) => ({
+          value: country.id,
+          label: country.name.english,
+          description: country.name.arabic,
+          icon: <Globe className="w-4 h-4" />,
+        })),
     }
   ];
 

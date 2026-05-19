@@ -116,7 +116,8 @@
     "countries": "الدول",
     "cities": "المدن",
     "banks": "البنوك",
-    "financeDashboard": "لوحة البيانات المالية"
+    "financeDashboard": "لوحة البيانات المالية",
+    "stages": "المراحل"
   },
   "financeDashboard": {
     "title": "لوحة البيانات المالية",
@@ -372,6 +373,7 @@
     "noLegalities": "لم يتم العثور على ملفات قانونية",
     "adjustSearch": "حاول تعديل البحث أو الفلاتر",
     "getStarted": "ابدأ بإنشاء أول سجل قانوني لك",
+    "deleteSuccess": "تم حذف الملف القانوني بنجاح",
     "backToList": "العودة للقائمة",
     "updateStep": "تحديث تفاصيل الخطوة",
     "updateStepDesc": "تعديل اسم الخطوة والتوقيت والمرفقات.",
@@ -571,6 +573,7 @@
     "profile": {
       "title": "ملف المشروع",
       "noStages": "لا توجد مراحل بناء محددة",
+      "noImages": "لا توجد صور",
       "addFirstStage": "إضافة المرحلة الأولى",
       "infoTitle": "معلومات المشروع",
       "internalId": "الهوية الداخلية / الرقم التعريفي",
@@ -637,6 +640,7 @@
     "archiveAll": "أرشفة الكل",
     "documentSak": "صك المستند",
     "noDocuments": "لم يتم تحميل أي مستندات",
+    "noImages": "لا توجد صور",
     "unitHistory": "تاريخ الوحدة",
     "recordCreated": "تم إنشاء السجل",
     "initialEntry": "الدخول الأولي للنظام في {{date}}",
@@ -684,7 +688,8 @@
       "floor": "الدور",
       "template": "النموذج",
       "rooms": "غرف",
-      "sqmLabel": "م²"
+      "sqmLabel": "م²",
+      "project": "المشروع"
     },
     "placeholders": {
       "majorNameEn": "مثال: Premium Suite A1",
@@ -1294,6 +1299,13 @@
     "deleteSuccess": "تم حذف المدينة بنجاح",
     "edit": "تعديل المدينة"
   },
+  "deleteDialog": {
+    "confirmTitle": "تأكيد الحذف",
+    "confirmDescription": "هل أنت متأكد من رغبتك في حذف هذا العنصر؟ لا يمكن التراجع عن هذا الإجراء.",
+    "confirm": "حذف",
+    "cancel": "إلغاء",
+    "deleting": "جاري الحذف..."
+  },
   "banks": {
     "title": "البنوك",
     "description": "تكوين المؤسسات المصرفية والإعدادات المالية الإقليمية.",
@@ -1313,5 +1325,49 @@
     "updateSuccess": "تم تحديث سجل البنك بنجاح",
     "deleteSuccess": "تم حذف سجل البنك بنجاح",
     "edit": "تعديل البنك"
+  },
+  "stages": {
+    "title": "المراحل",
+    "management": "مراحل المشاريع",
+    "description": "عرض وتتبع جميع مراحل البناء للمشاريع والمراحل الفرعية",
+    "add": "إضافة مرحلة",
+    "create": "إنشاء مرحلة",
+    "new": "مرحلة جديدة",
+    "createDescription": "تعريف مرحلة مشروع جديدة مع إمكانية إضافة مراحل فرعية",
+    "createSuccess": "تم إنشاء المرحلة بنجاح",
+    "deleteSuccess": "تم حذف المرحلة بنجاح",
+    "searchPlaceholder": "البحث في المراحل بالاسم...",
+    "subStageLabel": "مرحلة فرعية",
+    "addSubStage": "إضافة مرحلة فرعية",
+    "subStageIncomplete": "يرجى ملء جميع الحقول للمرحلة الفرعية",
+    "labels": {
+      "name": "اسم المرحلة",
+      "nameEn": "اسم المرحلة (إنجليزي)",
+      "nameAr": "اسم المرحلة (عربي)",
+      "projectId": "المشروع",
+      "estimateCost": "التكلفة التقديرية",
+      "dateRange": "نطاق التاريخ",
+      "subStages": "مراحل فرعية",
+      "sub": "فرعي"
+    },
+    "placeholders": {
+      "nameEn": "مثال: Excavation & Foundation",
+      "nameAr": "مثال: الحفر والأساسات",
+      "estimateCost": "0.00",
+      "fromDate": "اختر تاريخ البدء",
+      "toDate": "اختر تاريخ الانتهاء",
+      "selectProject": "اختر المشروع...",
+      "searchProject": "البحث في المشاريع..."
+    },
+    "sections": {
+      "details": "تفاصيل المرحلة",
+      "detailsDesc": "تحديد هوية المرحلة والتكلفة والجدول الزمني",
+      "subStages": "المراحل الفرعية",
+      "subStagesDesc": "تقسيم هذه المرحلة إلى مراحل فرعية أصغر (اختياري)"
+    },
+    "empty": {
+      "title": "لم يتم العثور على مراحل",
+      "description": "لا توجد مراحل بناء تطابق معايير البحث الحالية."
+    }
   }
 }

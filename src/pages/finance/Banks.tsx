@@ -61,20 +61,21 @@ interface BanksResponse {
 
 export default function Banks() {
   const { t } = useTranslation();
-  const [filters, setFilters] = useState({ search: '' });
+  const [filters, setFilters] = useState({ search: '', countryId: '' });
   const [currentPage, setCurrentPage] = useState(1);
   const [bankToDelete, setBankToDelete] = useState<number | null>(null);
   const pageSize = 10;
   const queryClient = useQueryClient();
 
   const { data: response, isLoading, refetch } = useQuery<BanksResponse>({
-    queryKey: ['banks', currentPage, pageSize, filters.search],
+    queryKey: ['banks', currentPage, pageSize, filters.search, filters.countryId],
     queryFn: async () => {
       const res = await api.get('/bank', {
         params: {
           page: currentPage,
           pageSize,
           search: filters.search || undefined,
+          countryId: filters.countryId || undefined,
         }
       });
       return res.data;
@@ -109,6 +110,22 @@ export default function Banks() {
       label: t('banks.title'),
       placeholder: t('banks.searchPlaceholder') || t('legality.searchPlaceholder'),
       key: 'search'
+    },
+    {
+      type: 'paginated-select',
+      label: t('cities.country'),
+      key: 'countryId',
+      apiEndpoint: '/country',
+      queryKey: 'countries-filter-banks',
+      placeholder: t('cities.selectCountry'),
+      searchPlaceholder: t('countries.searchPlaceholder'),
+      mapResponseToOptions: (data: any) =>
+        data.data.map((country: any) => ({
+          value: country.id,
+          label: country.name.english,
+          description: country.name.arabic,
+          icon: <Globe className="w-4 h-4" />,
+        })),
     }
   ];
 

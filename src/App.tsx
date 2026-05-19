@@ -62,6 +62,8 @@ import Contracts from "@/pages/contracts/Contracts";
 import ApproveContracts from "@/pages/contracts/ApproveContracts";
 
 
+import Stages from "@/pages/stages/Stages";
+import CreateStage from "@/pages/stages/CreateStage";
 import Salesman from "@/pages/salesman/Salesman";
 import CreateSalesman from "@/pages/salesman/CreateSalesman";
 import UpdateSalesman from "@/pages/salesman/UpdateSalesman";
@@ -254,6 +256,13 @@ function Router() {
         <ProtectedRoute component={CreateContract} resource="contract" action="CREATE" />
       </Route>
  
+      <Route path="/stages">
+        <ProtectedRoute component={Stages} resource="project" />
+      </Route>
+      <Route path="/stages/new">
+        <ProtectedRoute component={CreateStage} resource="project" action="CREATE" />
+      </Route>
+
       <Route path="/projects">
         <ProtectedRoute component={Projects} resource="project" />
       </Route>

@@ -17,7 +17,8 @@ import {
   Building2,
   Building,
   ShieldAlert,
-  PieChart
+  PieChart,
+  GitBranch
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { cn } from "@/lib/utils";
@@ -37,6 +38,7 @@ const menuItems: MenuItem[] = [
   { icon: LayoutDashboard, label: "dashboard",   path: "/dashboard",                resource: "resources-dashboard"                },
   { icon: Gavel,           label: "legality",    path: "/legality",           resource: "legality" },
   { icon: Briefcase,       label: "projects",    path: "/projects",           resource: "project"  },
+  { icon: GitBranch,       label: "stages",      path: "/stages",             resource: "project"  },
   { icon: FileText,        label: "templates",   path: "/templates",          resource: "template" },
   { icon: Home,            label: "apartments",  path: "/apartments",         resource: "apartment"},
   { icon: Users,           label: "clients",     path: "/clients",            resource: "client"   },

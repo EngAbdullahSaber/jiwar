@@ -116,7 +116,8 @@
     "countries": "Countries",
     "cities": "Cities",
     "banks": "Banks",
-    "financeDashboard": "Finance Dashboard"
+    "financeDashboard": "Finance Dashboard",
+    "stages": "Stages"
   },
   "financeDashboard": {
     "title": "Finance Dashboard",
@@ -372,6 +373,7 @@
     "noLegalities": "No legalities found",
     "adjustSearch": "Try adjusting your search or filters",
     "getStarted": "Start by creating your first legality record",
+    "deleteSuccess": "Legality deleted successfully",
     "backToList": "Back to List",
     "updateStep": "Update Step Details",
     "updateStepDesc": "Modify step name, timing, and attachments.",
@@ -571,6 +573,7 @@
     "profile": {
       "title": "Project Profile",
       "noStages": "No construction stages defined",
+      "noImages": "No Photos Available",
       "addFirstStage": "Add First Stage",
       "infoTitle": "Project Information",
       "internalId": "Internal ID / Identity",
@@ -637,6 +640,7 @@
     "archiveAll": "Archive All",
     "documentSak": "Document Sak",
     "noDocuments": "No documents uploaded",
+    "noImages": "No Photos Available",
     "unitHistory": "Unit History",
     "recordCreated": "Record Created",
     "initialEntry": "Initial system entry on {{date}}",
@@ -684,7 +688,8 @@
       "floor": "Floor",
       "template": "Template",
       "rooms": "Rooms",
-      "sqmLabel": "sqm"
+      "sqmLabel": "sqm",
+      "project": "Project"
     },
     "placeholders": {
       "majorNameEn": "e.g., Premium Suite A1",
@@ -1296,6 +1301,13 @@
     "deleteSuccess": "City deleted successfully",
     "edit": "Edit City"
   },
+  "deleteDialog": {
+    "confirmTitle": "Confirm Deletion",
+    "confirmDescription": "Are you sure you want to delete this item? This action cannot be undone.",
+    "confirm": "Delete",
+    "cancel": "Cancel",
+    "deleting": "Deleting..."
+  },
   "banks": {
     "title": "Banks",
     "description": "Configure banking institutions and regional financial settings.",
@@ -1315,5 +1327,49 @@
     "updateSuccess": "Bank record updated successfully",
     "deleteSuccess": "Bank record deleted successfully",
     "edit": "Edit Bank"
+  },
+  "stages": {
+    "title": "Stages",
+    "management": "Project Stages",
+    "description": "View and track all project construction stages and their sub-stages",
+    "add": "Add Stage",
+    "create": "Create Stage",
+    "new": "New Stage",
+    "createDescription": "Define a new project stage and optionally attach sub-stages",
+    "createSuccess": "Stage created successfully",
+    "deleteSuccess": "Stage deleted successfully",
+    "searchPlaceholder": "Search stages by name...",
+    "subStageLabel": "Sub-stage",
+    "addSubStage": "Add Sub-stage",
+    "subStageIncomplete": "Please fill in all fields for sub-stage",
+    "labels": {
+      "name": "Stage Name",
+      "nameEn": "Stage Name (English)",
+      "nameAr": "Stage Name (Arabic)",
+      "projectId": "Project",
+      "estimateCost": "Est. Cost",
+      "dateRange": "Date Range",
+      "subStages": "Sub-stages",
+      "sub": "sub"
+    },
+    "placeholders": {
+      "nameEn": "e.g. Excavation & Foundation",
+      "nameAr": "مثال: الحفر والأساسات",
+      "estimateCost": "0.00",
+      "fromDate": "Select start date",
+      "toDate": "Select end date",
+      "selectProject": "Select project...",
+      "searchProject": "Search projects..."
+    },
+    "sections": {
+      "details": "Stage Details",
+      "detailsDesc": "Define the core identity, cost, and timeline of this stage",
+      "subStages": "Sub-stages",
+      "subStagesDesc": "Optionally break this stage into smaller sub-stages"
+    },
+    "empty": {
+      "title": "No Stages Found",
+      "description": "No construction stages match your current search criteria."
+    }
   }
 }

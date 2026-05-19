@@ -77,7 +77,7 @@ interface ContractsResponse {
 
 export default function Contracts() {
   const { t, i18n } = useTranslation();
-  const [filters, setFilters] = useState({ search: '' });
+  const [filters, setFilters] = useState({ search: '', type: 'all' });
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 10;
   const queryClient = useQueryClient();
@@ -86,13 +86,14 @@ export default function Contracts() {
   const [selectedContractId, setSelectedContractId] = useState<number | null>(null);
 
   const { data: response, isLoading } = useQuery<ContractsResponse>({
-    queryKey: ['contracts', currentPage, pageSize, filters.search],
+    queryKey: ['contracts', currentPage, pageSize, filters.search, filters.type],
     queryFn: async () => {
       const res = await api.get('/contract?isApproved=true', {
         params: {
           page: currentPage,
           pageSize,
           search: filters.search || undefined,
+          type: filters.type !== 'all' ? filters.type : undefined,
         }
       });
       return res.data;
@@ -120,6 +121,17 @@ export default function Contracts() {
       label: t('contracts.title'),
       placeholder: t('contracts.placeholders.search'),
       key: 'search'
+    },
+    {
+      type: 'select',
+      label: t('contracts.labels.type'),
+      key: 'type',
+      options: [
+        { value: 'all', label: t('common.all') },
+        { value: 'apartment_sale', label: t('contracts.types.apartment_sale') },
+        { value: 'apartment_partial_sale', label: t('contracts.types.apartment_partial_sale') },
+        { value: 'land_partnership', label: t('contracts.types.land_partnership') },
+      ],
     }
   ];
 

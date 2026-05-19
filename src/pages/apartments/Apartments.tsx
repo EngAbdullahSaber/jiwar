@@ -60,18 +60,19 @@ interface ApartmentsResponse {
 
 export default function Apartments() {
   const { t, i18n } = useTranslation();
-  const [filters, setFilters] = useState({ search: '' });
+  const [filters, setFilters] = useState({ search: '', projectId: '' });
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 10;
 
   const { data: response, isLoading } = useQuery<ApartmentsResponse>({
-    queryKey: ['apartments', currentPage, pageSize, filters.search],
+    queryKey: ['apartments', currentPage, pageSize, filters.search, filters.projectId],
     queryFn: async () => {
       const res = await api.get('/apartment', {
         params: {
           page: currentPage,
           pageSize,
           search: filters.search || undefined,
+          projectId: filters.projectId || undefined,
         }
       });
       return res.data;
@@ -84,6 +85,22 @@ export default function Apartments() {
       label: t('apartments.title'),
       placeholder: t('apartments.placeholders.search'),
       key: 'search'
+    },
+    {
+      type: 'paginated-select',
+      label: t('apartments.labels.project'),
+      key: 'projectId',
+      apiEndpoint: '/project',
+      queryKey: 'projects-filter-apartments',
+      placeholder: t('apartments.placeholders.selectProject'),
+      searchPlaceholder: t('apartments.placeholders.searchProject'),
+      mapResponseToOptions: (data: any) =>
+        data.data.map((project: any) => ({
+          value: project.id,
+          label: project.name.english,
+          description: project.projectIdentity,
+          icon: <Building className="w-4 h-4" />,
+        })),
     }
   ];
 
