@@ -14,7 +14,6 @@ import {
   ImageOff,
   MapPin,
   CalendarDays,
-  Hash,
   Image,
   ArrowLeft,
   Plus,
