@@ -3,21 +3,21 @@ import { Link, useRoute } from "wouter";
 import {
   Building2,
   ChevronRight,
-  Clock,
   FileText,
   Download,
   ArrowUpRight,
   Info,
   Wallet,
-  Layers,
   Pencil,
   ImageOff,
   MapPin,
-  CalendarDays,
   Image,
   ArrowLeft,
   Plus,
+  Layers,
   Compass,
+  CalendarDays,
+  Clock,
 } from 'lucide-react';
 import { cn } from "@/lib/utils";
 import { Shell } from '../components/shared/Shell';
@@ -155,15 +155,6 @@ export default function ProjectProfile() {
             </div>
 
             <div className="flex items-center gap-2 shrink-0">
-              <Link href={`/projects/${projectId}/stages`}>
-                <motion.button
-                  whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.99 }}
-                  className="flex items-center gap-2 px-3.5 py-2 border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 rounded-lg text-xs font-medium text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
-                >
-                  <Layers className="w-3.5 h-3.5 text-[#B39371]" />
-                  {t('projects.stages.addStage')}
-                </motion.button>
-              </Link>
               <Link href={`/projects/${projectId}/media`}>
                 <motion.button
                   whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.99 }}

@@ -26,8 +26,7 @@ import UpdateApartment from "@/pages/apartments/UpdateApartment";
 import ViewApartment from "@/pages/apartments/ViewApartment";
 import CreateProject from "@/pages/projects/CreateProject";
 import AddProjectMedia from "@/pages/projects/AddProjectMedia";
-import AddProjectStage from "@/pages/projects/AddProjectStage";
-import ProjectProfile from "@/pages/ProjectProfile";
+ import ProjectProfile from "@/pages/ProjectProfile";
 import UpdateProject from "@/pages/projects/UpdateProject";
 import Materials from "@/pages/materials/Materials";
 import CreateMaterial from "@/pages/materials/CreateMaterial";
@@ -290,9 +289,7 @@ function Router() {
       <Route path="/projects/:id/media">
         <ProtectedRoute component={AddProjectMedia} resource="project" action="UPDATE" />
       </Route>
-      <Route path="/projects/:id/stages">
-        <ProtectedRoute component={AddProjectStage} resource="project" action="UPDATE" />
-      </Route>
+      
       
       <Route path="/materials">
         <ProtectedRoute component={Materials} resource="material" />

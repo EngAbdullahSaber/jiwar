@@ -7,8 +7,7 @@ import { DataTable } from '../../components/shared/DataTable';
 import type { Column } from '../../components/shared/DataTable';
 import { FilterBar } from '../../components/shared/FilterBar';
 import type { FilterField } from '../../components/shared/FilterBar';
-import { cn } from "@/lib/utils";
-import { Badge } from "@/components/ui/badge";
+ 
 import { Progress } from "@/components/ui/progress";
 import { Link } from "wouter";
 import { Shell } from '../../components/shared/Shell';
@@ -18,19 +17,14 @@ import {
   MapPin, 
   Plus,
   Eye,
-  Layers,
-  Pencil,
+   Pencil,
    Wallet,
-  FileEdit,
-  TrendingUp,
+ 
   Sparkles,
   Home,
-  AlertCircle,
-  CheckCircle2,
-  Clock,
+ 
   FolderOpen,
-  FileText
-} from 'lucide-react';
+ } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useState } from 'react';
 
@@ -175,11 +169,7 @@ export default function Projects() {
           </Can>
           <Can I="UPDATE" a="project">
             <>
-              <Link href={`/projects/${p.id}/stages`}>
-                <button className="p-2 hover:bg-[#F5F1ED] dark:hover:bg-gray-800 rounded-md text-gray-400 hover:text-[#4A1B1B] dark:hover:text-[#B39371] transition-colors" title="Manage Stages">
-                  <Layers className="w-4 h-4" />
-                </button>
-              </Link>
+             
               <Link href={`/projects/${p.id}/media`}>
                 <button className="p-2 hover:bg-[#F5F1ED] dark:hover:bg-gray-800 rounded-md text-gray-400 hover:text-[#B39371] transition-colors" title="Add Media">
                   <FolderOpen className="w-4 h-4" />
