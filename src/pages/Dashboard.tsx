@@ -6,27 +6,26 @@ import { LatestTransactions } from '../components/Dashboard/LatestTransactions';
 import { Shell } from '../components/shared/Shell';
 import { useDashboardStats } from '@/hooks/useDashboardStats';
 import { useTranslation } from 'react-i18next';
+import { useAppSelector } from '@/hooks/useRedux';
 import DatePicker from '@/components/shared/DatePicker';
-import { 
-  PlusSquare, 
-  Home, 
-  XCircle, 
+import {
+  PlusSquare,
+  Home,
+  XCircle,
   FileText,
-  Filter,
-  Calendar
+  Calendar,
+  LayoutDashboard,
 } from 'lucide-react';
 
 export default function Dashboard() {
   const { t } = useTranslation();
+  const { user } = useAppSelector((state: any) => state.auth);
   const [dateRange, setDateRange] = useState('');
 
-  // Extract startDate and endDate from the range string "YYYY-MM-DD to YYYY-MM-DD"
   let startDate = '';
   let endDate = '';
-  if (dateRange && dateRange.includes(' to ')) {
-    const parts = dateRange.split(' to ');
-    startDate = parts[0];
-    endDate = parts[1];
+  if (dateRange?.includes(' to ')) {
+    [startDate, endDate] = dateRange.split(' to ');
   }
 
   const { data: response, isLoading, isFetching } = useDashboardStats({ startDate, endDate });
@@ -35,65 +34,64 @@ export default function Dashboard() {
   if (isLoading && !response) {
     return (
       <Shell>
-        <div className="flex items-center justify-center min-h-screen">
+        <div className="flex items-center justify-center min-h-screen bg-gray-50 dark:bg-gray-950">
           <div className="flex flex-col items-center gap-4">
-            <div className="w-12 h-12 border-4 border-[#B39371]/20 border-t-[#B39371] rounded-md animate-spin" />
-            <p className="text-sm font-bold text-gray-400 uppercase tracking-widest">{t('common.loading')}</p>
+            <div className="w-10 h-10 border-[3px] border-[#B39371]/20 border-t-[#B39371] rounded-full animate-spin" />
+            <p className="text-xs font-semibold text-gray-400 uppercase tracking-widest">{t('common.loading')}</p>
           </div>
         </div>
       </Shell>
     );
   }
 
+  const greeting = () => {
+    const hour = new Date().getHours();
+    if (hour < 12) return t('dashboard.goodMorning', 'Good morning');
+    if (hour < 17) return t('dashboard.goodAfternoon', 'Good afternoon');
+    return t('dashboard.goodEvening', 'Good evening');
+  };
+
   return (
     <Shell>
       <TopHeader />
-      
-      <div className="p-8 max-w-7xl mx-auto">
-        {/* Creative General Overview Header with Integrated Date Filters */}
-        <div className="bg-white dark:bg-gray-900 p-8 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-800 mb-8 relative overflow-hidden group">
-          {/* Decorative premium ambient gradients */}
-          <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-[#4A1B1B]/5 to-transparent rounded-full -translate-y-1/2 translate-x-1/2 blur-3xl group-hover:bg-[#4A1B1B]/10 transition-all duration-500 pointer-events-none" />
-          <div className="absolute -left-10 -bottom-10 w-40 h-40 bg-gradient-to-tr from-[#B39371]/5 to-transparent rounded-full blur-2xl pointer-events-none" />
 
-          {/* Top progress line indicating data refetch */}
-          {isFetching && (
-            <div className="absolute top-0 left-0 right-0 h-[2.5px] bg-gradient-to-r from-transparent via-[#B39371] to-transparent animate-pulse z-20" />
-          )}
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-950">
+        {/* Fetching indicator */}
+        {isFetching && (
+          <div className="h-0.5 bg-gradient-to-r from-transparent via-[#B39371] to-transparent animate-pulse" />
+        )}
 
-          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-8 relative z-10">
-            {/* Title & Badge */}
-            <div className="flex items-center gap-6">
-              <div className="relative hidden sm:block">
-                <div className="absolute inset-0 bg-gradient-to-r from-[#4A1B1B] to-[#6B2727] rounded-2xl blur-xl opacity-20 group-hover:opacity-40 transition-opacity" />
-                <div className="relative w-16 h-16 rounded-2xl bg-gradient-to-br from-[#4A1B1B] to-[#6B2727] shadow-lg flex items-center justify-center border border-white/10">
-                  <Filter className="w-8 h-8 text-[#B39371]" />
+        <div className="max-w-7xl mx-auto px-6 py-8 space-y-6">
+
+          {/* ── Hero Header ── */}
+          <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 px-8 py-6 flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+            <div className="flex items-center gap-5">
+              <div className="relative hidden sm:block shrink-0">
+                <div className="absolute inset-0 bg-gradient-to-br from-[#4A1B1B] to-[#B39371] rounded-2xl blur-xl opacity-25" />
+                <div className="relative w-14 h-14 rounded-2xl bg-gradient-to-br from-[#4A1B1B] to-[#6B2727] flex items-center justify-center shadow-lg">
+                  <LayoutDashboard className="w-7 h-7 text-[#B39371]" />
                 </div>
               </div>
               <div>
-                <div className="flex items-center gap-2 mb-1.5">
-                  <div className="w-1.5 h-1.5 rounded-full bg-[#B39371] animate-pulse" />
-                  <p className="text-[10px] font-bold text-[#B39371] uppercase tracking-[0.2em]">
-                    {t('topHeader.overview') || 'Overview'}
-                  </p>
-                </div>
-                <h1 className="text-3xl font-extrabold text-gray-900 dark:text-white tracking-tight">
-                  {t('dashboard.title')}
+                <p className="text-[11px] font-semibold text-[#B39371] uppercase tracking-widest mb-0.5">
+                  {greeting()}
+                </p>
+                <h1 className="text-2xl font-bold text-gray-900 dark:text-white leading-tight">
+                  {user?.email?.split('@')[0] || t('dashboard.title')}
                 </h1>
-                <p className="text-sm text-gray-500 dark:text-gray-400 mt-1.5 font-medium">
+                <p className="text-sm text-gray-400 dark:text-gray-500 mt-0.5">
                   {t('dashboard.subtitle')}
                 </p>
               </div>
             </div>
 
-            {/* Date Filters Controller */}
-            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 bg-gray-50/50 dark:bg-gray-800/20 p-3.5 rounded-2xl border border-gray-100 dark:border-gray-800/80 backdrop-blur-sm self-start lg:self-center w-full lg:w-auto">
-              <div className="flex items-center gap-2 text-gray-500 dark:text-gray-400 font-bold text-xs uppercase tracking-wider px-1">
+            {/* Date range filter */}
+            <div className="flex items-center gap-3 shrink-0">
+              <div className="flex items-center gap-2 text-gray-400 text-sm font-medium">
                 <Calendar className="w-4 h-4 text-[#B39371]" />
                 <span className="hidden sm:inline">{t('common.filters')}:</span>
               </div>
-
-              <div className="w-full sm:w-[260px] relative">
+              <div className="w-[240px]">
                 <DatePicker
                   value={dateRange}
                   onChange={setDateRange}
@@ -101,54 +99,58 @@ export default function Dashboard() {
                   placeholder={t('common.dateRange')}
                 />
               </div>
-
               {dateRange && (
                 <button
                   onClick={() => setDateRange('')}
-                  className="h-11 px-4 rounded-xl border border-dashed border-red-200 dark:border-red-800/30 text-red-500 hover:text-white hover:bg-red-500 dark:hover:bg-red-600 transition-all duration-300 text-xs font-bold flex items-center justify-center gap-2 w-full sm:w-auto"
+                  className="flex items-center gap-1.5 px-3 py-2 rounded-xl border border-dashed border-red-200 dark:border-red-800/40 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors text-xs font-semibold"
                 >
-                  <XCircle className="w-4 h-4" />
+                  <XCircle className="w-3.5 h-3.5" />
                   {t('common.clearAll')}
                 </button>
               )}
             </div>
           </div>
-        </div>
 
-        {/* Stats Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <StatCard 
-            label={t('dashboard.stats.totalProjects')} 
-            value={stats?.totalProjects.toString() || "0"} 
-            icon={PlusSquare}
-          />
-          <StatCard 
-            label={t('dashboard.stats.totalContracts')} 
-            value={stats?.totalContracts.toString() || "0"} 
-            icon={FileText}
-            iconBg="bg-blue-50"
-            iconColor="text-blue-500"
-          />
-          <StatCard 
-            label={t('dashboard.stats.availableApartments')} 
-            value={stats?.availableApartments.toString() || "0"} 
-            icon={Home}
-            iconBg="bg-green-50"
-            iconColor="text-green-600"
-          />
-          <StatCard 
-            label={t('dashboard.stats.notAvailable')} 
-            value={stats?.notAvailableApartments.toString() || "0"} 
-            icon={XCircle}
-            iconBg="bg-red-50"
-            iconColor="text-red-600"
-          />
-        </div>
+          {/* ── Stat Cards ── */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <StatCard
+              label={t('dashboard.stats.totalProjects')}
+              value={stats?.totalProjects?.toString() ?? '0'}
+              icon={PlusSquare}
+              iconBg="bg-[#F5F1ED] dark:bg-gray-800"
+              iconColor="text-[#4A1B1B] dark:text-[#B39371]"
+              accent="bg-[#B39371]"
+            />
+            <StatCard
+              label={t('dashboard.stats.totalContracts')}
+              value={stats?.totalContracts?.toString() ?? '0'}
+              icon={FileText}
+              iconBg="bg-sky-50 dark:bg-sky-900/20"
+              iconColor="text-sky-600 dark:text-sky-400"
+              accent="bg-sky-400"
+            />
+            <StatCard
+              label={t('dashboard.stats.availableApartments')}
+              value={stats?.availableApartments?.toString() ?? '0'}
+              icon={Home}
+              iconBg="bg-emerald-50 dark:bg-emerald-900/20"
+              iconColor="text-emerald-600 dark:text-emerald-400"
+              accent="bg-emerald-400"
+            />
+            <StatCard
+              label={t('dashboard.stats.notAvailable')}
+              value={stats?.notAvailableApartments?.toString() ?? '0'}
+              icon={XCircle}
+              iconBg="bg-rose-50 dark:bg-rose-900/20"
+              iconColor="text-rose-600 dark:text-rose-400"
+              accent="bg-rose-400"
+            />
+          </div>
 
-        {/* Main Content Sections */}
-        <div className="grid grid-cols-1 gap-8">
+          {/* ── Chart + Transactions ── */}
           <SalesTrendsChart data={stats?.contractsPerMonth} />
           <LatestTransactions transactions={stats?.recentPayments} />
+
         </div>
       </div>
     </Shell>

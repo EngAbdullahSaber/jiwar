@@ -63,6 +63,7 @@ import ApproveContracts from "@/pages/contracts/ApproveContracts";
 
 import Stages from "@/pages/stages/Stages";
 import CreateStage from "@/pages/stages/CreateStage";
+import UpdateStage from "@/pages/stages/UpdateStage";
 import Salesman from "@/pages/salesman/Salesman";
 import CreateSalesman from "@/pages/salesman/CreateSalesman";
 import UpdateSalesman from "@/pages/salesman/UpdateSalesman";
@@ -256,10 +257,13 @@ function Router() {
       </Route>
  
       <Route path="/stages">
-        <ProtectedRoute component={Stages} resource="project" />
+        <ProtectedRoute component={Stages} resource="stage" />
       </Route>
       <Route path="/stages/new">
-        <ProtectedRoute component={CreateStage} resource="project" action="CREATE" />
+        <ProtectedRoute component={CreateStage} resource="stage" action="CREATE" />
+      </Route>
+      <Route path="/stages/:id/edit">
+        <ProtectedRoute component={UpdateStage} resource="stage" action="UPDATE" />
       </Route>
 
       <Route path="/projects">
@@ -327,12 +331,14 @@ function Router() {
 
 function App() {
   useEffect(() => {
+    // Theme
     const theme = localStorage.getItem("theme") || "dark";
-    if (theme === "dark") {
-      document.documentElement.classList.add("dark");
-    } else {
-      document.documentElement.classList.remove("dark");
-    }
+    document.documentElement.classList.toggle("dark", theme === "dark");
+
+    // Direction — safety net in case i18n fires before the listener is attached
+    const savedLng = localStorage.getItem("i18nextLng") || "en";
+    document.documentElement.dir = savedLng === "ar" ? "rtl" : "ltr";
+    document.documentElement.lang = savedLng;
   }, []);
 
   return (

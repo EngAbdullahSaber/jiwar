@@ -85,7 +85,10 @@
       "title": "Monthly Sales Performance",
       "subtitle": "Tracking contract volume across all projects",
       "last6Months": "Past 6 Months",
-      "contracts": "Contracts"
+      "contracts": "Contracts",
+      "noData": "No contracts yet",
+      "highest": "Highest",
+      "others": "Others"
     },
     "latestTransactions": {
       "title": "Recent Financial Activity",
@@ -95,7 +98,8 @@
       "status": "Status",
       "date": "Payment Date",
       "paid": "Paid",
-      "noTransactions": "No recent transactions found"
+      "noTransactions": "No transactions yet",
+      "noTransactionsDesc": "Payments will appear here once contracts are signed"
     }
   },
   "sidebar": {
@@ -1335,8 +1339,11 @@
     "add": "Add Stage",
     "create": "Create Stage",
     "new": "New Stage",
+    "edit": "Edit Stage",
     "createDescription": "Define a new project stage and optionally attach sub-stages",
+    "editDescription": "Update the stage details, cost, timeline, and sub-stages",
     "createSuccess": "Stage created successfully",
+    "updateSuccess": "Stage updated successfully",
     "deleteSuccess": "Stage deleted successfully",
     "searchPlaceholder": "Search stages by name...",
     "subStageLabel": "Sub-stage",

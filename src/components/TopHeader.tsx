@@ -76,6 +76,7 @@ export function TopHeader() {
       'roles': t('sidebar.roles', 'Roles'),
       'users': t('sidebar.users', 'Users'),
       'materials': t('sidebar.materials', 'Purchases'),
+      'stages': t('sidebar.stages', 'Stages'),
       'countries': t('sidebar.countries', 'Countries'),
       'cities': t('sidebar.cities', 'Cities'),
       'banks': t('sidebar.banks', 'Banks'),
@@ -150,12 +151,10 @@ export function TopHeader() {
   return (
     <>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Cairo:wght@400;600;700&display=swap');
-
         .top-header * { box-sizing: border-box; }
 
         .top-header {
-          font-family: 'Inter', 'Cairo', sans-serif;
+          font-family: 'Plus Jakarta Sans', 'Cairo', sans-serif;
         }
 
         .th-search-input {
@@ -165,7 +164,7 @@ export function TopHeader() {
           background: transparent;
           border: 1px solid var(--th-border);
           border-radius: 10px;
-          font-family: 'Inter', 'Cairo', sans-serif;
+          font-family: 'Plus Jakarta Sans', 'Cairo', sans-serif;
           font-size: 13.5px;
           font-weight: 400;
           color: var(--th-text-primary);
@@ -266,7 +265,7 @@ export function TopHeader() {
           border: 1px solid var(--th-accent-border);
           background: var(--th-accent-bg);
           color: var(--th-accent);
-          font-family: 'Inter', 'Cairo', sans-serif;
+          font-family: 'Plus Jakarta Sans', 'Cairo', sans-serif;
           font-size: 12.5px;
           font-weight: 500;
           letter-spacing: 0.01em;
@@ -285,7 +284,6 @@ export function TopHeader() {
         .th-dropdown {
           position: absolute;
           top: calc(100% + 10px);
-          right: 0;
           background: var(--th-dropdown-bg);
           border: 1px solid var(--th-border-strong);
           border-radius: 14px;
@@ -582,9 +580,9 @@ export function TopHeader() {
             </button>
 
             {profileOpen && (
-              <div className="th-dropdown" style={{ 
-                width: 240, 
-                right: 0 
+              <div className="th-dropdown" style={{
+                width: 240,
+                ...(i18n.language === 'ar' ? { left: 0 } : { right: 0 })
               } as any}>
                 {/* User card */}
                 <div style={{

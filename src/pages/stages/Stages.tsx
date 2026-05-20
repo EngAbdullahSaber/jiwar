@@ -22,6 +22,8 @@ import {
   GitBranch,
   Plus,
   Trash2,
+  Pencil,
+  Briefcase,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Link } from 'wouter';
@@ -58,11 +60,11 @@ interface StagesResponse {
   totalPages: number;
 }
 
-const COL = 'grid-cols-[2fr_100px_140px_180px_110px_64px]';
+const COL = 'grid-cols-[2fr_100px_140px_180px_110px_96px]';
 
 export default function Stages() {
   const { t, i18n } = useTranslation();
-  const [filters, setFilters] = useState({ search: '' });
+  const [filters, setFilters] = useState({ search: '', projectId: '' });
   const [currentPage, setCurrentPage] = useState(1);
   const [expandedRows, setExpandedRows] = useState<Set<number>>(new Set());
   const [stageToDelete, setStageToDelete] = useState<number | null>(null);
@@ -86,13 +88,14 @@ export default function Stages() {
   });
 
   const { data: response, isLoading, refetch } = useQuery<StagesResponse>({
-    queryKey: ['stages', currentPage, pageSize, filters.search],
+    queryKey: ['stages', currentPage, pageSize, filters.search, filters.projectId],
     queryFn: async () => {
       const res = await api.get('/stage', {
         params: {
           page: currentPage,
           pageSize,
           search: filters.search || undefined,
+          projectId: filters.projectId || undefined,
         },
       });
       return res.data;
@@ -114,7 +117,30 @@ export default function Stages() {
       placeholder: t('stages.searchPlaceholder'),
       key: 'search',
     },
+    {
+      type: 'paginated-select',
+      label: t('stages.labels.projectId'),
+      placeholder: t('stages.placeholders.selectProject'),
+      searchPlaceholder: t('stages.placeholders.searchProject'),
+      key: 'projectId',
+      apiEndpoint: '/project',
+      queryKey: 'projects-stage-filter',
+      icon: <Briefcase className="w-3 h-3" />,
+      width: 'md',
+      mapResponseToOptions: (data: any) =>
+        data.data.map((p: any) => ({
+          value: String(p.id),
+          label: p.name.english,
+          description: p.name.arabic,
+          icon: <Briefcase className="w-4 h-4" />,
+        })),
+    },
   ];
+
+  const handleReset = () => {
+    setFilters({ search: '', projectId: '' });
+    setCurrentPage(1);
+  };
 
   const lang = i18n.language === 'ar' ? 'arabic' : 'english';
   const otherLang = lang === 'english' ? 'arabic' : 'english';
@@ -176,7 +202,7 @@ export default function Stages() {
                   <RefreshCw className="w-4 h-4 mr-2 rtl:mr-0 rtl:ml-2" />
                   {t('common.refresh')}
                 </Button>
-                <Can I="CREATE" a="project">
+                <Can I="CREATE" a="stage">
                   <Link href="/stages/new">
                     <motion.button
                       whileHover={{ scale: 1.02 }}
@@ -200,6 +226,7 @@ export default function Stages() {
               setFilters(prev => ({ ...prev, [key]: value }));
               setCurrentPage(1);
             }}
+            onReset={handleReset}
           />
 
           {/* Table */}
@@ -313,8 +340,18 @@ export default function Stages() {
                     </div>
 
                     {/* Actions */}
-                    <div className="flex items-center justify-center">
-                      <Can I="DELETE" a="project">
+                    <div className="flex items-center justify-center gap-1">
+                      <Can I="UPDATE" a="stage">
+                        <Link href={`/stages/${stage.id}/edit`}>
+                          <button
+                            className="p-2 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-md text-gray-400 hover:text-blue-600 transition-colors"
+                            title={t('common.edit')}
+                          >
+                            <Pencil className="w-4 h-4" />
+                          </button>
+                        </Link>
+                      </Can>
+                      <Can I="DELETE" a="stage">
                         <button
                           onClick={() => setStageToDelete(stage.id)}
                           disabled={deleteMutation.isPending}
