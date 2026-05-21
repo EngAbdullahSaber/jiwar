@@ -7,13 +7,11 @@ import {
   PlusCircle,
   ArrowRight,
   Calendar,
-  User,
   Clock,
   CheckCircle2,
   AlertCircle,
   FileText,
   Layers,
-  Activity,
   ChevronDown,
   Scale,
   Pencil,
@@ -263,115 +261,116 @@ export default function Legality() {
             {!isLoading && data?.data.map((item, idx) => {
               const progress = calcProgress(item.legalitySteps);
               const status = getStatus(progress);
- 
+
               return (
                 <motion.div
                   key={item.id}
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: idx * 0.04, duration: 0.25 }}
-                  className="group bg-white dark:bg-[#18181B] rounded-md border border-black/[0.06] dark:border-white/[0.06] overflow-hidden hover:shadow-lg hover:shadow-black/[0.08] dark:hover:shadow-black/40 transition-shadow flex flex-col"
+                  className="group bg-white dark:bg-gray-900 rounded-md border border-gray-100 dark:border-gray-800 overflow-hidden hover:shadow-md hover:shadow-gray-200/60 dark:hover:shadow-black/40 hover:border-gray-200 dark:hover:border-gray-700 transition-all duration-200 flex flex-col"
                 >
-                  {/* Accent bar */}
-                  <div className={cn('h-[3px] w-full bg-gradient-to-r', status.gradient)} />
+                  {/* Top accent strip */}
+                  <div className={cn('h-[3px] w-full bg-gradient-to-r shrink-0', status.gradient)} />
 
-                  <div className="p-5 flex flex-col gap-4 flex-1">
-                    {/* Top row */}
-                    <div className="flex items-start justify-between gap-2">
-                      <div className="flex-1 min-w-0">
-                        <p className="text-[10px] font-mono font-semibold text-[#A8A29E] tracking-wider mb-1">
-                          LF-{item.id.toString().padStart(4, '0')}
-                        </p>
-                        <h3 className="text-[14px] font-semibold text-[#1C1917] dark:text-white leading-snug line-clamp-2">
-                          {item.name[lang]}
-                        </h3>
-                      </div>
-                    </div>
+                  <div className="p-5 flex flex-col gap-3 flex-1">
 
-                    {/* Status + steps */}
-                    <div className="flex items-center gap-2 flex-wrap">
-                      <span className={cn('inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[11px] font-medium', status.pill)}>
+                    {/* Header: ID + status pill */}
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="text-[10px] font-semibold font-mono text-gray-400 dark:text-gray-500 bg-gray-50 dark:bg-gray-800 border border-gray-100 dark:border-gray-700 px-2 py-0.5 rounded-md tracking-wider">
+                        LF-{item.id.toString().padStart(4, '0')}
+                      </span>
+                      <span className={cn('inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[11px] font-semibold', status.pill)}>
                         <span className={cn('w-1.5 h-1.5 rounded-md', status.dot)} />
                         {status.label}
                       </span>
-                      <span className="inline-flex items-center gap-1 text-[11px] font-medium text-[#78716C] dark:text-[#A8A29E]">
-                        <Layers className="w-3 h-3" />
+                    </div>
+
+                    {/* Title */}
+                    <h3 className="text-[14px] font-bold text-gray-900 dark:text-white leading-snug line-clamp-2 min-h-[40px]">
+                      {item.name[lang]}
+                    </h3>
+
+                    {/* Steps count */}
+                    <div className="flex items-center gap-1.5">
+                      <Layers className="w-3.5 h-3.5 text-gray-400 dark:text-gray-500" />
+                      <span className="text-[11px] font-medium text-gray-500 dark:text-gray-400">
                         {item.legalitySteps.length} {t('legality.steps')}
                       </span>
                     </div>
 
                     {/* Progress */}
                     <div className="space-y-1.5">
-                      <div className="flex justify-between text-[11px]">
-                        <span className="font-medium text-[#78716C] dark:text-[#A8A29E]">{t('legality.progress')}</span>
-                        <span className="font-bold text-[#1C1917] dark:text-white font-mono">{progress}%</span>
+                      <div className="flex justify-between items-center text-[11px]">
+                        <span className="font-medium text-gray-400 dark:text-gray-500">{t('legality.progress')}</span>
+                        <span className="font-bold tabular-nums text-gray-900 dark:text-white">{progress}%</span>
                       </div>
-                      <div className="h-1.5 bg-[#F7F6F3] dark:bg-[#27272A] rounded-md overflow-hidden">
+                      <div className="h-1.5 bg-gray-100 dark:bg-gray-800 rounded-md overflow-hidden">
                         <motion.div
                           initial={{ width: 0 }}
                           animate={{ width: `${progress}%` }}
-                          transition={{ duration: 0.8, ease: 'easeOut', delay: idx * 0.04 }}
+                          transition={{ duration: 0.7, ease: 'easeOut', delay: idx * 0.04 }}
                           className={cn('h-full rounded-md bg-gradient-to-r', status.gradient)}
                         />
                       </div>
                     </div>
 
-                    {/* Last Steps Preview */}
-                    <div className="space-y-2 py-3 border-y border-black/[0.03] dark:border-white/[0.03]">
-                      <div className="flex items-center gap-1.5 mb-1">
-                        <Activity className="w-3 h-3 text-[#A8A29E]" />
-                        <span className="text-[10px] font-bold text-[#A8A29E] uppercase tracking-wider">
-                          {t('legality.lastSteps')}
-                        </span>
-                      </div>
-                      {item.legalitySteps?.slice(-2).map((s) => (
-                        <div key={s.id} className="flex items-center justify-between gap-3">
+                    {/* Last Steps */}
+                    <div className="bg-gray-50 dark:bg-gray-800/50 rounded-md p-3 space-y-2">
+                      <p className="text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-2">
+                        {t('legality.lastSteps')}
+                      </p>
+                      {item.legalitySteps?.slice(-2).length > 0 ? item.legalitySteps.slice(-2).map((s) => (
+                        <div key={s.id} className="flex items-center justify-between gap-2">
                           <div className="flex items-center gap-2 min-w-0">
                             <div className={cn(
-                              "w-1.5 h-1.5 rounded-md shrink-0",
-                              s.step?.toDate ? "bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.4)]" : "bg-amber-400 shadow-[0_0_8px_rgba(251,191,36,0.4)]"
+                              'w-1.5 h-1.5 rounded-md shrink-0',
+                              s.step?.toDate ? 'bg-emerald-500' : 'bg-amber-400'
                             )} />
-                            <span className="text-[11px] font-medium text-[#44403C] dark:text-[#D6D3D1] truncate">
-                              {s.step?.name?.[lang] || 'Unnamed Step'}
+                            <span className="text-[11px] font-medium text-gray-600 dark:text-gray-300 truncate">
+                              {s.step?.name?.[lang] || '—'}
                             </span>
                           </div>
-                          {s.step?.toDate ? (
-                             <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
-                          ) : (
-                             <Clock className="w-3.5 h-3.5 text-[#A8A29E] shrink-0" />
-                          )}
+                          {s.step?.toDate
+                            ? <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
+                            : <Clock className="w-3.5 h-3.5 text-gray-400 shrink-0" />
+                          }
                         </div>
-                      ))}
+                      )) : (
+                        <p className="text-[11px] text-gray-400 dark:text-gray-600">—</p>
+                      )}
                     </div>
 
-                    {/* Meta */}
-                    <div className="grid grid-cols-2 gap-2 text-[11px]">
-                      <div className="flex items-center gap-1.5 text-[#78716C] dark:text-[#A8A29E]">
-                        <User className="w-3 h-3 flex-shrink-0" />
-                        <span className="truncate font-medium">{item.createdBy.email.split('@')[0]}</span>
+                    {/* Meta: user + date */}
+                    <div className="flex items-center justify-between text-[11px] text-gray-400 dark:text-gray-500">
+                      <div className="flex items-center gap-1.5">
+                        <div className="w-5 h-5 rounded-md bg-gray-900 dark:bg-white flex items-center justify-center text-[9px] font-bold text-white dark:text-gray-900 shrink-0">
+                          {item.createdBy.email.substring(0, 2).toUpperCase()}
+                        </div>
+                        <span className="font-medium truncate max-w-[80px]">{item.createdBy.email.split('@')[0]}</span>
                       </div>
-                      <div className="flex items-center gap-1.5 text-[#78716C] dark:text-[#A8A29E]">
-                        <Calendar className="w-3 h-3 flex-shrink-0" />
+                      <div className="flex items-center gap-1">
+                        <Calendar className="w-3 h-3" />
                         <span className="font-medium">{fmtDate(item.createdAt)}</span>
                       </div>
                     </div>
 
-                    {/* Footer */}
-                    <div className="mt-auto pt-4 border-t border-[#F7F6F3] dark:border-[#27272A] flex items-center justify-between">
-                      <div className="flex items-center gap-3">
-                        <Can I="READ" a="legality">
-                          <Link href={`/legality/${item.id}`}>
-                            <button className="inline-flex items-center gap-1.5 text-[12px] font-semibold text-[#1C1917] dark:text-white hover:opacity-70 transition-opacity">
-                              {t('legality.viewDetails')}
-                              <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
-                            </button>
-                          </Link>
-                        </Can>
+                    {/* Footer actions */}
+                    <div className="mt-auto pt-3 border-t border-gray-100 dark:border-gray-800 flex items-center justify-between gap-2">
+                      <Can I="READ" a="legality">
+                        <Link href={`/legality/${item.id}`}>
+                          <button className="inline-flex items-center gap-1.5 h-8 px-3 rounded-md bg-gray-900 dark:bg-white text-white dark:text-gray-900 text-[12px] font-semibold hover:opacity-90 transition-opacity">
+                            {t('legality.viewDetails')}
+                            <ArrowRight className="w-3.5 h-3.5 rtl:rotate-180" />
+                          </button>
+                        </Link>
+                      </Can>
+
+                      <div className="flex items-center gap-1">
                         <Can I="UPDATE" a="legality">
                           <Link href={`/legality/${item.id}/edit`}>
-                            <button className="inline-flex items-center gap-1.5 text-[12px] font-semibold text-[#B39371] hover:opacity-70 transition-opacity">
+                            <button className="w-8 h-8 rounded-md border border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-800 flex items-center justify-center text-gray-500 dark:text-gray-400 hover:border-[#B39371] hover:text-[#B39371] transition-colors" title={t('common.edit')}>
                               <Pencil className="w-3.5 h-3.5" />
-                              {t('common.edit')}
                             </button>
                           </Link>
                         </Can>
@@ -379,15 +378,12 @@ export default function Legality() {
                           <button
                             onClick={() => setLegalityToDelete(item.id)}
                             disabled={deleteMutation.isPending}
-                            className="inline-flex items-center gap-1.5 text-[12px] font-semibold text-red-500 hover:opacity-70 transition-opacity disabled:opacity-40"
+                            className="w-8 h-8 rounded-md border border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-800 flex items-center justify-center text-gray-500 dark:text-gray-400 hover:border-red-300 hover:text-red-500 transition-colors disabled:opacity-40"
+                            title={t('common.delete')}
                           >
                             <Trash2 className="w-3.5 h-3.5" />
-                            {t('common.delete')}
                           </button>
                         </Can>
-                      </div>
-                      <div className="w-7 h-7 rounded-md bg-[#1C1917] dark:bg-white flex items-center justify-center text-[10px] font-bold text-white dark:text-[#1C1917]">
-                        {item.createdBy.email.substring(0, 2).toUpperCase()}
                       </div>
                     </div>
                   </div>
