@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+﻿import { useState, useEffect } from 'react';
 import { useLocation, useRoute } from "wouter";
 import { useTranslation } from 'react-i18next';
 import { TopHeader } from '../../components/TopHeader';
@@ -160,19 +160,19 @@ export default function UpdateSalesman() {
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8 pb-32">
           
           {/* Header Section */}
-          <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 p-6 shadow-sm overflow-hidden relative group">
-            <div className="absolute top-0 right-0 w-48 h-48 bg-gradient-to-br from-[#4A1B1B]/5 to-transparent rounded-full -translate-y-1/2 translate-x-1/2 blur-3xl" />
+          <div className="bg-white dark:bg-gray-900 rounded-md border border-gray-200 dark:border-gray-800 p-6 shadow-sm overflow-hidden relative group">
+            <div className="absolute top-0 right-0 w-48 h-48 bg-gradient-to-br from-[#4A1B1B]/5 to-transparent rounded-md -translate-y-1/2 translate-x-1/2 blur-3xl" />
             
             <div className="flex items-center gap-6 relative z-10">
               <Link 
                 href="/salesman" 
-                className="p-2.5 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-xl transition-all border border-transparent hover:border-gray-200 dark:hover:border-gray-700"
+                className="p-2.5 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-md transition-all border border-transparent hover:border-gray-200 dark:hover:border-gray-700"
               >
                 <ArrowLeft className="w-5 h-5 text-gray-500 rtl:rotate-180" />
               </Link>
               <div className="relative">
-                <div className="absolute inset-0 bg-gradient-to-r from-[#4A1B1B] to-[#6B2727] rounded-xl blur-xl opacity-20" />
-                <div className="relative w-14 h-14 rounded-xl bg-gradient-to-br from-[#4A1B1B] to-[#6B2727] shadow-lg flex items-center justify-center border border-white/10">
+                <div className="absolute inset-0 bg-gradient-to-r from-[#4A1B1B] to-[#6B2727] rounded-md blur-xl opacity-20" />
+                <div className="relative w-14 h-14 rounded-md bg-gradient-to-br from-[#4A1B1B] to-[#6B2727] shadow-lg flex items-center justify-center border border-white/10">
                   <UserIcon className="w-7 h-7 text-[#B39371]" />
                 </div>
               </div>
@@ -198,11 +198,11 @@ export default function UpdateSalesman() {
             <motion.div 
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 overflow-hidden shadow-sm"
+              className="bg-white dark:bg-gray-900 rounded-md border border-gray-200 dark:border-gray-800 overflow-hidden shadow-sm"
             >
               <div className="p-6 border-b border-gray-100 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-800/50">
                 <div className="flex items-center gap-4">
-                  <div className="w-10 h-10 rounded-xl bg-indigo-50 dark:bg-indigo-500/10 flex items-center justify-center text-indigo-600">
+                  <div className="w-10 h-10 rounded-md bg-indigo-50 dark:bg-indigo-500/10 flex items-center justify-center text-indigo-600">
                     <UserIcon className="w-5 h-5" />
                   </div>
                   <div>
@@ -222,7 +222,7 @@ export default function UpdateSalesman() {
                       <Input
                         name="fullName"
                         placeholder={t('salesman.form.placeholders.fullName')}
-                        className="h-12 pl-11 rtl:pl-4 rtl:pr-11 rounded-xl bg-gray-50 dark:bg-gray-800/50 border-gray-100 dark:border-gray-800 focus:bg-white dark:focus:bg-gray-800 transition-all font-medium"
+                        className="h-12 pl-11 rtl:pl-4 rtl:pr-11 rounded-md bg-gray-50 dark:bg-gray-800/50 border-gray-100 dark:border-gray-800 focus:bg-white dark:focus:bg-gray-800 transition-all font-medium"
                         value={formData.fullName}
                         onChange={handleChange}
                         required
@@ -239,7 +239,7 @@ export default function UpdateSalesman() {
                         name="email"
                         type="email"
                         placeholder={t('salesman.form.placeholders.email')}
-                        className="h-12 pl-11 rtl:pl-4 rtl:pr-11 rounded-xl bg-gray-50 dark:bg-gray-800/50 border-gray-100 dark:border-gray-800 focus:bg-white dark:focus:bg-gray-800 transition-all font-medium"
+                        className="h-12 pl-11 rtl:pl-4 rtl:pr-11 rounded-md bg-gray-50 dark:bg-gray-800/50 border-gray-100 dark:border-gray-800 focus:bg-white dark:focus:bg-gray-800 transition-all font-medium"
                         value={formData.email}
                         onChange={handleChange}
                         required
@@ -256,7 +256,7 @@ export default function UpdateSalesman() {
                         name="password"
                         type="password"
                         placeholder={t('salesman.form.placeholders.password')}
-                        className="h-12 pl-11 rtl:pl-4 rtl:pr-11 rounded-xl bg-gray-50 dark:bg-gray-800/50 border-gray-100 dark:border-gray-800 focus:bg-white dark:focus:bg-gray-800 transition-all font-medium"
+                        className="h-12 pl-11 rtl:pl-4 rtl:pr-11 rounded-md bg-gray-50 dark:bg-gray-800/50 border-gray-100 dark:border-gray-800 focus:bg-white dark:focus:bg-gray-800 transition-all font-medium"
                         value={formData.password}
                         onChange={handleChange}
                       />
@@ -271,7 +271,7 @@ export default function UpdateSalesman() {
                       <Input
                         name="phoneNumber"
                         placeholder={t('salesman.form.placeholders.phone')}
-                        className="h-12 pl-11 rtl:pl-4 rtl:pr-11 rounded-xl bg-gray-50 dark:bg-gray-800/50 border-gray-100 dark:border-gray-800 focus:bg-white dark:focus:bg-gray-800 transition-all font-medium"
+                        className="h-12 pl-11 rtl:pl-4 rtl:pr-11 rounded-md bg-gray-50 dark:bg-gray-800/50 border-gray-100 dark:border-gray-800 focus:bg-white dark:focus:bg-gray-800 transition-all font-medium"
                         value={formData.phoneNumber}
                         onChange={handleChange}
                         required
@@ -286,7 +286,7 @@ export default function UpdateSalesman() {
                       <UsersIcon className="absolute left-4 rtl:left-auto rtl:right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 group-focus-within:text-[#B39371] transition-colors pointer-events-none" />
                       <select
                         name="agentType"
-                        className="w-full h-12 pl-11 rtl:pl-4 rtl:pr-11 rounded-xl bg-gray-50 dark:bg-gray-800/50 border border-gray-100 dark:border-gray-800 text-sm font-medium text-gray-700 dark:text-gray-200 outline-none focus:bg-white dark:focus:bg-gray-800 focus:ring-2 focus:ring-[#B39371]/10 transition-all appearance-none cursor-pointer"
+                        className="w-full h-12 pl-11 rtl:pl-4 rtl:pr-11 rounded-md bg-gray-50 dark:bg-gray-800/50 border border-gray-100 dark:border-gray-800 text-sm font-medium text-gray-700 dark:text-gray-200 outline-none focus:bg-white dark:focus:bg-gray-800 focus:ring-2 focus:ring-[#B39371]/10 transition-all appearance-none cursor-pointer"
                         value={formData.agentType}
                         onChange={handleChange}
                       >
@@ -305,11 +305,11 @@ export default function UpdateSalesman() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 }}
-              className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 overflow-hidden shadow-sm"
+              className="bg-white dark:bg-gray-900 rounded-md border border-gray-200 dark:border-gray-800 overflow-hidden shadow-sm"
             >
               <div className="p-6 border-b border-gray-100 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-800/50">
                 <div className="flex items-center gap-4">
-                  <div className="w-10 h-10 rounded-xl bg-amber-50 dark:bg-amber-500/10 flex items-center justify-center text-amber-600">
+                  <div className="w-10 h-10 rounded-md bg-amber-50 dark:bg-amber-500/10 flex items-center justify-center text-amber-600">
                     <Wallet className="w-5 h-5" />
                   </div>
                   <div>
@@ -328,7 +328,7 @@ export default function UpdateSalesman() {
                       <Wallet className="absolute left-4 rtl:left-auto rtl:right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 group-focus-within:text-[#B39371] transition-colors pointer-events-none" />
                         <select
                           name="paymentType"
-                          className="w-full h-12 pl-11 rtl:pl-4 rtl:pr-11 rounded-xl bg-gray-50 dark:bg-gray-800/50 border border-gray-100 dark:border-gray-800 text-sm font-medium text-gray-700 dark:text-gray-200 outline-none focus:bg-white dark:focus:bg-gray-800 focus:ring-2 focus:ring-[#B39371]/10 transition-all appearance-none cursor-pointer"
+                          className="w-full h-12 pl-11 rtl:pl-4 rtl:pr-11 rounded-md bg-gray-50 dark:bg-gray-800/50 border border-gray-100 dark:border-gray-800 text-sm font-medium text-gray-700 dark:text-gray-200 outline-none focus:bg-white dark:focus:bg-gray-800 focus:ring-2 focus:ring-[#B39371]/10 transition-all appearance-none cursor-pointer"
                           value={formData.paymentType}
                           onChange={handleChange}
                         >
@@ -347,7 +347,7 @@ export default function UpdateSalesman() {
                       <Percent className="absolute left-4 rtl:left-auto rtl:right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 group-focus-within:text-[#B39371] transition-colors pointer-events-none" />
                       <select
                         name="commissionBase"
-                        className="w-full h-12 pl-11 rtl:pl-4 rtl:pr-11 rounded-xl bg-gray-50 dark:bg-gray-800/50 border border-gray-100 dark:border-gray-800 text-sm font-medium text-gray-700 dark:text-gray-200 outline-none focus:bg-white dark:focus:bg-gray-800 focus:ring-2 focus:ring-[#B39371]/10 transition-all appearance-none cursor-pointer"
+                        className="w-full h-12 pl-11 rtl:pl-4 rtl:pr-11 rounded-md bg-gray-50 dark:bg-gray-800/50 border border-gray-100 dark:border-gray-800 text-sm font-medium text-gray-700 dark:text-gray-200 outline-none focus:bg-white dark:focus:bg-gray-800 focus:ring-2 focus:ring-[#B39371]/10 transition-all appearance-none cursor-pointer"
                         value={formData.commissionBase}
                         onChange={handleChange}
                       >
@@ -370,7 +370,7 @@ export default function UpdateSalesman() {
                         type="number"
                         step="0.01"
                         placeholder={t('salesman.form.placeholders.commissionValue')}
-                        className="h-12 pl-11 rtl:pl-4 rtl:pr-11 rounded-xl bg-gray-50 dark:bg-gray-800/50 border-gray-100 dark:border-gray-800 focus:bg-white dark:focus:bg-gray-800 transition-all font-medium"
+                        className="h-12 pl-11 rtl:pl-4 rtl:pr-11 rounded-md bg-gray-50 dark:bg-gray-800/50 border-gray-100 dark:border-gray-800 focus:bg-white dark:focus:bg-gray-800 transition-all font-medium"
                         value={formData.commissionValue}
                         onChange={handleChange}
                       />
@@ -378,9 +378,9 @@ export default function UpdateSalesman() {
                   </div>
 
                   {/* Target Completion Status */}
-                  <div className="md:col-span-2 p-6 bg-gray-50 dark:bg-gray-800/50 rounded-2xl border border-gray-100 dark:border-gray-800 flex items-center justify-between">
+                  <div className="md:col-span-2 p-6 bg-gray-50 dark:bg-gray-800/50 rounded-md border border-gray-100 dark:border-gray-800 flex items-center justify-between">
                     <div className="flex items-center gap-4">
-                      <div className="w-10 h-10 rounded-xl bg-emerald-50 dark:bg-emerald-500/10 flex items-center justify-center text-emerald-600">
+                      <div className="w-10 h-10 rounded-md bg-emerald-50 dark:bg-emerald-500/10 flex items-center justify-center text-emerald-600">
                         <CheckCircle2 className="w-5 h-5" />
                       </div>
                       <div>
@@ -408,7 +408,7 @@ export default function UpdateSalesman() {
                           name="apartmentTargetGoal"
                           type="number"
                           placeholder={t('salesman.form.placeholders.targetGoal')}
-                          className="h-12 pl-11 rtl:pl-4 rtl:pr-11 rounded-xl bg-gray-50 dark:bg-gray-800/50 border-gray-100 dark:border-gray-800 focus:bg-white dark:focus:bg-gray-800 transition-all font-medium"
+                          className="h-12 pl-11 rtl:pl-4 rtl:pr-11 rounded-md bg-gray-50 dark:bg-gray-800/50 border-gray-100 dark:border-gray-800 focus:bg-white dark:focus:bg-gray-800 transition-all font-medium"
                           value={formData.apartmentTargetGoal}
                           onChange={handleChange}
                         />
@@ -424,11 +424,11 @@ export default function UpdateSalesman() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
-              className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 overflow-hidden shadow-sm"
+              className="bg-white dark:bg-gray-900 rounded-md border border-gray-200 dark:border-gray-800 overflow-hidden shadow-sm"
             >
               <div className="p-6 border-b border-gray-100 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-800/50">
                 <div className="flex items-center gap-4">
-                  <div className="w-10 h-10 rounded-xl bg-rose-50 dark:bg-rose-500/10 flex items-center justify-center text-rose-600">
+                  <div className="w-10 h-10 rounded-md bg-rose-50 dark:bg-rose-500/10 flex items-center justify-center text-rose-600">
                     <Calendar className="w-5 h-5" />
                   </div>
                   <div>
@@ -465,12 +465,12 @@ export default function UpdateSalesman() {
 
             {/* Submit Bar */}
             <div className=" w-ful z-50">
-              <div className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl border border-white/20 dark:border-gray-800/50 rounded-2xl p-4 shadow-2xl flex items-center justify-between gap-4">
+              <div className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl border border-white/20 dark:border-gray-800/50 rounded-md p-4 shadow-2xl flex items-center justify-between gap-4">
                 <Button
                   type="button"
                   variant="ghost"
                   onClick={() => setLocation('/salesman')}
-                  className="h-12 px-8 rounded-xl font-bold text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white transition-all"
+                  className="h-12 px-8 rounded-md font-bold text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white transition-all"
                 >
                   {t('common.cancel')}
                 </Button>
@@ -478,7 +478,7 @@ export default function UpdateSalesman() {
                 <Button
                   type="submit"
                   disabled={updateMutation.isPending}
-                  className="h-12 px-12 rounded-xl bg-gradient-to-r from-[#4A1B1B] to-[#6B2727] hover:from-[#6B2727] hover:to-[#4A1B1B] text-white font-extrabold shadow-xl shadow-[#4A1B1B]/20 flex items-center gap-3 transition-all min-w-[200px] border border-white/10"
+                  className="h-12 px-12 rounded-md bg-gradient-to-r from-[#4A1B1B] to-[#6B2727] hover:from-[#6B2727] hover:to-[#4A1B1B] text-white font-extrabold shadow-xl shadow-[#4A1B1B]/20 flex items-center gap-3 transition-all min-w-[200px] border border-white/10"
                 >
                   {updateMutation.isPending ? (
                     <>

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+﻿import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { TopHeader } from '../../components/TopHeader';
 import { Link, useRoute } from 'wouter';
@@ -118,8 +118,8 @@ const InfoField = ({
   value: React.ReactNode;
   accent?: boolean;
 }) => (
-  <div className="flex items-start gap-3 p-4 bg-gray-50 dark:bg-gray-800/50 rounded-xl border border-gray-100 dark:border-gray-700/50">
-    <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#4A1B1B]/10 to-[#6B2727]/10 flex items-center justify-center flex-shrink-0 mt-0.5">
+  <div className="flex items-start gap-3 p-4 bg-gray-50 dark:bg-gray-800/50 rounded-md border border-gray-100 dark:border-gray-700/50">
+    <div className="w-8 h-8 rounded-md bg-gradient-to-br from-[#4A1B1B]/10 to-[#6B2727]/10 flex items-center justify-center flex-shrink-0 mt-0.5">
       <Icon className="w-4 h-4 text-[#B39371]" />
     </div>
     <div className="min-w-0">
@@ -143,8 +143,8 @@ const StatCard = ({
   value: React.ReactNode;
   color: string;
 }) => (
-  <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 p-4 flex items-center gap-4">
-    <div className={cn('w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0', color)}>
+  <div className="bg-white dark:bg-gray-900 rounded-md border border-gray-200 dark:border-gray-800 p-4 flex items-center gap-4">
+    <div className={cn('w-10 h-10 rounded-md flex items-center justify-center flex-shrink-0', color)}>
       <Icon className="w-5 h-5 text-white" />
     </div>
     <div>
@@ -227,13 +227,13 @@ export default function ViewClient() {
         <TopHeader />
         <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-50 dark:from-gray-950 dark:via-gray-900 dark:to-gray-950">
           <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
-            <div className="h-24 bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 animate-pulse" />
+            <div className="h-24 bg-white dark:bg-gray-900 rounded-md border border-gray-200 dark:border-gray-800 animate-pulse" />
             <div className="grid grid-cols-3 gap-4">
               {[1, 2, 3].map((i) => (
-                <div key={i} className="h-20 bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 animate-pulse" />
+                <div key={i} className="h-20 bg-white dark:bg-gray-900 rounded-md border border-gray-200 dark:border-gray-800 animate-pulse" />
               ))}
             </div>
-            <div className="h-72 bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 animate-pulse" />
+            <div className="h-72 bg-white dark:bg-gray-900 rounded-md border border-gray-200 dark:border-gray-800 animate-pulse" />
           </div>
         </div>
       </Shell>
@@ -249,9 +249,9 @@ export default function ViewClient() {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 p-12 text-center max-w-md w-full"
+            className="bg-white dark:bg-gray-900 rounded-md border border-gray-200 dark:border-gray-800 p-12 text-center max-w-md w-full"
           >
-            <div className="w-16 h-16 rounded-2xl bg-red-50 dark:bg-red-900/20 flex items-center justify-center mx-auto mb-4">
+            <div className="w-16 h-16 rounded-md bg-red-50 dark:bg-red-900/20 flex items-center justify-center mx-auto mb-4">
               <AlertCircle className="w-8 h-8 text-red-500" />
             </div>
             <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
@@ -261,7 +261,7 @@ export default function ViewClient() {
               {t('clients.errors.notFound')}
             </p>
             <Link href="/clients">
-              <button className="px-6 py-2.5 bg-gradient-to-r from-[#4A1B1B] to-[#6B2727] text-white rounded-xl text-sm font-medium shadow-lg shadow-[#4A1B1B]/20">
+              <button className="px-6 py-2.5 bg-gradient-to-r from-[#4A1B1B] to-[#6B2727] text-white rounded-md text-sm font-medium shadow-lg shadow-[#4A1B1B]/20">
                 {t('common.backToList')}
               </button>
             </Link>
@@ -287,13 +287,13 @@ export default function ViewClient() {
           <motion.div
             initial={{ opacity: 0, y: -12 }}
             animate={{ opacity: 1, y: 0 }}
-            className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 p-6 shadow-sm"
+            className="bg-white dark:bg-gray-900 rounded-md border border-gray-200 dark:border-gray-800 p-6 shadow-sm"
           >
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div className="flex items-center gap-4">
                 <Link
                   href="/clients"
-                  className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-xl transition-colors flex-shrink-0"
+                  className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-md transition-colors flex-shrink-0"
                 >
                   <ArrowLeft className="w-5 h-5 text-gray-500" />
                 </Link>
@@ -316,7 +316,7 @@ export default function ViewClient() {
                     {client.fullName}
                   </h1>
                   <div className="flex items-center gap-2 mt-1">
-                    <Badge className={cn('text-[10px] px-2 py-0.5 rounded-full border font-medium', typeBadgeClass)}>
+                    <Badge className={cn('text-[10px] px-2 py-0.5 rounded-md border font-medium', typeBadgeClass)}>
                       {t(`clients.${client.type}`)}
                     </Badge>
                     <span className="text-xs text-gray-400">#{client.id}</span>
@@ -330,7 +330,7 @@ export default function ViewClient() {
                 <a
                   href={`tel:${client.phoneNumber}`}
                   title={t('common.call')}
-                  className="inline-flex items-center justify-center w-9 h-9 rounded-xl bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-100 dark:border-blue-500/20 hover:bg-blue-100 dark:hover:bg-blue-500/20 transition-all"
+                  className="inline-flex items-center justify-center w-9 h-9 rounded-md bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-100 dark:border-blue-500/20 hover:bg-blue-100 dark:hover:bg-blue-500/20 transition-all"
                 >
                   <PhoneCall className="w-4 h-4" />
                 </a>
@@ -340,7 +340,7 @@ export default function ViewClient() {
                   target="_blank"
                   rel="noopener noreferrer"
                   title={t('common.whatsapp')}
-                  className="inline-flex items-center justify-center w-9 h-9 rounded-xl bg-[#25D366]/10 text-[#25D366] border border-[#25D366]/20 hover:bg-[#25D366]/20 transition-all"
+                  className="inline-flex items-center justify-center w-9 h-9 rounded-md bg-[#25D366]/10 text-[#25D366] border border-[#25D366]/20 hover:bg-[#25D366]/20 transition-all"
                 >
                   <MessageCircle className="w-4 h-4" />
                 </a>
@@ -348,7 +348,7 @@ export default function ViewClient() {
                 <button
                   onClick={() => handleShare(client)}
                   title={t('common.share')}
-                  className="inline-flex items-center justify-center w-9 h-9 rounded-xl bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400 border border-gray-200 dark:border-gray-700 hover:bg-gray-200 dark:hover:bg-gray-700 transition-all"
+                  className="inline-flex items-center justify-center w-9 h-9 rounded-md bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400 border border-gray-200 dark:border-gray-700 hover:bg-gray-200 dark:hover:bg-gray-700 transition-all"
                 >
                   <Share2 className="w-4 h-4" />
                 </button>
@@ -357,13 +357,13 @@ export default function ViewClient() {
 
                 <button
                   onClick={() => setPaymentDialogOpen(true)}
-                  className="flex items-center gap-2 px-4 py-2 bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-100 dark:border-emerald-500/20 rounded-xl text-sm font-medium hover:bg-emerald-100 dark:hover:bg-emerald-500/20 transition-all"
+                  className="flex items-center gap-2 px-4 py-2 bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-100 dark:border-emerald-500/20 rounded-md text-sm font-medium hover:bg-emerald-100 dark:hover:bg-emerald-500/20 transition-all"
                 >
                   <Plus className="w-4 h-4" />
                   {t('payments.addPayment')}
                 </button>
                 <Link href={`/clients/${client.id}/edit`}>
-                  <button className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-[#4A1B1B] to-[#6B2727] text-white rounded-xl text-sm font-medium shadow-lg shadow-[#4A1B1B]/20 hover:shadow-xl transition-all">
+                  <button className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-[#4A1B1B] to-[#6B2727] text-white rounded-md text-sm font-medium shadow-lg shadow-[#4A1B1B]/20 hover:shadow-xl transition-all">
                     <Edit className="w-4 h-4" />
                     {t('common.edit')}
                   </button>
@@ -407,7 +407,7 @@ export default function ViewClient() {
             className="grid grid-cols-1 lg:grid-cols-2 gap-6"
           >
             {/* Personal / Contact */}
-            <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 p-6 space-y-4">
+            <div className="bg-white dark:bg-gray-900 rounded-md border border-gray-200 dark:border-gray-800 p-6 space-y-4">
               <h2 className="text-sm font-semibold text-gray-900 dark:text-white flex items-center gap-2">
                 <User className="w-4 h-4 text-[#B39371]" />
                 {t('clients.personalInfo')}
@@ -420,7 +420,7 @@ export default function ViewClient() {
             </div>
 
             {/* Financial */}
-            <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 p-6 space-y-4">
+            <div className="bg-white dark:bg-gray-900 rounded-md border border-gray-200 dark:border-gray-800 p-6 space-y-4">
               <h2 className="text-sm font-semibold text-gray-900 dark:text-white flex items-center gap-2">
                 <CreditCard className="w-4 h-4 text-[#B39371]" />
                 {t('clients.financialInfo')}
@@ -437,7 +437,7 @@ export default function ViewClient() {
             </div>
 
             {/* Location */}
-            <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 p-6 space-y-4 lg:col-span-2">
+            <div className="bg-white dark:bg-gray-900 rounded-md border border-gray-200 dark:border-gray-800 p-6 space-y-4 lg:col-span-2">
               <h2 className="text-sm font-semibold text-gray-900 dark:text-white flex items-center gap-2">
                 <MapPin className="w-4 h-4 text-[#B39371]" />
                 {t('clients.location')}
@@ -463,7 +463,7 @@ export default function ViewClient() {
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.12 }}
-            className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 overflow-hidden"
+            className="bg-white dark:bg-gray-900 rounded-md border border-gray-200 dark:border-gray-800 overflow-hidden"
           >
             <div className="flex items-center justify-between p-6 border-b border-gray-100 dark:border-gray-800">
               <h2 className="text-sm font-semibold text-gray-900 dark:text-white flex items-center gap-2">
@@ -474,7 +474,7 @@ export default function ViewClient() {
 
             {(!client.contracts || client.contracts.length === 0) ? (
               <div className="p-12 text-center">
-                <div className="w-12 h-12 rounded-xl bg-gray-100 dark:bg-gray-800 flex items-center justify-center mx-auto mb-3">
+                <div className="w-12 h-12 rounded-md bg-gray-100 dark:bg-gray-800 flex items-center justify-center mx-auto mb-3">
                   <FileText className="w-6 h-6 text-gray-400" />
                 </div>
                 <p className="text-sm text-gray-500 dark:text-gray-400">
@@ -493,7 +493,7 @@ export default function ViewClient() {
                   >
                     <div className="flex items-center justify-between mb-2">
                       <div className="flex items-center gap-3">
-                        <div className="w-9 h-9 rounded-lg bg-blue-50 dark:bg-blue-500/10 flex items-center justify-center flex-shrink-0">
+                        <div className="w-9 h-9 rounded-md bg-blue-50 dark:bg-blue-500/10 flex items-center justify-center flex-shrink-0">
                           <Landmark className="w-4 h-4 text-blue-600 dark:text-blue-400" />
                         </div>
                         <div>
@@ -510,7 +510,7 @@ export default function ViewClient() {
                           href={`${import.meta.env.VITE_API_BASE_URL}/${contract.pdfUrl}`}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="p-1.5 text-gray-400 hover:text-[#B39371] hover:bg-[#B39371]/10 rounded-lg transition-all"
+                          className="p-1.5 text-gray-400 hover:text-[#B39371] hover:bg-[#B39371]/10 rounded-md transition-all"
                         >
                           <Eye className="w-4 h-4" />
                         </a>
@@ -547,7 +547,7 @@ export default function ViewClient() {
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.15 }}
-            className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 overflow-hidden"
+            className="bg-white dark:bg-gray-900 rounded-md border border-gray-200 dark:border-gray-800 overflow-hidden"
           >
             <div className="flex items-center justify-between p-6 border-b border-gray-100 dark:border-gray-800">
               <h2 className="text-sm font-semibold text-gray-900 dark:text-white flex items-center gap-2">
@@ -566,12 +566,12 @@ export default function ViewClient() {
             {paymentsLoading ? (
               <div className="p-6 space-y-3">
                 {[1, 2, 3].map((i) => (
-                  <div key={i} className="h-14 bg-gray-100 dark:bg-gray-800 rounded-xl animate-pulse" />
+                  <div key={i} className="h-14 bg-gray-100 dark:bg-gray-800 rounded-md animate-pulse" />
                 ))}
               </div>
             ) : payments.length === 0 ? (
               <div className="p-12 text-center">
-                <div className="w-12 h-12 rounded-xl bg-gray-100 dark:bg-gray-800 flex items-center justify-center mx-auto mb-3">
+                <div className="w-12 h-12 rounded-md bg-gray-100 dark:bg-gray-800 flex items-center justify-center mx-auto mb-3">
                   <Receipt className="w-6 h-6 text-gray-400" />
                 </div>
                 <p className="text-sm text-gray-500 dark:text-gray-400">
@@ -589,7 +589,7 @@ export default function ViewClient() {
                     className="flex items-center justify-between px-6 py-4 hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors"
                   >
                     <div className="flex items-center gap-4">
-                      <div className="w-9 h-9 rounded-lg bg-emerald-50 dark:bg-emerald-500/10 flex items-center justify-center flex-shrink-0">
+                      <div className="w-9 h-9 rounded-md bg-emerald-50 dark:bg-emerald-500/10 flex items-center justify-center flex-shrink-0">
                         <Receipt className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
                       </div>
                       <div>
@@ -621,7 +621,7 @@ export default function ViewClient() {
                           href={`${import.meta.env.VITE_API_BASE_URL}/${payment.receipt[0]}`}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="p-1.5 text-gray-400 hover:text-[#B39371] hover:bg-[#B39371]/10 rounded-lg transition-all"
+                          className="p-1.5 text-gray-400 hover:text-[#B39371] hover:bg-[#B39371]/10 rounded-md transition-all"
                           title={t('common.viewReceipt')}
                         >
                           <Eye className="w-4 h-4" />

@@ -1,4 +1,4 @@
-import { TopHeader } from '../components/TopHeader';
+﻿import { TopHeader } from '../components/TopHeader';
 import { Link, useRoute } from "wouter";
 import {
   Building2,
@@ -88,8 +88,8 @@ export default function ProjectProfile() {
         <TopHeader />
         <div className="flex items-center justify-center min-h-[60vh]">
           <div className="relative w-16 h-16">
-            <div className="absolute inset-0 border-4 border-[#B39371]/10 rounded-full" />
-            <div className="absolute inset-0 border-4 border-t-[#B39371] rounded-full animate-spin" />
+            <div className="absolute inset-0 border-4 border-[#B39371]/10 rounded-md" />
+            <div className="absolute inset-0 border-4 border-t-[#B39371] rounded-md animate-spin" />
             <div className="absolute inset-0 flex items-center justify-center">
               <Building2 className="w-6 h-6 text-[#B39371]" />
             </div>
@@ -105,12 +105,12 @@ export default function ProjectProfile() {
       <Shell>
         <TopHeader />
         <div className="max-w-md mx-auto text-center py-24 px-4">
-          <div className="w-20 h-20 bg-red-50 dark:bg-red-900/10 rounded-2xl flex items-center justify-center mx-auto mb-5">
+          <div className="w-20 h-20 bg-red-50 dark:bg-red-900/10 rounded-md flex items-center justify-center mx-auto mb-5">
             <Building2 className="w-10 h-10 text-red-400" />
           </div>
           <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-2">{t('projects.errors.loadDetails')}</h2>
           <Link href="/projects">
-            <button className="inline-flex items-center gap-2 px-5 py-2.5 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-lg text-sm font-medium hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors mt-4">
+            <button className="inline-flex items-center gap-2 px-5 py-2.5 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-md text-sm font-medium hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors mt-4">
               <ArrowLeft className="w-4 h-4" /> {t('common.back')}
             </button>
           </Link>
@@ -137,10 +137,10 @@ export default function ProjectProfile() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
 
           {/* ── Top bar ── */}
-          <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 px-5 py-3.5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+          <div className="bg-white dark:bg-gray-900 rounded-md border border-gray-200 dark:border-gray-800 px-5 py-3.5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
             <div className="flex items-center gap-2.5 min-w-0">
               <Link href="/projects">
-                <button className="p-1.5 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors shrink-0">
+                <button className="p-1.5 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-md transition-colors shrink-0">
                   <ArrowLeft className="w-4 h-4 text-gray-500" />
                 </button>
               </Link>
@@ -158,7 +158,7 @@ export default function ProjectProfile() {
               <Link href={`/projects/${projectId}/media`}>
                 <motion.button
                   whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.99 }}
-                  className="flex items-center gap-2 px-3.5 py-2 border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 rounded-lg text-xs font-medium text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                  className="flex items-center gap-2 px-3.5 py-2 border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 rounded-md text-xs font-medium text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
                 >
                   <Image className="w-3.5 h-3.5 text-[#B39371]" />
                   {t('projects.media.uploadImages')}
@@ -167,7 +167,7 @@ export default function ProjectProfile() {
               <Link href={`/projects/${projectId}/edit`}>
                 <motion.button
                   whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.99 }}
-                  className="flex items-center gap-2 px-4 py-2 bg-[#4A1B1B] hover:bg-[#3a1515] text-white rounded-lg text-sm font-medium transition-colors"
+                  className="flex items-center gap-2 px-4 py-2 bg-[#4A1B1B] hover:bg-[#3a1515] text-white rounded-md text-sm font-medium transition-colors"
                 >
                   <Pencil className="w-3.5 h-3.5" />
                   {t('common.edit')}
@@ -177,18 +177,18 @@ export default function ProjectProfile() {
           </div>
 
           {/* ── Hero name + status ── */}
-          <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 px-6 py-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <div className="bg-white dark:bg-gray-900 rounded-md border border-gray-200 dark:border-gray-800 px-6 py-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <div className="flex items-center gap-4">
-              <div className="w-12 h-12 rounded-xl bg-[#F5F1ED] dark:bg-gray-800 flex items-center justify-center shrink-0">
+              <div className="w-12 h-12 rounded-md bg-[#F5F1ED] dark:bg-gray-800 flex items-center justify-center shrink-0">
                 <Building2 className="w-6 h-6 text-[#B39371]" />
               </div>
               <div>
                 <div className="flex items-center gap-2 mb-1">
                   <span className={cn(
-                    'inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold ring-1',
+                    'inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-semibold ring-1',
                     currentStatus.pill
                   )}>
-                    <span className={cn('w-1.5 h-1.5 rounded-full', currentStatus.dot)} />
+                    <span className={cn('w-1.5 h-1.5 rounded-md', currentStatus.dot)} />
                     {t(`projects.statuses.${project.status}`)}
                   </span>
                   <span className="text-xs font-mono text-gray-400">#{project.id.toString().padStart(4, '0')}</span>
@@ -225,10 +225,10 @@ export default function ProjectProfile() {
             <div className="lg:col-span-2 space-y-6">
 
               {/* Gallery */}
-              <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 overflow-hidden">
+              <div className="bg-white dark:bg-gray-900 rounded-md border border-gray-200 dark:border-gray-800 overflow-hidden">
                 <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100 dark:border-gray-800">
                   <div className="flex items-center gap-3">
-                    <div className="w-7 h-7 rounded-lg bg-[#F5F1ED] dark:bg-gray-800 flex items-center justify-center">
+                    <div className="w-7 h-7 rounded-md bg-[#F5F1ED] dark:bg-gray-800 flex items-center justify-center">
                       <Image className="w-3.5 h-3.5 text-[#B39371]" />
                     </div>
                     <h3 className="text-sm font-semibold text-gray-900 dark:text-white">{t('projects.media.visualAssets')}</h3>
@@ -243,18 +243,18 @@ export default function ProjectProfile() {
                 <div className="p-5">
                   <div className="grid grid-cols-3 gap-3 h-52">
                     {/* Main slot */}
-                    <div className="col-span-2 relative rounded-xl overflow-hidden bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-700 flex flex-col items-center justify-center border border-gray-200 dark:border-gray-700">
+                    <div className="col-span-2 relative rounded-md overflow-hidden bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-700 flex flex-col items-center justify-center border border-gray-200 dark:border-gray-700">
                       <div
                         className="absolute inset-0 opacity-[0.04] dark:opacity-[0.08]"
                         style={{ backgroundImage: 'repeating-linear-gradient(0deg,#000 0,#000 1px,transparent 0,transparent 20px),repeating-linear-gradient(90deg,#000 0,#000 1px,transparent 0,transparent 20px)' }}
                       />
                       <div className="relative flex flex-col items-center gap-2.5">
-                        <div className="w-12 h-12 rounded-xl bg-white/70 dark:bg-gray-900/60 flex items-center justify-center shadow-sm">
+                        <div className="w-12 h-12 rounded-md bg-white/70 dark:bg-gray-900/60 flex items-center justify-center shadow-sm">
                           <ImageOff className="w-5 h-5 text-gray-400" />
                         </div>
                         <span className="text-xs font-medium text-gray-400">{t('projects.profile.noImages')}</span>
                       </div>
-                      <div className="absolute top-3 left-3 flex items-center gap-1.5 px-2.5 py-1 bg-white/80 dark:bg-gray-900/70 backdrop-blur-sm rounded-lg border border-gray-200/60 dark:border-gray-700/60">
+                      <div className="absolute top-3 left-3 flex items-center gap-1.5 px-2.5 py-1 bg-white/80 dark:bg-gray-900/70 backdrop-blur-sm rounded-md border border-gray-200/60 dark:border-gray-700/60">
                         <ImageOff className="w-3 h-3 text-gray-400" />
                         <span className="text-[10px] text-gray-500 dark:text-gray-400 font-medium">{t('projects.profile.noImages')}</span>
                       </div>
@@ -262,7 +262,7 @@ export default function ProjectProfile() {
                     {/* Side slots */}
                     <div className="grid grid-rows-2 gap-3">
                       {[0, 1].map(i => (
-                        <div key={i} className="relative rounded-xl overflow-hidden bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-700 flex items-center justify-center border border-gray-200 dark:border-gray-700">
+                        <div key={i} className="relative rounded-md overflow-hidden bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-700 flex items-center justify-center border border-gray-200 dark:border-gray-700">
                           <div
                             className="absolute inset-0 opacity-[0.04] dark:opacity-[0.08]"
                             style={{ backgroundImage: 'repeating-linear-gradient(0deg,#000 0,#000 1px,transparent 0,transparent 20px),repeating-linear-gradient(90deg,#000 0,#000 1px,transparent 0,transparent 20px)' }}
@@ -276,10 +276,10 @@ export default function ProjectProfile() {
               </div>
 
               {/* Stages timeline */}
-              <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 overflow-hidden">
+              <div className="bg-white dark:bg-gray-900 rounded-md border border-gray-200 dark:border-gray-800 overflow-hidden">
                 <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100 dark:border-gray-800">
                   <div className="flex items-center gap-3">
-                    <div className="w-7 h-7 rounded-lg bg-[#F5F1ED] dark:bg-gray-800 flex items-center justify-center">
+                    <div className="w-7 h-7 rounded-md bg-[#F5F1ED] dark:bg-gray-800 flex items-center justify-center">
                       <Layers className="w-3.5 h-3.5 text-[#B39371]" />
                     </div>
                     <h3 className="text-sm font-semibold text-gray-900 dark:text-white">{t('projects.stages.phasesTitle')}</h3>
@@ -299,8 +299,8 @@ export default function ProjectProfile() {
 
                 <div className="p-5">
                   {project.stages.length === 0 ? (
-                    <div className="py-12 text-center rounded-xl border-2 border-dashed border-gray-100 dark:border-gray-800">
-                      <div className="w-14 h-14 rounded-2xl bg-gray-50 dark:bg-gray-800 flex items-center justify-center mx-auto mb-3">
+                    <div className="py-12 text-center rounded-md border-2 border-dashed border-gray-100 dark:border-gray-800">
+                      <div className="w-14 h-14 rounded-md bg-gray-50 dark:bg-gray-800 flex items-center justify-center mx-auto mb-3">
                         <Compass className="w-6 h-6 text-gray-300 dark:text-gray-600" />
                       </div>
                       <p className="text-sm font-medium text-gray-400">{t('projects.profile.noStages')}</p>
@@ -325,20 +325,20 @@ export default function ProjectProfile() {
                           >
                             {/* Parent stage */}
                             <div className="flex gap-4 py-3 group">
-                              <div className="w-6 h-6 rounded-full bg-[#4A1B1B] dark:bg-[#B39371] border-2 border-white dark:border-gray-900 flex items-center justify-center shrink-0 mt-0.5 relative z-10 shadow-sm">
+                              <div className="w-6 h-6 rounded-md bg-[#4A1B1B] dark:bg-[#B39371] border-2 border-white dark:border-gray-900 flex items-center justify-center shrink-0 mt-0.5 relative z-10 shadow-sm">
                                 <Layers className="w-3 h-3 text-white dark:text-[#4A1B1B]" />
                               </div>
                               <div className="flex-1 min-w-0">
-                                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 p-3 rounded-lg border border-gray-100 dark:border-gray-800 hover:border-[#B39371]/30 hover:bg-[#F5F1ED]/20 dark:hover:bg-gray-800/40 transition-all">
+                                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 p-3 rounded-md border border-gray-100 dark:border-gray-800 hover:border-[#B39371]/30 hover:bg-[#F5F1ED]/20 dark:hover:bg-gray-800/40 transition-all">
                                   <div className="min-w-0">
                                     <p className="text-sm font-semibold text-gray-900 dark:text-white truncate group-hover:text-[#4A1B1B] dark:group-hover:text-[#B39371] transition-colors">
                                       {isRtl ? stage.name.arabic : stage.name.english}
                                     </p>
-                                    <span className="inline-flex items-center mt-1 text-[10px] font-semibold text-[#B39371] bg-[#B39371]/10 px-2 py-0.5 rounded-full">
+                                    <span className="inline-flex items-center mt-1 text-[10px] font-semibold text-[#B39371] bg-[#B39371]/10 px-2 py-0.5 rounded-md">
                                       {stage.estimateCost.toLocaleString()} {t('common.sar')}
                                     </span>
                                   </div>
-                                  <div className="flex items-center gap-1.5 shrink-0 text-xs text-gray-400 bg-gray-50 dark:bg-gray-800 px-3 py-1.5 rounded-lg border border-gray-100 dark:border-gray-700">
+                                  <div className="flex items-center gap-1.5 shrink-0 text-xs text-gray-400 bg-gray-50 dark:bg-gray-800 px-3 py-1.5 rounded-md border border-gray-100 dark:border-gray-700">
                                     <CalendarDays className="w-3 h-3 text-[#B39371]" />
                                     <span>{fmtDate(stage.fromDate)}</span>
                                     <span className="text-gray-300">→</span>
@@ -350,9 +350,9 @@ export default function ProjectProfile() {
                                 {stage.children && stage.children.length > 0 && (
                                   <div className="mt-2 ml-4 space-y-1.5 pl-3 border-l-2 border-dashed border-gray-100 dark:border-gray-800">
                                     {stage.children.map(child => (
-                                      <div key={child.id} className="flex items-center justify-between gap-3 px-3 py-2.5 rounded-lg bg-gray-50/70 dark:bg-gray-800/30 border border-gray-100 dark:border-gray-800">
+                                      <div key={child.id} className="flex items-center justify-between gap-3 px-3 py-2.5 rounded-md bg-gray-50/70 dark:bg-gray-800/30 border border-gray-100 dark:border-gray-800">
                                         <div className="flex items-center gap-2 min-w-0">
-                                          <div className="w-1.5 h-1.5 rounded-full bg-[#B39371]/60 shrink-0" />
+                                          <div className="w-1.5 h-1.5 rounded-md bg-[#B39371]/60 shrink-0" />
                                           <div className="min-w-0">
                                             <p className="text-xs font-medium text-gray-700 dark:text-gray-300 truncate">
                                               {isRtl ? child.name.arabic : child.name.english}
@@ -383,9 +383,9 @@ export default function ProjectProfile() {
               </div>
 
               {/* Map */}
-              <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 overflow-hidden">
+              <div className="bg-white dark:bg-gray-900 rounded-md border border-gray-200 dark:border-gray-800 overflow-hidden">
                 <div className="flex items-center gap-3 px-5 py-4 border-b border-gray-100 dark:border-gray-800">
-                  <div className="w-7 h-7 rounded-lg bg-[#F5F1ED] dark:bg-gray-800 flex items-center justify-center">
+                  <div className="w-7 h-7 rounded-md bg-[#F5F1ED] dark:bg-gray-800 flex items-center justify-center">
                     <MapPin className="w-3.5 h-3.5 text-[#B39371]" />
                   </div>
                   <h3 className="text-sm font-semibold text-gray-900 dark:text-white">{t('projects.labels.location')}</h3>
@@ -397,7 +397,7 @@ export default function ProjectProfile() {
                     readOnly={true}
                   />
                   {/* Address overlay */}
-                  <div className="absolute bottom-4 left-4 p-3.5 rounded-xl bg-white/90 dark:bg-gray-900/90 backdrop-blur-md border border-white/20 dark:border-gray-700/50 shadow-lg max-w-xs z-[400]">
+                  <div className="absolute bottom-4 left-4 p-3.5 rounded-md bg-white/90 dark:bg-gray-900/90 backdrop-blur-md border border-white/20 dark:border-gray-700/50 shadow-lg max-w-xs z-[400]">
                     <p className="text-[10px] font-semibold text-[#B39371] uppercase tracking-widest mb-1">{t('projects.labels.address')}</p>
                     <p className="text-xs font-medium text-gray-800 dark:text-gray-200 leading-relaxed">{project.address}</p>
                     <div className="mt-2 flex gap-3">
@@ -413,9 +413,9 @@ export default function ProjectProfile() {
             <div className="space-y-5">
 
               {/* Project Info */}
-              <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 overflow-hidden">
+              <div className="bg-white dark:bg-gray-900 rounded-md border border-gray-200 dark:border-gray-800 overflow-hidden">
                 <div className="flex items-center gap-3 px-5 py-4 border-b border-gray-100 dark:border-gray-800">
-                  <div className="w-7 h-7 rounded-lg bg-[#F5F1ED] dark:bg-gray-800 flex items-center justify-center">
+                  <div className="w-7 h-7 rounded-md bg-[#F5F1ED] dark:bg-gray-800 flex items-center justify-center">
                     <Info className="w-3.5 h-3.5 text-[#B39371]" />
                   </div>
                   <h3 className="text-sm font-semibold text-gray-900 dark:text-white">{t('projects.profile.infoTitle')}</h3>
@@ -433,16 +433,16 @@ export default function ProjectProfile() {
               </div>
 
               {/* Financial Overview */}
-              <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 overflow-hidden">
+              <div className="bg-white dark:bg-gray-900 rounded-md border border-gray-200 dark:border-gray-800 overflow-hidden">
                 <div className="flex items-center gap-3 px-5 py-4 border-b border-gray-100 dark:border-gray-800">
-                  <div className="w-7 h-7 rounded-lg bg-[#F5F1ED] dark:bg-gray-800 flex items-center justify-center">
+                  <div className="w-7 h-7 rounded-md bg-[#F5F1ED] dark:bg-gray-800 flex items-center justify-center">
                     <Wallet className="w-3.5 h-3.5 text-[#B39371]" />
                   </div>
                   <h3 className="text-sm font-semibold text-gray-900 dark:text-white">{t('projects.profile.financeTitle')}</h3>
                 </div>
                 <div className="p-5 space-y-4">
                   {/* Total cost */}
-                  <div className="p-4 rounded-xl bg-[#F5F1ED] dark:bg-gray-800 border border-[#E8DDD3] dark:border-gray-700">
+                  <div className="p-4 rounded-md bg-[#F5F1ED] dark:bg-gray-800 border border-[#E8DDD3] dark:border-gray-700">
                     <p className="text-[10px] text-[#B39371] font-semibold uppercase tracking-widest mb-1">{t('projects.profile.estCost')}</p>
                     <p className="text-2xl font-black text-[#4A1B1B] dark:text-[#B39371] leading-none">
                       {totalEstimate.toLocaleString()}
@@ -452,11 +452,11 @@ export default function ProjectProfile() {
 
                   {/* Phases + avg */}
                   <div className="grid grid-cols-2 gap-3">
-                    <div className="p-3 rounded-lg border border-gray-100 dark:border-gray-800 text-center">
+                    <div className="p-3 rounded-md border border-gray-100 dark:border-gray-800 text-center">
                       <p className="text-[10px] text-gray-400 font-medium uppercase tracking-wide mb-1">{t('projects.profile.totalPhases')}</p>
                       <p className="text-xl font-bold text-gray-900 dark:text-white">{project.stages.length}</p>
                     </div>
-                    <div className="p-3 rounded-lg border border-gray-100 dark:border-gray-800 text-center">
+                    <div className="p-3 rounded-md border border-gray-100 dark:border-gray-800 text-center">
                       <p className="text-[10px] text-gray-400 font-medium uppercase tracking-wide mb-1">{t('projects.profile.avgPerStage')}</p>
                       <p className="text-sm font-bold text-[#B39371]">
                         {project.stages.length > 0
@@ -472,18 +472,18 @@ export default function ProjectProfile() {
                       <span className="text-[10px] text-gray-400 font-medium uppercase tracking-wide">{t('projects.profile.liquidity')}</span>
                       <span className="text-[10px] font-semibold text-emerald-600">{t('common.available')}</span>
                     </div>
-                    <div className="h-1.5 w-full bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
-                      <div className="h-full bg-gradient-to-r from-[#B39371] to-[#4A1B1B] w-full rounded-full" />
+                    <div className="h-1.5 w-full bg-gray-100 dark:bg-gray-800 rounded-md overflow-hidden">
+                      <div className="h-full bg-gradient-to-r from-[#B39371] to-[#4A1B1B] w-full rounded-md" />
                     </div>
                   </div>
                 </div>
               </div>
 
               {/* Documents */}
-              <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 overflow-hidden">
+              <div className="bg-white dark:bg-gray-900 rounded-md border border-gray-200 dark:border-gray-800 overflow-hidden">
                 <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100 dark:border-gray-800">
                   <div className="flex items-center gap-3">
-                    <div className="w-7 h-7 rounded-lg bg-[#F5F1ED] dark:bg-gray-800 flex items-center justify-center">
+                    <div className="w-7 h-7 rounded-md bg-[#F5F1ED] dark:bg-gray-800 flex items-center justify-center">
                       <FileText className="w-3.5 h-3.5 text-[#B39371]" />
                     </div>
                     <h3 className="text-sm font-semibold text-gray-900 dark:text-white">{t('projects.profile.docsTitle')}</h3>
@@ -493,7 +493,7 @@ export default function ProjectProfile() {
                   </button>
                 </div>
                 <div className="p-5">
-                  <div className="py-8 text-center rounded-xl border-2 border-dashed border-gray-100 dark:border-gray-800">
+                  <div className="py-8 text-center rounded-md border-2 border-dashed border-gray-100 dark:border-gray-800">
                     <FileText className="w-7 h-7 text-gray-200 dark:text-gray-700 mx-auto mb-2" />
                     <p className="text-xs text-gray-400">{t('projects.profile.noDocs')}</p>
                   </div>
@@ -503,8 +503,8 @@ export default function ProjectProfile() {
               {/* Quick links */}
               <div className="grid grid-cols-1 gap-2">
                 <Link href={`/projects/${projectId}/stages`}>
-                  <div className="flex items-center gap-3 p-3.5 rounded-xl border border-gray-100 dark:border-gray-800 hover:border-[#B39371]/40 hover:bg-[#F5F1ED]/30 dark:hover:bg-gray-800 transition-all group cursor-pointer bg-white dark:bg-gray-900">
-                    <div className="w-8 h-8 rounded-lg bg-[#F5F1ED] dark:bg-gray-800 flex items-center justify-center shrink-0">
+                  <div className="flex items-center gap-3 p-3.5 rounded-md border border-gray-100 dark:border-gray-800 hover:border-[#B39371]/40 hover:bg-[#F5F1ED]/30 dark:hover:bg-gray-800 transition-all group cursor-pointer bg-white dark:bg-gray-900">
+                    <div className="w-8 h-8 rounded-md bg-[#F5F1ED] dark:bg-gray-800 flex items-center justify-center shrink-0">
                       <Layers className="w-4 h-4 text-[#B39371]" />
                     </div>
                     <div className="flex-1 min-w-0">
@@ -515,8 +515,8 @@ export default function ProjectProfile() {
                   </div>
                 </Link>
                 <Link href={`/projects/${projectId}/media`}>
-                  <div className="flex items-center gap-3 p-3.5 rounded-xl border border-gray-100 dark:border-gray-800 hover:border-[#B39371]/40 hover:bg-[#F5F1ED]/30 dark:hover:bg-gray-800 transition-all group cursor-pointer bg-white dark:bg-gray-900">
-                    <div className="w-8 h-8 rounded-lg bg-[#F5F1ED] dark:bg-gray-800 flex items-center justify-center shrink-0">
+                  <div className="flex items-center gap-3 p-3.5 rounded-md border border-gray-100 dark:border-gray-800 hover:border-[#B39371]/40 hover:bg-[#F5F1ED]/30 dark:hover:bg-gray-800 transition-all group cursor-pointer bg-white dark:bg-gray-900">
+                    <div className="w-8 h-8 rounded-md bg-[#F5F1ED] dark:bg-gray-800 flex items-center justify-center shrink-0">
                       <Image className="w-4 h-4 text-[#B39371]" />
                     </div>
                     <div className="flex-1 min-w-0">

@@ -1,4 +1,4 @@
-import { motion } from 'framer-motion';
+﻿import { motion } from 'framer-motion';
 import { TrendingUp, TrendingDown } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import { Badge } from "@/components/ui/badge";
@@ -39,7 +39,7 @@ export function StatCard({
       <div className="relative bg-white dark:bg-gray-900 rounded-md border border-gray-200 dark:border-gray-800 p-6 shadow-lg group-hover:shadow-xl transition-all h-full flex flex-col justify-between">
         <div>
           <div className="flex items-start justify-between mb-4">
-            <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${color} bg-opacity-10 flex items-center justify-center`}>
+            <div className={`w-12 h-12 rounded-md bg-gradient-to-br ${color} bg-opacity-10 flex items-center justify-center`}>
               <Icon className="w-6 h-6 text-white" />
             </div>
             {trend && (

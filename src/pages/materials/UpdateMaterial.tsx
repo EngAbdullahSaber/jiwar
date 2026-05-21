@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+﻿import { useState, useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { TopHeader } from "../../components/TopHeader";
 import { Link, useLocation, useRoute } from "wouter";
@@ -559,7 +559,7 @@ export default function UpdateMaterial() {
                           return (
                             <div
                               key={i}
-                              className="flex items-center gap-2 px-3 py-1.5 bg-gray-100 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 text-xs text-gray-700 dark:text-gray-300"
+                              className="flex items-center gap-2 px-3 py-1.5 bg-gray-100 dark:bg-gray-800 rounded-md border border-gray-200 dark:border-gray-700 text-xs text-gray-700 dark:text-gray-300"
                             >
                               <span className="truncate max-w-[160px]">
                                 {fileName}
@@ -710,7 +710,7 @@ export default function UpdateMaterial() {
                     return (
                       <div
                         key={i}
-                        className="flex items-center gap-2 px-3 py-1.5 bg-gray-100 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 text-xs text-gray-700 dark:text-gray-300"
+                        className="flex items-center gap-2 px-3 py-1.5 bg-gray-100 dark:bg-gray-800 rounded-md border border-gray-200 dark:border-gray-700 text-xs text-gray-700 dark:text-gray-300"
                       >
                         <span className="truncate max-w-[160px]">
                           {fileName}

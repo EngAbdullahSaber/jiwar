@@ -1,4 +1,4 @@
-import { useState } from 'react';
+﻿import { useState } from 'react';
 import { TopHeader } from '../components/TopHeader';
 import { StatCard } from '../components/Dashboard/StatCard';
 import { SalesTrendsChart } from '../components/Dashboard/SalesTrendsChart';
@@ -36,7 +36,7 @@ export default function Dashboard() {
       <Shell>
         <div className="flex items-center justify-center min-h-screen bg-gray-50 dark:bg-gray-950">
           <div className="flex flex-col items-center gap-4">
-            <div className="w-10 h-10 border-[3px] border-[#B39371]/20 border-t-[#B39371] rounded-full animate-spin" />
+            <div className="w-10 h-10 border-[3px] border-[#B39371]/20 border-t-[#B39371] rounded-md animate-spin" />
             <p className="text-xs font-semibold text-gray-400 uppercase tracking-widest">{t('common.loading')}</p>
           </div>
         </div>
@@ -64,11 +64,11 @@ export default function Dashboard() {
         <div className="max-w-7xl mx-auto px-6 py-8 space-y-6">
 
           {/* ── Hero Header ── */}
-          <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 px-8 py-6 flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+          <div className="bg-white dark:bg-gray-900 rounded-md border border-gray-100 dark:border-gray-800 px-8 py-6 flex flex-col lg:flex-row lg:items-center justify-between gap-6">
             <div className="flex items-center gap-5">
               <div className="relative hidden sm:block shrink-0">
-                <div className="absolute inset-0 bg-gradient-to-br from-[#4A1B1B] to-[#B39371] rounded-2xl blur-xl opacity-25" />
-                <div className="relative w-14 h-14 rounded-2xl bg-gradient-to-br from-[#4A1B1B] to-[#6B2727] flex items-center justify-center shadow-lg">
+                <div className="absolute inset-0 bg-gradient-to-br from-[#4A1B1B] to-[#B39371] rounded-md blur-xl opacity-25" />
+                <div className="relative w-14 h-14 rounded-md bg-gradient-to-br from-[#4A1B1B] to-[#6B2727] flex items-center justify-center shadow-lg">
                   <LayoutDashboard className="w-7 h-7 text-[#B39371]" />
                 </div>
               </div>
@@ -102,7 +102,7 @@ export default function Dashboard() {
               {dateRange && (
                 <button
                   onClick={() => setDateRange('')}
-                  className="flex items-center gap-1.5 px-3 py-2 rounded-xl border border-dashed border-red-200 dark:border-red-800/40 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors text-xs font-semibold"
+                  className="flex items-center gap-1.5 px-3 py-2 rounded-md border border-dashed border-red-200 dark:border-red-800/40 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors text-xs font-semibold"
                 >
                   <XCircle className="w-3.5 h-3.5" />
                   {t('common.clearAll')}

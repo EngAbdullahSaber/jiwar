@@ -1,4 +1,4 @@
-// import { useLocation, useRoute } from "wouter";
+﻿// import { useLocation, useRoute } from "wouter";
 // import { useQuery } from '@tanstack/react-query';
 // import { TopHeader } from '../../components/TopHeader';
 // import { Shell } from '../../components/shared/Shell';
@@ -94,9 +94,9 @@
 //         <div className="min-h-screen flex items-center justify-center">
 //           <div className="text-center space-y-6">
 //             <div className="relative">
-//               <div className="w-20 h-20 border-4 border-[#B39371]/20 border-t-[#B39371] rounded-full animate-spin mx-auto" />
+//               <div className="w-20 h-20 border-4 border-[#B39371]/20 border-t-[#B39371] rounded-md animate-spin mx-auto" />
 //               <div className="absolute inset-0 flex items-center justify-center">
-//                 <div className="w-8 h-8 bg-white rounded-full animate-pulse" />
+//                 <div className="w-8 h-8 bg-white rounded-md animate-pulse" />
 //               </div>
 //             </div>
 //             <div className="space-y-2">
@@ -119,7 +119,7 @@
 //             animate={{ opacity: 1, y: 0 }}
 //             className="max-w-md w-full text-center space-y-6"
 //           >
-//             <div className="w-24 h-24 bg-red-50 rounded-3xl flex items-center justify-center mx-auto">
+//             <div className="w-24 h-24 bg-red-50 rounded-md flex items-center justify-center mx-auto">
 //               <XCircle className="w-12 h-12 text-red-500" />
 //             </div>
 //             <div className="space-y-2">
@@ -130,7 +130,7 @@
 //               whileHover={{ scale: 1.02 }}
 //               whileTap={{ scale: 0.98 }}
 //               onClick={() => setLocation('/templates')}
-//               className="inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-[#B39371] to-[#C4A484] text-white rounded-2xl font-semibold shadow-xl shadow-[#B39371]/30 hover:shadow-2xl transition-all"
+//               className="inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-[#B39371] to-[#C4A484] text-white rounded-md font-semibold shadow-xl shadow-[#B39371]/30 hover:shadow-2xl transition-all"
 //             >
 //               <ChevronLeft className="w-4 h-4" />
 //               Back to Templates
@@ -211,14 +211,14 @@
 //                 whileHover={{ scale: 1.05 }}
 //                 whileTap={{ scale: 0.95 }}
 //                 onClick={() => setIsLiked(!isLiked)}
-//                 className="w-10 h-10 lg:w-12 lg:h-12 rounded-xl lg:rounded-2xl bg-white border border-gray-100 flex items-center justify-center hover:border-gray-200 transition-all shadow-sm"
+//                 className="w-10 h-10 lg:w-12 lg:h-12 rounded-md lg:rounded-md bg-white border border-gray-100 flex items-center justify-center hover:border-gray-200 transition-all shadow-sm"
 //               >
 //                 <Heart className={cn("w-4 h-4 lg:w-5 lg:h-5 transition-colors", isLiked ? "fill-red-500 text-red-500" : "text-gray-400")} />
 //               </motion.button>
 //               <motion.button
 //                 whileHover={{ scale: 1.05 }}
 //                 whileTap={{ scale: 0.95 }}
-//                 className="w-10 h-10 lg:w-12 lg:h-12 rounded-xl lg:rounded-2xl bg-white border border-gray-100 flex items-center justify-center hover:border-gray-200 transition-all shadow-sm"
+//                 className="w-10 h-10 lg:w-12 lg:h-12 rounded-md lg:rounded-md bg-white border border-gray-100 flex items-center justify-center hover:border-gray-200 transition-all shadow-sm"
 //               >
 //                 <Share2 className="w-4 h-4 lg:w-5 lg:h-5 text-gray-400" />
 //               </motion.button>
@@ -226,7 +226,7 @@
 //                 whileHover={{ scale: 1.02 }}
 //                 whileTap={{ scale: 0.98 }}
 //                 onClick={() => setLocation('/templates')}
-//                 className="px-4 lg:px-6 py-2.5 lg:py-3 bg-white border border-gray-100 rounded-xl lg:rounded-2xl text-xs lg:text-sm font-medium text-gray-600 shadow-sm hover:shadow-md transition-all flex items-center gap-2"
+//                 className="px-4 lg:px-6 py-2.5 lg:py-3 bg-white border border-gray-100 rounded-md lg:rounded-md text-xs lg:text-sm font-medium text-gray-600 shadow-sm hover:shadow-md transition-all flex items-center gap-2"
 //               >
 //                 <ChevronLeft className="w-3.5 h-3.5 lg:w-4 lg:h-4" />
 //                 Back
@@ -235,7 +235,7 @@
 //                 whileHover={{ scale: 1.02 }}
 //                 whileTap={{ scale: 0.98 }}
 //                 onClick={() => setLocation(`/templates/${id}/edit`)}
-//                 className="px-4 lg:px-6 py-2.5 lg:py-3 bg-gradient-to-r from-[#B39371] to-[#C4A484] text-white rounded-xl lg:rounded-2xl text-xs lg:text-sm font-medium shadow-lg shadow-[#B39371]/30 hover:shadow-xl transition-all flex items-center gap-2"
+//                 className="px-4 lg:px-6 py-2.5 lg:py-3 bg-gradient-to-r from-[#B39371] to-[#C4A484] text-white rounded-md lg:rounded-md text-xs lg:text-sm font-medium shadow-lg shadow-[#B39371]/30 hover:shadow-xl transition-all flex items-center gap-2"
 //               >
 //                 <Edit className="w-3.5 h-3.5 lg:w-4 lg:h-4" />
 //                 Edit
@@ -250,7 +250,7 @@
 //               <motion.div 
 //                 initial={{ opacity: 0, y: 20 }}
 //                 animate={{ opacity: 1, y: 0 }}
-//                 className="relative group h-[300px] lg:h-[500px] rounded-2xl lg:rounded-3xl overflow-hidden shadow-xl"
+//                 className="relative group h-[300px] lg:h-[500px] rounded-md lg:rounded-md overflow-hidden shadow-xl"
 //               >
 //                 <AnimatePresence mode="wait">
 //                   <motion.img 
@@ -276,7 +276,7 @@
 //                         key={idx}
 //                         onClick={() => setActiveImageIndex(idx)}
 //                         className={cn(
-//                           "w-2 h-2 rounded-full transition-all",
+//                           "w-2 h-2 rounded-md transition-all",
 //                           activeImageIndex === idx 
 //                             ? "w-8 bg-white" 
 //                             : "bg-white/50 hover:bg-white/80"
@@ -285,7 +285,7 @@
 //                     ))}
 //                   </div>
 //                   <div className="flex gap-2">
-//                     <button className="p-2 bg-black/50 backdrop-blur-sm rounded-lg text-white hover:bg-black/70 transition-colors">
+//                     <button className="p-2 bg-black/50 backdrop-blur-sm rounded-md text-white hover:bg-black/70 transition-colors">
 //                       <Camera className="w-4 h-4" />
 //                     </button>
 //                   </div>
@@ -293,7 +293,7 @@
 
 //                 {/* Location Badge */}
 //                 <div className="absolute top-4 right-4">
-//                   <div className="px-3 py-1.5 bg-white/90 backdrop-blur-sm rounded-lg text-xs font-medium text-gray-700 flex items-center gap-1.5 shadow-lg">
+//                   <div className="px-3 py-1.5 bg-white/90 backdrop-blur-sm rounded-md text-xs font-medium text-gray-700 flex items-center gap-1.5 shadow-lg">
 //                     <MapPin className="w-3.5 h-3.5 text-[#B39371]" />
 //                     {template.location} VIEW
 //                   </div>
@@ -309,7 +309,7 @@
 //                     whileTap={{ scale: 0.98 }}
 //                     onClick={() => setActiveImageIndex(idx)}
 //                     className={cn(
-//                       "relative rounded-xl lg:rounded-2xl overflow-hidden aspect-video transition-all",
+//                       "relative rounded-md lg:rounded-md overflow-hidden aspect-video transition-all",
 //                       activeImageIndex === idx ? "ring-2 ring-[#B39371] ring-offset-2" : "opacity-70 hover:opacity-100"
 //                     )}
 //                   >
@@ -331,10 +331,10 @@
 //                     initial={{ opacity: 0, y: 20 }}
 //                     animate={{ opacity: 1, y: 0 }}
 //                     transition={{ delay: i * 0.1 }}
-//                     className="p-3 lg:p-4 bg-white rounded-xl lg:rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-all"
+//                     className="p-3 lg:p-4 bg-white rounded-md lg:rounded-md border border-gray-100 shadow-sm hover:shadow-md transition-all"
 //                   >
 //                     <div className="flex items-center gap-3">
-//                       <div className="w-8 h-8 lg:w-10 lg:h-10 rounded-lg lg:rounded-xl bg-[#F5F1ED] flex items-center justify-center">
+//                       <div className="w-8 h-8 lg:w-10 lg:h-10 rounded-md lg:rounded-md bg-[#F5F1ED] flex items-center justify-center">
 //                         <stat.icon className="w-4 h-4 lg:w-5 lg:h-5 text-[#B39371]" />
 //                       </div>
 //                       <div>
@@ -348,7 +348,7 @@
 //               </div>
 
 //               {/* Features & Amenities */}
-//               <div className="bg-white rounded-2xl lg:rounded-3xl border border-gray-100 shadow-sm overflow-hidden">
+//               <div className="bg-white rounded-md lg:rounded-md border border-gray-100 shadow-sm overflow-hidden">
 //                 <div className="p-4 lg:p-6 border-b border-gray-50 bg-gradient-to-r from-gray-50 to-white">
 //                   <h3 className="text-sm lg:text-base font-bold text-gray-900 flex items-center gap-2">
 //                     <Sparkles className="w-4 h-4 lg:w-5 lg:h-5 text-[#B39371]" />
@@ -364,7 +364,7 @@
 //                         <div 
 //                           key={feature.key}
 //                           className={cn(
-//                             "relative p-3 lg:p-4 rounded-xl lg:rounded-2xl border transition-all group",
+//                             "relative p-3 lg:p-4 rounded-md lg:rounded-md border transition-all group",
 //                             isActive 
 //                               ? "bg-gradient-to-br from-[#B39371]/5 to-transparent border-[#B39371]/20" 
 //                               : "bg-gray-50 border-gray-100 opacity-50 grayscale"
@@ -372,7 +372,7 @@
 //                         >
 //                           <div className="flex items-center gap-3">
 //                             <div className={cn(
-//                               "w-8 h-8 lg:w-10 lg:h-10 rounded-lg lg:rounded-xl flex items-center justify-center",
+//                               "w-8 h-8 lg:w-10 lg:h-10 rounded-md lg:rounded-md flex items-center justify-center",
 //                               isActive ? "bg-[#B39371]/10 text-[#B39371]" : "bg-gray-200 text-gray-400"
 //                             )}>
 //                               <Icon className="w-4 h-4 lg:w-5 lg:h-5" />
@@ -406,7 +406,7 @@
 //                 <motion.div 
 //                   initial={{ opacity: 0, x: 20 }}
 //                   animate={{ opacity: 1, x: 0 }}
-//                   className="bg-gradient-to-br from-[#4A1B1B] to-[#2D1111] rounded-2xl lg:rounded-3xl p-6 lg:p-8 text-white shadow-xl"
+//                   className="bg-gradient-to-br from-[#4A1B1B] to-[#2D1111] rounded-md lg:rounded-md p-6 lg:p-8 text-white shadow-xl"
 //                 >
 //                   <div className="space-y-6">
 //                     <div>
@@ -428,7 +428,7 @@
 //                     </div>
 
 //                     <div className="flex items-center gap-3 pt-2">
-//                       <div className="flex-1 p-3 bg-white/10 rounded-xl">
+//                       <div className="flex-1 p-3 bg-white/10 rounded-md">
 //                         <p className="text-xs text-white/50 mb-1">Last Updated</p>
 //                         <div className="flex items-center gap-1.5 text-sm">
 //                           <Clock className="w-4 h-4" />
@@ -444,7 +444,7 @@
 //                   initial={{ opacity: 0, x: 20 }}
 //                   animate={{ opacity: 1, x: 0 }}
 //                   transition={{ delay: 0.1 }}
-//                   className="bg-white rounded-2xl lg:rounded-3xl border border-gray-100 shadow-sm overflow-hidden"
+//                   className="bg-white rounded-md lg:rounded-md border border-gray-100 shadow-sm overflow-hidden"
 //                 >
 //                   <div className="p-4 lg:p-6 border-b border-gray-50">
 //                     <h4 className="text-sm font-bold text-gray-900 flex items-center gap-2">
@@ -457,10 +457,10 @@
 //                       href={imageUrl} 
 //                       target="_blank" 
 //                       rel="noreferrer"
-//                       className="group flex items-center justify-between p-3 lg:p-4 bg-gray-50 hover:bg-[#F5F1ED] rounded-xl lg:rounded-2xl transition-all border border-transparent hover:border-[#B39371]/20"
+//                       className="group flex items-center justify-between p-3 lg:p-4 bg-gray-50 hover:bg-[#F5F1ED] rounded-md lg:rounded-md transition-all border border-transparent hover:border-[#B39371]/20"
 //                     >
 //                       <div className="flex items-center gap-3">
-//                         <div className="w-10 h-10 bg-white rounded-lg lg:rounded-xl flex items-center justify-center shadow-sm">
+//                         <div className="w-10 h-10 bg-white rounded-md lg:rounded-md flex items-center justify-center shadow-sm">
 //                           <FileText className="w-5 h-5 text-[#B39371]" />
 //                         </div>
 //                         <div>
@@ -469,7 +469,7 @@
 //                         </div>
 //                       </div>
 //                       <div className="flex gap-2">
-//                         <button className="p-2 hover:bg-white rounded-lg transition-colors">
+//                         <button className="p-2 hover:bg-white rounded-md transition-colors">
 //                           <Download className="w-4 h-4 text-gray-400 group-hover:text-[#B39371]" />
 //                         </button>
 //                         <ArrowUpRight className="w-4 h-4 text-gray-300 group-hover:text-[#B39371] transition-colors" />
@@ -480,10 +480,10 @@
 //                       href={imageUrl} 
 //                       target="_blank" 
 //                       rel="noreferrer"
-//                       className="group flex items-center justify-between p-3 lg:p-4 bg-gray-50 hover:bg-[#F5F1ED] rounded-xl lg:rounded-2xl transition-all border border-transparent hover:border-[#B39371]/20"
+//                       className="group flex items-center justify-between p-3 lg:p-4 bg-gray-50 hover:bg-[#F5F1ED] rounded-md lg:rounded-md transition-all border border-transparent hover:border-[#B39371]/20"
 //                     >
 //                       <div className="flex items-center gap-3">
-//                         <div className="w-10 h-10 bg-white rounded-lg lg:rounded-xl flex items-center justify-center shadow-sm">
+//                         <div className="w-10 h-10 bg-white rounded-md lg:rounded-md flex items-center justify-center shadow-sm">
 //                           <ImageIcon className="w-5 h-5 text-[#B39371]" />
 //                         </div>
 //                         <div>
@@ -492,7 +492,7 @@
 //                         </div>
 //                       </div>
 //                       <div className="flex gap-2">
-//                         <button className="p-2 hover:bg-white rounded-lg transition-colors">
+//                         <button className="p-2 hover:bg-white rounded-md transition-colors">
 //                           <Download className="w-4 h-4 text-gray-400 group-hover:text-[#B39371]" />
 //                         </button>
 //                         <ArrowUpRight className="w-4 h-4 text-gray-300 group-hover:text-[#B39371] transition-colors" />
@@ -508,16 +508,16 @@
 //                   transition={{ delay: 0.2 }}
 //                   className="grid grid-cols-2 gap-3 lg:gap-4"
 //                 >
-//                   <button className="p-4 lg:p-5 bg-white rounded-xl lg:rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-all group">
-//                     <div className="w-8 h-8 lg:w-10 lg:h-10 rounded-lg lg:rounded-xl bg-[#F5F1ED] group-hover:bg-[#B39371]/10 flex items-center justify-center mb-3">
+//                   <button className="p-4 lg:p-5 bg-white rounded-md lg:rounded-md border border-gray-100 shadow-sm hover:shadow-md transition-all group">
+//                     <div className="w-8 h-8 lg:w-10 lg:h-10 rounded-md lg:rounded-md bg-[#F5F1ED] group-hover:bg-[#B39371]/10 flex items-center justify-center mb-3">
 //                       <Users className="w-4 h-4 lg:w-5 lg:h-5 text-[#B39371]" />
 //                     </div>
 //                     <p className="text-xs lg:text-sm font-semibold text-gray-900">Assign Project</p>
 //                     <p className="text-[10px] text-gray-400 mt-1">Link to development</p>
 //                   </button>
                   
-//                   <button className="p-4 lg:p-5 bg-white rounded-xl lg:rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-all group">
-//                     <div className="w-8 h-8 lg:w-10 lg:h-10 rounded-lg lg:rounded-xl bg-[#F5F1ED] group-hover:bg-[#B39371]/10 flex items-center justify-center mb-3">
+//                   <button className="p-4 lg:p-5 bg-white rounded-md lg:rounded-md border border-gray-100 shadow-sm hover:shadow-md transition-all group">
+//                     <div className="w-8 h-8 lg:w-10 lg:h-10 rounded-md lg:rounded-md bg-[#F5F1ED] group-hover:bg-[#B39371]/10 flex items-center justify-center mb-3">
 //                       <Copy className="w-4 h-4 lg:w-5 lg:h-5 text-[#B39371]" />
 //                     </div>
 //                     <p className="text-xs lg:text-sm font-semibold text-gray-900">Duplicate</p>
@@ -530,14 +530,14 @@
 //                   initial={{ opacity: 0, x: 20 }}
 //                   animate={{ opacity: 1, x: 0 }}
 //                   transition={{ delay: 0.3 }}
-//                   className="bg-gradient-to-r from-emerald-500 to-teal-500 p-5 lg:p-6 rounded-2xl lg:rounded-3xl text-white shadow-xl shadow-emerald-500/20"
+//                   className="bg-gradient-to-r from-emerald-500 to-teal-500 p-5 lg:p-6 rounded-md lg:rounded-md text-white shadow-xl shadow-emerald-500/20"
 //                 >
 //                   <div className="flex items-center gap-4">
 //                     <div className="flex-1">
 //                       <h4 className="text-lg lg:text-xl font-bold mb-1">Ready to Use</h4>
 //                       <p className="text-xs lg:text-sm text-white/80">This template is verified and ready for project allocation.</p>
 //                     </div>
-//                     <div className="w-12 h-12 lg:w-14 lg:h-14 bg-white/20 rounded-xl lg:rounded-2xl backdrop-blur-xl flex items-center justify-center">
+//                     <div className="w-12 h-12 lg:w-14 lg:h-14 bg-white/20 rounded-md lg:rounded-md backdrop-blur-xl flex items-center justify-center">
 //                       <CheckCircle className="w-6 h-6 lg:w-7 lg:h-7" />
 //                     </div>
 //                   </div>

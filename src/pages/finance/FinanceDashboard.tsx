@@ -1,4 +1,4 @@
-import { useState } from 'react';
+﻿import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { TopHeader } from '../../components/TopHeader';
 import { 
@@ -146,7 +146,7 @@ export default function FinanceDashboard() {
       header: t('financeDashboard.salesmenTable.fullName'),
       cell: (row) => (
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#4A1B1B] to-[#6B2727] flex items-center justify-center text-white text-xs font-bold shadow-sm">
+          <div className="w-8 h-8 rounded-md bg-gradient-to-br from-[#4A1B1B] to-[#6B2727] flex items-center justify-center text-white text-xs font-bold shadow-sm">
             {row.fullName.substring(0, 2).toUpperCase()}
           </div>
           <span className="font-semibold text-gray-900 dark:text-white">{row.fullName}</span>
@@ -173,10 +173,10 @@ export default function FinanceDashboard() {
         const rate = row.totalContractValue > 0 ? (row.totalPaidAmount / row.totalContractValue) * 100 : 0;
         return (
           <div className="flex items-center gap-2">
-            <div className="flex-1 h-1.5 w-24 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
+            <div className="flex-1 h-1.5 w-24 bg-gray-100 dark:bg-gray-800 rounded-md overflow-hidden">
               <div 
                 className={cn(
-                  "h-full rounded-full transition-all duration-500",
+                  "h-full rounded-md transition-all duration-500",
                   rate > 70 ? "bg-emerald-500" : rate > 30 ? "bg-amber-500" : "bg-rose-500"
                 )}
                 style={{ width: `${rate}%` }}
@@ -204,8 +204,8 @@ export default function FinanceDashboard() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
           
           {/* Header with Integrated Date Filters */}
-          <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 p-8 shadow-sm overflow-hidden relative group">
-            <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-[#4A1B1B]/5 to-transparent rounded-full -translate-y-1/2 translate-x-1/2 blur-3xl group-hover:bg-[#4A1B1B]/10 transition-all duration-500 pointer-events-none" />
+          <div className="bg-white dark:bg-gray-900 rounded-md border border-gray-200 dark:border-gray-800 p-8 shadow-sm overflow-hidden relative group">
+            <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-[#4A1B1B]/5 to-transparent rounded-md -translate-y-1/2 translate-x-1/2 blur-3xl group-hover:bg-[#4A1B1B]/10 transition-all duration-500 pointer-events-none" />
             
             {/* Top progress line indicating data refetch */}
             {isFetching && (
@@ -216,14 +216,14 @@ export default function FinanceDashboard() {
               {/* Title area */}
               <div className="flex items-center gap-6">
                 <div className="relative hidden sm:block">
-                  <div className="absolute inset-0 bg-gradient-to-r from-[#4A1B1B] to-[#6B2727] rounded-2xl blur-xl opacity-20 group-hover:opacity-40 transition-opacity pointer-events-none" />
-                  <div className="relative w-16 h-16 rounded-2xl bg-gradient-to-br from-[#4A1B1B] to-[#6B2727] shadow-lg flex items-center justify-center border border-white/10">
+                  <div className="absolute inset-0 bg-gradient-to-r from-[#4A1B1B] to-[#6B2727] rounded-md blur-xl opacity-20 group-hover:opacity-40 transition-opacity pointer-events-none" />
+                  <div className="relative w-16 h-16 rounded-md bg-gradient-to-br from-[#4A1B1B] to-[#6B2727] shadow-lg flex items-center justify-center border border-white/10">
                     <PieChartIcon className="w-8 h-8 text-[#B39371]" />
                   </div>
                 </div>
                 <div>
                   <div className="flex items-center gap-2 mb-1.5">
-                    <div className="w-1.5 h-1.5 rounded-full bg-[#B39371] animate-pulse" />
+                    <div className="w-1.5 h-1.5 rounded-md bg-[#B39371] animate-pulse" />
                     <p className="text-[10px] font-bold text-[#B39371] uppercase tracking-[0.2em]">
                       {t('financeDashboard.title')}
                     </p>
@@ -238,7 +238,7 @@ export default function FinanceDashboard() {
               </div>
 
               {/* Date Filters Container */}
-              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 bg-gray-50/50 dark:bg-gray-800/20 p-3.5 rounded-2xl border border-gray-100 dark:border-gray-800/80 backdrop-blur-sm w-full lg:w-auto">
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 bg-gray-50/50 dark:bg-gray-800/20 p-3.5 rounded-md border border-gray-100 dark:border-gray-800/80 backdrop-blur-sm w-full lg:w-auto">
                 <div className="flex items-center gap-2 text-gray-500 dark:text-gray-400 font-bold text-xs uppercase tracking-wider px-1">
                   <Calendar className="w-4 h-4 text-[#B39371]" />
                   <span className="hidden sm:inline">{t('common.filters')}:</span>
@@ -256,7 +256,7 @@ export default function FinanceDashboard() {
                 {dateRange && (
                   <button
                     onClick={() => setDateRange('')}
-                    className="h-11 px-4 rounded-xl border border-dashed border-red-200 dark:border-red-800/30 text-red-500 hover:text-white hover:bg-red-500 dark:hover:bg-red-600 transition-all duration-300 text-xs font-bold flex items-center justify-center gap-2"
+                    className="h-11 px-4 rounded-md border border-dashed border-red-200 dark:border-red-800/30 text-red-500 hover:text-white hover:bg-red-500 dark:hover:bg-red-600 transition-all duration-300 text-xs font-bold flex items-center justify-center gap-2"
                   >
                     <XCircle className="w-4 h-4" />
                     {t('common.clearAll')}
@@ -267,7 +267,7 @@ export default function FinanceDashboard() {
 
                 <Button
                   variant="outline"
-                  className="h-12 px-5 rounded-xl border-gray-200 dark:border-gray-800 text-gray-600 dark:text-gray-300 hover:text-gray-900 hover:bg-gray-50 dark:hover:bg-gray-800 transition-all font-semibold text-xs shadow-sm flex items-center gap-2"
+                  className="h-12 px-5 rounded-md border-gray-200 dark:border-gray-800 text-gray-600 dark:text-gray-300 hover:text-gray-900 hover:bg-gray-50 dark:hover:bg-gray-800 transition-all font-semibold text-xs shadow-sm flex items-center gap-2"
                   onClick={() => refetch()}
                 >
                   <RefreshCw className={cn("w-4 h-4", isLoading && "animate-spin")} />
@@ -285,14 +285,14 @@ export default function FinanceDashboard() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: i * 0.1 }}
-                className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 p-6 shadow-sm hover:shadow-md transition-all group overflow-hidden relative"
+                className="bg-white dark:bg-gray-900 rounded-md border border-gray-200 dark:border-gray-800 p-6 shadow-sm hover:shadow-md transition-all group overflow-hidden relative"
               >
                 <div className="flex items-center justify-between relative z-10">
-                  <div className={cn("p-3 rounded-xl transition-colors", card.bg)}>
+                  <div className={cn("p-3 rounded-md transition-colors", card.bg)}>
                     <card.icon className={cn("w-6 h-6", card.color)} />
                   </div>
                   <div className={cn(
-                    "flex items-center gap-1 text-[10px] font-bold px-2 py-1 rounded-full",
+                    "flex items-center gap-1 text-[10px] font-bold px-2 py-1 rounded-md",
                     card.trendUp ? "bg-emerald-50 text-emerald-600 dark:bg-emerald-500/10" : "bg-rose-50 text-rose-600 dark:bg-rose-500/10"
                   )}>
                     {card.trendUp ? <ArrowUpRight className="w-3 h-3" /> : <ArrowDownRight className="w-3 h-3" />}
@@ -316,7 +316,7 @@ export default function FinanceDashboard() {
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             {/* Top Salesmen Chart */}
-            <div className="lg:col-span-2 bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 p-6 shadow-sm">
+            <div className="lg:col-span-2 bg-white dark:bg-gray-900 rounded-md border border-gray-200 dark:border-gray-800 p-6 shadow-sm">
               <div className="flex items-center justify-between mb-8">
                 <div>
                   <h3 className="text-lg font-bold text-gray-900 dark:text-white">
@@ -326,7 +326,7 @@ export default function FinanceDashboard() {
                     {t('financeDashboard.charts.salesVsPaid')}
                   </p>
                 </div>
-                <div className="w-10 h-10 rounded-xl bg-gray-50 dark:bg-gray-800 flex items-center justify-center">
+                <div className="w-10 h-10 rounded-md bg-gray-50 dark:bg-gray-800 flex items-center justify-center">
                   <BarChart3 className="w-5 h-5 text-[#B39371]" />
                 </div>
               </div>
@@ -348,7 +348,7 @@ export default function FinanceDashboard() {
                       content={({ active, payload }) => {
                         if (active && payload && payload.length) {
                           return (
-                            <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 p-3 rounded-xl shadow-xl">
+                            <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 p-3 rounded-md shadow-xl">
                               <p className="text-xs font-bold text-gray-900 dark:text-white mb-1">{payload[0].payload.name}</p>
                               <p className="text-sm font-extrabold text-[#B39371]">
                                 {payload[0].value?.toLocaleString()} {t('common.sar')}
@@ -370,7 +370,7 @@ export default function FinanceDashboard() {
             </div>
 
             {/* Top Contracts */}
-            <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 p-6 shadow-sm overflow-hidden flex flex-col">
+            <div className="bg-white dark:bg-gray-900 rounded-md border border-gray-200 dark:border-gray-800 p-6 shadow-sm overflow-hidden flex flex-col">
               <div className="flex items-center justify-between mb-8">
                 <div>
                   <h3 className="text-lg font-bold text-gray-900 dark:text-white">
@@ -380,7 +380,7 @@ export default function FinanceDashboard() {
                     {t('financeDashboard.topContracts.subtitle')}
                   </p>
                 </div>
-                <div className="w-10 h-10 rounded-xl bg-gray-50 dark:bg-gray-800 flex items-center justify-center">
+                <div className="w-10 h-10 rounded-md bg-gray-50 dark:bg-gray-800 flex items-center justify-center">
                   <Award className="w-5 h-5 text-[#B39371]" />
                 </div>
               </div>
@@ -392,11 +392,11 @@ export default function FinanceDashboard() {
                     initial={{ opacity: 0, x: 20 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: 0.3 + (i * 0.1) }}
-                    className="p-4 rounded-xl border border-gray-100 dark:border-gray-800 hover:border-[#B39371]/30 transition-all group"
+                    className="p-4 rounded-md border border-gray-100 dark:border-gray-800 hover:border-[#B39371]/30 transition-all group"
                   >
                     <div className="flex items-start justify-between mb-2">
                       <div className="flex items-center gap-2">
-                        <div className="w-8 h-8 rounded-lg bg-[#4A1B1B]/5 flex items-center justify-center">
+                        <div className="w-8 h-8 rounded-md bg-[#4A1B1B]/5 flex items-center justify-center">
                           <FileText className="w-4 h-4 text-[#4A1B1B]" />
                         </div>
                         <div>
@@ -430,7 +430,7 @@ export default function FinanceDashboard() {
           </div>
 
           {/* Detailed Table */}
-          <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 shadow-sm overflow-hidden">
+          <div className="bg-white dark:bg-gray-900 rounded-md border border-gray-200 dark:border-gray-800 shadow-sm overflow-hidden">
             <div className="p-6 border-b border-gray-100 dark:border-gray-800">
               <h3 className="text-lg font-bold text-gray-900 dark:text-white">
                 {t('financeDashboard.salesmenTable.title')}

@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+﻿import { useState, useRef, useEffect } from 'react';
 import { 
   Upload, X, CheckCircle2, Loader2, FileText, Image, AlertCircle, 
   Files, File, Trash2, Eye, Paperclip 
@@ -335,7 +335,7 @@ export function FileUpload({
             {label}
           </label>
           {!multiple && preview && (
-            <span className="text-xs px-2 py-0.5 bg-emerald-100 text-emerald-700 rounded-full font-medium">
+            <span className="text-xs px-2 py-0.5 bg-emerald-100 text-emerald-700 rounded-md font-medium">
               Uploaded
             </span>
           )}
@@ -348,7 +348,7 @@ export function FileUpload({
         className={cn(
           "relative group cursor-pointer transition-all duration-300",
           "min-h-[200px] flex flex-col items-center justify-center p-8",
-          "rounded-2xl border-2 border-dashed",
+          "rounded-md border-2 border-dashed",
           "bg-gradient-to-br from-white to-gray-50 dark:from-gray-900 dark:to-gray-800/50",
           dragActive 
                 ? "border-[#B39371] bg-[#B39371]/5 shadow-lg shadow-[#B39371]/20" 
@@ -372,9 +372,9 @@ export function FileUpload({
         />
 
         {/* Decorative Elements */}
-        <div className="absolute inset-0 overflow-hidden rounded-2xl pointer-events-none">
-          <div className="absolute -top-20 -right-20 w-40 h-40 bg-[#B39371]/5 rounded-full blur-3xl" />
-          <div className="absolute -bottom-20 -left-20 w-40 h-40 bg-[#B39371]/5 rounded-full blur-3xl" />
+        <div className="absolute inset-0 overflow-hidden rounded-md pointer-events-none">
+          <div className="absolute -top-20 -right-20 w-40 h-40 bg-[#B39371]/5 rounded-md blur-3xl" />
+          <div className="absolute -bottom-20 -left-20 w-40 h-40 bg-[#B39371]/5 rounded-md blur-3xl" />
         </div>
 
         <AnimatePresence mode="wait">
@@ -406,11 +406,11 @@ export function FileUpload({
               </div>
 
               {/* Progress Bar */}
-              <div className="w-64 h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+              <div className="w-64 h-2 bg-gray-200 dark:bg-gray-700 rounded-md overflow-hidden">
                 <motion.div
                   initial={{ width: 0 }}
                   animate={{ width: `${uploadProgress}%` }}
-                  className="h-full bg-gradient-to-r from-[#B39371] to-[#8B7355] rounded-full"
+                  className="h-full bg-gradient-to-r from-[#B39371] to-[#8B7355] rounded-md"
                 />
               </div>
             </motion.div>
@@ -423,16 +423,16 @@ export function FileUpload({
               className="w-full space-y-6 z-10"
               onClick={(e) => e.stopPropagation()}
             >
-              <div className="flex items-center gap-4 bg-white dark:bg-gray-800 p-4 rounded-xl shadow-lg border border-emerald-100 dark:border-emerald-500/20">
+              <div className="flex items-center gap-4 bg-white dark:bg-gray-800 p-4 rounded-md shadow-lg border border-emerald-100 dark:border-emerald-500/20">
                 <div className="relative">
-                  <div className="absolute inset-0 bg-emerald-500/20 rounded-lg blur-md" />
-                  <div className="relative w-14 h-14 rounded-lg bg-gradient-to-br from-emerald-500/10 to-emerald-500/5 flex items-center justify-center">
+                  <div className="absolute inset-0 bg-emerald-500/20 rounded-md blur-md" />
+                  <div className="relative w-14 h-14 rounded-md bg-gradient-to-br from-emerald-500/10 to-emerald-500/5 flex items-center justify-center">
                     {fileInfo?.type.startsWith('image/') ? (
                       fileInfo.url ? (
                         <img 
                           src={fileInfo.url} 
                           alt="Preview"
-                          className="w-full h-full object-cover rounded-lg"
+                          className="w-full h-full object-cover rounded-md"
                         />
                       ) : (
                         <Image className="w-7 h-7 text-emerald-600" />
@@ -453,7 +453,7 @@ export function FileUpload({
                         <span className="text-xs text-gray-500 font-medium">
                           {formatFileSize(fileInfo.size)}
                         </span>
-                        <span className="w-1 h-1 bg-gray-300 rounded-full" />
+                        <span className="w-1 h-1 bg-gray-300 rounded-md" />
                       </>
                     )}
                     <span className="text-xs text-emerald-600 font-medium">
@@ -470,7 +470,7 @@ export function FileUpload({
                     target="_blank"
                     rel="noopener noreferrer"
                     onClick={(e) => e.stopPropagation()}
-                    className="p-2.5 rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-500 hover:text-[#B39371] hover:bg-[#B39371]/10 transition-all"
+                    className="p-2.5 rounded-md bg-gray-50 dark:bg-gray-700 text-gray-500 hover:text-[#B39371] hover:bg-[#B39371]/10 transition-all"
                     title="View file"
                   >
                     <Eye className="w-5 h-5" />
@@ -482,7 +482,7 @@ export function FileUpload({
                       e.stopPropagation();
                       removeFile();
                     }}
-                    className="p-2.5 rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-500 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 transition-all"
+                    className="p-2.5 rounded-md bg-gray-50 dark:bg-gray-700 text-gray-500 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 transition-all"
                     title="Remove file"
                   >
                     <Trash2 className="w-5 h-5" />
@@ -493,7 +493,7 @@ export function FileUpload({
               <motion.div 
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                className="flex items-center justify-center gap-2 text-emerald-600 bg-emerald-50 dark:bg-emerald-500/10 py-2 px-4 rounded-full w-fit mx-auto"
+                className="flex items-center justify-center gap-2 text-emerald-600 bg-emerald-50 dark:bg-emerald-500/10 py-2 px-4 rounded-md w-fit mx-auto"
               >
                 <CheckCircle2 className="w-4 h-4" />
                 <span className="text-xs font-bold uppercase tracking-wider">File uploaded successfully</span>
@@ -517,7 +517,7 @@ export function FileUpload({
                   className="relative"
                 >
                   <div className="absolute inset-0 blur-3xl bg-[#B39371]/20 group-hover:bg-[#B39371]/30 transition-all" />
-                  <div className="relative w-20 h-20 rounded-2xl bg-gradient-to-br from-[#B39371]/10 to-[#8B7355]/5 flex items-center justify-center border-2 border-gray-200 dark:border-gray-700 group-hover:border-[#B39371]/30 transition-all">
+                  <div className="relative w-20 h-20 rounded-md bg-gradient-to-br from-[#B39371]/10 to-[#8B7355]/5 flex items-center justify-center border-2 border-gray-200 dark:border-gray-700 group-hover:border-[#B39371]/30 transition-all">
                     {multiple ? (
                       <Files className="w-10 h-10 text-gray-400 group-hover:text-[#B39371] transition-colors" />
                     ) : (
@@ -540,7 +540,7 @@ export function FileUpload({
                 {accept.split(',').map((type, i) => (
                   <span 
                     key={i}
-                    className="text-xs px-3 py-1 bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 rounded-full font-medium"
+                    className="text-xs px-3 py-1 bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 rounded-md font-medium"
                   >
                     {type.trim()}
                   </span>
@@ -580,9 +580,9 @@ export function FileUpload({
                   animate={{ opacity: 1, x: 0 }}
                   exit={{ opacity: 0, x: 20 }}
                   transition={{ delay: idx * 0.05 }}
-                  className="group flex items-center gap-3 p-3 bg-white dark:bg-gray-800/50 rounded-xl border border-gray-100 dark:border-gray-700 hover:border-[#B39371]/30 hover:shadow-md transition-all"
+                  className="group flex items-center gap-3 p-3 bg-white dark:bg-gray-800/50 rounded-md border border-gray-100 dark:border-gray-700 hover:border-[#B39371]/30 hover:shadow-md transition-all"
                 >
-                  <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-[#B39371]/10 to-[#8B7355]/5 flex items-center justify-center">
+                  <div className="w-10 h-10 rounded-md bg-gradient-to-br from-[#B39371]/10 to-[#8B7355]/5 flex items-center justify-center">
                     {getFileIcon(file.name, file.type)}
                   </div>
 
@@ -594,7 +594,7 @@ export function FileUpload({
                       <span className="text-xs text-gray-500">
                         {formatFileSize(file.size)}
                       </span>
-                      <span className="w-1 h-1 bg-gray-300 rounded-full" />
+                      <span className="w-1 h-1 bg-gray-300 rounded-md" />
                       <span className="text-xs text-emerald-600">Uploaded</span>
                     </div>
                   </div>
@@ -606,7 +606,7 @@ export function FileUpload({
                       href={file.url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="p-2 rounded-lg text-gray-400 hover:text-[#B39371] hover:bg-[#B39371]/10 transition-all"
+                      className="p-2 rounded-md text-gray-400 hover:text-[#B39371] hover:bg-[#B39371]/10 transition-all"
                       title="View file"
                     >
                       <Eye className="w-4 h-4" />
@@ -615,7 +615,7 @@ export function FileUpload({
                       whileHover={{ scale: 1.1 }}
                       whileTap={{ scale: 0.95 }}
                       onClick={() => removePreview(idx)}
-                      className="p-2 rounded-lg text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 transition-all"
+                      className="p-2 rounded-md text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 transition-all"
                       title="Remove file"
                     >
                       <X className="w-4 h-4" />

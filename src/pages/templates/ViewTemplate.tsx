@@ -1,4 +1,4 @@
-import { useLocation, useRoute } from "wouter";
+﻿import { useLocation, useRoute } from "wouter";
 import { useQuery } from '@tanstack/react-query';
 import { TopHeader } from '../../components/TopHeader';
 import { Shell } from '../../components/shared/Shell';
@@ -78,10 +78,10 @@ const StatCard = ({ icon: Icon, label, value, subValue, delay = 0 }: any) => (
     initial={{ opacity: 0, y: 20 }}
     animate={{ opacity: 1, y: 0 }}
     transition={{ delay }}
-    className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 p-4 hover:shadow-md transition-all group"
+    className="bg-white dark:bg-gray-900 rounded-md border border-gray-200 dark:border-gray-800 p-4 hover:shadow-md transition-all group"
   >
     <div className="flex items-center gap-3">
-      <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-[#B39371]/10 to-[#B39371]/5 flex items-center justify-center group-hover:scale-110 transition-transform">
+      <div className="w-10 h-10 rounded-md bg-gradient-to-br from-[#B39371]/10 to-[#B39371]/5 flex items-center justify-center group-hover:scale-110 transition-transform">
         <Icon className="w-5 h-5 text-[#B39371]" />
       </div>
       <div>
@@ -102,7 +102,7 @@ const FeatureCard = ({ icon: Icon, label, active, delay = 0 }: any) => {
     animate={{ opacity: 1, scale: 1 }}
     transition={{ delay }}
     className={cn(
-      "relative overflow-hidden rounded-xl border p-4 transition-all",
+      "relative overflow-hidden rounded-md border p-4 transition-all",
       active 
         ? "border-[#B39371] bg-gradient-to-br from-[#B39371]/5 to-transparent dark:from-[#B39371]/10 dark:to-transparent" 
         : "border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50 opacity-60"
@@ -111,7 +111,7 @@ const FeatureCard = ({ icon: Icon, label, active, delay = 0 }: any) => {
     <div className="flex items-center justify-between">
       <div className="flex items-center gap-3">
         <div className={cn(
-          "w-10 h-10 rounded-lg flex items-center justify-center",
+          "w-10 h-10 rounded-md flex items-center justify-center",
           active ? "bg-[#B39371]/10 text-[#B39371]" : "bg-gray-200 dark:bg-gray-700 text-gray-400"
         )}>
           <Icon className="w-5 h-5" />
@@ -133,7 +133,7 @@ const FeatureCard = ({ icon: Icon, label, active, delay = 0 }: any) => {
       <motion.div 
         initial={{ opacity: 0, scale: 0 }}
         animate={{ opacity: 1, scale: 1 }}
-        className="absolute -top-1 -right-1 w-3 h-3 bg-[#B39371] rounded-full"
+        className="absolute -top-1 -right-1 w-3 h-3 bg-[#B39371] rounded-md"
       />
     )}
   </motion.div>
@@ -175,7 +175,7 @@ export default function ViewTemplate() {
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
             <div className="flex flex-col items-center justify-center min-h-[60vh]">
               <div className="relative">
-                <div className="w-20 h-20 border-4 border-[#B39371]/20 border-t-[#B39371] rounded-full animate-spin" />
+                <div className="w-20 h-20 border-4 border-[#B39371]/20 border-t-[#B39371] rounded-md animate-spin" />
                 <div className="absolute inset-0 flex items-center justify-center">
                   <Building2 className="w-8 h-8 text-[#B39371] animate-pulse" />
                 </div>
@@ -201,7 +201,7 @@ export default function ViewTemplate() {
               animate={{ opacity: 1, y: 0 }}
               className="max-w-md mx-auto text-center"
             >
-              <div className="w-24 h-24 rounded-2xl bg-red-50 dark:bg-red-900/20 flex items-center justify-center mx-auto mb-6">
+              <div className="w-24 h-24 rounded-md bg-red-50 dark:bg-red-900/20 flex items-center justify-center mx-auto mb-6">
                 <AlertCircle className="w-12 h-12 text-red-500" />
               </div>
               <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">{t('templates.empty.title')}</h2>
@@ -212,7 +212,7 @@ export default function ViewTemplate() {
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
                 onClick={() => setLocation('/templates')}
-                className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-[#4A1B1B] to-[#6B2727] text-white rounded-xl font-medium shadow-lg shadow-[#4A1B1B]/20 hover:shadow-xl transition-all"
+                className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-[#4A1B1B] to-[#6B2727] text-white rounded-md font-medium shadow-lg shadow-[#4A1B1B]/20 hover:shadow-xl transition-all"
               >
                 <ArrowLeft className="w-4 h-4" />
                 {t('common.back')}
@@ -289,18 +289,18 @@ export default function ViewTemplate() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
           
           {/* Header Section */}
-          <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 p-6 shadow-sm">
+          <div className="bg-white dark:bg-gray-900 rounded-md border border-gray-200 dark:border-gray-800 p-6 shadow-sm">
             <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
               <div className="flex items-center gap-4">
                 <button 
                   onClick={() => setLocation('/templates')}
-                  className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-xl transition-colors"
+                  className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-md transition-colors"
                 >
                   <ArrowLeft className="w-5 h-5 text-gray-500" />
                 </button>
                 <div className="relative">
-                  <div className="absolute inset-0 bg-gradient-to-r from-[#4A1B1B] to-[#6B2727] rounded-xl blur-lg opacity-50" />
-                  <div className="relative w-12 h-12 rounded-xl bg-gradient-to-br from-[#4A1B1B] to-[#6B2727] shadow-lg flex items-center justify-center">
+                  <div className="absolute inset-0 bg-gradient-to-r from-[#4A1B1B] to-[#6B2727] rounded-md blur-lg opacity-50" />
+                  <div className="relative w-12 h-12 rounded-md bg-gradient-to-br from-[#4A1B1B] to-[#6B2727] shadow-lg flex items-center justify-center">
                     <Building2 className="w-6 h-6 text-[#B39371]" />
                   </div>
                 </div>
@@ -327,7 +327,7 @@ export default function ViewTemplate() {
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                   onClick={handleShare}
-                  className="p-2.5 rounded-xl border border-gray-200 dark:border-gray-700 text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 transition-all"
+                  className="p-2.5 rounded-md border border-gray-200 dark:border-gray-700 text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 transition-all"
                 >
                   <Share2 className="w-5 h-5" />
                 </motion.button>
@@ -335,7 +335,7 @@ export default function ViewTemplate() {
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                   onClick={() => setLocation(`/templates/${id}/edit`)}
-                  className="px-5 py-2.5 bg-gradient-to-r from-[#4A1B1B] to-[#6B2727] text-white rounded-xl text-sm font-medium shadow-lg shadow-[#4A1B1B]/20 hover:shadow-xl transition-all flex items-center gap-2"
+                  className="px-5 py-2.5 bg-gradient-to-r from-[#4A1B1B] to-[#6B2727] text-white rounded-md text-sm font-medium shadow-lg shadow-[#4A1B1B]/20 hover:shadow-xl transition-all flex items-center gap-2"
                 >
                   <Edit className="w-4 h-4" />
                   {t('common.edit')}
@@ -352,7 +352,7 @@ export default function ViewTemplate() {
               <motion.div 
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="relative h-[400px] rounded-2xl overflow-hidden shadow-lg bg-gray-100 dark:bg-gray-800 group"
+                className="relative h-[400px] rounded-md overflow-hidden shadow-lg bg-gray-100 dark:bg-gray-800 group"
               >
                 {imageUrl ? (
                   <img 
@@ -447,7 +447,7 @@ export default function ViewTemplate() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.3 }}
-                className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 overflow-hidden"
+                className="bg-white dark:bg-gray-900 rounded-md border border-gray-200 dark:border-gray-800 overflow-hidden"
               >
                 <div className="p-6 border-b border-gray-100 dark:border-gray-800">
                   <h3 className="text-lg font-semibold text-gray-900 dark:text-white flex items-center gap-2">
@@ -477,7 +477,7 @@ export default function ViewTemplate() {
               <motion.div 
                 initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
-                className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 overflow-hidden  "
+                className="bg-white dark:bg-gray-900 rounded-md border border-gray-200 dark:border-gray-800 overflow-hidden  "
               >
                 <div className="p-6 border-b border-gray-100 dark:border-gray-800">
                   <h3 className="text-lg font-semibold text-gray-900 dark:text-white">{t('common.details')}</h3>
@@ -506,7 +506,7 @@ export default function ViewTemplate() {
                   initial={{ opacity: 0, x: 20 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: 0.1 }}
-                  className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 overflow-hidden"
+                  className="bg-white dark:bg-gray-900 rounded-md border border-gray-200 dark:border-gray-800 overflow-hidden"
                 >
                   <div className="p-6 border-b border-gray-100 dark:border-gray-800">
                     <h4 className="text-sm font-semibold text-gray-900 dark:text-white">{t('templates.sections.visualAssets')}</h4>
@@ -516,10 +516,10 @@ export default function ViewTemplate() {
                       href={imageUrl} 
                       target="_blank" 
                       rel="noopener noreferrer"
-                      className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-800 rounded-xl hover:bg-[#F5F1ED] dark:hover:bg-gray-700 transition-all group"
+                      className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-800 rounded-md hover:bg-[#F5F1ED] dark:hover:bg-gray-700 transition-all group"
                     >
                       <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-lg bg-white dark:bg-gray-900 flex items-center justify-center shadow-sm">
+                        <div className="w-10 h-10 rounded-md bg-white dark:bg-gray-900 flex items-center justify-center shadow-sm">
                           <ImageIcon className="w-5 h-5 text-[#B39371]" />
                         </div>
                         <div>
@@ -540,14 +540,14 @@ export default function ViewTemplate() {
                 initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 0.3 }}
-                className="bg-gradient-to-r from-emerald-500 to-emerald-600 p-6 rounded-2xl text-white shadow-lg shadow-emerald-500/20"
+                className="bg-gradient-to-r from-emerald-500 to-emerald-600 p-6 rounded-md text-white shadow-lg shadow-emerald-500/20"
               >
                 <div className="flex items-center gap-4">
                   <div className="flex-1">
                     <h4 className="text-lg font-semibold mb-1">{t('templates.readyToUse')}</h4>
                     <p className="text-sm text-white/80">{t('templates.readyToUseDesc')}</p>
                   </div>
-                  <div className="w-12 h-12 bg-white/20 rounded-xl backdrop-blur-sm flex items-center justify-center">
+                  <div className="w-12 h-12 bg-white/20 rounded-md backdrop-blur-sm flex items-center justify-center">
                     <CheckCircle className="w-6 h-6" />
                   </div>
                 </div>

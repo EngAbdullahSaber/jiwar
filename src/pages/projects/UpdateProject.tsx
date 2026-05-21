@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+﻿import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { TopHeader } from '../../components/TopHeader';
 import { Link, useLocation, useRoute } from "wouter";
@@ -36,8 +36,8 @@ const FormSection = ({ icon: Icon, title, description, children, delay = 0 }: an
     <div className="p-8 border-b border-gray-50 dark:border-gray-800 bg-gradient-to-r from-gray-50/50 to-white dark:from-gray-800/50 dark:to-gray-900">
       <div className="flex items-center gap-5">
         <div className="relative">
-          <div className="absolute inset-0 bg-[#4A1B1B] blur-lg opacity-20 rounded-2xl" />
-          <div className="relative w-14 h-14 rounded-2xl bg-[#F5F1ED] dark:bg-gray-800 flex items-center justify-center">
+          <div className="absolute inset-0 bg-[#4A1B1B] blur-lg opacity-20 rounded-md" />
+          <div className="relative w-14 h-14 rounded-md bg-[#F5F1ED] dark:bg-gray-800 flex items-center justify-center">
             <Icon className="w-7 h-7 text-[#4A1B1B] dark:text-[#B39371]" />
           </div>
         </div>
@@ -183,13 +183,13 @@ export default function UpdateProject() {
             <div className="flex flex-col sm:flex-row items-center gap-6">
               <Link 
                 href="/projects" 
-                className="p-3 bg-gray-50 dark:bg-gray-800 hover:bg-[#F5F1ED] dark:hover:bg-[#B39371]/10 rounded-2xl transition-all shadow-sm group"
+                className="p-3 bg-gray-50 dark:bg-gray-800 hover:bg-[#F5F1ED] dark:hover:bg-[#B39371]/10 rounded-md transition-all shadow-sm group"
               >
                 <ArrowLeft className="w-6 h-6 text-gray-500 dark:text-gray-400 group-hover:text-[#4A1B1B] dark:group-hover:text-[#B39371]" />
               </Link>
               <div className="relative">
-                <div className="absolute inset-0 bg-gradient-to-r from-[#4A1B1B] to-[#6B2727] rounded-2xl blur-lg opacity-30" />
-                <div className="relative w-16 h-16 rounded-2xl bg-gradient-to-br from-[#4A1B1B] to-[#6B2727] shadow-xl flex items-center justify-center">
+                <div className="absolute inset-0 bg-gradient-to-r from-[#4A1B1B] to-[#6B2727] rounded-md blur-lg opacity-30" />
+                <div className="relative w-16 h-16 rounded-md bg-gradient-to-br from-[#4A1B1B] to-[#6B2727] shadow-xl flex items-center justify-center">
                   <Building2 className="w-8 h-8 text-[#B39371]" />
                 </div>
               </div>

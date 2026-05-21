@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+﻿import { useState, useEffect } from 'react';
 import { TopHeader } from '../../components/TopHeader';
 import { Link, useLocation, useRoute } from 'wouter';
 import {
@@ -349,7 +349,7 @@ export default function UpdateStage() {
                       {/* Sub-stage header */}
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
-                          <span className="w-6 h-6 rounded-full bg-[#B39371]/15 text-[#4A1B1B] dark:text-[#B39371] text-xs font-bold flex items-center justify-center">
+                          <span className="w-6 h-6 rounded-md bg-[#B39371]/15 text-[#4A1B1B] dark:text-[#B39371] text-xs font-bold flex items-center justify-center">
                             {idx + 1}
                           </span>
                           <span className="text-sm font-semibold text-gray-700 dark:text-gray-300">

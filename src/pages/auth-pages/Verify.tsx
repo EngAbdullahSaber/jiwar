@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+﻿import { useState, useEffect } from "react";
 import { useLocation } from "wouter";
 import {
   InputOTP,
@@ -121,7 +121,7 @@ export const Verify = (): JSX.Element => {
                     <InputOTPSlot
                       key={index}
                       index={index}
-                      className="w-[45px] h-[50px] md:w-[60px] md:h-[60px] text-2xl font-bold bg-slate-50 border-slate-200 rounded-xl transition-all duration-300 focus-within:border-[#bb9e80] focus-within:ring-4 focus-within:ring-[#bb9e80]/10"
+                      className="w-[45px] h-[50px] md:w-[60px] md:h-[60px] text-2xl font-bold bg-slate-50 border-slate-200 rounded-md transition-all duration-300 focus-within:border-[#bb9e80] focus-within:ring-4 focus-within:ring-[#bb9e80]/10"
                     />
                   ))}
                 </InputOTPGroup>

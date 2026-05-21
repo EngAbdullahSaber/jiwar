@@ -1,4 +1,4 @@
-import { useState } from 'react';
+﻿import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { TopHeader } from '../../components/TopHeader';
 import { Link, useRoute } from "wouter";
@@ -73,13 +73,13 @@ const StatCard = ({ icon: Icon, label, value, color, gradient }: any) => (
     whileHover={{ y: -2 }}
     className="relative group"
   >
-    <div className="absolute inset-0 bg-gradient-to-r opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl blur-xl"
+    <div className="absolute inset-0 bg-gradient-to-r opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-md blur-xl"
       style={{ background: gradient }}
     />
-    <div className="relative bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 p-6 shadow-lg group-hover:shadow-xl transition-all">
+    <div className="relative bg-white dark:bg-gray-900 rounded-md border border-gray-200 dark:border-gray-800 p-6 shadow-lg group-hover:shadow-xl transition-all">
       <div className="flex items-center gap-4">
         <div className={cn(
-          "w-12 h-12 rounded-xl flex items-center justify-center",
+          "w-12 h-12 rounded-md flex items-center justify-center",
           color
         )}>
           <Icon className="w-6 h-6 text-white" />
@@ -99,7 +99,7 @@ const StepTimeline = ({ steps }: { steps: LegalityStep[] }) => {
   const totalSteps = steps.length;
   const { t,  i18n } = useTranslation();
   return (
-    <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 p-6">
+    <div className="bg-white dark:bg-gray-900 rounded-md border border-gray-200 dark:border-gray-800 p-6">
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-sm font-semibold text-gray-900 dark:text-white">{t('legality.profile.timeline')}</h3>
         <span className="text-xs font-medium text-gray-500 dark:text-gray-400">
@@ -114,7 +114,7 @@ const StepTimeline = ({ steps }: { steps: LegalityStep[] }) => {
           return (
             <div key={item.id} className="flex items-center gap-3">
               <div className={cn(
-                "w-6 h-6 rounded-full flex items-center justify-center text-xs font-medium",
+                "w-6 h-6 rounded-md flex items-center justify-center text-xs font-medium",
                 isCompleted 
                   ? "bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400"
                   : "bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400"
@@ -132,9 +132,9 @@ const StepTimeline = ({ steps }: { steps: LegalityStep[] }) => {
                     </span>
                   )}
                 </div>
-                <div className="w-full h-1 bg-gray-100 dark:bg-gray-800 rounded-full mt-1">
+                <div className="w-full h-1 bg-gray-100 dark:bg-gray-800 rounded-md mt-1">
                   <div className={cn(
-                    "h-full rounded-full transition-all duration-500",
+                    "h-full rounded-md transition-all duration-500",
                     isCompleted ? "w-full bg-emerald-500" : "w-0"
                   )} />
                 </div>
@@ -195,15 +195,15 @@ export default function ViewLegality() {
         <TopHeader />
         <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-50 dark:from-gray-950 dark:via-gray-900 dark:to-gray-950">
           <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
-            <div className="h-24 bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 animate-pulse" />
+            <div className="h-24 bg-white dark:bg-gray-900 rounded-md border border-gray-200 dark:border-gray-800 animate-pulse" />
             <div className="grid grid-cols-3 gap-6">
               {[1, 2, 3].map(i => (
-                <div key={i} className="h-32 bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 animate-pulse" />
+                <div key={i} className="h-32 bg-white dark:bg-gray-900 rounded-md border border-gray-200 dark:border-gray-800 animate-pulse" />
               ))}
             </div>
             <div className="space-y-4">
               {[1, 2, 3].map(i => (
-                <div key={i} className="h-24 bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 animate-pulse" />
+                <div key={i} className="h-24 bg-white dark:bg-gray-900 rounded-md border border-gray-200 dark:border-gray-800 animate-pulse" />
               ))}
             </div>
           </div>
@@ -221,9 +221,9 @@ export default function ViewLegality() {
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 p-12 text-center"
+              className="bg-white dark:bg-gray-900 rounded-md border border-gray-200 dark:border-gray-800 p-12 text-center"
             >
-              <div className="w-20 h-20 rounded-2xl bg-red-50 dark:bg-red-900/20 flex items-center justify-center mx-auto mb-6">
+              <div className="w-20 h-20 rounded-md bg-red-50 dark:bg-red-900/20 flex items-center justify-center mx-auto mb-6">
                 <AlertCircle className="w-10 h-10 text-red-500" />
               </div>
               <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
@@ -233,7 +233,7 @@ export default function ViewLegality() {
                 {t('legality.errorDesc')}
               </p>
               <Link href="/legality">
-                <button className="px-6 py-3 bg-gradient-to-r from-[#4A1B1B] to-[#6B2727] text-white rounded-xl text-sm font-medium shadow-lg shadow-[#4A1B1B]/20 hover:shadow-xl transition-all">
+                <button className="px-6 py-3 bg-gradient-to-r from-[#4A1B1B] to-[#6B2727] text-white rounded-md text-sm font-medium shadow-lg shadow-[#4A1B1B]/20 hover:shadow-xl transition-all">
                   {t('legality.backToList')}
                 </button>
               </Link>
@@ -256,17 +256,17 @@ export default function ViewLegality() {
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
           
           {/* Header with Back Button */}
-          <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 p-6 shadow-sm">
+          <div className="bg-white dark:bg-gray-900 rounded-md border border-gray-200 dark:border-gray-800 p-6 shadow-sm">
             <div className="flex items-center gap-4">
               <Link
                 href="/legality"
-                className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-xl transition-colors"
+                className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-md transition-colors"
               >
                 <ArrowLeft className="w-5 h-5 text-gray-500" />
               </Link>
               <div className="relative">
-                <div className="absolute inset-0 bg-gradient-to-r from-[#4A1B1B] to-[#6B2727] rounded-xl blur-lg opacity-50" />
-                <div className="relative w-12 h-12 rounded-xl bg-gradient-to-br from-[#4A1B1B] to-[#6B2727] shadow-lg flex items-center justify-center">
+                <div className="absolute inset-0 bg-gradient-to-r from-[#4A1B1B] to-[#6B2727] rounded-md blur-lg opacity-50" />
+                <div className="relative w-12 h-12 rounded-md bg-gradient-to-br from-[#4A1B1B] to-[#6B2727] shadow-lg flex items-center justify-center">
                   <Gavel className="w-6 h-6 text-[#B39371]" />
                 </div>
               </div>
@@ -282,7 +282,7 @@ export default function ViewLegality() {
                 </h1>
               </div>
               <Link href={`/legality/${id}/edit`}>
-                <button className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-[#4A1B1B] to-[#6B2727] text-white rounded-xl text-sm font-medium shadow-lg shadow-[#4A1B1B]/20 hover:shadow-xl transition-all">
+                <button className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-[#4A1B1B] to-[#6B2727] text-white rounded-md text-sm font-medium shadow-lg shadow-[#4A1B1B]/20 hover:shadow-xl transition-all">
                   <Edit className="w-4 h-4" />
                   {t('legality.updateLegality')}
                 </button>
@@ -324,7 +324,7 @@ export default function ViewLegality() {
 
           {/* Progress Overview */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <div className="lg:col-span-2 bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 p-6">
+            <div className="lg:col-span-2 bg-white dark:bg-gray-900 rounded-md border border-gray-200 dark:border-gray-800 p-6">
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-sm font-semibold text-gray-900 dark:text-white">{t('legality.profile.overallProgress')}</h3>
                 <div className="flex items-center gap-3">
@@ -338,7 +338,7 @@ export default function ViewLegality() {
                   </span>
                 </div>
               </div>
-              <div className="h-3 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
+              <div className="h-3 bg-gray-100 dark:bg-gray-800 rounded-md overflow-hidden">
                 <motion.div 
                    initial={{ width: 0 }}
                   animate={{ width: `${progress}%` }}
@@ -356,7 +356,7 @@ export default function ViewLegality() {
             </div>
 
             {/* Quick Stats */}
-            <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 p-6">
+            <div className="bg-white dark:bg-gray-900 rounded-md border border-gray-200 dark:border-gray-800 p-6">
               <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-4">{t('legality.profile.quickOverview')}</h3>
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
@@ -406,7 +406,7 @@ export default function ViewLegality() {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: index * 0.05 }}
-                    className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 overflow-hidden"
+                    className="bg-white dark:bg-gray-900 rounded-md border border-gray-200 dark:border-gray-800 overflow-hidden"
                   >
                     {/* Step Header */}
                     <div 
@@ -416,7 +416,7 @@ export default function ViewLegality() {
                       <div className="flex items-center gap-4 flex-1">
                         {/* Step Icon */}
                         <div className={cn(
-                          "w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0",
+                          "w-10 h-10 rounded-md flex items-center justify-center flex-shrink-0",
                           isCompleted 
                             ? "bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400"
                             : "bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400"
@@ -472,7 +472,7 @@ export default function ViewLegality() {
                             setSelectedStepData(item);
                             setIsUpdateDialogOpen(true);
                           }}
-                          className="p-1 text-gray-400 hover:text-[#B39371] hover:bg-[#B39371]/10 rounded-lg transition-all"
+                          className="p-1 text-gray-400 hover:text-[#B39371] hover:bg-[#B39371]/10 rounded-md transition-all"
                         >
                           <Edit className="w-4 h-4" />
                         </button>
@@ -502,7 +502,7 @@ export default function ViewLegality() {
                             {/* Status row always shown */}
                             <div className="flex items-center gap-3 pb-3 border-b border-gray-200 dark:border-gray-700">
                               <div className={cn(
-                                "flex items-center gap-1.5 text-xs font-medium px-2.5 py-1 rounded-full",
+                                "flex items-center gap-1.5 text-xs font-medium px-2.5 py-1 rounded-md",
                                 isCompleted
                                   ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-400"
                                   : "bg-amber-100 text-amber-700 dark:bg-amber-500/10 dark:text-amber-400"
@@ -512,7 +512,7 @@ export default function ViewLegality() {
                                   : <><Clock className="w-3.5 h-3.5" /> {t('legality.pending')}</>}
                               </div>
                               {step?.isDefault && (
-                                <span className="text-[10px] font-medium text-gray-400 bg-gray-100 dark:bg-gray-800 px-2 py-0.5 rounded-full">
+                                <span className="text-[10px] font-medium text-gray-400 bg-gray-100 dark:bg-gray-800 px-2 py-0.5 rounded-md">
                                   {t('legality.profile.default')}
                                 </span>
                               )}
@@ -574,7 +574,7 @@ export default function ViewLegality() {
                                       href={`${import.meta.env.VITE_API_BASE_URL}/${file}`}
                                       target="_blank"
                                       rel="noopener noreferrer"
-                                      className="flex items-center gap-2 p-2 bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 hover:border-[#B39371] transition-colors group"
+                                      className="flex items-center gap-2 p-2 bg-white dark:bg-gray-900 rounded-md border border-gray-200 dark:border-gray-700 hover:border-[#B39371] transition-colors group"
                                     >
                                       <File className="w-4 h-4 text-gray-400 group-hover:text-[#B39371]" />
                                       <span className="text-xs text-gray-600 dark:text-gray-400 truncate flex-1">

@@ -1,4 +1,4 @@
-import { useRoute, Link } from 'wouter';
+﻿import { useRoute, Link } from 'wouter';
 import { useQuery } from '@tanstack/react-query';
 import api from '@/lib/api';
 import { TopHeader } from '../../components/TopHeader';
@@ -140,7 +140,7 @@ const StatusBadge = ({ status, type }: { status: string; type: 'request' | 'appr
   const Icon = config.icon;
 
   return (
-    <Badge className={cn('rounded-lg px-3 py-1.5 text-xs font-semibold border gap-1.5', config.color)}>
+    <Badge className={cn('rounded-md px-3 py-1.5 text-xs font-semibold border gap-1.5', config.color)}>
       <Icon className="w-3.5 h-3.5" />
       {config.label}
     </Badge>
@@ -150,7 +150,7 @@ const StatusBadge = ({ status, type }: { status: string; type: 'request' | 'appr
 // ─── Detail Row ───────────────────────────────────────────────────────────────
 const DetailRow = ({ icon: Icon, label, value }: { icon: any; label: string; value: React.ReactNode }) => (
   <div className="flex items-start gap-3 py-3 border-b border-gray-100 dark:border-gray-800 last:border-0">
-    <div className="w-8 h-8 rounded-lg bg-[#4A1B1B]/6 dark:bg-[#B39371]/10 flex items-center justify-center flex-shrink-0 mt-0.5">
+    <div className="w-8 h-8 rounded-md bg-[#4A1B1B]/6 dark:bg-[#B39371]/10 flex items-center justify-center flex-shrink-0 mt-0.5">
       <Icon className="w-4 h-4 text-[#4A1B1B] dark:text-[#B39371]" />
     </div>
     <div className="flex-1 min-w-0">
@@ -176,10 +176,10 @@ const SectionCard = ({
     initial={{ opacity: 0, y: 20 }}
     animate={{ opacity: 1, y: 0 }}
     transition={{ delay }}
-    className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 overflow-hidden shadow-sm"
+    className="bg-white dark:bg-gray-900 rounded-md border border-gray-200 dark:border-gray-800 overflow-hidden shadow-sm"
   >
     <div className="px-6 py-4 border-b border-gray-100 dark:border-gray-800 bg-gradient-to-r from-gray-50/60 to-white dark:from-gray-800/40 dark:to-gray-900 flex items-center gap-3">
-      <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#4A1B1B] to-[#6B2727] flex items-center justify-center flex-shrink-0">
+      <div className="w-8 h-8 rounded-md bg-gradient-to-br from-[#4A1B1B] to-[#6B2727] flex items-center justify-center flex-shrink-0">
         <Icon className="w-4 h-4 text-[#B39371]" />
       </div>
       <h2 className="text-sm font-semibold text-gray-900 dark:text-white uppercase tracking-wider">{title}</h2>
@@ -228,13 +228,13 @@ export default function ViewMaterial() {
         <TopHeader />
         <div className="flex items-center justify-center min-h-[70vh]">
           <div className="text-center">
-            <div className="w-20 h-20 rounded-2xl bg-red-50 dark:bg-red-500/10 flex items-center justify-center mx-auto mb-4">
+            <div className="w-20 h-20 rounded-md bg-red-50 dark:bg-red-500/10 flex items-center justify-center mx-auto mb-4">
               <AlertCircle className="w-9 h-9 text-red-500" />
             </div>
             <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-2">{t('common.error')}</h2>
             <p className="text-sm text-gray-500 mb-6">{t('materials.empty')}</p>
             <Link href="/materials">
-              <Button variant="outline" className="rounded-lg gap-2">
+              <Button variant="outline" className="rounded-md gap-2">
                 <ArrowLeft className="w-4 h-4 rtl:rotate-180" />
                 {t('materials.backToList')}
               </Button>
@@ -271,16 +271,16 @@ export default function ViewMaterial() {
           <motion.div
             initial={{ opacity: 0, y: -12 }}
             animate={{ opacity: 1, y: 0 }}
-            className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 p-6 shadow-sm"
+            className="bg-white dark:bg-gray-900 rounded-md border border-gray-200 dark:border-gray-800 p-6 shadow-sm"
           >
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div className="flex items-center gap-4">
-                <Link href="/materials" className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors">
+                <Link href="/materials" className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-md transition-colors">
                   <ArrowLeft className="w-5 h-5 text-gray-500 rtl:rotate-180" />
                 </Link>
                 <div className="relative">
-                  <div className="absolute inset-0 bg-gradient-to-r from-[#4A1B1B] to-[#6B2727] rounded-xl blur-lg opacity-40" />
-                  <div className="relative w-14 h-14 rounded-xl bg-gradient-to-br from-[#4A1B1B] to-[#6B2727] shadow-lg flex items-center justify-center">
+                  <div className="absolute inset-0 bg-gradient-to-r from-[#4A1B1B] to-[#6B2727] rounded-md blur-lg opacity-40" />
+                  <div className="relative w-14 h-14 rounded-md bg-gradient-to-br from-[#4A1B1B] to-[#6B2727] shadow-lg flex items-center justify-center">
                     <Layers className="w-7 h-7 text-[#B39371]" />
                   </div>
                 </div>
@@ -303,7 +303,7 @@ export default function ViewMaterial() {
               {/* Actions */}
               <div className="flex items-center gap-2 flex-shrink-0">
                 <Link href={`/materials/${material.id}/edit`}>
-                  <Button className="gap-2 bg-gradient-to-r from-[#4A1B1B] to-[#6B2727] text-white rounded-lg hover:shadow-lg transition-all text-sm">
+                  <Button className="gap-2 bg-gradient-to-r from-[#4A1B1B] to-[#6B2727] text-white rounded-md hover:shadow-lg transition-all text-sm">
                     <Pencil className="w-4 h-4" />
                     {t('materials.edit')}
                   </Button>
@@ -351,9 +351,9 @@ export default function ViewMaterial() {
             ].map((stat, i) => (
               <div
                 key={i}
-                className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 p-4 shadow-sm flex items-center gap-3"
+                className="bg-white dark:bg-gray-900 rounded-md border border-gray-200 dark:border-gray-800 p-4 shadow-sm flex items-center gap-3"
               >
-                <div className={cn('w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0', stat.bg)}>
+                <div className={cn('w-10 h-10 rounded-md flex items-center justify-center flex-shrink-0', stat.bg)}>
                   <stat.icon className={cn('w-5 h-5', stat.color)} />
                 </div>
                 <div className="min-w-0">
@@ -440,7 +440,7 @@ export default function ViewMaterial() {
                               href={`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000'}/${doc}`}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="flex items-center gap-2 p-2 rounded-lg bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 hover:border-[#B39371]/40 transition-all group"
+                              className="flex items-center gap-2 p-2 rounded-md bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 hover:border-[#B39371]/40 transition-all group"
                             >
                               <Paperclip className="w-3.5 h-3.5 text-gray-400 group-hover:text-[#B39371]" />
                               <span className="text-xs font-medium text-gray-600 dark:text-gray-400 truncate">{fileName}</span>
@@ -499,9 +499,9 @@ export default function ViewMaterial() {
                           href={`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000'}/${file}`}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="flex items-center gap-3 p-3 rounded-lg bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 hover:border-[#B39371]/40 hover:bg-[#B39371]/5 transition-all group"
+                          className="flex items-center gap-3 p-3 rounded-md bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 hover:border-[#B39371]/40 hover:bg-[#B39371]/5 transition-all group"
                         >
-                          <div className="w-9 h-9 rounded-lg bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 flex items-center justify-center flex-shrink-0">
+                          <div className="w-9 h-9 rounded-md bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 flex items-center justify-center flex-shrink-0">
                             {isImage ? (
                               <Package className="w-4 h-4 text-blue-500" />
                             ) : (
@@ -555,19 +555,19 @@ export default function ViewMaterial() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.3 }}
-                className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 p-5 shadow-sm space-y-2"
+                className="bg-white dark:bg-gray-900 rounded-md border border-gray-200 dark:border-gray-800 p-5 shadow-sm space-y-2"
               >
                 <p className="text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-3">
                   {t('materials.quickActions')}
                 </p>
                 <Link href={`/materials/${material.id}/edit`}>
-                  <button className="w-full flex items-center gap-3 px-4 py-3 rounded-lg bg-[#4A1B1B]/5 dark:bg-[#B39371]/10 text-[#4A1B1B] dark:text-[#B39371] hover:bg-[#4A1B1B]/10 dark:hover:bg-[#B39371]/20 transition-colors text-sm font-medium">
+                  <button className="w-full flex items-center gap-3 px-4 py-3 rounded-md bg-[#4A1B1B]/5 dark:bg-[#B39371]/10 text-[#4A1B1B] dark:text-[#B39371] hover:bg-[#4A1B1B]/10 dark:hover:bg-[#B39371]/20 transition-colors text-sm font-medium">
                     <Pencil className="w-4 h-4" />
                     {t('materials.edit')}
                   </button>
                 </Link>
                 <Link href="/materials">
-                  <button className="w-full flex items-center gap-3 px-4 py-3 rounded-lg bg-gray-50 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors text-sm font-medium mt-2">
+                  <button className="w-full flex items-center gap-3 px-4 py-3 rounded-md bg-gray-50 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors text-sm font-medium mt-2">
                     <ArrowLeft className="w-4 h-4 rtl:rotate-180" />
                     {t('materials.backToList')}
                   </button>

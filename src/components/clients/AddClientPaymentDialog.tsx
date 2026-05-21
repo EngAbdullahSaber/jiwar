@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+﻿import { useState, useEffect } from 'react';
 import { 
   Dialog, 
   DialogContent, 
@@ -100,7 +100,7 @@ export function AddClientPaymentDialog({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[750px] max-h-[90vh] overflow-y-auto rounded-xl sm:rounded-2xl border-none shadow-2xl p-0">
+      <DialogContent className="sm:max-w-[750px] max-h-[90vh] overflow-y-auto rounded-md sm:rounded-md border-none shadow-2xl p-0">
         <div className="relative overflow-hidden">
           {/* Decorative Header Background */}
           <div className="absolute top-0 left-0 right-0 h-32 bg-gradient-to-r from-[#4A1B1B] to-[#6B2727] opacity-10 dark:opacity-20" />
@@ -108,7 +108,7 @@ export function AddClientPaymentDialog({
           <div className="relative p-6 sm:p-8">
             <DialogHeader className="mb-8">
               <div className="flex items-center gap-4">
-                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#4A1B1B] to-[#6B2727] shadow-lg flex items-center justify-center text-white shrink-0">
+                <div className="w-12 h-12 rounded-md bg-gradient-to-br from-[#4A1B1B] to-[#6B2727] shadow-lg flex items-center justify-center text-white shrink-0">
                   <CreditCard className="w-6 h-6 text-[#B39371]" />
                 </div>
                 <div>
@@ -143,7 +143,7 @@ export function AddClientPaymentDialog({
                        value={formData.paymentDate}
                        onChange={(date) => setFormData(prev => ({ ...prev, paymentDate: date }))}
                        required
-                       className="h-12 rounded-xl border-gray-100 bg-gray-50 dark:bg-gray-800/50 dark:border-gray-700"
+                       className="h-12 rounded-md border-gray-100 bg-gray-50 dark:bg-gray-800/50 dark:border-gray-700"
                      />
                    </div>
 
@@ -157,7 +157,7 @@ export function AddClientPaymentDialog({
                        type="number"
                        required
                        placeholder="0.00"
-                       className="h-12 rounded-xl border-gray-100 bg-gray-50 dark:bg-gray-800/50 dark:border-gray-700 font-bold text-lg"
+                       className="h-12 rounded-md border-gray-100 bg-gray-50 dark:bg-gray-800/50 dark:border-gray-700 font-bold text-lg"
                        value={formData.amount}
                        onChange={(e) => setFormData(prev => ({ ...prev, amount: e.target.value }))}
                      />
@@ -185,7 +185,7 @@ export function AddClientPaymentDialog({
 
                 {/* File Upload Section */}
                 <div className="lg:col-span-12 space-y-6">
-                   <div className="p-6 bg-gray-50 dark:bg-gray-800/30 rounded-2xl border border-dashed border-gray-200 dark:border-gray-700">
+                   <div className="p-6 bg-gray-50 dark:bg-gray-800/30 rounded-md border border-dashed border-gray-200 dark:border-gray-700">
                       <Label className="text-xs font-bold text-gray-500 uppercase mb-4 block">
                         {t('payments.receipt')}
                       </Label>
@@ -208,14 +208,14 @@ export function AddClientPaymentDialog({
                     type="button"
                     variant="ghost"
                     onClick={onClose}
-                    className="h-12 px-6 rounded-xl font-bold text-gray-500 hover:text-gray-900"
+                    className="h-12 px-6 rounded-md font-bold text-gray-500 hover:text-gray-900"
                   >
                     {t('common.cancel')}
                   </Button>
                   <Button
                     type="submit"
                     disabled={mutation.isPending}
-                    className="h-12 px-8 rounded-xl bg-gradient-to-r from-[#4A1B1B] to-[#6B2727] text-white font-bold shadow-xl shadow-[#4A1B1B]/20 min-w-[180px]"
+                    className="h-12 px-8 rounded-md bg-gradient-to-r from-[#4A1B1B] to-[#6B2727] text-white font-bold shadow-xl shadow-[#4A1B1B]/20 min-w-[180px]"
                   >
                     {mutation.isPending ? (
                       <Loader2 className="w-5 h-5 animate-spin mx-auto" />

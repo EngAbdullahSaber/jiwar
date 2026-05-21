@@ -1,4 +1,4 @@
-import {
+﻿import {
   BarChart,
   Bar,
   XAxis,
@@ -19,7 +19,7 @@ interface SalesTrendsChartProps {
 const CustomTooltip = ({ active, payload, label, isEmpty }: any) => {
   if (!active || !payload?.length || isEmpty) return null;
   return (
-    <div className="bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-xl px-4 py-3 shadow-xl">
+    <div className="bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-md px-4 py-3 shadow-xl">
       <p className="text-[11px] font-semibold text-gray-400 uppercase tracking-wider mb-1">
         {label}
       </p>
@@ -54,12 +54,12 @@ export function SalesTrendsChart({ data: rawData }: SalesTrendsChartProps) {
   const isEmpty = total === 0;
 
   return (
-    <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 p-6">
+    <div className="bg-white dark:bg-gray-900 rounded-md border border-gray-100 dark:border-gray-800 p-6">
       {/* Header */}
       <div className="flex items-start justify-between mb-6">
         <div>
           <div className="flex items-center gap-2 mb-1">
-            <div className="w-1.5 h-1.5 rounded-full bg-[#B39371]" />
+            <div className="w-1.5 h-1.5 rounded-md bg-[#B39371]" />
             <p className="text-[11px] font-semibold text-[#B39371] uppercase tracking-widest">
               {t("dashboard.salesTrends.last6Months")}
             </p>
@@ -72,7 +72,7 @@ export function SalesTrendsChart({ data: rawData }: SalesTrendsChartProps) {
           </p>
         </div>
 
-        <div className="flex items-center gap-1.5 bg-gray-50 dark:bg-gray-800 border border-gray-100 dark:border-gray-700 px-3 py-1.5 rounded-xl">
+        <div className="flex items-center gap-1.5 bg-gray-50 dark:bg-gray-800 border border-gray-100 dark:border-gray-700 px-3 py-1.5 rounded-md">
           <BarChart2 className="w-3.5 h-3.5 text-gray-400 dark:text-gray-500" />
           <span className="text-xs font-semibold text-gray-500 dark:text-gray-400 tabular-nums">
             {total} {t("dashboard.salesTrends.contracts")}
@@ -142,7 +142,7 @@ export function SalesTrendsChart({ data: rawData }: SalesTrendsChartProps) {
         {/* Empty state overlay */}
         {isEmpty && (
           <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-            <div className="bg-white/90 dark:bg-gray-900/90 backdrop-blur-sm rounded-2xl px-6 py-4 flex flex-col items-center gap-2 border border-gray-100 dark:border-gray-800 shadow-sm">
+            <div className="bg-white/90 dark:bg-gray-900/90 backdrop-blur-sm rounded-md px-6 py-4 flex flex-col items-center gap-2 border border-gray-100 dark:border-gray-800 shadow-sm">
               <BarChart2 className="w-7 h-7 text-gray-300 dark:text-gray-600" />
               <p className="text-sm font-semibold text-gray-400 dark:text-gray-500">
                 {t("dashboard.salesTrends.noData", "No contracts yet")}
@@ -155,13 +155,13 @@ export function SalesTrendsChart({ data: rawData }: SalesTrendsChartProps) {
       {/* Month legend dots */}
       <div className="flex items-center gap-4 mt-4 pt-4 border-t border-gray-50 dark:border-gray-800">
         <div className="flex items-center gap-1.5">
-          <div className="w-3 h-3 rounded-sm bg-[#4A1B1B]" />
+          <div className="w-3 h-3 rounded-md bg-[#4A1B1B]" />
           <span className="text-[11px] text-gray-400 dark:text-gray-500 font-medium">
             {t("dashboard.salesTrends.highest", "Highest")}
           </span>
         </div>
         <div className="flex items-center gap-1.5">
-          <div className="w-3 h-3 rounded-sm bg-[#E2D0C0] dark:bg-gray-700" />
+          <div className="w-3 h-3 rounded-md bg-[#E2D0C0] dark:bg-gray-700" />
           <span className="text-[11px] text-gray-400 dark:text-gray-500 font-medium">
             {t("dashboard.salesTrends.others", "Others")}
           </span>

@@ -1,4 +1,4 @@
-import { Search, Filter, X, ChevronDown } from 'lucide-react';
+﻿import { Search, Filter, X, ChevronDown } from 'lucide-react';
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -93,7 +93,7 @@ export function FilterBar({
       )} />
       <Input
         className={cn(
-          "pl-9 h-10 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg text-sm transition-all rtl:pl-3 rtl:pr-9",
+          "pl-9 h-10 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-md text-sm transition-all rtl:pl-3 rtl:pr-9",
           "placeholder:text-gray-400 dark:placeholder:text-gray-500",
           "hover:border-gray-300 dark:hover:border-gray-600",
           "focus:border-[#B39371] focus:ring-2 focus:ring-[#B39371]/20",
@@ -106,7 +106,7 @@ export function FilterBar({
       {values[field.key] && (
         <button
           onClick={() => clearFilter(field.key)}
-          className="absolute right-3 top-1/2 -translate-y-1/2 p-0.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors rtl:right-auto rtl:left-3"
+          className="absolute right-3 top-1/2 -translate-y-1/2 p-0.5 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors rtl:right-auto rtl:left-3"
         >
           <X className="w-3.5 h-3.5 text-gray-400" />
         </button>
@@ -120,7 +120,7 @@ export function FilterBar({
       onValueChange={(value) => onChange(field.key, value)}
     >
       <SelectTrigger className={cn(
-        "h-10 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg text-sm transition-all",
+        "h-10 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-md text-sm transition-all",
         "hover:border-gray-300 dark:hover:border-gray-600",
         "focus:border-[#B39371] focus:ring-2 focus:ring-[#B39371]/20",
         values[field.key] && values[field.key] !== 'all' && "border-[#B39371]/50 bg-[#B39371]/5"
@@ -129,7 +129,7 @@ export function FilterBar({
           {field.options?.find(opt => opt.value === values[field.key])?.label}
         </SelectValue>
       </SelectTrigger>
-      <SelectContent className="rounded-lg border-gray-200 dark:border-gray-700 shadow-lg">
+      <SelectContent className="rounded-md border-gray-200 dark:border-gray-700 shadow-lg">
         {field.options?.map((option) => (
           <SelectItem 
             key={option.value} 
@@ -150,7 +150,7 @@ export function FilterBar({
     <DatePicker
       value={values[field.key] || ''}
       onChange={(date) => onChange(field.key, date)}
-      className="h-10 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg text-sm"
+      className="h-10 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-md text-sm"
     />
   );
 
@@ -162,7 +162,7 @@ export function FilterBar({
         <Input
           type="number"
           placeholder={t('common.min')}
-          className="h-10 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg text-sm"
+          className="h-10 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-md text-sm"
           value={min || ''}
           onChange={(e) => {
             const newMin = e.target.value;
@@ -174,7 +174,7 @@ export function FilterBar({
         <Input
           type="number"
           placeholder={t('common.max')}
-          className="h-10 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg text-sm"
+          className="h-10 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-md text-sm"
           value={max || ''}
           onChange={(e) => {
             const newMax = e.target.value;
@@ -271,7 +271,7 @@ export function FilterBar({
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               onClick={onReset}
-              className="px-4 py-2 text-xs font-medium text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-lg transition-colors flex items-center gap-1.5"
+              className="px-4 py-2 text-xs font-medium text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-md transition-colors flex items-center gap-1.5"
             >
               <X className="w-3.5 h-3.5" />
               {t('common.clearAll')}
@@ -337,7 +337,7 @@ export function FilterBar({
                   <span className="text-xs">{displayValue}</span>
                   <button
                     onClick={() => clearFilter(field.key)}
-                    className="ml-1 p-0.5 rounded-full hover:bg-white/50 dark:hover:bg-gray-700 transition-colors"
+                    className="ml-1 p-0.5 rounded-md hover:bg-white/50 dark:hover:bg-gray-700 transition-colors"
                   >
                     <X className="w-3 h-3" />
                   </button>

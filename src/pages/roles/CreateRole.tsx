@@ -1,4 +1,4 @@
-import { useState } from 'react';
+﻿import { useState } from 'react';
 import { useLocation } from "wouter";
 import { useTranslation } from "react-i18next";
 import { TopHeader } from '../../components/TopHeader';
@@ -365,10 +365,10 @@ export default function CreateRole() {
                                         <Checkbox 
                                           checked={selectedIds.includes(module.actions.UPDATE)}
                                           onCheckedChange={() => togglePermission(module.actions.UPDATE)}
-                                          className="w-6 h-6 rounded-lg border-gray-200 dark:border-gray-700 data-[state=checked]:bg-[#B39371] data-[state=checked]:border-[#B39371] transition-all hover:scale-110 active:scale-90"
+                                          className="w-6 h-6 rounded-md border-gray-200 dark:border-gray-700 data-[state=checked]:bg-[#B39371] data-[state=checked]:border-[#B39371] transition-all hover:scale-110 active:scale-90"
                                         />
                                       ) : (
-                                        <span className="w-1.5 h-1.5 rounded-full bg-gray-200 dark:bg-gray-800" />
+                                        <span className="w-1.5 h-1.5 rounded-md bg-gray-200 dark:bg-gray-800" />
                                       )}
                                     </div>
                                   </TableCell>

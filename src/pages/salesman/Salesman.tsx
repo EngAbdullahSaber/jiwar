@@ -1,4 +1,4 @@
-import { useState } from 'react';
+﻿import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { TopHeader } from '../../components/TopHeader';
 import { 
@@ -211,7 +211,7 @@ export default function SalesmanPage() {
         <Badge 
           variant="outline"
           className={cn(
-            "px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider rounded-lg border shadow-sm transition-all",
+            "px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider rounded-md border shadow-sm transition-all",
             salesman.agentType === 'INTERNAL' 
               ? "bg-indigo-50 text-indigo-700 border-indigo-200 dark:bg-indigo-500/10 dark:text-indigo-400 dark:border-indigo-500/20"
               : "bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-500/10 dark:text-amber-400 dark:border-amber-500/20"
@@ -225,7 +225,7 @@ export default function SalesmanPage() {
       header: t('salesman.commissionValue'),
       cell: (salesman) => (
         <div className="flex items-center gap-2">
-          <div className="p-1.5 rounded-lg bg-gray-50 dark:bg-gray-800">
+          <div className="p-1.5 rounded-md bg-gray-50 dark:bg-gray-800">
             {salesman.commissionBase === 'PERCENTAGE' ? (
               <Percent className="w-3.5 h-3.5 text-[#B39371]" />
             ) : (
@@ -270,7 +270,7 @@ export default function SalesmanPage() {
         return (
           <div className="flex items-center gap-2">
             <div className={cn(
-              "w-2 h-2 rounded-full",
+              "w-2 h-2 rounded-md",
               isActive ? "bg-emerald-500 animate-pulse" : "bg-rose-500"
             )} />
             <span className={cn(
@@ -290,7 +290,7 @@ export default function SalesmanPage() {
       cell: (salesman) => (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="h-8 w-8 p-0 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800">
+            <Button variant="ghost" className="h-8 w-8 p-0 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800">
               <MoreVertical className="h-4 w-4 text-gray-400" />
             </Button>
           </DropdownMenuTrigger>
@@ -301,7 +301,7 @@ export default function SalesmanPage() {
             <DropdownMenuSeparator className="bg-gray-100 dark:bg-gray-800" />
             <Can I="READ" a="salesman">
               <Link href={`/salesman/${salesman.id}`}>
-                <DropdownMenuItem className="rounded-lg cursor-pointer py-2 px-3 focus:bg-gray-50 dark:focus:bg-gray-800">
+                <DropdownMenuItem className="rounded-md cursor-pointer py-2 px-3 focus:bg-gray-50 dark:focus:bg-gray-800">
                   <UsersIcon className="w-4 h-4 mr-2 rtl:mr-0 rtl:ml-2 text-gray-400" />
                   <span className="text-xs font-medium">{t('common.details')}</span>
                 </DropdownMenuItem>
@@ -309,7 +309,7 @@ export default function SalesmanPage() {
             </Can>
             <Can I="UPDATE" a="salesman">
               <Link href={`/salesman/${salesman.id}/edit`}>
-                <DropdownMenuItem className="rounded-lg cursor-pointer py-2 px-3 focus:bg-gray-50 dark:focus:bg-gray-800">
+                <DropdownMenuItem className="rounded-md cursor-pointer py-2 px-3 focus:bg-gray-50 dark:focus:bg-gray-800">
                   <Edit className="w-4 h-4 mr-2 rtl:mr-0 rtl:ml-2 text-gray-400" />
                   <span className="text-xs font-medium">{t('common.edit')}</span>
                 </DropdownMenuItem>
@@ -317,7 +317,7 @@ export default function SalesmanPage() {
             </Can>
             <Can I="DELETE" a="salesman">
               <DropdownMenuItem 
-                className="rounded-lg cursor-pointer py-2 px-3 focus:bg-rose-50 dark:focus:bg-rose-900/10 text-rose-600"
+                className="rounded-md cursor-pointer py-2 px-3 focus:bg-rose-50 dark:focus:bg-rose-900/10 text-rose-600"
                 onClick={() => handleDelete(salesman.id)}
               >
                 <Trash2 className="w-4 h-4 mr-2 rtl:mr-0 rtl:ml-2" />
@@ -339,7 +339,7 @@ export default function SalesmanPage() {
           
           {/* Header Section */}
           <div className="bg-white dark:bg-gray-900 rounded-md border border-gray-200 dark:border-gray-800 p-8 shadow-sm overflow-hidden relative group">
-            <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-[#4A1B1B]/5 to-transparent rounded-full -translate-y-1/2 translate-x-1/2 blur-3xl group-hover:bg-[#4A1B1B]/10 transition-all duration-500" />
+            <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-[#4A1B1B]/5 to-transparent rounded-md -translate-y-1/2 translate-x-1/2 blur-3xl group-hover:bg-[#4A1B1B]/10 transition-all duration-500" />
             
             <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-8 relative z-10">
               <div className="flex items-center gap-6">
@@ -351,7 +351,7 @@ export default function SalesmanPage() {
                 </div>
                 <div>
                   <div className="flex items-center gap-2 mb-1.5">
-                    <div className="w-1.5 h-1.5 rounded-full bg-[#B39371]" />
+                    <div className="w-1.5 h-1.5 rounded-md bg-[#B39371]" />
                     <p className="text-[10px] font-bold text-[#B39371] uppercase tracking-[0.2em]">
                       {t('salesman.title')}
                     </p>
@@ -426,10 +426,10 @@ export default function SalesmanPage() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: i * 0.1 }}
-                className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 p-6 shadow-sm hover:shadow-md transition-all group"
+                className="bg-white dark:bg-gray-900 rounded-md border border-gray-200 dark:border-gray-800 p-6 shadow-sm hover:shadow-md transition-all group"
               >
                 <div className="flex items-center gap-4">
-                  <div className={cn("p-3 rounded-xl transition-colors", stat.bg)}>
+                  <div className={cn("p-3 rounded-md transition-colors", stat.bg)}>
                     <stat.icon className={cn("w-6 h-6", stat.color)} />
                   </div>
                   <div>
@@ -456,7 +456,7 @@ export default function SalesmanPage() {
               onReset={() => setFilters({ search: '', agentType: 'all', paymentType: 'all' })}
             />
 
-            <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 shadow-sm overflow-hidden">
+            <div className="bg-white dark:bg-gray-900 rounded-md border border-gray-200 dark:border-gray-800 shadow-sm overflow-hidden">
               <DataTable 
                 columns={columns} 
                 data={data?.data?.salesmen || []}
@@ -476,10 +476,10 @@ export default function SalesmanPage() {
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
-              className="bg-white dark:bg-gray-900 rounded-3xl border border-gray-100 dark:border-gray-800 p-16 text-center shadow-xl relative overflow-hidden"
+              className="bg-white dark:bg-gray-900 rounded-md border border-gray-100 dark:border-gray-800 p-16 text-center shadow-xl relative overflow-hidden"
             >
               <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-1 bg-gradient-to-r from-transparent via-[#4A1B1B] to-transparent opacity-20" />
-              <div className="w-24 h-24 rounded-3xl bg-gray-50 dark:bg-gray-800/50 flex items-center justify-center mx-auto mb-8 border border-gray-100 dark:border-gray-800">
+              <div className="w-24 h-24 rounded-md bg-gray-50 dark:bg-gray-800/50 flex items-center justify-center mx-auto mb-8 border border-gray-100 dark:border-gray-800">
                 <UsersIcon className="w-10 h-10 text-gray-300 dark:text-gray-600" />
               </div>
               <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-3">
@@ -492,7 +492,7 @@ export default function SalesmanPage() {
               </p>
               {!filters.search && (
                 <Link href="/salesman/new">
-                  <button className="inline-flex items-center gap-2 px-10 py-3.5 bg-gradient-to-r from-[#4A1B1B] to-[#6B2727] text-white rounded-xl text-sm font-bold shadow-xl shadow-[#4A1B1B]/20 hover:shadow-2xl transition-all border border-white/10">
+                  <button className="inline-flex items-center gap-2 px-10 py-3.5 bg-gradient-to-r from-[#4A1B1B] to-[#6B2727] text-white rounded-md text-sm font-bold shadow-xl shadow-[#4A1B1B]/20 hover:shadow-2xl transition-all border border-white/10">
                     <Plus className="w-5 h-5" />
                     {t('salesman.create')}
                   </button>

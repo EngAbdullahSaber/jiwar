@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import { motion } from 'framer-motion';
 import { Loader2, Save, X } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
@@ -52,7 +52,7 @@ export function FormActions({
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay }}
       className={cn(
-        "bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 shadow-xl overflow-hidden mt-8",
+        "bg-white dark:bg-gray-900 rounded-md border border-gray-200 dark:border-gray-800 shadow-xl overflow-hidden mt-8",
         className
       )}
     >

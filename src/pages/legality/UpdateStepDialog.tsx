@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+﻿import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { 
   Dialog, 
@@ -121,11 +121,11 @@ export function UpdateStepDialog({ isOpen, onClose, legalityId, stepData }: Upda
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-2xl bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800 rounded-2xl p-0 overflow-hidden">
+      <DialogContent className="max-w-2xl bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800 rounded-md p-0 overflow-hidden">
         <form onSubmit={handleSubmit}>
           <DialogHeader className="p-6 pb-0">
             <div className="flex items-center gap-4 mb-4">
-              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#4A1B1B] to-[#6B2727] flex items-center justify-center shadow-lg">
+              <div className="w-12 h-12 rounded-md bg-gradient-to-br from-[#4A1B1B] to-[#6B2727] flex items-center justify-center shadow-lg">
                 <FileText className="w-6 h-6 text-[#B39371]" />
               </div>
               <div>
@@ -150,7 +150,7 @@ export function UpdateStepDialog({ isOpen, onClose, legalityId, stepData }: Upda
                   value={formData.nameEn}
                   onChange={(e) => setFormData(prev => ({ ...prev, nameEn: e.target.value }))}
                   className={cn(
-                    "border-gray-200 dark:border-gray-700 h-11 rounded-xl",
+                    "border-gray-200 dark:border-gray-700 h-11 rounded-md",
                     isDefault
                       ? "bg-gray-100 dark:bg-gray-800/50 cursor-not-allowed opacity-70"
                       : "bg-gray-50 dark:bg-gray-800"
@@ -168,7 +168,7 @@ export function UpdateStepDialog({ isOpen, onClose, legalityId, stepData }: Upda
                   onChange={(e) => setFormData(prev => ({ ...prev, nameAr: e.target.value }))}
                   dir="rtl"
                   className={cn(
-                    "border-gray-200 dark:border-gray-700 h-11 rounded-xl text-right",
+                    "border-gray-200 dark:border-gray-700 h-11 rounded-md text-right",
                     isDefault
                       ? "bg-gray-100 dark:bg-gray-800/50 cursor-not-allowed opacity-70"
                       : "bg-gray-50 dark:bg-gray-800"
@@ -187,7 +187,7 @@ export function UpdateStepDialog({ isOpen, onClose, legalityId, stepData }: Upda
               <Textarea
                 value={formData.details}
                 onChange={(e) => setFormData(prev => ({ ...prev, details: e.target.value }))}
-                className="bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-xl min-h-[100px] resize-none"
+                className="bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md min-h-[100px] resize-none"
                 placeholder={t('legality.placeholders.details')}
               />
             </div>
@@ -202,7 +202,7 @@ export function UpdateStepDialog({ isOpen, onClose, legalityId, stepData }: Upda
                 <DatePicker
                   value={formData.fromDate}
                   onChange={(date) => setFormData(prev => ({ ...prev, fromDate: date }))}
-                  className="bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 h-11 rounded-xl"
+                  className="bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 h-11 rounded-md"
                 />
               </div>
               <div className="space-y-2">
@@ -213,7 +213,7 @@ export function UpdateStepDialog({ isOpen, onClose, legalityId, stepData }: Upda
                 <DatePicker
                   value={formData.toDate}
                   onChange={(date) => setFormData(prev => ({ ...prev, toDate: date }))}
-                  className="bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 h-11 rounded-xl"
+                  className="bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 h-11 rounded-md"
                 />
               </div>
               <div className="space-y-2">
@@ -225,7 +225,7 @@ export function UpdateStepDialog({ isOpen, onClose, legalityId, stepData }: Upda
                   type="number"
                   value={formData.amount}
                   onChange={(e) => setFormData(prev => ({ ...prev, amount: e.target.value }))}
-                  className="bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 h-11 rounded-xl"
+                  className="bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 h-11 rounded-md"
                   placeholder={t('legality.placeholders.amount')}
                 />
               </div>
@@ -251,7 +251,7 @@ export function UpdateStepDialog({ isOpen, onClose, legalityId, stepData }: Upda
                       animate={{ opacity: 1, scale: 1 }}
                       exit={{ opacity: 0, scale: 0.95 }}
                       key={idx}
-                      className="flex items-center gap-3 p-2 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-100 dark:border-gray-700 transition-all hover:border-[#B39371]/30"
+                      className="flex items-center gap-3 p-2 bg-gray-50 dark:bg-gray-800 rounded-md border border-gray-100 dark:border-gray-700 transition-all hover:border-[#B39371]/30"
                     >
                       <div className="w-8 h-8 rounded bg-white dark:bg-gray-900 flex items-center justify-center text-[#B39371]">
                         <FileText className="w-4 h-4" />
@@ -291,14 +291,14 @@ export function UpdateStepDialog({ isOpen, onClose, legalityId, stepData }: Upda
               variant="outline"
               onClick={onClose}
               disabled={updateMutation.isPending}
-              className="rounded-xl border-gray-200 dark:border-gray-700"
+              className="rounded-md border-gray-200 dark:border-gray-700"
             >
               {t('common.cancel')}
             </Button>
             <Button
               type="submit"
               disabled={updateMutation.isPending}
-              className="rounded-xl bg-gradient-to-r from-[#4A1B1B] to-[#6B2727] text-white shadow-lg shadow-[#4A1B1B]/20"
+              className="rounded-md bg-gradient-to-r from-[#4A1B1B] to-[#6B2727] text-white shadow-lg shadow-[#4A1B1B]/20"
             >
               {updateMutation.isPending ? (
                 <>

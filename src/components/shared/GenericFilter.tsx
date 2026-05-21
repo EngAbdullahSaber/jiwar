@@ -1,4 +1,4 @@
-import { Search, SlidersHorizontal, ChevronDown, ChevronUp } from 'lucide-react';
+﻿import { Search, SlidersHorizontal, ChevronDown, ChevronUp } from 'lucide-react';
 import { useState } from 'react';
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
@@ -55,7 +55,7 @@ export function GenericFilter({
             value={searchValue}
             onChange={(e) => onSearchChange(e.target.value)}
             placeholder={placeholder}
-            className="pl-12 bg-gray-50/50 border-gray-100 rounded-2xl h-12 focus:ring-[#B39371]/20 transition-all font-medium"
+            className="pl-12 bg-gray-50/50 border-gray-100 rounded-md h-12 focus:ring-[#B39371]/20 transition-all font-medium"
           />
         </div>
 
@@ -63,7 +63,7 @@ export function GenericFilter({
           <button
             onClick={() => setIsExpanded(!isExpanded)}
             className={cn(
-              "flex items-center gap-2 px-6 h-12 rounded-2xl border transition-all font-bold text-xs uppercase tracking-widest whitespace-nowrap",
+              "flex items-center gap-2 px-6 h-12 rounded-md border transition-all font-bold text-xs uppercase tracking-widest whitespace-nowrap",
               isExpanded
                 ? "bg-[#4A1B1B] text-white border-[#4A1B1B] shadow-lg shadow-[#4A1B1B]/20"
                 : "bg-white text-gray-600 border-gray-100 hover:bg-gray-50"
@@ -95,10 +95,10 @@ export function GenericFilter({
                       value={filterValues[field.key]}
                       onValueChange={(value) => onFilterChange(field.key, value)}
                     >
-                      <SelectTrigger className="bg-gray-50/80 border-none rounded-xl h-12 px-5 focus:ring-[#B39371]/20 transition-all">
+                      <SelectTrigger className="bg-gray-50/80 border-none rounded-md h-12 px-5 focus:ring-[#B39371]/20 transition-all">
                         <SelectValue placeholder={field.placeholder || `Select ${field.label}`} />
                       </SelectTrigger>
-                      <SelectContent className="rounded-xl border-gray-50 shadow-xl overflow-hidden">
+                      <SelectContent className="rounded-md border-gray-50 shadow-xl overflow-hidden">
                         {field.options?.map((option) => (
                           <SelectItem 
                             key={option.value} 
@@ -115,7 +115,7 @@ export function GenericFilter({
                       placeholder={field.placeholder}
                       value={filterValues[field.key] || ''}
                       onChange={(e) => onFilterChange(field.key, e.target.value)}
-                      className="bg-gray-50/80 border-none rounded-xl h-12 px-5 focus-visible:ring-[#B39371]/20 transition-all"
+                      className="bg-gray-50/80 border-none rounded-md h-12 px-5 focus-visible:ring-[#B39371]/20 transition-all"
                     />
                   )}
                 </div>

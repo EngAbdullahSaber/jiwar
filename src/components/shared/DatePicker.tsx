@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+﻿import React, { useEffect, useRef } from 'react';
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.css';
 import { useTranslation } from 'react-i18next';
@@ -90,7 +90,7 @@ const DatePicker: React.FC<DatePickerProps> = ({
         required={required}
         placeholder={placeholder}
         className={cn(
-          "w-full h-12 pl-11 rtl:pl-4 rtl:pr-11 rounded-xl bg-gray-50 dark:bg-gray-800/50 border border-gray-100 dark:border-gray-800 focus:bg-white dark:focus:bg-gray-800 outline-none focus:ring-2 focus:ring-[#B39371]/10 transition-all font-medium text-sm text-gray-900 dark:text-white dark:placeholder-gray-500",
+          "w-full h-12 pl-11 rtl:pl-4 rtl:pr-11 rounded-md bg-gray-50 dark:bg-gray-800/50 border border-gray-100 dark:border-gray-800 focus:bg-white dark:focus:bg-gray-800 outline-none focus:ring-2 focus:ring-[#B39371]/10 transition-all font-medium text-sm text-gray-900 dark:text-white dark:placeholder-gray-500",
           mode === 'range' ? "text-[13px]" : "text-sm"
         )}
       />

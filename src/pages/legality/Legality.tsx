@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+﻿import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { TopHeader } from '../../components/TopHeader';
 import { Pagination } from '../../components/shared/Pagination';
@@ -161,7 +161,7 @@ export default function Legality() {
 
             {/* Brand */}
             <div className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-lg bg-[#1C1917] dark:bg-white flex items-center justify-center shadow-sm">
+              <div className="w-8 h-8 rounded-md bg-[#1C1917] dark:bg-white flex items-center justify-center shadow-sm">
                 <Scale className="w-4 h-4 text-white dark:text-[#1C1917]" />
               </div>
               <div>
@@ -180,7 +180,7 @@ export default function Legality() {
                 <motion.button
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.97 }}
-                  className="inline-flex items-center gap-2 h-9 px-5 bg-[#1C1917] dark:bg-white text-white dark:text-[#1C1917] rounded-lg text-[13px] font-semibold shadow-sm hover:opacity-90 transition-opacity"
+                  className="inline-flex items-center gap-2 h-9 px-5 bg-[#1C1917] dark:bg-white text-white dark:text-[#1C1917] rounded-md text-[13px] font-semibold shadow-sm hover:opacity-90 transition-opacity"
                 >
                   <PlusCircle className="w-4 h-4" />
                   {t('legality.create')}
@@ -195,14 +195,14 @@ export default function Legality() {
       
 
           {/* ── Toolbar ─────────────────────────────────── */}
-          <div className="bg-white dark:bg-[#18181B] rounded-xl border border-black/[0.06] dark:border-white/[0.06] px-4 py-3 flex flex-col sm:flex-row gap-3">
+          <div className="bg-white dark:bg-[#18181B] rounded-md border border-black/[0.06] dark:border-white/[0.06] px-4 py-3 flex flex-col sm:flex-row gap-3">
             {/* Search */}
             <div className="relative flex-1">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#A8A29E]" />
               <input
                 type="text"
                 placeholder={t('legality.searchPlaceholder')}
-                className="w-full pl-9 pr-4 h-9 rounded-lg bg-[#F7F6F3] dark:bg-[#0E0E0F] text-[13px] font-medium text-[#1C1917] dark:text-white placeholder:text-[#A8A29E] border border-transparent focus:border-[#1C1917]/20 dark:focus:border-white/20 focus:outline-none transition-colors"
+                className="w-full pl-9 pr-4 h-9 rounded-md bg-[#F7F6F3] dark:bg-[#0E0E0F] text-[13px] font-medium text-[#1C1917] dark:text-white placeholder:text-[#A8A29E] border border-transparent focus:border-[#1C1917]/20 dark:focus:border-white/20 focus:outline-none transition-colors"
                 value={searchValue}
                 onChange={e => setSearchValue(e.target.value)}
               />
@@ -213,7 +213,7 @@ export default function Legality() {
               <select
                 value={filterStatus}
                 onChange={e => setFilterStatus(e.target.value)}
-                className="h-9 pl-3 pr-8 rounded-lg bg-[#F7F6F3] dark:bg-[#0E0E0F] text-[13px] font-medium text-[#1C1917] dark:text-white border border-transparent focus:border-[#1C1917]/20 dark:focus:border-white/20 focus:outline-none appearance-none cursor-pointer transition-colors"
+                className="h-9 pl-3 pr-8 rounded-md bg-[#F7F6F3] dark:bg-[#0E0E0F] text-[13px] font-medium text-[#1C1917] dark:text-white border border-transparent focus:border-[#1C1917]/20 dark:focus:border-white/20 focus:outline-none appearance-none cursor-pointer transition-colors"
               >
                 <option value="all">{t('legality.allStatus')}</option>
                 <option value="completed">{t('legality.completed')}</option>
@@ -233,9 +233,9 @@ export default function Legality() {
                 <motion.div
                   whileHover={{ scale: 1.015 }}
                   whileTap={{ scale: 0.99 }}
-                  className="group h-full min-h-[220px] rounded-xl border-2 border-dashed border-[#D6D3D1] dark:border-[#3F3F46] hover:border-[#1C1917] dark:hover:border-white transition-colors flex flex-col items-center justify-center gap-3 cursor-pointer"
+                  className="group h-full min-h-[220px] rounded-md border-2 border-dashed border-[#D6D3D1] dark:border-[#3F3F46] hover:border-[#1C1917] dark:hover:border-white transition-colors flex flex-col items-center justify-center gap-3 cursor-pointer"
                 >
-                  <div className="w-10 h-10 rounded-lg bg-[#F7F6F3] dark:bg-[#27272A] group-hover:bg-[#1C1917] dark:group-hover:bg-white transition-colors flex items-center justify-center">
+                  <div className="w-10 h-10 rounded-md bg-[#F7F6F3] dark:bg-[#27272A] group-hover:bg-[#1C1917] dark:group-hover:bg-white transition-colors flex items-center justify-center">
                     <PlusCircle className="w-5 h-5 text-[#A8A29E] group-hover:text-white dark:group-hover:text-[#1C1917] transition-colors" />
                   </div>
                   <div className="text-center">
@@ -248,13 +248,13 @@ export default function Legality() {
 
             {/* Skeletons */}
             {isLoading && Array.from({ length: 3 }).map((_, i) => (
-              <div key={i} className="bg-white dark:bg-[#18181B] rounded-xl border border-black/[0.06] dark:border-white/[0.06] p-5 space-y-4 animate-pulse">
+              <div key={i} className="bg-white dark:bg-[#18181B] rounded-md border border-black/[0.06] dark:border-white/[0.06] p-5 space-y-4 animate-pulse">
                 <div className="flex justify-between">
                   <div className="h-4 w-20 bg-[#E7E5E4] dark:bg-[#27272A] rounded" />
                   <div className="h-4 w-4 bg-[#E7E5E4] dark:bg-[#27272A] rounded" />
                 </div>
                 <div className="h-5 w-3/4 bg-[#E7E5E4] dark:bg-[#27272A] rounded" />
-                <div className="h-2 w-full bg-[#E7E5E4] dark:bg-[#27272A] rounded-full" />
+                <div className="h-2 w-full bg-[#E7E5E4] dark:bg-[#27272A] rounded-md" />
                 <div className="h-8 w-1/2 bg-[#E7E5E4] dark:bg-[#27272A] rounded" />
               </div>
             ))}
@@ -270,7 +270,7 @@ export default function Legality() {
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: idx * 0.04, duration: 0.25 }}
-                  className="group bg-white dark:bg-[#18181B] rounded-xl border border-black/[0.06] dark:border-white/[0.06] overflow-hidden hover:shadow-lg hover:shadow-black/[0.08] dark:hover:shadow-black/40 transition-shadow flex flex-col"
+                  className="group bg-white dark:bg-[#18181B] rounded-md border border-black/[0.06] dark:border-white/[0.06] overflow-hidden hover:shadow-lg hover:shadow-black/[0.08] dark:hover:shadow-black/40 transition-shadow flex flex-col"
                 >
                   {/* Accent bar */}
                   <div className={cn('h-[3px] w-full bg-gradient-to-r', status.gradient)} />
@@ -291,7 +291,7 @@ export default function Legality() {
                     {/* Status + steps */}
                     <div className="flex items-center gap-2 flex-wrap">
                       <span className={cn('inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[11px] font-medium', status.pill)}>
-                        <span className={cn('w-1.5 h-1.5 rounded-full', status.dot)} />
+                        <span className={cn('w-1.5 h-1.5 rounded-md', status.dot)} />
                         {status.label}
                       </span>
                       <span className="inline-flex items-center gap-1 text-[11px] font-medium text-[#78716C] dark:text-[#A8A29E]">
@@ -306,12 +306,12 @@ export default function Legality() {
                         <span className="font-medium text-[#78716C] dark:text-[#A8A29E]">{t('legality.progress')}</span>
                         <span className="font-bold text-[#1C1917] dark:text-white font-mono">{progress}%</span>
                       </div>
-                      <div className="h-1.5 bg-[#F7F6F3] dark:bg-[#27272A] rounded-full overflow-hidden">
+                      <div className="h-1.5 bg-[#F7F6F3] dark:bg-[#27272A] rounded-md overflow-hidden">
                         <motion.div
                           initial={{ width: 0 }}
                           animate={{ width: `${progress}%` }}
                           transition={{ duration: 0.8, ease: 'easeOut', delay: idx * 0.04 }}
-                          className={cn('h-full rounded-full bg-gradient-to-r', status.gradient)}
+                          className={cn('h-full rounded-md bg-gradient-to-r', status.gradient)}
                         />
                       </div>
                     </div>
@@ -328,7 +328,7 @@ export default function Legality() {
                         <div key={s.id} className="flex items-center justify-between gap-3">
                           <div className="flex items-center gap-2 min-w-0">
                             <div className={cn(
-                              "w-1.5 h-1.5 rounded-full shrink-0",
+                              "w-1.5 h-1.5 rounded-md shrink-0",
                               s.step?.toDate ? "bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.4)]" : "bg-amber-400 shadow-[0_0_8px_rgba(251,191,36,0.4)]"
                             )} />
                             <span className="text-[11px] font-medium text-[#44403C] dark:text-[#D6D3D1] truncate">
@@ -386,7 +386,7 @@ export default function Legality() {
                           </button>
                         </Can>
                       </div>
-                      <div className="w-7 h-7 rounded-full bg-[#1C1917] dark:bg-white flex items-center justify-center text-[10px] font-bold text-white dark:text-[#1C1917]">
+                      <div className="w-7 h-7 rounded-md bg-[#1C1917] dark:bg-white flex items-center justify-center text-[10px] font-bold text-white dark:text-[#1C1917]">
                         {item.createdBy.email.substring(0, 2).toUpperCase()}
                       </div>
                     </div>
@@ -398,7 +398,7 @@ export default function Legality() {
 
           {/* ── Pagination ──────────────────────────────── */}
           {data && data.totalPages > 1 && (
-            <div className="bg-white dark:bg-[#18181B] rounded-xl border border-black/[0.06] dark:border-white/[0.06] px-5 py-3 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div className="bg-white dark:bg-[#18181B] rounded-md border border-black/[0.06] dark:border-white/[0.06] px-5 py-3 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <p className="text-[12px] text-[#78716C] dark:text-[#A8A29E]">
                 {t('common.showing')}{' '}
                 <span className="font-semibold text-[#1C1917] dark:text-white">
@@ -420,9 +420,9 @@ export default function Legality() {
             <motion.div
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
-              className="bg-white dark:bg-[#18181B] rounded-xl border border-black/[0.06] dark:border-white/[0.06] py-20 flex flex-col items-center gap-4 text-center"
+              className="bg-white dark:bg-[#18181B] rounded-md border border-black/[0.06] dark:border-white/[0.06] py-20 flex flex-col items-center gap-4 text-center"
             >
-              <div className="w-12 h-12 rounded-xl bg-[#F7F6F3] dark:bg-[#27272A] flex items-center justify-center">
+              <div className="w-12 h-12 rounded-md bg-[#F7F6F3] dark:bg-[#27272A] flex items-center justify-center">
                 <FileText className="w-5 h-5 text-[#A8A29E]" />
               </div>
               <div>
@@ -433,7 +433,7 @@ export default function Legality() {
               </div>
               {!searchValue && filterStatus === 'all' && (
                 <Link href="/legality/new">
-                  <button className="inline-flex items-center gap-2 h-9 px-5 bg-[#1C1917] dark:bg-white text-white dark:text-[#1C1917] rounded-lg text-[13px] font-semibold shadow-sm hover:opacity-90 transition-opacity mt-2">
+                  <button className="inline-flex items-center gap-2 h-9 px-5 bg-[#1C1917] dark:bg-white text-white dark:text-[#1C1917] rounded-md text-[13px] font-semibold shadow-sm hover:opacity-90 transition-opacity mt-2">
                     <PlusCircle className="w-4 h-4" />
                     {t('legality.create')}
                   </button>

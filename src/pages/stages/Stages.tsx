@@ -1,4 +1,4 @@
-import { useState } from 'react';
+﻿import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import api from '@/lib/api';
@@ -331,7 +331,7 @@ export default function Stages() {
                     {/* Sub-stages count */}
                     <div className="flex items-center justify-end">
                       {hasChildren ? (
-                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-[#F5F1ED] text-[#4A1B1B] dark:bg-gray-800 dark:text-[#B39371]">
+                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-md text-xs font-medium bg-[#F5F1ED] text-[#4A1B1B] dark:bg-gray-800 dark:text-[#B39371]">
                           {stage.children.length}
                         </span>
                       ) : (
@@ -429,7 +429,7 @@ export default function Stages() {
             {/* Empty state */}
             {!isLoading && stages.length === 0 && (
               <div className="flex flex-col items-center justify-center py-16 text-center">
-                <div className="w-16 h-16 rounded-2xl bg-gray-100 dark:bg-gray-800 flex items-center justify-center mb-4">
+                <div className="w-16 h-16 rounded-md bg-gray-100 dark:bg-gray-800 flex items-center justify-center mb-4">
                   <GitBranch className="w-7 h-7 text-gray-400" />
                 </div>
                 <p className="text-sm font-semibold text-gray-900 dark:text-white">

@@ -1,4 +1,4 @@
-import { useLocation, Link } from "wouter";
+﻿import { useLocation, Link } from "wouter";
 import { useMutation } from '@tanstack/react-query';
 import { useForm } from 'react-hook-form';
 import { FormActions } from '../../components/shared/FormActions';
@@ -72,13 +72,13 @@ const FormSection = ({ icon: Icon, title, description, children, delay = 0 }: an
     initial={{ opacity: 0, y: 20 }}
     animate={{ opacity: 1, y: 0 }}
     transition={{ delay }}
-    className="bg-light dark:bg-dark rounded-2xl border border-gray-200 dark:border-gray-800 overflow-hidden shadow-sm hover:shadow-md transition-all"
+    className="bg-light dark:bg-dark rounded-md border border-gray-200 dark:border-gray-800 overflow-hidden shadow-sm hover:shadow-md transition-all"
   >
     <div className="p-6 border-b border-gray-100 dark:border-gray-800 bg-gradient-to-r from-gray-50/50 to-white dark:from-gray-800/50 dark:to-gray-900">
       <div className="flex items-center gap-4">
         <div className="relative">
-          <div className="absolute inset-0 bg-gradient-to-r from-[#4A1B1B] to-[#6B2727] rounded-xl blur-lg opacity-20" />
-          <div className="relative w-12 h-12 rounded-xl bg-gradient-to-br from-[#4A1B1B] to-[#6B2727] shadow-lg flex items-center justify-center">
+          <div className="absolute inset-0 bg-gradient-to-r from-[#4A1B1B] to-[#6B2727] rounded-md blur-lg opacity-20" />
+          <div className="relative w-12 h-12 rounded-md bg-gradient-to-br from-[#4A1B1B] to-[#6B2727] shadow-lg flex items-center justify-center">
             <Icon className="w-6 h-6 text-[#B39371]" />
           </div>
         </div>
@@ -183,17 +183,17 @@ export default function CreateTemplate() {
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8 pb-32">
           
           {/* Header Section */}
-          <div className="bg-light dark:bg-dark rounded-2xl border border-gray-200 dark:border-gray-800 p-6 shadow-sm">
+          <div className="bg-light dark:bg-dark rounded-md border border-gray-200 dark:border-gray-800 p-6 shadow-sm">
             <div className="flex items-center gap-4">
               <Link 
                 href="/templates" 
-                className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-xl transition-colors"
+                className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-md transition-colors"
               >
                 <ArrowLeft className="w-5 h-5 text-gray-500" />
               </Link>
               <div className="relative">
-                <div className="absolute inset-0 bg-gradient-to-r from-[#4A1B1B] to-[#6B2727] rounded-xl blur-lg opacity-50" />
-                <div className="relative w-12 h-12 rounded-xl bg-gradient-to-br from-[#4A1B1B] to-[#6B2727] shadow-lg flex items-center justify-center">
+                <div className="absolute inset-0 bg-gradient-to-r from-[#4A1B1B] to-[#6B2727] rounded-md blur-lg opacity-50" />
+                <div className="relative w-12 h-12 rounded-md bg-gradient-to-br from-[#4A1B1B] to-[#6B2727] shadow-lg flex items-center justify-center">
                   <Home className="w-6 h-6 text-[#B39371]" />
                 </div>
               </div>
@@ -234,7 +234,7 @@ export default function CreateTemplate() {
                     {...register('name.english')}
                     placeholder={t('templates.placeholders.nameEn')}
                     className={cn(
-                      "h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-xl",
+                      "h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md",
                       "hover:bg-white dark:hover:bg-gray-700 hover:border-[#B39371]/30",
                       "focus:bg-white dark:focus:bg-gray-700 focus:border-[#B39371] focus:ring-2 focus:ring-[#B39371]/20",
                       errors.name?.english && "border-red-300 dark:border-red-700 focus:border-red-500 focus:ring-red-500/20"
@@ -253,7 +253,7 @@ export default function CreateTemplate() {
                     dir="rtl"
                     placeholder={t('templates.placeholders.nameAr')}
                     className={cn(
-                      "h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-xl text-right",
+                      "h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md text-right",
                       "hover:bg-white dark:hover:bg-gray-700 hover:border-[#B39371]/30",
                       "focus:bg-white dark:focus:bg-gray-700 focus:border-[#B39371] focus:ring-2 focus:ring-[#B39371]/20",
                       errors.name?.arabic && "border-red-300 dark:border-red-700 focus:border-red-500 focus:ring-red-500/20"
@@ -265,19 +265,19 @@ export default function CreateTemplate() {
                 <FormField label={t('templates.modelType')} required error={errors.modelType?.message}>
                   <Select onValueChange={(val) => setValue('modelType', val)}>
                     <SelectTrigger className={cn(
-                      "h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-xl",
+                      "h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md",
                       "hover:bg-white dark:hover:bg-gray-700 hover:border-[#B39371]/30",
                       "focus:border-[#B39371] focus:ring-2 focus:ring-[#B39371]/20",
                       errors.modelType && "border-red-300 dark:border-red-700"
                     )}>
                       <SelectValue placeholder={t('templates.placeholders.selectModel')} />
                     </SelectTrigger>
-                    <SelectContent className="rounded-xl border-gray-200 dark:border-gray-700">
+                    <SelectContent className="rounded-md border-gray-200 dark:border-gray-700">
                       {['Residential', 'Commercial', 'Mixed-use', 'Type A'].map((type) => (
                         <SelectItem 
                           key={type} 
                           value={type}
-                          className="rounded-lg focus:bg-[#F5F1ED] dark:focus:bg-gray-800 cursor-pointer"
+                          className="rounded-md focus:bg-[#F5F1ED] dark:focus:bg-gray-800 cursor-pointer"
                         >
                           {type}
                         </SelectItem>
@@ -292,7 +292,7 @@ export default function CreateTemplate() {
                     {...register('sku')}
                     placeholder={t('templates.placeholders.sku')}
                     className={cn(
-                      "h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-xl",
+                      "h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md",
                       "hover:bg-white dark:hover:bg-gray-700 hover:border-[#B39371]/30",
                       "focus:bg-white dark:focus:bg-gray-700 focus:border-[#B39371] focus:ring-2 focus:ring-[#B39371]/20",
                       errors.sku && "border-red-300 dark:border-red-700 focus:border-red-500 focus:ring-red-500/20"
@@ -318,7 +318,7 @@ export default function CreateTemplate() {
                       step="0.01"
                       {...register('maidRoom')}
                       placeholder="0.00"
-                      className="h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-xl px-4"
+                      className="h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md px-4"
                     />
                   </FormField>
                   <FormField label={t('templates.labels.clothsRoom')} error={errors.clothsRoom?.message}>
@@ -327,7 +327,7 @@ export default function CreateTemplate() {
                       step="0.01"
                       {...register('clothsRoom')}
                       placeholder="0.00"
-                      className="h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-xl px-4"
+                      className="h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md px-4"
                     />
                   </FormField>
                   <FormField label={t('templates.labels.driverRoom')} error={errors.driverRoom?.message}>
@@ -336,7 +336,7 @@ export default function CreateTemplate() {
                       step="0.01"
                       {...register('driverRoom')}
                       placeholder="0.00"
-                      className="h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-xl px-4"
+                      className="h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md px-4"
                     />
                   </FormField>
                 </div>
@@ -351,7 +351,7 @@ export default function CreateTemplate() {
                         {...register('size')}
                         placeholder="125"
                         className={cn(
-                          "h-12 pl-10 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-xl",
+                          "h-12 pl-10 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md",
                           "hover:bg-white dark:hover:bg-gray-700 hover:border-[#B39371]/30",
                           "focus:bg-white dark:focus:bg-gray-700 focus:border-[#B39371] focus:ring-2 focus:ring-[#B39371]/20"
                         )}
@@ -366,7 +366,7 @@ export default function CreateTemplate() {
                         type="number"
                         {...register('totalRooms')}
                         placeholder="7"
-                        className="h-12 pl-10 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-xl hover:bg-white focus:border-[#B39371] transition-all"
+                        className="h-12 pl-10 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md hover:bg-white focus:border-[#B39371] transition-all"
                       />
                     </div>
                   </FormField>
@@ -378,7 +378,7 @@ export default function CreateTemplate() {
                         type="number"
                         {...register('bedrooms')}
                         placeholder="5"
-                        className="h-12 pl-10 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-xl hover:bg-white focus:border-[#B39371] transition-all"
+                        className="h-12 pl-10 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md hover:bg-white focus:border-[#B39371] transition-all"
                       />
                     </div>
                   </FormField>
@@ -390,7 +390,7 @@ export default function CreateTemplate() {
                         type="number"
                         {...register('bathrooms')}
                         placeholder="2"
-                        className="h-12 pl-10 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-xl hover:bg-white focus:border-[#B39371] transition-all"
+                        className="h-12 pl-10 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md hover:bg-white focus:border-[#B39371] transition-all"
                       />
                     </div>
                   </FormField>
@@ -420,7 +420,7 @@ export default function CreateTemplate() {
                             <Label
                               htmlFor={`balcony-${option}`}
                               className={cn(
-                                "px-6 py-2.5 text-sm font-medium rounded-lg cursor-pointer transition-all border-2",
+                                "px-6 py-2.5 text-sm font-medium rounded-md cursor-pointer transition-all border-2",
                                 !!watch('balconyAccess') === (value === 'true')
                                   ? "bg-[#B39371] text-white border-[#B39371] shadow-lg shadow-[#B39371]/20"
                                   : "bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:border-[#B39371]/30"
@@ -451,7 +451,7 @@ export default function CreateTemplate() {
                           <Label
                             htmlFor={`loc-${loc}`}
                             className={cn(
-                              "px-6 py-2.5 text-sm font-medium rounded-lg cursor-pointer transition-all border-2",
+                              "px-6 py-2.5 text-sm font-medium rounded-md cursor-pointer transition-all border-2",
                               watch('location') === loc
                                 ? "bg-[#B39371] text-white border-[#B39371] shadow-lg shadow-[#B39371]/20"
                                 : "bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:border-[#B39371]/30"
@@ -483,7 +483,7 @@ export default function CreateTemplate() {
                         whileTap={{ scale: 0.98 }}
                         onClick={() => setValue(feature.key as any, !watch(feature.key as any))}
                         className={cn(
-                          "relative overflow-hidden rounded-xl border-2 p-4 cursor-pointer transition-all",
+                          "relative overflow-hidden rounded-md border-2 p-4 cursor-pointer transition-all",
                           watchedFeatures[feature.key as keyof typeof watchedFeatures]
                             ? "border-[#B39371] bg-[#B39371]/5 dark:bg-[#B39371]/10 shadow-lg shadow-[#B39371]/10"
                             : "border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 hover:border-gray-300 dark:hover:border-gray-600"

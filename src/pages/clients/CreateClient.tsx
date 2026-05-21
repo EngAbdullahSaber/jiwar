@@ -1,4 +1,4 @@
-import { useState } from 'react';
+﻿import { useState } from 'react';
 import { useLocation } from "wouter";
 import { TopHeader } from '../../components/TopHeader';
 import { Shell } from '../../components/shared/Shell';
@@ -135,7 +135,7 @@ export default function CreateClient() {
                <div className="flex items-center gap-4">
                   <div className="relative">
                     <div className="absolute inset-0 bg-gradient-to-r from-[#4A1B1B] to-[#6B2727] rounded-md blur-lg opacity-20" />
-                    <div className="relative w-12 h-12 rounded-xl bg-gradient-to-br from-[#4A1B1B] to-[#6B2727] shadow-lg flex items-center justify-center">
+                    <div className="relative w-12 h-12 rounded-md bg-gradient-to-br from-[#4A1B1B] to-[#6B2727] shadow-lg flex items-center justify-center">
                       <UsersIcon className="w-6 h-6 text-[#B39371]" />
                     </div>
                   </div>
@@ -160,7 +160,7 @@ export default function CreateClient() {
                         name="fullName"
                         required
                         placeholder={t('clients.placeholders.fullName')}
-                        className="h-12 pl-11 rtl:pl-4 rtl:pr-11 rounded-xl bg-gray-50 dark:bg-gray-800/50 border-gray-100 dark:border-gray-700 focus:bg-white dark:focus:bg-gray-800 focus:ring-2 focus:ring-[#B39371]/10 transition-all"
+                        className="h-12 pl-11 rtl:pl-4 rtl:pr-11 rounded-md bg-gray-50 dark:bg-gray-800/50 border-gray-100 dark:border-gray-700 focus:bg-white dark:focus:bg-gray-800 focus:ring-2 focus:ring-[#B39371]/10 transition-all"
                         value={formData.fullName}
                         onChange={handleChange}
                       />
@@ -174,7 +174,7 @@ export default function CreateClient() {
                       <select
                         name="type"
                         required
-                        className="w-full h-12 px-4 rounded-xl bg-gray-50 dark:bg-gray-800/50 border border-gray-100 dark:border-gray-700 text-sm font-medium text-gray-700 dark:text-gray-300 outline-none focus:bg-white dark:focus:bg-gray-800 focus:ring-2 focus:ring-[#B39371]/10 transition-all appearance-none cursor-pointer"
+                        className="w-full h-12 px-4 rounded-md bg-gray-50 dark:bg-gray-800/50 border border-gray-100 dark:border-gray-700 text-sm font-medium text-gray-700 dark:text-gray-300 outline-none focus:bg-white dark:focus:bg-gray-800 focus:ring-2 focus:ring-[#B39371]/10 transition-all appearance-none cursor-pointer"
                         value={formData.type}
                         onChange={handleChange}
                       >
@@ -194,7 +194,7 @@ export default function CreateClient() {
                         name="phoneNumber"
                         required
                         placeholder={t('clients.placeholders.phone')}
-                        className="h-12 pl-11 rtl:pl-4 rtl:pr-11 rounded-xl bg-gray-50 dark:bg-gray-800/50 border-gray-100 dark:border-gray-700 focus:bg-white dark:focus:bg-gray-800 focus:ring-2 focus:ring-[#B39371]/10 transition-all"
+                        className="h-12 pl-11 rtl:pl-4 rtl:pr-11 rounded-md bg-gray-50 dark:bg-gray-800/50 border-gray-100 dark:border-gray-700 focus:bg-white dark:focus:bg-gray-800 focus:ring-2 focus:ring-[#B39371]/10 transition-all"
                         value={formData.phoneNumber}
                         onChange={handleChange}
                       />
@@ -210,7 +210,7 @@ export default function CreateClient() {
                         name="email"
                         type="email"
                         placeholder={t('clients.placeholders.email')}
-                        className="h-12 pl-11 rtl:pl-4 rtl:pr-11 rounded-xl bg-gray-50 dark:bg-gray-800/50 border-gray-100 dark:border-gray-700 focus:bg-white dark:focus:bg-gray-800 focus:ring-2 focus:ring-[#B39371]/10 transition-all"
+                        className="h-12 pl-11 rtl:pl-4 rtl:pr-11 rounded-md bg-gray-50 dark:bg-gray-800/50 border-gray-100 dark:border-gray-700 focus:bg-white dark:focus:bg-gray-800 focus:ring-2 focus:ring-[#B39371]/10 transition-all"
                         value={formData.email}
                         onChange={handleChange}
                       />
@@ -227,7 +227,7 @@ export default function CreateClient() {
                         type="password"
                         required
                         placeholder={t('clients.placeholders.password')}
-                        className="h-12 pl-11 rtl:pl-4 rtl:pr-11 rounded-xl bg-gray-50 dark:bg-gray-800/50 border-gray-100 dark:border-gray-700 focus:bg-white dark:focus:bg-gray-800 focus:ring-2 focus:ring-[#B39371]/10 transition-all"
+                        className="h-12 pl-11 rtl:pl-4 rtl:pr-11 rounded-md bg-gray-50 dark:bg-gray-800/50 border-gray-100 dark:border-gray-700 focus:bg-white dark:focus:bg-gray-800 focus:ring-2 focus:ring-[#B39371]/10 transition-all"
                         value={formData.password}
                         onChange={handleChange}
                       />
@@ -242,7 +242,7 @@ export default function CreateClient() {
                       <Input
                         name="vatNumber"
                         placeholder={t('clients.placeholders.vat')}
-                        className="h-12 pl-11 rtl:pl-4 rtl:pr-11 rounded-xl bg-gray-50 dark:bg-gray-800/50 border-gray-100 dark:border-gray-700 focus:bg-white dark:focus:bg-gray-800 focus:ring-2 focus:ring-[#B39371]/10 transition-all"
+                        className="h-12 pl-11 rtl:pl-4 rtl:pr-11 rounded-md bg-gray-50 dark:bg-gray-800/50 border-gray-100 dark:border-gray-700 focus:bg-white dark:focus:bg-gray-800 focus:ring-2 focus:ring-[#B39371]/10 transition-all"
                         value={formData.vatNumber}
                         onChange={handleChange}
                       />
@@ -257,7 +257,7 @@ export default function CreateClient() {
                       <Input
                         name="iqama"
                         placeholder={t('clients.placeholders.iqama')}
-                        className="h-12 pl-11 rtl:pl-4 rtl:pr-11 rounded-xl bg-gray-50 dark:bg-gray-800/50 border-gray-100 dark:border-gray-700 focus:bg-white dark:focus:bg-gray-800 focus:ring-2 focus:ring-[#B39371]/10 transition-all"
+                        className="h-12 pl-11 rtl:pl-4 rtl:pr-11 rounded-md bg-gray-50 dark:bg-gray-800/50 border-gray-100 dark:border-gray-700 focus:bg-white dark:focus:bg-gray-800 focus:ring-2 focus:ring-[#B39371]/10 transition-all"
                         value={formData.iqama}
                         onChange={handleChange}
                       />
@@ -272,7 +272,7 @@ export default function CreateClient() {
                       <Input
                         name="iban"
                         placeholder={t('clients.placeholders.iban')}
-                        className="h-12 pl-11 rtl:pl-4 rtl:pr-11 rounded-xl bg-gray-50 dark:bg-gray-800/50 border-gray-100 dark:border-gray-700 focus:bg-white dark:focus:bg-gray-800 focus:ring-2 focus:ring-[#B39371]/10 transition-all"
+                        className="h-12 pl-11 rtl:pl-4 rtl:pr-11 rounded-md bg-gray-50 dark:bg-gray-800/50 border-gray-100 dark:border-gray-700 focus:bg-white dark:focus:bg-gray-800 focus:ring-2 focus:ring-[#B39371]/10 transition-all"
                         value={formData.iban}
                         onChange={handleChange}
                       />
@@ -340,7 +340,7 @@ export default function CreateClient() {
                         name="physicalAddress"
                         rows={3}
                         placeholder={t('clients.placeholders.address')}
-                        className="w-full pl-11 pr-4 rtl:pl-4 rtl:pr-11 pt-3 rounded-xl bg-gray-50 dark:bg-gray-800/50 border border-gray-100 dark:border-gray-700 text-sm font-medium text-gray-700 dark:text-gray-300 outline-none focus:bg-white dark:focus:bg-gray-800 focus:ring-2 focus:ring-[#B39371]/10 transition-all resize-none"
+                        className="w-full pl-11 pr-4 rtl:pl-4 rtl:pr-11 pt-3 rounded-md bg-gray-50 dark:bg-gray-800/50 border border-gray-100 dark:border-gray-700 text-sm font-medium text-gray-700 dark:text-gray-300 outline-none focus:bg-white dark:focus:bg-gray-800 focus:ring-2 focus:ring-[#B39371]/10 transition-all resize-none"
                         value={formData.physicalAddress}
                         onChange={handleChange}
                       />
@@ -384,7 +384,7 @@ export default function CreateClient() {
           {/* Guidelines */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
              <div className="p-6 bg-emerald-50 dark:bg-emerald-500/5 rounded-md border border-emerald-100 dark:border-emerald-500/20 flex items-start gap-4 transition-all hover:shadow-md">
-                <div className="w-10 h-10 rounded-xl bg-emerald-500/10 flex items-center justify-center text-emerald-600 flex-shrink-0">
+                <div className="w-10 h-10 rounded-md bg-emerald-500/10 flex items-center justify-center text-emerald-600 flex-shrink-0">
                   <CheckCircle2 className="w-6 h-6" />
                 </div>
                 <div className="space-y-1">
@@ -393,7 +393,7 @@ export default function CreateClient() {
                 </div>
              </div>
              <div className="p-6 bg-amber-50 dark:bg-amber-500/5 rounded-md border border-amber-100 dark:border-amber-500/20 flex items-start gap-4 transition-all hover:shadow-md">
-                <div className="w-10 h-10 rounded-xl bg-amber-500/10 flex items-center justify-center text-amber-600 flex-shrink-0">
+                <div className="w-10 h-10 rounded-md bg-amber-500/10 flex items-center justify-center text-amber-600 flex-shrink-0">
                   <AlertCircle className="w-6 h-6" />
                 </div>
                 <div className="space-y-1">

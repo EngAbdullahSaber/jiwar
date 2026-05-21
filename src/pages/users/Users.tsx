@@ -1,4 +1,4 @@
-import { useState } from 'react';
+﻿import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { TopHeader } from '../../components/TopHeader';
 import { 
@@ -199,7 +199,7 @@ export default function Users() {
       cell: (user) => (
         <div className="flex items-center gap-2">
           <div className={cn(
-            "w-2 h-2 rounded-full",
+            "w-2 h-2 rounded-md",
             user.isVerified ? "bg-emerald-500 animate-pulse" : "bg-gray-300"
           )} />
           <span className={cn(
@@ -218,7 +218,7 @@ export default function Users() {
       cell: (user) => (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="h-8 w-8 p-0 rounded-lg">
+            <Button variant="ghost" className="h-8 w-8 p-0 rounded-md">
               <MoreVertical className="h-4 w-4 text-gray-400" />
             </Button>
           </DropdownMenuTrigger>
@@ -227,7 +227,7 @@ export default function Users() {
             <DropdownMenuSeparator />
             <Can I="UPDATE" a="user">
               <DropdownMenuItem 
-                className="rounded-lg cursor-pointer"
+                className="rounded-md cursor-pointer"
                 onClick={() => {
                   setSelectedUser(user);
                   setIsUpdateDialogOpen(true);
@@ -240,7 +240,7 @@ export default function Users() {
             <Can I="DELETE" a="user">
               <>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem className="rounded-lg cursor-pointer text-red-600">
+                <DropdownMenuItem className="rounded-md cursor-pointer text-red-600">
                   <Trash2 className="w-3.5 h-3.5 mr-2 rtl:mr-0 rtl:ml-2" />
                   <span className="text-xs">{t('users.delete')}</span>
                 </DropdownMenuItem>

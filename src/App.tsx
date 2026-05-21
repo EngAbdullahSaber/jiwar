@@ -1,4 +1,4 @@
-import { Switch, Route } from "wouter";
+﻿import { Switch, Route } from "wouter";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster as HotToaster } from "react-hot-toast";
@@ -93,8 +93,8 @@ function ProtectedRoute({ component: Component, resource, action = 'READ', ...re
     if (!hasPermission) {
       return (
         <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-950 p-4">
-          <div className="max-w-md w-full bg-white dark:bg-gray-900 rounded-3xl shadow-2xl border border-gray-100 dark:border-gray-800 p-10 text-center">
-            <div className="w-20 h-20 bg-red-50 dark:bg-red-500/10 rounded-2xl flex items-center justify-center mx-auto mb-6">
+          <div className="max-w-md w-full bg-white dark:bg-gray-900 rounded-md shadow-2xl border border-gray-100 dark:border-gray-800 p-10 text-center">
+            <div className="w-20 h-20 bg-red-50 dark:bg-red-500/10 rounded-md flex items-center justify-center mx-auto mb-6">
               <ShieldAlert className="w-10 h-10 text-red-500" />
             </div>
             <h1 className="text-2xl font-black text-gray-900 dark:text-white mb-2">
@@ -105,7 +105,7 @@ function ProtectedRoute({ component: Component, resource, action = 'READ', ...re
             </p>
             <button 
               onClick={() => setLocation('/dashboard')}
-              className="w-full h-12 flex items-center justify-center gap-2 bg-gray-900 dark:bg-white text-white dark:text-gray-900 rounded-xl font-bold transition-all hover:scale-[1.02] active:scale-[0.98]"
+              className="w-full h-12 flex items-center justify-center gap-2 bg-gray-900 dark:bg-white text-white dark:text-gray-900 rounded-md font-bold transition-all hover:scale-[1.02] active:scale-[0.98]"
             >
               <ArrowLeft className="w-4 h-4 rtl:rotate-180" />
               {t('common.goDashboard')}

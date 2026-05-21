@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import { cn } from "@/lib/utils";
 import { Loader2, ChevronDown, ChevronUp, Search } from 'lucide-react';
 import { Pagination } from './Pagination';
@@ -359,9 +359,9 @@ export const TableCell = {
   
   Progress: ({ value }: { value: number }) => (
     <div className="flex items-center gap-3 min-w-[100px]">
-      <div className="flex-1 h-2 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
+      <div className="flex-1 h-2 bg-gray-100 dark:bg-gray-800 rounded-md overflow-hidden">
         <div 
-          className="h-full bg-gradient-to-r from-[#4A1B1B] to-[#B39371] rounded-full"
+          className="h-full bg-gradient-to-r from-[#4A1B1B] to-[#B39371] rounded-md"
           style={{ width: `${value}%` }}
         />
       </div>

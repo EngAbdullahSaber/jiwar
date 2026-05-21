@@ -1,4 +1,4 @@
-import { useState } from 'react';
+﻿import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { TopHeader } from '../../components/TopHeader';
 import { Shell } from '../../components/shared/Shell';
@@ -131,8 +131,8 @@ export default function Roles() {
             <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
               <div className="flex items-center gap-4">
                 <div className="relative">
-                  <div className="absolute inset-0 bg-gradient-to-r from-[#4A1B1B] to-[#6B2727] rounded-xl blur-lg opacity-50" />
-                  <div className="relative w-14 h-14 rounded-xl bg-gradient-to-br from-[#4A1B1B] to-[#6B2727] shadow-lg flex items-center justify-center">
+                  <div className="absolute inset-0 bg-gradient-to-r from-[#4A1B1B] to-[#6B2727] rounded-md blur-lg opacity-50" />
+                  <div className="relative w-14 h-14 rounded-md bg-gradient-to-br from-[#4A1B1B] to-[#6B2727] shadow-lg flex items-center justify-center">
                     <Shield className="w-7 h-7 text-[#B39371]" />
                   </div>
                 </div>
@@ -211,12 +211,12 @@ export default function Roles() {
           </div>
 
           {/* Search */}
-          <div className="bg-white dark:bg-gray-900 p-2 rounded-xl border border-gray-200 dark:border-gray-800 shadow-sm">
+          <div className="bg-white dark:bg-gray-900 p-2 rounded-md border border-gray-200 dark:border-gray-800 shadow-sm">
             <div className="relative">
               <Search className="absolute left-4 rtl:left-auto rtl:right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
               <Input
                 placeholder={t('roles.searchPlaceholder')}
-                className="pl-11 rtl:pl-4 rtl:pr-11 h-12 bg-gray-50/50 dark:bg-gray-800/50 border-none rounded-lg focus-visible:ring-2 focus-visible:ring-[#B39371]/20 transition-all"
+                className="pl-11 rtl:pl-4 rtl:pr-11 h-12 bg-gray-50/50 dark:bg-gray-800/50 border-none rounded-md focus-visible:ring-2 focus-visible:ring-[#B39371]/20 transition-all"
                 value={searchValue}
                 onChange={(e) => setSearchValue(e.target.value)}
               />
@@ -229,7 +229,7 @@ export default function Roles() {
               Array.from({ length: 6 }).map((_, i) => (
                 <div
                   key={i}
-                  className="h-[240px] bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm animate-pulse"
+                  className="h-[240px] bg-white dark:bg-gray-900 rounded-md border border-gray-100 dark:border-gray-800 shadow-sm animate-pulse"
                 />
               ))
             ) : (
@@ -246,15 +246,15 @@ export default function Roles() {
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, scale: 0.95 }}
                       transition={{ delay: index * 0.04, duration: 0.3 }}
-                      className="group relative bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 p-6 shadow-sm hover:shadow-lg hover:border-[#B39371]/30 transition-all flex flex-col gap-5 overflow-hidden"
+                      className="group relative bg-white dark:bg-gray-900 rounded-md border border-gray-100 dark:border-gray-800 p-6 shadow-sm hover:shadow-lg hover:border-[#B39371]/30 transition-all flex flex-col gap-5 overflow-hidden"
                     >
                       {/* Glow */}
-                      <div className="absolute top-0 right-0 rtl:left-0 rtl:right-auto w-40 h-40 bg-[#B39371]/5 blur-3xl rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+                      <div className="absolute top-0 right-0 rtl:left-0 rtl:right-auto w-40 h-40 bg-[#B39371]/5 blur-3xl rounded-md opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
 
                       {/* Top row */}
                       <div className="flex items-start justify-between relative z-10">
                         <div className="flex items-center gap-3">
-                          <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-[#4A1B1B]/8 to-[#6B2727]/12 dark:from-[#B39371]/10 dark:to-[#D4A574]/15 flex items-center justify-center text-[#4A1B1B] dark:text-[#B39371] border border-[#4A1B1B]/10 dark:border-[#B39371]/20 group-hover:scale-110 transition-transform">
+                          <div className="w-11 h-11 rounded-md bg-gradient-to-br from-[#4A1B1B]/8 to-[#6B2727]/12 dark:from-[#B39371]/10 dark:to-[#D4A574]/15 flex items-center justify-center text-[#4A1B1B] dark:text-[#B39371] border border-[#4A1B1B]/10 dark:border-[#B39371]/20 group-hover:scale-110 transition-transform">
                             <RoleIcon className="w-5 h-5" />
                           </div>
                           <div>
@@ -272,7 +272,7 @@ export default function Roles() {
                             <Button
                               variant="ghost"
                               size="icon"
-                              className="h-8 w-8 text-gray-400 hover:text-gray-700 dark:hover:text-white rounded-lg opacity-0 group-hover:opacity-100 transition-opacity"
+                              className="h-8 w-8 text-gray-400 hover:text-gray-700 dark:hover:text-white rounded-md opacity-0 group-hover:opacity-100 transition-opacity"
                             >
                               <MoreVertical className="w-4 h-4" />
                             </Button>
@@ -284,7 +284,7 @@ export default function Roles() {
                             <DropdownMenuSeparator />
                             <Can I="UPDATE" a="role-permission">
                               <Link href={`/roles/${role.id}/edit`}>
-                                <DropdownMenuItem className="cursor-pointer rounded-lg gap-2">
+                                <DropdownMenuItem className="cursor-pointer rounded-md gap-2">
                                   <Edit className="w-3.5 h-3.5 text-gray-400" />
                                   <span className="text-xs">{t('common.edit')}</span>
                                 </DropdownMenuItem>
@@ -294,7 +294,7 @@ export default function Roles() {
                               <>
                                 <DropdownMenuSeparator />
                                 <DropdownMenuItem
-                                  className="cursor-pointer rounded-lg gap-2 text-red-600 focus:text-red-700"
+                                  className="cursor-pointer rounded-md gap-2 text-red-600 focus:text-red-700"
                                   onClick={() => setRoleToDelete(role.id)}
                                 >
                                   <Trash2 className="w-3.5 h-3.5" />
@@ -316,13 +316,13 @@ export default function Roles() {
 
                       {/* Stats row */}
                       <div className="flex items-center gap-3 relative z-10">
-                        <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-100 dark:border-emerald-500/20">
+                        <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-100 dark:border-emerald-500/20">
                           <Users className="w-3 h-3" />
                           <span className="text-[10px] font-semibold uppercase tracking-wider">
                             {userCount} {t('sidebar.users')}
                           </span>
                         </div>
-                        <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-amber-50 dark:bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-100 dark:border-amber-500/20">
+                        <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-amber-50 dark:bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-100 dark:border-amber-500/20">
                           <Key className="w-3 h-3" />
                           <span className="text-[10px] font-semibold uppercase tracking-wider">
                             {permCount} {t('roles.perms')}
@@ -345,9 +345,9 @@ export default function Roles() {
                       initial={{ opacity: 0, y: 16 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: (filteredRoles?.length || 0) * 0.04 + 0.1 }}
-                      className="group h-full min-h-[240px] bg-[#B39371]/5 dark:bg-[#B39371]/5 rounded-2xl border-2 border-dashed border-[#B39371]/25 p-6 flex flex-col items-center justify-center text-center gap-4 hover:border-[#B39371]/50 hover:bg-[#B39371]/10 transition-all cursor-pointer"
+                      className="group h-full min-h-[240px] bg-[#B39371]/5 dark:bg-[#B39371]/5 rounded-md border-2 border-dashed border-[#B39371]/25 p-6 flex flex-col items-center justify-center text-center gap-4 hover:border-[#B39371]/50 hover:bg-[#B39371]/10 transition-all cursor-pointer"
                     >
-                      <div className="w-14 h-14 rounded-2xl bg-white dark:bg-gray-900 border border-[#B39371]/20 flex items-center justify-center text-[#B39371] shadow-md group-hover:scale-110 group-hover:rotate-6 transition-all duration-300">
+                      <div className="w-14 h-14 rounded-md bg-white dark:bg-gray-900 border border-[#B39371]/20 flex items-center justify-center text-[#B39371] shadow-md group-hover:scale-110 group-hover:rotate-6 transition-all duration-300">
                         <PlusCircle className="w-7 h-7" />
                       </div>
                       <div className="space-y-1">
@@ -372,7 +372,7 @@ export default function Roles() {
               animate={{ opacity: 1, y: 0 }}
               className="py-20 text-center"
             >
-              <div className="w-20 h-20 bg-gray-100 dark:bg-gray-800 rounded-2xl flex items-center justify-center mx-auto mb-6">
+              <div className="w-20 h-20 bg-gray-100 dark:bg-gray-800 rounded-md flex items-center justify-center mx-auto mb-6">
                 <Search className="w-9 h-9 text-gray-400" />
               </div>
               <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
@@ -384,7 +384,7 @@ export default function Roles() {
               <Button
                 variant="outline"
                 onClick={() => setSearchValue('')}
-                className="rounded-lg px-6"
+                className="rounded-md px-6"
               >
                 {t('roles.empty.clearSearch')}
               </Button>

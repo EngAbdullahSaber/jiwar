@@ -1,4 +1,4 @@
-import { useState } from 'react';
+﻿import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { TopHeader } from '../../components/TopHeader';
 import { 
@@ -170,7 +170,7 @@ export default function Clients() {
             </p>
             <div className="flex items-center gap-1.5 text-xs text-gray-400">
               <Badge variant="outline" className={cn(
-                "px-2 py-0 text-[10px] font-medium rounded-full",
+                "px-2 py-0 text-[10px] font-medium rounded-md",
                 client.type === 'individual' 
                   ? "bg-blue-50 text-blue-600 border-blue-100" 
                   : "bg-purple-50 text-purple-600 border-purple-100"
@@ -215,7 +215,7 @@ export default function Clients() {
         <div className="flex flex-col gap-1">
           <div className="flex items-center gap-1.5">
             <Badge variant="outline" className={cn(
-              "px-2 py-0 text-[10px] font-medium rounded-full",
+              "px-2 py-0 text-[10px] font-medium rounded-md",
               client.activeContract > 0 
                 ? "bg-emerald-50 text-emerald-600 border-emerald-100" 
                 : "bg-gray-50 text-gray-400 border-gray-100"
@@ -245,7 +245,7 @@ export default function Clients() {
       cell: (client) => (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="h-8 w-8 p-0 rounded-lg">
+            <Button variant="ghost" className="h-8 w-8 p-0 rounded-md">
               <MoreVertical className="h-4 w-4 text-gray-400" />
             </Button>
           </DropdownMenuTrigger>
@@ -255,7 +255,7 @@ export default function Clients() {
             </DropdownMenuLabel>
             <Can I="READ" a="client">
               <Link href={`/clients/${client.id}`}>
-                <DropdownMenuItem className="rounded-lg cursor-pointer">
+                <DropdownMenuItem className="rounded-md cursor-pointer">
                   <Eye className="w-3.5 h-3.5 mr-2 rtl:ml-2 rtl:mr-0 text-gray-400" />
                   <span className="text-xs">{t('common.details')}</span>
                 </DropdownMenuItem>
@@ -265,7 +265,7 @@ export default function Clients() {
               <>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem 
-                  className="rounded-lg cursor-pointer text-emerald-600 focus:text-emerald-700"
+                  className="rounded-md cursor-pointer text-emerald-600 focus:text-emerald-700"
                   onClick={() => setPaymentClient({ id: client.id, name: client.fullName })}
                 >
                   <CreditCard className="w-3.5 h-3.5 mr-2 rtl:ml-2 rtl:mr-0" />
@@ -277,7 +277,7 @@ export default function Clients() {
               <>
                 <DropdownMenuSeparator />
                 <Link href={`/clients/${client.id}/edit`}>
-                  <DropdownMenuItem className="rounded-lg cursor-pointer">
+                  <DropdownMenuItem className="rounded-md cursor-pointer">
                     <Edit className="w-3.5 h-3.5 mr-2 rtl:ml-2 rtl:mr-0 text-gray-400" />
                     <span className="text-xs">{t('common.edit')}</span>
                   </DropdownMenuItem>
@@ -288,7 +288,7 @@ export default function Clients() {
               <>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem 
-                  className="rounded-lg cursor-pointer text-red-600"
+                  className="rounded-md cursor-pointer text-red-600"
                   onClick={() => setClientToDelete(client.id)}
                 >
                   <Trash2 className="w-3.5 h-3.5 mr-2 rtl:ml-2 rtl:mr-0" />
@@ -314,8 +314,8 @@ export default function Clients() {
             <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
               <div className="flex items-center gap-4">
                 <div className="relative">
-                  <div className="absolute inset-0 bg-gradient-to-r from-[#4A1B1B] to-[#6B2727] rounded-xl blur-lg opacity-50" />
-                  <div className="relative w-14 h-14 rounded-xl bg-gradient-to-br from-[#4A1B1B] to-[#6B2727] shadow-lg flex items-center justify-center">
+                  <div className="absolute inset-0 bg-gradient-to-r from-[#4A1B1B] to-[#6B2727] rounded-md blur-lg opacity-50" />
+                  <div className="relative w-14 h-14 rounded-md bg-gradient-to-br from-[#4A1B1B] to-[#6B2727] shadow-lg flex items-center justify-center">
                     <UsersIcon className="w-7 h-7 text-[#B39371]" />
                   </div>
                 </div>
@@ -391,9 +391,9 @@ export default function Clients() {
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 p-12 text-center"
+              className="bg-white dark:bg-gray-900 rounded-md border border-gray-200 dark:border-gray-800 p-12 text-center"
             >
-              <div className="w-20 h-20 rounded-2xl bg-gray-100 dark:bg-gray-800 flex items-center justify-center mx-auto mb-6">
+              <div className="w-20 h-20 rounded-md bg-gray-100 dark:bg-gray-800 flex items-center justify-center mx-auto mb-6">
                 <UsersIcon className="w-8 h-8 text-gray-400" />
               </div>
               <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">

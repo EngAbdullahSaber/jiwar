@@ -1,4 +1,4 @@
-import { useState } from 'react';
+﻿import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { TopHeader } from '../../components/TopHeader';
@@ -168,12 +168,12 @@ export default function Templates() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
           
           {/* Header Section */}
-          <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 p-6 shadow-sm">
+          <div className="bg-white dark:bg-gray-900 rounded-md border border-gray-200 dark:border-gray-800 p-6 shadow-sm">
             <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
               <div className="flex items-center gap-4">
                 <div className="relative">
-                  <div className="absolute inset-0 bg-gradient-to-r from-[#4A1B1B] to-[#6B2727] rounded-xl blur-lg opacity-50" />
-                  <div className="relative w-14 h-14 rounded-xl bg-gradient-to-br from-[#4A1B1B] to-[#6B2727] shadow-lg flex items-center justify-center">
+                  <div className="absolute inset-0 bg-gradient-to-r from-[#4A1B1B] to-[#6B2727] rounded-md blur-lg opacity-50" />
+                  <div className="relative w-14 h-14 rounded-md bg-gradient-to-br from-[#4A1B1B] to-[#6B2727] shadow-lg flex items-center justify-center">
                     <Home className="w-7 h-7 text-[#B39371]" />
                   </div>
                 </div>
@@ -213,14 +213,14 @@ export default function Templates() {
         
 
           {/* Search and Filter Section */}
-          <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 p-6 shadow-sm">
+          <div className="bg-white dark:bg-gray-900 rounded-md border border-gray-200 dark:border-gray-800 p-6 shadow-sm">
             <div className="flex flex-col sm:flex-row gap-4">
               <div className="flex-1 relative">
                 <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
                 <input
                   type="text"
                   placeholder={t('templates.placeholders.search')}
-                  className="w-full pl-12 pr-4 py-3 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#B39371]/20 focus:border-[#B39371] transition-all"
+                  className="w-full pl-12 pr-4 py-3 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-[#B39371]/20 focus:border-[#B39371] transition-all"
                   value={searchValue}
                   onChange={(e) => setSearchValue(e.target.value)}
                 />
@@ -230,7 +230,7 @@ export default function Templates() {
               <div className="relative">
                 <button
                   onClick={() => setShowSortDropdown(!showSortDropdown)}
-                  className="flex items-center gap-2 px-4 py-3 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm hover:bg-gray-100 dark:hover:bg-gray-700 transition-all min-w-[160px] justify-between"
+                  className="flex items-center gap-2 px-4 py-3 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-md text-sm hover:bg-gray-100 dark:hover:bg-gray-700 transition-all min-w-[160px] justify-between"
                 >
                   <span className="text-gray-600 dark:text-gray-400">
                     {sortOptions.find(opt => opt.value === sortOrder)?.label || t('templates.sortBy')}
@@ -244,7 +244,7 @@ export default function Templates() {
                       initial={{ opacity: 0, y: -10 }}
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, y: -10 }}
-                      className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl shadow-lg z-50 overflow-hidden"
+                      className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-md shadow-lg z-50 overflow-hidden"
                     >
                       {sortOptions.map((option) => (
                         <button
@@ -298,8 +298,8 @@ export default function Templates() {
 
               {isLoading ? (
                 Array.from({ length: 5 }).map((_, i) => (
-                  <div key={i} className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 h-[450px] p-4 space-y-4">
-                    <div className="bg-gray-200 dark:bg-gray-800 rounded-xl h-48 animate-pulse" />
+                  <div key={i} className="bg-white dark:bg-gray-900 rounded-md border border-gray-200 dark:border-gray-800 h-[450px] p-4 space-y-4">
+                    <div className="bg-gray-200 dark:bg-gray-800 rounded-md h-48 animate-pulse" />
                     <div className="space-y-3">
                       <div className="bg-gray-200 dark:bg-gray-800 h-5 w-2/3 rounded animate-pulse" />
                       <div className="bg-gray-200 dark:bg-gray-800 h-4 w-1/2 rounded animate-pulse" />
@@ -317,7 +317,7 @@ export default function Templates() {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: index * 0.05 }}
-                    className="group bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 shadow-sm hover:shadow-xl hover:shadow-[#B39371]/5 transition-all overflow-hidden h-[450px]"
+                    className="group bg-white dark:bg-gray-900 rounded-md border border-gray-200 dark:border-gray-800 shadow-sm hover:shadow-xl hover:shadow-[#B39371]/5 transition-all overflow-hidden h-[450px]"
                   >
                     {/* Image Section */}
                     <div className="relative h-48 overflow-hidden">
@@ -411,21 +411,21 @@ export default function Templates() {
                       {/* Action Buttons */}
                       <div className="flex items-center gap-2 pt-2">
                         <Link href={`/templates/${template.id}`} className="flex-1">
-                          <button className="w-full py-2.5 cursor-pointer bg-gradient-to-r from-[#4A1B1B] to-[#6B2727] text-white rounded-xl text-xs font-medium shadow-lg shadow-[#4A1B1B]/20 hover:shadow-xl transition-all">
+                          <button className="w-full py-2.5 cursor-pointer bg-gradient-to-r from-[#4A1B1B] to-[#6B2727] text-white rounded-md text-xs font-medium shadow-lg shadow-[#4A1B1B]/20 hover:shadow-xl transition-all">
                             {t('templates.viewDetails')}
                           </button>
                         </Link>
                         
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
-                            <button className="p-2.5 border border-gray-200 dark:border-gray-700 rounded-xl text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 hover:border-gray-300 dark:hover:border-gray-600 transition-all outline-none">
+                            <button className="p-2.5 border border-gray-200 dark:border-gray-700 rounded-md text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 hover:border-gray-300 dark:hover:border-gray-600 transition-all outline-none">
                               <MoreVertical className="w-4 h-4" />
                             </button>
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end" className="w-40 rounded-md">
                             <Can I="UPDATE" a="template">
                               <Link href={`/templates/${template.id}/edit`}>
-                                <DropdownMenuItem className="gap-2 cursor-pointer rounded-lg">
+                                <DropdownMenuItem className="gap-2 cursor-pointer rounded-md">
                                   <Edit className="w-4 h-4" />
                                   <span>{t('common.edit')}</span>
                                 </DropdownMenuItem>
@@ -435,7 +435,7 @@ export default function Templates() {
                               <>
                                 <DropdownMenuSeparator />
                                 <DropdownMenuItem 
-                                  className="gap-2 cursor-pointer rounded-lg text-red-500 focus:text-red-500 focus:bg-red-50 dark:focus:bg-red-500/10"
+                                  className="gap-2 cursor-pointer rounded-md text-red-500 focus:text-red-500 focus:bg-red-50 dark:focus:bg-red-500/10"
                                   onClick={() => setTemplateToDelete(template.id)}
                                 >
                                   <Trash2 className="w-4 h-4" />
@@ -455,7 +455,7 @@ export default function Templates() {
 
           {/* Pagination Section */}
           {data && data.totalPages > 1 && (
-            <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 p-6 shadow-sm">
+            <div className="bg-white dark:bg-gray-900 rounded-md border border-gray-200 dark:border-gray-800 p-6 shadow-sm">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
                 <p className="text-sm text-gray-600 dark:text-gray-400">
                   {t('common.showing')}{' '}
@@ -486,9 +486,9 @@ export default function Templates() {
             <motion.div 
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 p-12 text-center"
+              className="bg-white dark:bg-gray-900 rounded-md border border-gray-200 dark:border-gray-800 p-12 text-center"
             >
-              <div className="w-20 h-20 rounded-2xl bg-gray-100 dark:bg-gray-800 flex items-center justify-center mx-auto mb-6">
+              <div className="w-20 h-20 rounded-md bg-gray-100 dark:bg-gray-800 flex items-center justify-center mx-auto mb-6">
                 <FileText className="w-8 h-8 text-gray-400" />
               </div>
               <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
@@ -501,7 +501,7 @@ export default function Templates() {
               </p>
               {!searchValue && (
                 <Link href="/templates/new">
-                  <button className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-[#4A1B1B] to-[#6B2727] text-white rounded-xl text-sm font-medium shadow-lg shadow-[#4A1B1B]/20 hover:shadow-xl transition-all">
+                  <button className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-[#4A1B1B] to-[#6B2727] text-white rounded-md text-sm font-medium shadow-lg shadow-[#4A1B1B]/20 hover:shadow-xl transition-all">
                     <Plus className="w-5 h-5" />
                     {t('templates.create')}
                   </button>
@@ -514,7 +514,7 @@ export default function Templates() {
 
       {/* Delete Confirmation Dialog */}
       <AlertDialog open={templateToDelete !== null} onOpenChange={(open) => !open && setTemplateToDelete(null)}>
-        <AlertDialogContent className="rounded-2xl">
+        <AlertDialogContent className="rounded-md">
           <AlertDialogHeader>
             <AlertDialogTitle className="text-xl font-semibold">{t('templates.deleteConfirm.title')}</AlertDialogTitle>
             <AlertDialogDescription className="text-gray-500">
@@ -522,17 +522,17 @@ export default function Templates() {
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter className="gap-3">
-            <AlertDialogCancel className="rounded-xl border-gray-200 hover:bg-gray-50">
+            <AlertDialogCancel className="rounded-md border-gray-200 hover:bg-gray-50">
               {t('common.cancel')}
             </AlertDialogCancel>
             <AlertDialogAction 
               onClick={handleDelete}
-              className="bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 rounded-xl shadow-lg shadow-red-500/20"
+              className="bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 rounded-md shadow-lg shadow-red-500/20"
               disabled={deleteMutation.isPending}
             >
               {deleteMutation.isPending ? (
                 <div className="flex items-center gap-2">
-                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-md animate-spin" />
                   {t('common.processing')}
                 </div>
               ) : (

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+﻿import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { 
   Dialog, 
@@ -106,8 +106,8 @@ export function UpdateUserDialog({ user, open, onOpenChange }: UpdateUserDialogP
             >
               {/* Premium Header with Background Pattern */}
               <div className="relative h-32 bg-gradient-to-br from-[#4A1B1B] to-[#6B2727] p-8 overflow-hidden">
-                <div className="absolute top-0 right-0 rtl:right-auto rtl:left-0 w-64 h-64 bg-white/5 rounded-full -mr-20 rtl:-mr-0 rtl:-ml-20 -mt-20 blur-3xl" />
-                <div className="absolute bottom-0 left-0 rtl:left-auto rtl:right-0 w-32 h-32 bg-[#B39371]/10 rounded-full -ml-10 rtl:-ml-0 rtl:-mr-10 -mb-10 blur-2xl" />
+                <div className="absolute top-0 right-0 rtl:right-auto rtl:left-0 w-64 h-64 bg-white/5 rounded-md -mr-20 rtl:-mr-0 rtl:-ml-20 -mt-20 blur-3xl" />
+                <div className="absolute bottom-0 left-0 rtl:left-auto rtl:right-0 w-32 h-32 bg-[#B39371]/10 rounded-md -ml-10 rtl:-ml-0 rtl:-mr-10 -mb-10 blur-2xl" />
                 
                 <div className="relative z-10 flex items-center gap-4">
                   <div className="w-12 h-12 rounded-md bg-white/10 backdrop-blur-md flex items-center justify-center border border-white/20">
@@ -137,7 +137,7 @@ export function UpdateUserDialog({ user, open, onOpenChange }: UpdateUserDialogP
                     </p>
                     <div className="flex items-center gap-2 mt-0.5">
                       <div className={cn(
-                        "flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider",
+                        "flex items-center gap-1.5 px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider",
                         user?.isVerified 
                           ? "bg-emerald-50 text-emerald-600 dark:bg-emerald-500/10" 
                           : "bg-amber-50 text-amber-600 dark:bg-amber-500/10"

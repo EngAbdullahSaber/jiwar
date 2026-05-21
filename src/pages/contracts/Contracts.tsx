@@ -1,4 +1,4 @@
-import { useState } from 'react';
+﻿import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import api from '@/lib/api';
@@ -145,7 +145,7 @@ export default function Contracts() {
       header: t('contracts.labels.client'),
       cell: (c) => (
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-full bg-[#F5F1ED] dark:bg-gray-800 flex items-center justify-center">
+          <div className="w-8 h-8 rounded-md bg-[#F5F1ED] dark:bg-gray-800 flex items-center justify-center">
             <User className="w-4 h-4 text-[#4A1B1B] dark:text-[#B39371]" />
           </div>
           <div>
@@ -163,7 +163,7 @@ export default function Contracts() {
       header: t('contracts.labels.apartment'),
       cell: (c) => (
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-full bg-[#F5F1ED] dark:bg-gray-800 flex items-center justify-center">
+          <div className="w-8 h-8 rounded-md bg-[#F5F1ED] dark:bg-gray-800 flex items-center justify-center">
             <Building2 className="w-4 h-4 text-[#4A1B1B] dark:text-[#B39371]" />
           </div>
           <div>
@@ -205,7 +205,7 @@ export default function Contracts() {
     {
       header: t('contracts.labels.type'),
       cell: (c) => (
-        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-[#F5F1ED] text-[#4A1B1B] dark:bg-gray-800 dark:text-[#B39371]">
+        <span className="inline-flex items-center px-2.5 py-0.5 rounded-md text-xs font-medium bg-[#F5F1ED] text-[#4A1B1B] dark:bg-gray-800 dark:text-[#B39371]">
           {t(`contracts.types.${c.type}`)}
         </span>
       )
@@ -228,7 +228,7 @@ export default function Contracts() {
         }
         
         return (
-          <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${color}`}>
+          <span className={`inline-flex items-center px-2.5 py-0.5 rounded-md text-xs font-medium ${color}`}>
             {step}
           </span>
         );
@@ -368,9 +368,9 @@ export default function Contracts() {
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 p-12 text-center"
+              className="bg-white dark:bg-gray-900 rounded-md border border-gray-200 dark:border-gray-800 p-12 text-center"
             >
-              <div className="w-20 h-20 rounded-2xl bg-gray-100 dark:bg-gray-800 flex items-center justify-center mx-auto mb-6">
+              <div className="w-20 h-20 rounded-md bg-gray-100 dark:bg-gray-800 flex items-center justify-center mx-auto mb-6">
                 <FileText className="w-8 h-8 text-gray-400" />
               </div>
               <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+﻿import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import api from '@/lib/api';
@@ -135,7 +135,7 @@ export default function Cities() {
       header: t('cities.name'),
       cell: (c: City) => (
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-full bg-[#F5F1ED] dark:bg-gray-800 flex items-center justify-center">
+          <div className="w-8 h-8 rounded-md bg-[#F5F1ED] dark:bg-gray-800 flex items-center justify-center">
             <Building2 className="w-4 h-4 text-[#4A1B1B] dark:text-[#B39371]" />
           </div>
           <div>
