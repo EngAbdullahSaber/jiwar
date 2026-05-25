@@ -70,7 +70,9 @@
     "createdBy": "Created by",
     "createdAt": "Created",
     "lastUpdated": "Last updated",
-    "id": "ID"
+    "id": "ID",
+    "optional": "optional",
+    "confirm": "Confirm"
   },
   "dashboard": {
     "title": "General Dashboard",
@@ -687,6 +689,9 @@
       "projectSak": "Project Sak",
       "apartmentSak": "Apartment Sak",
       "subDivision": "Sub Division Record",
+      "fileTitle": "File Title",
+      "fileUrl": "File",
+      "addFile": "Add File",
       "apartmentNo": "Apartment No",
       "suite": "Suite Name",
       "floor": "Floor",
@@ -717,9 +722,11 @@
       "selectOverallStatus": "Select current status",
       "requestNumber": "REQ-000",
       "search": "Search by apartment name, suite, or ID...",
-      "uploadProjectSak": "Upload Project Sak (PDF)",
-      "uploadApartmentSak": "Upload Apartment Sak (PDF)",
-      "uploadSubDivision": "Upload Sub Division (PDF)"
+      "uploadProjectSak": "Upload Project Sak image",
+      "uploadApartmentSak": "Upload Apartment Sak image",
+      "uploadSubDivision": "Upload Sub Division image",
+      "fileTitle": "e.g., Contract",
+      "uploadFile": "Upload file (PDF, image, etc.)"
     },
     "sections": {
       "identification": "Unit Identification",
@@ -728,6 +735,8 @@
       "locationalDesc": "Where the unit is situated and its physical specs",
       "economics": "Financials & Status",
       "economicsDesc": "Pricing, availability and tracking information",
+      "sakImages": "Sak Images",
+      "sakImagesDesc": "Upload official sak and subdivision images",
       "documents": "Legal Attachments",
       "documentsDesc": "Official records and certificates"
     },
@@ -740,7 +749,8 @@
       "residential": "Residential",
       "commercial": "Commercial",
       "penthouse": "Penthouse",
-      "duplex": "Duplex"
+      "duplex": "Duplex",
+      "studio": "Studio"
     },
     "owners": {
       "owned": "Company Owned",
@@ -751,7 +761,9 @@
       "available": "Available",
       "sold": "Sold",
       "reserved": "Reserved",
-      "reselling": "Reselling"
+      "reselling": "Reselling",
+      "active": "Active",
+      "inactive": "Inactive"
     },
     "streetCounts": {
       "ONE_STREET": "One Street",
@@ -893,6 +905,7 @@
     "deleteSuccess": "Salesman deleted successfully",
     "deleteError": "Failed to delete salesman",
     "loading": "Loading salesmen...",
+    "role": "Role",
     "snapshot": "Salesman Snapshot",
     "performance": "Performance Metrics",
     "contractStats": "Contract Statistics",
@@ -906,7 +919,9 @@
       "totalContracts": "Total Contracts",
       "totalApartmentContracts": "Apartment Contracts",
       "totalContractValue": "Total Sales Value",
-      "totalCommission": "Total Commission"
+      "totalCommission": "Total Commission",
+      "totalPaid": "Total Paid",
+      "balance": "Remaining Balance"
     },
     "empty": {
       "title": "No Salesmen Found",
@@ -943,6 +958,20 @@
     "bases": {
       "percentage": "Percentage",
       "fixed": "Fixed"
+    },
+    "payBalance": {
+      "button": "Pay Balance",
+      "title": "Record Commission Payment",
+      "date": "Payment Date",
+      "amount": "Amount",
+      "notes": "Notes",
+      "notesPlaceholder": "e.g. May commission disbursement",
+      "pay": "Record Payment",
+      "success": "Payment recorded successfully",
+      "error": "Failed to record payment",
+      "dateRequired": "Please select a payment date",
+      "amountRequired": "Please enter a valid amount greater than 0",
+      "exceedsBalance": "Amount exceeds available balance"
     }
   },
   "auth": {
@@ -1099,6 +1128,15 @@
       "salesApproval": "Sales Manager Approval",
       "financeApproval": "Finance Manager Approval",
       "completed": "Fully Approved"
+    },
+    "commission": {
+      "title": "Add Salesman Commission",
+      "description": "Set the commission for the salesman before approving this contract.",
+      "base": "Commission Base",
+      "value": "Commission Value",
+      "percentage": "Percentage (%)",
+      "fixed": "Fixed Amount (SAR)",
+      "valueRequired": "Please enter a valid commission value greater than 0."
     }
   },
   "clients": {

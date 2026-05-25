@@ -1,7 +1,7 @@
 ﻿import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { TopHeader } from '../../components/TopHeader';
-import { 
+import {
   Users as UsersIcon,
   RefreshCw,
   Plus,
@@ -12,18 +12,22 @@ import {
   Trash2,
   Percent,
   Wallet,
-  Target
+  Target,
+  Banknote,
+  Loader2,
 } from 'lucide-react';
 import { Link } from "wouter";
 import { Shell } from '../../components/shared/Shell';
 import { Can } from '../../components/shared/Can';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import api from '@/lib/api';
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { DataTable } from '../../components/shared/DataTable';
 import type { Column } from '../../components/shared/DataTable';
 import { FilterBar } from '../../components/shared/FilterBar';
@@ -36,33 +40,38 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useMutation } from '@tanstack/react-query';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from '@/components/ui/dialog';
 import { DeleteDialog } from '../../components/shared/DeleteDialog';
 import { useToast } from "@/hooks/use-toast";
+import { toast } from 'react-hot-toast';
+import DatePicker from '../../components/shared/DatePicker';
 
 interface Salesman {
   id: number;
   fullName: string;
   phoneNumber: string;
   email: string;
-  paymentType: string;
+  agentType: string;
   startDate: string;
   endDate: string;
-  commissionBase: string;
-  commissionValue: number;
-  completeTarget: boolean;
-  apartmentTargetGoal: number | null;
-  agentType: string;
+  roleId: number | null;
+  role: { id: number; name: string; description: string } | null;
   createdAt: string;
-  createdBy: {
-    id: number;
-    email: string;
-  };
+  updatedAt: string | null;
+  createdBy: { id: number; email: string };
+  updatedBy: { id: number; email: string } | null;
   contractsCount: number;
   apartmentContractsCount: number;
   totalContractValue: number;
   totalPaidAmount: number;
   totalCommission: number;
+  totalPaidToSalesman: number;
 }
 
 interface SalesmanStatics {
@@ -86,14 +95,18 @@ interface SalesmanResponse {
 export default function SalesmanPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const { t } = useTranslation();
-  const { toast } = useToast();
-  const [filters, setFilters] = useState({ search: '', agentType: 'all', paymentType: 'all' });
+  const { toast: shadToast } = useToast();
+  const queryClient = useQueryClient();
+  const [filters, setFilters] = useState({ search: '', agentType: 'all' });
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [salesmanToDelete, setSalesmanToDelete] = useState<number | null>(null);
+  const [payDialogOpen, setPayDialogOpen] = useState(false);
+  const [selectedSalesman, setSelectedSalesman] = useState<Salesman | null>(null);
+  const [payForm, setPayForm] = useState({ paidDate: '', amount: '', notes: '' });
   const pageSize = 10;
 
   const { data, isLoading, refetch } = useQuery<SalesmanResponse>({
-    queryKey: ['salesmen', currentPage, filters.search, filters.agentType, filters.paymentType],
+    queryKey: ['salesmen', currentPage, filters.search, filters.agentType],
     queryFn: async () => {
       const response = await api.get('/salesman', {
         params: {
@@ -101,7 +114,6 @@ export default function SalesmanPage() {
           pageSize: pageSize,
           search: filters.search || undefined,
           agentType: filters.agentType !== 'all' ? filters.agentType : undefined,
-          paymentType: filters.paymentType !== 'all' ? filters.paymentType : undefined
         }
       });
       return response.data;
@@ -113,7 +125,7 @@ export default function SalesmanPage() {
       await api.delete(`/salesman/${id}`);
     },
     onSuccess: () => {
-      toast({
+      shadToast({
         title: t('common.success'),
         description: t('salesman.deleteSuccess'),
         variant: 'default',
@@ -123,13 +135,47 @@ export default function SalesmanPage() {
       setSalesmanToDelete(null);
     },
     onError: () => {
-      toast({
+      shadToast({
         title: t('common.error'),
         description: t('salesman.deleteError'),
         variant: 'destructive',
       });
     }
   });
+
+  const payMutation = useMutation({
+    mutationFn: async (payload: { salesManId: number; paidDate: string; amount: number; notes: string }) => {
+      await api.post('/salesman-paid-log', payload);
+    },
+    onSuccess: () => {
+      toast.success(t('salesman.payBalance.success'));
+      queryClient.invalidateQueries({ queryKey: ['salesmen'] });
+      setPayDialogOpen(false);
+      setSelectedSalesman(null);
+      setPayForm({ paidDate: '', amount: '', notes: '' });
+    },
+    onError: (error: any) => {
+      toast.error(error.response?.data?.message?.english || t('salesman.payBalance.error'));
+    },
+  });
+
+  const handlePaySubmit = () => {
+    const amount = parseFloat(payForm.amount);
+    const balance = selectedSalesman ? selectedSalesman.totalCommission - selectedSalesman.totalPaidToSalesman : 0;
+    if (!payForm.paidDate) {
+      toast.error(t('salesman.payBalance.dateRequired'));
+      return;
+    }
+    if (!payForm.amount || isNaN(amount) || amount <= 0) {
+      toast.error(t('salesman.payBalance.amountRequired'));
+      return;
+    }
+    if (amount > balance) {
+      toast.error(t('salesman.payBalance.exceedsBalance'));
+      return;
+    }
+    payMutation.mutate({ salesManId: selectedSalesman!.id, paidDate: payForm.paidDate, amount, notes: payForm.notes });
+  };
 
   const handleDelete = (id: number) => {
     setSalesmanToDelete(id);
@@ -158,18 +204,6 @@ export default function SalesmanPage() {
         { value: 'all', label: t('common.all') },
         { value: 'INTERNAL', label: t('salesman.types.internal') },
         { value: 'EXTERNAL', label: t('salesman.types.external') }
-      ]
-    },
-    {
-      type: 'select',
-      label: t('salesman.paymentType'),
-      placeholder: t('salesman.paymentType'),
-      key: 'paymentType',
-      options: [
-        { value: 'all', label: t('common.all') },
-        { value: 'CASH', label: t('salesman.payments.cash') },
-        { value: 'INSTALLMENT', label: t('salesman.payments.installment') },
-        { value: 'COMMISSION', label: t('salesman.payments.commission') }
       ]
     }
   ];
@@ -222,46 +256,38 @@ export default function SalesmanPage() {
       )
     },
     {
-      header: t('salesman.commissionValue'),
+      header: t('salesman.stats.totalCommission'),
       cell: (salesman) => (
-        <div className="flex items-center gap-2">
-          <div className="p-1.5 rounded-md bg-gray-50 dark:bg-gray-800">
-            {salesman.commissionBase === 'PERCENTAGE' ? (
-              <Percent className="w-3.5 h-3.5 text-[#B39371]" />
-            ) : (
-              <Wallet className="w-3.5 h-3.5 text-[#B39371]" />
-            )}
-          </div>
-          <div>
-            <p className="text-sm font-bold text-gray-900 dark:text-white">
-              {salesman.commissionValue}
-              <span className="text-[10px] text-gray-400 ml-1">
-              {salesman.commissionBase === 'PERCENTAGE' ? '%' : t('common.sar')}
-            </span>
-            </p>
-          </div>
+        <div className="flex flex-col gap-0.5">
+          <span className="text-sm font-bold text-gray-900 dark:text-white">
+            {salesman.totalCommission.toLocaleString()}
+            <span className="text-[10px] text-gray-400 ml-1">{t('common.sar')}</span>
+          </span>
+          <span className="text-[10px] text-gray-400">
+            {t('salesman.stats.totalContracts')}: {salesman.contractsCount}
+          </span>
         </div>
       )
     },
     {
-      header: t('salesman.targetGoal'),
-      cell: (salesman) => (
-        <div className="space-y-1.5 min-w-[120px]">
-          <div className="flex items-center justify-between text-[10px]">
-            <span className="text-gray-500 font-medium flex items-center gap-1">
-              <Target className="w-3 h-3" />
-              {t('salesman.targetGoal')}
-            </span>
+      header: t('salesman.stats.balance'),
+      cell: (salesman) => {
+        const balance = salesman.totalCommission - salesman.totalPaidToSalesman;
+        return (
+          <div className="flex flex-col gap-0.5">
             <span className={cn(
-              "font-bold",
-              salesman.completeTarget ? "text-emerald-500" : "text-amber-500"
+              "text-sm font-bold",
+              balance > 0 ? "text-amber-600" : "text-gray-400"
             )}>
-              {salesman.apartmentTargetGoal} {t('common.units')}
+              {balance.toLocaleString()}
+              <span className="text-[10px] ml-1">{t('common.sar')}</span>
+            </span>
+            <span className="text-[10px] text-gray-400">
+              {t('salesman.stats.totalPaid')}: {salesman.totalPaidToSalesman.toLocaleString()}
             </span>
           </div>
-         
-        </div>
-      )
+        );
+      }
     },
     {
       header: t('salesman.status'),
@@ -314,6 +340,19 @@ export default function SalesmanPage() {
                   <span className="text-xs font-medium">{t('common.edit')}</span>
                 </DropdownMenuItem>
               </Link>
+            </Can>
+            <Can I="UPDATE" a="salesman">
+              <DropdownMenuItem
+                className="rounded-md cursor-pointer py-2 px-3 focus:bg-emerald-50 dark:focus:bg-emerald-900/10 text-emerald-600"
+                onClick={() => {
+                  setSelectedSalesman(salesman);
+                  setPayForm({ paidDate: '', amount: '', notes: '' });
+                  setPayDialogOpen(true);
+                }}
+              >
+                <Banknote className="w-4 h-4 mr-2 rtl:mr-0 rtl:ml-2" />
+                <span className="text-xs font-medium">{t('salesman.payBalance.button')}</span>
+              </DropdownMenuItem>
             </Can>
             <Can I="DELETE" a="salesman">
               <DropdownMenuItem 
@@ -453,7 +492,7 @@ export default function SalesmanPage() {
                 setFilters(prev => ({ ...prev, [key]: value }));
                 setCurrentPage(1);
               }} 
-              onReset={() => setFilters({ search: '', agentType: 'all', paymentType: 'all' })}
+              onReset={() => setFilters({ search: '', agentType: 'all' })}
             />
 
             <div className="bg-white dark:bg-gray-900 rounded-md border border-gray-200 dark:border-gray-800 shadow-sm overflow-hidden">
@@ -503,12 +542,157 @@ export default function SalesmanPage() {
         </div>
       </div>
 
-      <DeleteDialog 
+      <DeleteDialog
         isOpen={isDeleteDialogOpen}
         onClose={() => setIsDeleteDialogOpen(false)}
         onConfirm={confirmDelete}
         isDeleting={deleteMutation.isPending}
       />
+
+      {/* Pay Balance Dialog */}
+      <Dialog open={payDialogOpen} onOpenChange={(open) => !open && setPayDialogOpen(false)}>
+        <DialogContent
+          className="sm:max-w-[440px] rounded-md border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-0 overflow-hidden"
+          onOpenAutoFocus={(e) => e.preventDefault()}
+        >
+          <div className="p-6 border-b border-gray-100 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-800/50">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-md bg-emerald-50 dark:bg-emerald-500/10 flex items-center justify-center text-emerald-600">
+                <Banknote className="w-5 h-5" />
+              </div>
+              <DialogHeader>
+                <DialogTitle className="text-lg font-bold text-gray-900 dark:text-white">
+                  {t('salesman.payBalance.title')}
+                </DialogTitle>
+                <p className="text-xs text-gray-500 dark:text-gray-400 font-medium mt-0.5">
+                  {selectedSalesman?.fullName}
+                </p>
+              </DialogHeader>
+            </div>
+          </div>
+
+          <div className="p-6 space-y-5">
+            {/* Balance summary */}
+            {selectedSalesman && (() => {
+              const balance = selectedSalesman.totalCommission - selectedSalesman.totalPaidToSalesman;
+              return (
+                <div className={cn(
+                  "flex items-center justify-between px-4 py-3 rounded-md border",
+                  balance > 0
+                    ? "bg-amber-50 dark:bg-amber-500/5 border-amber-200 dark:border-amber-500/20"
+                    : "bg-gray-50 dark:bg-gray-800/50 border-gray-200 dark:border-gray-700"
+                )}>
+                  <span className={cn(
+                    "text-xs font-bold uppercase tracking-wider",
+                    balance > 0 ? "text-amber-700 dark:text-amber-400" : "text-gray-500"
+                  )}>
+                    {t('salesman.stats.balance')}
+                  </span>
+                  <span className={cn(
+                    "text-base font-black",
+                    balance > 0 ? "text-amber-700 dark:text-amber-400" : "text-gray-400"
+                  )}>
+                    {balance.toLocaleString()}
+                    <span className="text-[10px] font-bold ml-1 uppercase">{t('common.sar')}</span>
+                  </span>
+                </div>
+              );
+            })()}
+
+            {/* Payment Date */}
+            <div className="space-y-2">
+              <Label className="text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
+                {t('salesman.payBalance.date')}
+              </Label>
+              <DatePicker
+                value={payForm.paidDate}
+                onChange={(date) => setPayForm(prev => ({ ...prev, paidDate: date }))}
+                required
+              />
+            </div>
+
+            {/* Amount */}
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <Label className="text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
+                  {t('salesman.payBalance.amount')}
+                </Label>
+                {selectedSalesman && (() => {
+                  const balance = selectedSalesman.totalCommission - selectedSalesman.totalPaidToSalesman;
+                  const entered = parseFloat(payForm.amount);
+                  const exceeds = !isNaN(entered) && entered > balance;
+                  return exceeds ? (
+                    <span className="text-[10px] font-bold text-rose-500">{t('salesman.payBalance.exceedsBalance')}</span>
+                  ) : null;
+                })()}
+              </div>
+              <div className="relative">
+                <div className="absolute left-4 rtl:left-auto rtl:right-4 top-1/2 -translate-y-1/2 text-gray-400 text-[10px] font-bold pointer-events-none">
+                  {t('common.sar')}
+                </div>
+                <Input
+                  type="number"
+                  step="0.01"
+                  min="0"
+                  max={selectedSalesman ? selectedSalesman.totalCommission - selectedSalesman.totalPaidToSalesman : undefined}
+                  placeholder="0.00"
+                  className={cn(
+                    "h-11 pl-12 rtl:pl-4 rtl:pr-12 rounded-md bg-gray-50 dark:bg-gray-800/50 border-gray-200 dark:border-gray-700 focus:bg-white dark:focus:bg-gray-800 transition-all font-medium",
+                    selectedSalesman && parseFloat(payForm.amount) > (selectedSalesman.totalCommission - selectedSalesman.totalPaidToSalesman)
+                      ? "border-rose-400 dark:border-rose-500 focus:border-rose-400"
+                      : ""
+                  )}
+                  value={payForm.amount}
+                  onChange={(e) => setPayForm(prev => ({ ...prev, amount: e.target.value }))}
+                />
+              </div>
+            </div>
+
+            {/* Notes */}
+            <div className="space-y-2">
+              <Label className="text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
+                {t('salesman.payBalance.notes')}
+                <span className="ml-1 text-gray-400 normal-case font-normal">({t('common.optional')})</span>
+              </Label>
+              <Input
+                type="text"
+                placeholder={t('salesman.payBalance.notesPlaceholder')}
+                className="h-11 rounded-md bg-gray-50 dark:bg-gray-800/50 border-gray-200 dark:border-gray-700 focus:bg-white dark:focus:bg-gray-800 transition-all font-medium"
+                value={payForm.notes}
+                onChange={(e) => setPayForm(prev => ({ ...prev, notes: e.target.value }))}
+              />
+            </div>
+          </div>
+
+          <DialogFooter className="p-4 border-t border-gray-100 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-800/50 gap-3">
+            <Button
+              variant="ghost"
+              onClick={() => setPayDialogOpen(false)}
+              disabled={payMutation.isPending}
+              className="rounded-md font-semibold"
+            >
+              {t('common.cancel')}
+            </Button>
+            <Button
+              onClick={handlePaySubmit}
+              disabled={payMutation.isPending}
+              className="rounded-md bg-emerald-600 hover:bg-emerald-700 text-white font-semibold shadow-lg min-w-[140px]"
+            >
+              {payMutation.isPending ? (
+                <span className="flex items-center gap-2">
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  {t('common.processing')}
+                </span>
+              ) : (
+                <span className="flex items-center gap-2">
+                  <Banknote className="w-4 h-4" />
+                  {t('salesman.payBalance.pay')}
+                </span>
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </Shell>
   );
 }

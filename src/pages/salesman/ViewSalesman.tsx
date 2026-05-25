@@ -1,9 +1,10 @@
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import api from '@/lib/api';
 import { TopHeader } from '../../components/TopHeader';
 import { Link, useRoute } from "wouter";
-import { 
+import {
   Users as UsersIcon,
   ArrowLeft,
   Mail,
@@ -20,7 +21,9 @@ import {
   ChevronRight,
   ArrowUpRight,
   ShieldCheck,
-  Building
+  Building,
+  Banknote,
+  Loader2,
 } from 'lucide-react';
 import { Shell } from '../../components/shared/Shell';
 import { cn } from '@/lib/utils';
@@ -28,6 +31,18 @@ import { motion } from 'framer-motion';
 import { format } from 'date-fns';
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from '@/components/ui/dialog';
+import DatePicker from '../../components/shared/DatePicker';
+import { toast } from 'react-hot-toast';
 
 interface Contract {
   id: number;
@@ -52,26 +67,16 @@ interface Salesman {
   fullName: string;
   phoneNumber: string;
   email: string;
-  paymentType: string;
+  agentType: string;
   startDate: string;
   endDate: string;
-  commissionBase: string;
-  commissionValue: number;
-  completeTarget: boolean;
-  apartmentTargetGoal: number | null;
-  agentType: string;
+  roleId: number | null;
+  role: { id: number; name: string; description: string } | null;
   createdAt: string;
   updatedAt: string | null;
-  createdById: number;
-  createdBy?: {
-    id: number;
-    email: string;
-  };
+  createdBy?: { id: number; email: string };
+  updatedBy?: { id: number; email: string } | null;
   contracts?: Contract[];
-  contractsCount?: number;
-  apartmentContractsCount?: number;
-  totalContractValue?: number;
-  totalCommission?: number;
 }
 
 interface SalesmanResponse {
@@ -79,10 +84,28 @@ interface SalesmanResponse {
   data: Salesman;
 }
 
+interface SalesmanStatistics {
+  totalContracts: number;
+  totalApartmentContracts: number;
+  totalContractValue: number;
+  totalCommission: number;
+  totalPaid: number;
+  balance: number;
+}
+
+interface StatisticsResponse {
+  code: number;
+  data: SalesmanStatistics;
+}
+
 export default function ViewSalesman() {
   const { t, i18n } = useTranslation();
   const [, params] = useRoute("/salesman/:id");
   const id = params?.id;
+  const queryClient = useQueryClient();
+
+  const [payDialogOpen, setPayDialogOpen] = useState(false);
+  const [payForm, setPayForm] = useState({ paidDate: '', amount: '', notes: '' });
 
   const { data: response, isLoading } = useQuery<SalesmanResponse>({
     queryKey: ['salesman', id],
@@ -93,26 +116,58 @@ export default function ViewSalesman() {
     enabled: !!id
   });
 
-  const salesman = response?.data;
+  const { data: statsResponse, isLoading: isLoadingStats } = useQuery<StatisticsResponse>({
+    queryKey: ['salesman-statistics', id],
+    queryFn: async () => {
+      const res = await api.get(`/salesman/${id}/statistics`);
+      return res.data;
+    },
+    enabled: !!id
+  });
 
-  // Calculate stats if not provided by backend
+  const salesman = response?.data;
+  const stats = statsResponse?.data;
+
   const contracts = salesman?.contracts || [];
-  const contractsCount = salesman?.contractsCount ?? contracts.length;
-  
-  const uniqueApartments = new Set(contracts.map(c => c.apartment?.id).filter(Boolean));
-  const apartmentContractsCount = salesman?.apartmentContractsCount ?? uniqueApartments.size;
-  
-  const totalContractValue = salesman?.totalContractValue ?? contracts.reduce((sum, c) => sum + (Number(c.paidAmount) || 0), 0);
-  
-  let calculatedCommission = 0;
-  if (salesman) {
-    if (salesman.commissionBase === 'FIXED') {
-      calculatedCommission = contracts.length * salesman.commissionValue;
-    } else {
-      calculatedCommission = totalContractValue * (salesman.commissionValue / 100);
+  const contractsCount = stats?.totalContracts ?? 0;
+  const apartmentContractsCount = stats?.totalApartmentContracts ?? 0;
+  const totalContractValue = stats?.totalContractValue ?? 0;
+  const totalCommission = stats?.totalCommission ?? 0;
+  const totalPaid = stats?.totalPaid ?? 0;
+  const balance = stats?.balance ?? (totalCommission - totalPaid);
+
+  const { mutate: payBalance, isPending: isPaying } = useMutation({
+    mutationFn: async (payload: { salesManId: number; paidDate: string; amount: number; notes: string }) => {
+      await api.post('/salesman-paid-log', payload);
+    },
+    onSuccess: () => {
+      toast.success(t('salesman.payBalance.success'));
+      queryClient.invalidateQueries({ queryKey: ['salesman', id] });
+      queryClient.invalidateQueries({ queryKey: ['salesman-statistics', id] });
+      setPayDialogOpen(false);
+      setPayForm({ paidDate: '', amount: '', notes: '' });
+    },
+    onError: (error: any) => {
+      toast.error(error.response?.data?.message?.english || t('salesman.payBalance.error'));
+    },
+  });
+
+  const handlePaySubmit = () => {
+    const amount = parseFloat(payForm.amount);
+    if (!payForm.paidDate) {
+      toast.error(t('salesman.payBalance.dateRequired'));
+      return;
     }
-  }
-  const totalCommission = salesman?.totalCommission ?? calculatedCommission;
+    if (!payForm.amount || isNaN(amount) || amount <= 0) {
+      toast.error(t('salesman.payBalance.amountRequired'));
+      return;
+    }
+    if (amount > balance) {
+      toast.error(t('salesman.payBalance.exceedsBalance'));
+      return;
+    }
+    payBalance({ salesManId: Number(id), paidDate: payForm.paidDate, amount, notes: payForm.notes });
+  };
 
   const formatDate = (dateString: string) => {
     if (!dateString) return 'N/A';
@@ -123,7 +178,7 @@ export default function ViewSalesman() {
     }
   };
 
-  if (isLoading) {
+  if (isLoading || isLoadingStats) {
     return (
       <Shell>
         <TopHeader />
@@ -184,6 +239,18 @@ export default function ViewSalesman() {
             </div>
 
             <div className="flex items-center gap-3">
+              <motion.button
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                onClick={() => {
+                  setPayForm({ paidDate: '', amount: '', notes: '' });
+                  setPayDialogOpen(true);
+                }}
+                className="px-6 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-md text-sm font-bold shadow-lg shadow-emerald-600/20 hover:shadow-xl transition-all flex items-center gap-2"
+              >
+                <Banknote className="w-4 h-4" />
+                {t('salesman.payBalance.button')}
+              </motion.button>
               <Link href={`/salesman/${salesman.id}/edit`}>
                 <motion.button
                   whileHover={{ scale: 1.02 }}
@@ -239,9 +306,9 @@ export default function ViewSalesman() {
 
                     <div className="flex flex-wrap justify-center md:justify-start gap-4">
                       <div className="px-4 py-2 bg-gray-50 dark:bg-gray-800 rounded-md border border-gray-100 dark:border-gray-700">
-                        <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-0.5">{t('salesman.paymentType')}</p>
+                        <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-0.5">{t('salesman.agentType')}</p>
                         <p className="text-xs font-bold text-gray-900 dark:text-white">
-                          {t(`salesman.payments.${salesman.paymentType.toLowerCase()}`)}
+                          {salesman.agentType === 'INTERNAL' ? t('salesman.types.internal') : t('salesman.types.external')}
                         </p>
                       </div>
                       <div className="px-4 py-2 bg-gray-50 dark:bg-gray-800 rounded-md border border-gray-100 dark:border-gray-700">
@@ -259,6 +326,12 @@ export default function ViewSalesman() {
                           </p>
                         </div>
                       </div>
+                      {salesman.role && (
+                        <div className="px-4 py-2 bg-gray-50 dark:bg-gray-800 rounded-md border border-gray-100 dark:border-gray-700">
+                          <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-0.5">{t('salesman.role')}</p>
+                          <p className="text-xs font-bold text-gray-900 dark:text-white capitalize">{salesman.role.name}</p>
+                        </div>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -314,7 +387,7 @@ export default function ViewSalesman() {
                   </div>
                 </motion.section>
 
-                {/* Commission Card */}
+                {/* Commission & Balance Card */}
                 <motion.section
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -328,39 +401,65 @@ export default function ViewSalesman() {
                     <h3 className="text-sm font-bold text-gray-900 dark:text-white uppercase tracking-widest">{t('salesman.commissionDetails')}</h3>
                   </div>
 
-                  <div className="space-y-6">
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="p-4 bg-gray-50 dark:bg-gray-800/50 rounded-md border border-gray-100 dark:border-gray-800">
-                        <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">{t('salesman.commissionBase')}</p>
-                        <p className="text-sm font-bold text-gray-900 dark:text-white">
-                          {t(`salesman.bases.${salesman.commissionBase.toLowerCase()}`)}
-                        </p>
-                      </div>
-                      <div className="p-4 bg-gray-50 dark:bg-gray-800/50 rounded-md border border-gray-100 dark:border-gray-800">
-                        <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">{t('salesman.commissionValue')}</p>
-                        <p className="text-sm font-bold text-gray-900 dark:text-white">
-                          {salesman.commissionValue}{salesman.commissionBase === 'PERCENTAGE' ? '%' : ' ' + t('common.sar')}
-                        </p>
-                      </div>
-                    </div>
-
-                    <div className="p-6 bg-[#4A1B1B]/5 dark:bg-[#4A1B1B]/10 rounded-md border border-[#4A1B1B]/10 text-center">
-                      <p className="text-[10px] font-bold text-[#B39371] uppercase tracking-[0.2em] mb-2">{t('salesman.stats.totalCommission')}</p>
-                      <div className="flex items-baseline justify-center gap-2">
-                        <span className="text-3xl font-black text-gray-900 dark:text-white">{totalCommission.toLocaleString()}</span>
-                        <span className="text-xs font-bold text-[#B39371] uppercase">{t('common.sar')}</span>
-                      </div>
-                    </div>
-
-                    {salesman.completeTarget && (
-                      <div className="p-4 bg-indigo-50 dark:bg-indigo-500/10 rounded-md border border-indigo-100 dark:border-indigo-500/20 flex items-center justify-between">
-                        <div className="flex items-center gap-3">
-                          <Target className="w-5 h-5 text-indigo-600" />
-                          <span className="text-xs font-bold text-indigo-700">{t('salesman.targetGoal')}</span>
+                  <div className="space-y-4">
+                    {/* Total Commission */}
+                    <div className="p-5 bg-[#4A1B1B]/5 dark:bg-[#4A1B1B]/10 rounded-md border border-[#4A1B1B]/10 flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-md bg-white dark:bg-gray-800 flex items-center justify-center text-[#B39371] shadow-sm">
+                          <Percent className="w-4 h-4" />
                         </div>
-                        <span className="text-sm font-black text-indigo-700">{salesman.apartmentTargetGoal} {t('common.units')}</span>
+                        <span className="text-xs font-bold text-gray-600 dark:text-gray-400">{t('salesman.stats.totalCommission')}</span>
                       </div>
-                    )}
+                      <div className="text-right">
+                        <span className="text-lg font-black text-gray-900 dark:text-white">{totalCommission.toLocaleString()}</span>
+                        <span className="text-[10px] font-bold text-[#B39371] uppercase ml-1">{t('common.sar')}</span>
+                      </div>
+                    </div>
+
+                    {/* Total Paid */}
+                    <div className="p-5 bg-emerald-50 dark:bg-emerald-500/5 rounded-md border border-emerald-100 dark:border-emerald-500/10 flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-md bg-white dark:bg-gray-800 flex items-center justify-center text-emerald-600 shadow-sm">
+                          <Banknote className="w-4 h-4" />
+                        </div>
+                        <span className="text-xs font-bold text-emerald-700/80">{t('salesman.stats.totalPaid')}</span>
+                      </div>
+                      <div className="text-right">
+                        <span className="text-lg font-black text-emerald-700">{totalPaid.toLocaleString()}</span>
+                        <span className="text-[10px] font-bold text-emerald-600 uppercase ml-1">{t('common.sar')}</span>
+                      </div>
+                    </div>
+
+                    {/* Balance */}
+                    <div className={cn(
+                      "p-5 rounded-md border flex items-center justify-between",
+                      balance > 0
+                        ? "bg-amber-50 dark:bg-amber-500/5 border-amber-100 dark:border-amber-500/10"
+                        : "bg-gray-50 dark:bg-gray-800/50 border-gray-100 dark:border-gray-800"
+                    )}>
+                      <div className="flex items-center gap-3">
+                        <div className={cn(
+                          "w-8 h-8 rounded-md bg-white dark:bg-gray-800 flex items-center justify-center shadow-sm",
+                          balance > 0 ? "text-amber-600" : "text-gray-400"
+                        )}>
+                          <Wallet className="w-4 h-4" />
+                        </div>
+                        <span className={cn(
+                          "text-xs font-bold",
+                          balance > 0 ? "text-amber-700/80" : "text-gray-500"
+                        )}>{t('salesman.stats.balance')}</span>
+                      </div>
+                      <div className="text-right">
+                        <span className={cn(
+                          "text-lg font-black",
+                          balance > 0 ? "text-amber-700" : "text-gray-500"
+                        )}>{balance.toLocaleString()}</span>
+                        <span className={cn(
+                          "text-[10px] font-bold uppercase ml-1",
+                          balance > 0 ? "text-amber-600" : "text-gray-400"
+                        )}>{t('common.sar')}</span>
+                      </div>
+                    </div>
                   </div>
                 </motion.section>
               </div>
@@ -518,6 +617,139 @@ export default function ViewSalesman() {
               </motion.section>
         </div>
       </div>
+
+      {/* Pay Balance Dialog */}
+      <Dialog open={payDialogOpen} onOpenChange={(open) => !open && setPayDialogOpen(false)}>
+        <DialogContent
+          className="sm:max-w-[440px] rounded-md border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-0 overflow-hidden"
+          onOpenAutoFocus={(e) => e.preventDefault()}
+        >
+          <div className="p-6 border-b border-gray-100 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-800/50">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-md bg-emerald-50 dark:bg-emerald-500/10 flex items-center justify-center text-emerald-600">
+                <Banknote className="w-5 h-5" />
+              </div>
+              <DialogHeader>
+                <DialogTitle className="text-lg font-bold text-gray-900 dark:text-white">
+                  {t('salesman.payBalance.title')}
+                </DialogTitle>
+                <p className="text-xs text-gray-500 dark:text-gray-400 font-medium mt-0.5">
+                  {salesman?.fullName}
+                </p>
+              </DialogHeader>
+            </div>
+          </div>
+
+          <div className="p-6 space-y-5">
+            {/* Balance summary */}
+            <div className={cn(
+              "flex items-center justify-between px-4 py-3 rounded-md border",
+              balance > 0
+                ? "bg-amber-50 dark:bg-amber-500/5 border-amber-200 dark:border-amber-500/20"
+                : "bg-gray-50 dark:bg-gray-800/50 border-gray-200 dark:border-gray-700"
+            )}>
+              <span className={cn(
+                "text-xs font-bold uppercase tracking-wider",
+                balance > 0 ? "text-amber-700 dark:text-amber-400" : "text-gray-500"
+              )}>
+                {t('salesman.stats.balance')}
+              </span>
+              <span className={cn(
+                "text-base font-black",
+                balance > 0 ? "text-amber-700 dark:text-amber-400" : "text-gray-400"
+              )}>
+                {balance.toLocaleString()}
+                <span className="text-[10px] font-bold ml-1 uppercase">{t('common.sar')}</span>
+              </span>
+            </div>
+
+            {/* Payment Date */}
+            <div className="space-y-2">
+              <Label className="text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
+                {t('salesman.payBalance.date')}
+              </Label>
+              <DatePicker
+                value={payForm.paidDate}
+                onChange={(date) => setPayForm(prev => ({ ...prev, paidDate: date }))}
+                required
+              />
+            </div>
+
+            {/* Amount */}
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <Label className="text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
+                  {t('salesman.payBalance.amount')}
+                </Label>
+                {parseFloat(payForm.amount) > balance && (
+                  <span className="text-[10px] font-bold text-rose-500">{t('salesman.payBalance.exceedsBalance')}</span>
+                )}
+              </div>
+              <div className="relative">
+                <div className="absolute left-4 rtl:left-auto rtl:right-4 top-1/2 -translate-y-1/2 text-gray-400 text-[10px] font-bold pointer-events-none">
+                  {t('common.sar')}
+                </div>
+                <Input
+                  type="number"
+                  step="0.01"
+                  min="0"
+                  max={balance}
+                  placeholder="0.00"
+                  className={cn(
+                    "h-11 pl-12 rtl:pl-4 rtl:pr-12 rounded-md bg-gray-50 dark:bg-gray-800/50 border-gray-200 dark:border-gray-700 focus:bg-white dark:focus:bg-gray-800 transition-all font-medium",
+                    parseFloat(payForm.amount) > balance ? "border-rose-400 dark:border-rose-500" : ""
+                  )}
+                  value={payForm.amount}
+                  onChange={(e) => setPayForm(prev => ({ ...prev, amount: e.target.value }))}
+                />
+              </div>
+            </div>
+
+            {/* Notes */}
+            <div className="space-y-2">
+              <Label className="text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
+                {t('salesman.payBalance.notes')}
+                <span className="ml-1 text-gray-400 normal-case font-normal">({t('common.optional')})</span>
+              </Label>
+              <Input
+                type="text"
+                placeholder={t('salesman.payBalance.notesPlaceholder')}
+                className="h-11 rounded-md bg-gray-50 dark:bg-gray-800/50 border-gray-200 dark:border-gray-700 focus:bg-white dark:focus:bg-gray-800 transition-all font-medium"
+                value={payForm.notes}
+                onChange={(e) => setPayForm(prev => ({ ...prev, notes: e.target.value }))}
+              />
+            </div>
+          </div>
+
+          <DialogFooter className="p-4 border-t border-gray-100 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-800/50 gap-3">
+            <Button
+              variant="ghost"
+              onClick={() => setPayDialogOpen(false)}
+              disabled={isPaying}
+              className="rounded-md font-semibold"
+            >
+              {t('common.cancel')}
+            </Button>
+            <Button
+              onClick={handlePaySubmit}
+              disabled={isPaying}
+              className="rounded-md bg-emerald-600 hover:bg-emerald-700 text-white font-semibold shadow-lg min-w-[140px]"
+            >
+              {isPaying ? (
+                <span className="flex items-center gap-2">
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  {t('common.processing')}
+                </span>
+              ) : (
+                <span className="flex items-center gap-2">
+                  <Banknote className="w-4 h-4" />
+                  {t('salesman.payBalance.pay')}
+                </span>
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </Shell>
   );
 }

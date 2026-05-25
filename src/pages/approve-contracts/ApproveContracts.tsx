@@ -15,7 +15,17 @@ import { toast } from 'react-hot-toast';
 import { Link } from "wouter";
 import { Shell } from '../../components/shared/Shell';
 import { Can } from '../../components/shared/Can';
-import { 
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import {
   FileText,
   Plus,
   Sparkles,
@@ -25,7 +35,11 @@ import {
   Building2,
   Trash2,
   CheckCircle2,
-  Clock
+  Clock,
+  Percent,
+  Wallet,
+  ChevronRight,
+  Loader2,
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { format } from 'date-fns';
@@ -87,7 +101,10 @@ export default function ApproveContracts() {
 
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [approveDialogOpen, setApproveDialogOpen] = useState(false);
+  const [commissionDialogOpen, setCommissionDialogOpen] = useState(false);
   const [selectedContractId, setSelectedContractId] = useState<number | null>(null);
+  const [selectedContract, setSelectedContract] = useState<Contract | null>(null);
+  const [commissionForm, setCommissionForm] = useState({ commissionBase: 'PERCENTAGE', commissionValue: '' });
 
   const { data: response, isLoading } = useQuery<ContractsResponse>({
     queryKey: ['contracts-approve', currentPage, pageSize, filters.search],
@@ -119,15 +136,17 @@ export default function ApproveContracts() {
   });
 
   const { mutate: approveContract, isPending: isApproving } = useMutation({
-    mutationFn: async (id: number) => {
-      await api.patch(`/contract/${id}/approve`);
+    mutationFn: async ({ id, commission }: { id: number; commission?: { commissionBase: string; commissionValue: number } }) => {
+      await api.patch(`/contract/${id}/approve`, commission ?? {});
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['contracts-approve'] });
-      queryClient.invalidateQueries({ queryKey: ['contracts'] }); // Also invalidate approved contracts list
+      queryClient.invalidateQueries({ queryKey: ['contracts'] });
       toast.success(t('contracts.approveSuccess'));
       setApproveDialogOpen(false);
+      setCommissionDialogOpen(false);
       setSelectedContractId(null);
+      setSelectedContract(null);
     },
     onError: () => {
       toast.error(t('contracts.approveError'));
@@ -248,12 +267,18 @@ export default function ApproveContracts() {
       cell: (c) => (
         <div className="flex items-center justify-center gap-2">
           <Can I="UPDATE" a="contract">
-            <button 
+            <button
               onClick={() => {
-                setSelectedContractId(c.id);
-                setApproveDialogOpen(true);
-              }} 
-              className="p-2 hover:bg-green-50 dark:hover:bg-green-950/30 rounded-md text-gray-400 hover:text-green-600 transition-colors" 
+                if (!c.salesManagerApproval) {
+                  setSelectedContract(c);
+                  setCommissionForm({ commissionBase: 'PERCENTAGE', commissionValue: '' });
+                  setCommissionDialogOpen(true);
+                } else {
+                  setSelectedContractId(c.id);
+                  setApproveDialogOpen(true);
+                }
+              }}
+              className="p-2 hover:bg-green-50 dark:hover:bg-green-950/30 rounded-md text-gray-400 hover:text-green-600 transition-colors"
               title={t('contracts.approve')}
             >
               <CheckCircle2 className="w-4 h-4" />
@@ -307,7 +332,7 @@ export default function ApproveContracts() {
       <ConfirmDialog
         isOpen={approveDialogOpen}
         onClose={() => setApproveDialogOpen(false)}
-        onConfirm={() => selectedContractId && approveContract(selectedContractId)}
+        onConfirm={() => selectedContractId && approveContract({ id: selectedContractId })}
         title={t('contracts.approveConfirmTitle')}
         description={t('contracts.approveConfirmDescription')}
         confirmText={t('contracts.approve')}
@@ -316,6 +341,107 @@ export default function ApproveContracts() {
         variant="success"
         icon={CheckCircle2}
       />
+
+      {/* Commission Dialog — shown for Sales Manager approval step */}
+      <Dialog open={commissionDialogOpen} onOpenChange={(open) => !open && setCommissionDialogOpen(false)}>
+        <DialogContent className="sm:max-w-[440px] rounded-md border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-0 overflow-hidden">
+          <div className="p-6 border-b border-gray-100 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-800/50">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-md bg-amber-50 dark:bg-amber-500/10 flex items-center justify-center text-amber-600">
+                <Wallet className="w-5 h-5" />
+              </div>
+              <DialogHeader>
+                <DialogTitle className="text-lg font-bold text-gray-900 dark:text-white">
+                  {t('contracts.commission.title')}
+                </DialogTitle>
+                <p className="text-xs text-gray-500 dark:text-gray-400 font-medium mt-0.5">
+                  {t('contracts.commission.description')}
+                </p>
+              </DialogHeader>
+            </div>
+          </div>
+
+          <div className="p-6 space-y-5">
+            {/* Commission Base */}
+            <div className="space-y-2">
+              <Label className="text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
+                {t('contracts.commission.base')}
+              </Label>
+              <div className="relative group">
+                <Percent className="absolute left-4 rtl:left-auto rtl:right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+                <select
+                  className="w-full h-11 pl-11 rtl:pl-4 rtl:pr-11 rounded-md bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700 text-sm font-medium text-gray-700 dark:text-gray-200 outline-none focus:ring-2 focus:ring-[#B39371]/20 transition-all appearance-none cursor-pointer"
+                  value={commissionForm.commissionBase}
+                  onChange={(e) => setCommissionForm(prev => ({ ...prev, commissionBase: e.target.value }))}
+                >
+                  <option value="PERCENTAGE">{t('contracts.commission.percentage')}</option>
+                  <option value="FIXED">{t('contracts.commission.fixed')}</option>
+                </select>
+                <ChevronRight className="absolute right-4 rtl:right-auto rtl:left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 rotate-90 pointer-events-none" />
+              </div>
+            </div>
+
+            {/* Commission Value */}
+            <div className="space-y-2">
+              <Label className="text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
+                {t('contracts.commission.value')}
+              </Label>
+              <div className="relative group">
+                <div className="absolute left-4 rtl:left-auto rtl:right-4 top-1/2 -translate-y-1/2 text-gray-400 text-[10px] font-bold pointer-events-none">
+                  {commissionForm.commissionBase === 'PERCENTAGE' ? '%' : t('common.sar')}
+                </div>
+                <Input
+                  type="number"
+                  step="0.01"
+                  min="0"
+                  placeholder={commissionForm.commissionBase === 'PERCENTAGE' ? '2.5' : '5000'}
+                  className="h-11 pl-11 rtl:pl-4 rtl:pr-11 rounded-md bg-gray-50 dark:bg-gray-800/50 border-gray-200 dark:border-gray-700 focus:bg-white dark:focus:bg-gray-800 transition-all font-medium"
+                  value={commissionForm.commissionValue}
+                  onChange={(e) => setCommissionForm(prev => ({ ...prev, commissionValue: e.target.value }))}
+                />
+              </div>
+            </div>
+          </div>
+
+          <DialogFooter className="p-4 border-t border-gray-100 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-800/50 gap-3">
+            <Button
+              variant="ghost"
+              onClick={() => setCommissionDialogOpen(false)}
+              disabled={isApproving}
+              className="rounded-md font-semibold"
+            >
+              {t('common.cancel')}
+            </Button>
+            <Button
+              onClick={() => {
+                const value = parseFloat(commissionForm.commissionValue);
+                if (!commissionForm.commissionValue || isNaN(value) || value <= 0) {
+                  toast.error(t('contracts.commission.valueRequired'));
+                  return;
+                }
+                approveContract({
+                  id: selectedContract!.id,
+                  commission: { commissionBase: commissionForm.commissionBase, commissionValue: value },
+                });
+              }}
+              disabled={isApproving}
+              className="rounded-md bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-semibold shadow-lg min-w-[120px]"
+            >
+              {isApproving ? (
+                <span className="flex items-center gap-2">
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  {t('contracts.approving')}
+                </span>
+              ) : (
+                <>
+                  <CheckCircle2 className="w-4 h-4 mr-1 rtl:mr-0 rtl:ml-1" />
+                  {t('contracts.approve')}
+                </>
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
       
       <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-50 dark:from-gray-950 dark:via-gray-900 dark:to-gray-950">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">

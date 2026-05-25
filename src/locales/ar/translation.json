@@ -70,7 +70,9 @@
     "createdBy": "أنشئ بواسطة",
     "createdAt": "تاريخ الإنشاء",
     "lastUpdated": "آخر تحديث",
-    "id": "المعرف"
+    "id": "المعرف",
+    "optional": "اختياري",
+    "confirm": "تأكيد"
   },
   "dashboard": {
     "title": "لوحة القيادة العامة",
@@ -687,6 +689,9 @@
       "projectSak": "صك المشروع",
       "apartmentSak": "صك الشقة",
       "subDivision": "سجل التقسيم",
+      "fileTitle": "عنوان الملف",
+      "fileUrl": "الملف",
+      "addFile": "إضافة ملف",
       "apartmentNo": "رقم الشقة",
       "suite": "اسم الجناح",
       "floor": "الدور",
@@ -717,9 +722,11 @@
       "selectOverallStatus": "اختر الحالة الحالية",
       "requestNumber": "REQ-000",
       "search": "البحث باسم الشقة أو الجناح أو المعرف...",
-      "uploadProjectSak": "تحميل صك المشروع (PDF)",
-      "uploadApartmentSak": "تحميل صك الشقة (PDF)",
-      "uploadSubDivision": "تحميل سجل التقسيم (PDF)"
+      "uploadProjectSak": "تحميل صورة صك المشروع",
+      "uploadApartmentSak": "تحميل صورة صك الشقة",
+      "uploadSubDivision": "تحميل صورة سجل التقسيم",
+      "fileTitle": "مثال: عقد",
+      "uploadFile": "تحميل ملف (PDF، صورة، إلخ)"
     },
     "sections": {
       "identification": "تعريف الوحدة",
@@ -728,6 +735,8 @@
       "locationalDesc": "مكان الوحدة ومواصفاتها الفيزيائية",
       "economics": "المالية والحالة",
       "economicsDesc": "التسعير والتوافر ومعلومات التتبع",
+      "sakImages": "صور الصكوك",
+      "sakImagesDesc": "تحميل صور الصكوك الرسمية وسجلات التقسيم",
       "documents": "المرفقات القانونية",
       "documentsDesc": "السجلات والشهادات الرسمية"
     },
@@ -740,7 +749,8 @@
       "residential": "سكني",
       "commercial": "تجاري",
       "penthouse": "بنتهاوس",
-      "duplex": "دوبلكس"
+      "duplex": "دوبلكس",
+      "studio": "استوديو"
     },
     "owners": {
       "owned": "مملوك للشركة",
@@ -751,7 +761,9 @@
       "available": "متاح",
       "sold": "مباع",
       "reserved": "محجوز",
-      "reselling": "إعادة بيع"
+      "reselling": "إعادة بيع",
+      "active": "نشط",
+      "inactive": "غير نشط"
     },
     "streetCounts": {
       "ONE_STREET": "شارع واحد",
@@ -893,6 +905,7 @@
     "deleteSuccess": "تم حذف مندوب المبيعات بنجاح",
     "deleteError": "فشل حذف مندوب المبيعات",
     "loading": "جاري تحميل المندوبين...",
+    "role": "الدور",
     "snapshot": "نظرة عامة على المندوب",
     "performance": "مقاييس الأداء",
     "contractStats": "إحصائيات العقود",
@@ -906,7 +919,9 @@
       "totalContracts": "إجمالي العقود",
       "totalApartmentContracts": "عقود الوحدات",
       "totalContractValue": "إجمالي قيمة المبيعات",
-      "totalCommission": "إجمالي العمولات"
+      "totalCommission": "إجمالي العمولات",
+      "totalPaid": "إجمالي المدفوع",
+      "balance": "الرصيد المتبقي"
     },
     "empty": {
       "title": "لم يتم العثور على مندوبين",
@@ -941,6 +956,20 @@
     "bases": {
       "percentage": "نسبة مئوية",
       "fixed": "مبلغ ثابت"
+    },
+    "payBalance": {
+      "button": "دفع الرصيد",
+      "title": "تسجيل دفعة عمولة",
+      "date": "تاريخ الدفع",
+      "amount": "المبلغ",
+      "notes": "ملاحظات",
+      "notesPlaceholder": "مثال: صرف عمولة شهر مايو",
+      "pay": "تسجيل الدفعة",
+      "success": "تم تسجيل الدفعة بنجاح",
+      "error": "فشل في تسجيل الدفعة",
+      "dateRequired": "يرجى تحديد تاريخ الدفع",
+      "amountRequired": "يرجى إدخال مبلغ صحيح أكبر من 0",
+      "exceedsBalance": "المبلغ يتجاوز الرصيد المتاح"
     }
   },
   "auth": {
@@ -1097,6 +1126,15 @@
       "salesApproval": "اعتماد مدير المبيعات",
       "financeApproval": "اعتماد المدير المالي",
       "completed": "معتمد بالكامل"
+    },
+    "commission": {
+      "title": "إضافة عمولة المندوب",
+      "description": "حدد عمولة المندوب قبل اعتماد هذا العقد.",
+      "base": "أساس العمولة",
+      "value": "قيمة العمولة",
+      "percentage": "نسبة مئوية (%)",
+      "fixed": "مبلغ ثابت (ر.س)",
+      "valueRequired": "يرجى إدخال قيمة عمولة صحيحة أكبر من 0."
     }
   },
   "clients": {

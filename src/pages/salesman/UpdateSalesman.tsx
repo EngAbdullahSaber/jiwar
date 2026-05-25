@@ -3,21 +3,17 @@ import { useLocation, useRoute } from "wouter";
 import { useTranslation } from 'react-i18next';
 import { TopHeader } from '../../components/TopHeader';
 import { Shell } from '../../components/shared/Shell';
-import { 
-  Users as UsersIcon, 
-  ChevronRight, 
-  Mail, 
+import {
+  Users as UsersIcon,
+  ChevronRight,
+  Mail,
   Phone,
   User as UserIcon,
   Loader2,
   ArrowLeft,
-  Percent,
-  Wallet,
-  Target,
   Calendar,
   Sparkles,
   Save,
-  CheckCircle2,
   CreditCard
 } from 'lucide-react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
@@ -26,7 +22,6 @@ import { motion } from 'framer-motion';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Switch } from "@/components/ui/switch";
 import { toast } from "react-hot-toast";
 import { Link } from 'wouter';
 import DatePicker from '../../components/shared/DatePicker';
@@ -42,14 +37,9 @@ export default function UpdateSalesman() {
     fullName: '',
     phoneNumber: '',
     email: '',
-    paymentType: 'COMMISSION',
     agentType: 'INTERNAL',
     startDate: '',
     endDate: '',
-    commissionBase: 'PERCENTAGE',
-    commissionValue: '',
-    apartmentTargetGoal: '',
-    completeTarget: false,
     password: ''
   });
 
@@ -70,14 +60,9 @@ export default function UpdateSalesman() {
         fullName: s.fullName || '',
         phoneNumber: s.phoneNumber || '',
         email: s.email || '',
-        paymentType: s.paymentType || 'COMMISSION',
         agentType: s.agentType || 'INTERNAL',
         startDate: s.startDate ? new Date(s.startDate).toISOString().split('T')[0] : '',
         endDate: s.endDate ? new Date(s.endDate).toISOString().split('T')[0] : '',
-        commissionBase: s.commissionBase || 'PERCENTAGE',
-        commissionValue: s.commissionValue?.toString() || '',
-        apartmentTargetGoal: s.apartmentTargetGoal?.toString() || '',
-        completeTarget: s.completeTarget || false,
         password: ''
       });
     }
@@ -113,20 +98,10 @@ export default function UpdateSalesman() {
       return;
     }
 
-    const payload: any = {
-      ...formData,
-      commissionValue: parseFloat(formData.commissionValue) || 0
-    };
+    const payload: any = { ...formData };
 
     if (!payload.password) {
       delete payload.password;
-    }
-
-    // Only send apartmentTargetGoal if toggle is on AND it's a positive number
-    if (formData.completeTarget && parseInt(formData.apartmentTargetGoal) > 0) {
-      payload.apartmentTargetGoal = parseInt(formData.apartmentTargetGoal);
-    } else {
-      delete payload.apartmentTargetGoal;
     }
 
     updateMutation.mutate(payload);
@@ -135,10 +110,6 @@ export default function UpdateSalesman() {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
-  };
-
-  const handleSwitchChange = (checked: boolean) => {
-    setFormData(prev => ({ ...prev, completeTarget: checked }));
   };
 
   if (isLoadingSalesman) {
@@ -296,125 +267,6 @@ export default function UpdateSalesman() {
                       <ChevronRight className="absolute right-4 rtl:right-auto rtl:left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 group-focus-within:text-[#B39371] rotate-90 transition-colors pointer-events-none" />
                     </div>
                   </div>
-                </div>
-              </div>
-            </motion.div>
-
-            {/* Commission & Target */}
-            <motion.div 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.1 }}
-              className="bg-white dark:bg-gray-900 rounded-md border border-gray-200 dark:border-gray-800 overflow-hidden shadow-sm"
-            >
-              <div className="p-6 border-b border-gray-100 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-800/50">
-                <div className="flex items-center gap-4">
-                  <div className="w-10 h-10 rounded-md bg-amber-50 dark:bg-amber-500/10 flex items-center justify-center text-amber-600">
-                    <Wallet className="w-5 h-5" />
-                  </div>
-                  <div>
-                    <h2 className="text-lg font-bold text-gray-900 dark:text-white">{t('salesman.form.commissionInfo')}</h2>
-                    <p className="text-xs text-gray-500 dark:text-gray-400 font-medium">{t('salesman.form.commissionInfoDesc')}</p>
-                  </div>
-                </div>
-              </div>
-
-              <div className="p-8 space-y-8">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
-                  {/* Payment Type */}
-                  <div className="space-y-2">
-                    <Label className="text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider">{t('salesman.paymentType')}</Label>
-                    <div className="relative group">
-                      <Wallet className="absolute left-4 rtl:left-auto rtl:right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 group-focus-within:text-[#B39371] transition-colors pointer-events-none" />
-                        <select
-                          name="paymentType"
-                          className="w-full h-12 pl-11 rtl:pl-4 rtl:pr-11 rounded-md bg-gray-50 dark:bg-gray-800/50 border border-gray-100 dark:border-gray-800 text-sm font-medium text-gray-700 dark:text-gray-200 outline-none focus:bg-white dark:focus:bg-gray-800 focus:ring-2 focus:ring-[#B39371]/10 transition-all appearance-none cursor-pointer"
-                          value={formData.paymentType}
-                          onChange={handleChange}
-                        >
-                          <option value="COMMISSION">{t('salesman.payments.commission')}</option>
-                          <option value="CASH">{t('salesman.payments.cash')}</option>
-                          <option value="INSTALLMENT">{t('salesman.payments.installment')}</option>
-                        </select>
-                      <ChevronRight className="absolute right-4 rtl:right-auto rtl:left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 group-focus-within:text-[#B39371] rotate-90 transition-colors pointer-events-none" />
-                    </div>
-                  </div>
-
-                  {/* Commission Base */}
-                  <div className="space-y-2">
-                    <Label className="text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider">{t('salesman.commissionBase')}</Label>
-                    <div className="relative group">
-                      <Percent className="absolute left-4 rtl:left-auto rtl:right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 group-focus-within:text-[#B39371] transition-colors pointer-events-none" />
-                      <select
-                        name="commissionBase"
-                        className="w-full h-12 pl-11 rtl:pl-4 rtl:pr-11 rounded-md bg-gray-50 dark:bg-gray-800/50 border border-gray-100 dark:border-gray-800 text-sm font-medium text-gray-700 dark:text-gray-200 outline-none focus:bg-white dark:focus:bg-gray-800 focus:ring-2 focus:ring-[#B39371]/10 transition-all appearance-none cursor-pointer"
-                        value={formData.commissionBase}
-                        onChange={handleChange}
-                      >
-                        <option value="PERCENTAGE">{t('salesman.bases.percentage')}</option>
-                        <option value="FIXED">{t('salesman.bases.fixed')}</option>
-                      </select>
-                      <ChevronRight className="absolute right-4 rtl:right-auto rtl:left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 group-focus-within:text-[#B39371] rotate-90 transition-colors pointer-events-none" />
-                    </div>
-                  </div>
-
-                  {/* Commission Value */}
-                  <div className="space-y-2">
-                    <Label className="text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider">{t('salesman.commissionValue')}</Label>
-                    <div className="relative group">
-                      <div className="absolute left-4 rtl:left-auto rtl:right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 group-focus-within:text-[#B39371] transition-colors flex items-center justify-center font-bold text-[10px]">
-                        {formData.commissionBase === 'PERCENTAGE' ? '%' : 'SAR'}
-                      </div>
-                      <Input
-                        name="commissionValue"
-                        type="number"
-                        step="0.01"
-                        placeholder={t('salesman.form.placeholders.commissionValue')}
-                        className="h-12 pl-11 rtl:pl-4 rtl:pr-11 rounded-md bg-gray-50 dark:bg-gray-800/50 border-gray-100 dark:border-gray-800 focus:bg-white dark:focus:bg-gray-800 transition-all font-medium"
-                        value={formData.commissionValue}
-                        onChange={handleChange}
-                      />
-                    </div>
-                  </div>
-
-                  {/* Target Completion Status */}
-                  <div className="md:col-span-2 p-6 bg-gray-50 dark:bg-gray-800/50 rounded-md border border-gray-100 dark:border-gray-800 flex items-center justify-between">
-                    <div className="flex items-center gap-4">
-                      <div className="w-10 h-10 rounded-md bg-emerald-50 dark:bg-emerald-500/10 flex items-center justify-center text-emerald-600">
-                        <CheckCircle2 className="w-5 h-5" />
-                      </div>
-                      <div>
-                        <h3 className="text-sm font-bold text-gray-900 dark:text-white">{t('salesman.hasTarget')}</h3>
-                        <p className="text-[10px] text-gray-500 font-medium">{t('salesman.hasTargetDesc')}</p>
-                      </div>
-                    </div>
-                    <Switch 
-                      checked={formData.completeTarget}
-                      onCheckedChange={handleSwitchChange}
-                    />
-                  </div>
-
-                  {/* Apartment Target Goal - Conditional */}
-                  {formData.completeTarget && (
-                    <motion.div 
-                      className="md:col-span-2 space-y-2"
-                      initial={{ opacity: 0, height: 0 }}
-                      animate={{ opacity: 1, height: 'auto' }}
-                    >
-                      <Label className="text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider">{t('salesman.targetGoal')}</Label>
-                      <div className="relative group">
-                        <Target className="absolute left-4 rtl:left-auto rtl:right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 group-focus-within:text-[#B39371] transition-colors" />
-                        <Input
-                          name="apartmentTargetGoal"
-                          type="number"
-                          placeholder={t('salesman.form.placeholders.targetGoal')}
-                          className="h-12 pl-11 rtl:pl-4 rtl:pr-11 rounded-md bg-gray-50 dark:bg-gray-800/50 border-gray-100 dark:border-gray-800 focus:bg-white dark:focus:bg-gray-800 transition-all font-medium"
-                          value={formData.apartmentTargetGoal}
-                          onChange={handleChange}
-                        />
-                      </div>
-                    </motion.div>
-                  )}
                 </div>
               </div>
             </motion.div>

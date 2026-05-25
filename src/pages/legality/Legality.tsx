@@ -10,6 +10,7 @@ import {
   Clock,
   CheckCircle2,
   AlertCircle,
+  Activity,
   FileText,
   Layers,
   ChevronDown,

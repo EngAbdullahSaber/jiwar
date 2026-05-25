@@ -1,35 +1,30 @@
-﻿import { useState } from 'react';
+﻿import { useState } from "react";
 import { useLocation } from "wouter";
-import { useTranslation } from 'react-i18next';
-import { TopHeader } from '../../components/TopHeader';
-import { Shell } from '../../components/shared/Shell';
-import { 
-  Users as UsersIcon, 
-  ChevronRight, 
-  UserPlus, 
-  Mail, 
+import { useTranslation } from "react-i18next";
+import { TopHeader } from "../../components/TopHeader";
+import { Shell } from "../../components/shared/Shell";
+import {
+  Users as UsersIcon,
+  ChevronRight,
+  UserPlus,
+  Mail,
   Phone,
   User as UserIcon,
   Loader2,
   ArrowLeft,
-  Percent,
-  Wallet,
-  Target,
   Calendar,
   Sparkles,
-  CreditCard
-} from 'lucide-react';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import api from '@/lib/api';
-import { motion } from 'framer-motion';
+  CreditCard,
+} from "lucide-react";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import api from "@/lib/api";
+import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Switch } from "@/components/ui/switch";
 import { toast } from "react-hot-toast";
-import { Link } from 'wouter';
-import DatePicker from '../../components/shared/DatePicker';
-import { CheckCircle2 } from 'lucide-react';
+import { Link } from "wouter";
+import DatePicker from "../../components/shared/DatePicker";
 
 export default function CreateSalesman() {
   const [, setLocation] = useLocation();
@@ -37,83 +32,74 @@ export default function CreateSalesman() {
   const { t } = useTranslation();
 
   const [formData, setFormData] = useState({
-    fullName: '',
-    phoneNumber: '',
-    email: '',
-    paymentType: 'COMMISSION',
-    agentType: 'INTERNAL',
-    startDate: '',
-    endDate: '',
-    commissionBase: 'PERCENTAGE',
-    commissionValue: '',
-    apartmentTargetGoal: '',
-    completeTarget: false,
-    password: ''
+    fullName: "",
+    phoneNumber: "",
+    email: "",
+    agentType: "INTERNAL",
+    startDate: "",
+    endDate: "",
+    password: "",
   });
 
   const createMutation = useMutation({
     mutationFn: async (salesmanData: any) => {
-      const response = await api.post('/salesman', salesmanData);
+      const response = await api.post("/salesman", salesmanData);
       return response.data;
     },
     onSuccess: () => {
-      toast.success(t('salesman.successCreate'));
-      queryClient.invalidateQueries({ queryKey: ['salesmen'] });
-      setLocation('/salesman');
+      toast.success(t("salesman.successCreate"));
+      queryClient.invalidateQueries({ queryKey: ["salesmen"] });
+      setLocation("/salesman");
     },
     onError: (error: any) => {
-      toast.error(error.response?.data?.message?.english || t('common.error'));
-    }
+      toast.error(error.response?.data?.message?.english || t("common.error"));
+    },
   });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     // Validation
-    if (!formData.fullName || !formData.email || !formData.phoneNumber || !formData.startDate || !formData.endDate || !formData.password) {
-      toast.error(t('common.fillRequiredFields'));
+    if (
+      !formData.fullName ||
+      !formData.email ||
+      !formData.phoneNumber ||
+      !formData.startDate ||
+      !formData.endDate ||
+      !formData.password
+    ) {
+      toast.error(t("common.fillRequiredFields"));
       return;
     }
 
     if (new Date(formData.startDate) > new Date(formData.endDate)) {
-      toast.error(t('common.startDateBeforeEndDate'));
+      toast.error(t("common.startDateBeforeEndDate"));
       return;
     }
 
-    const payload: any = {
-      ...formData,
-      commissionValue: parseFloat(formData.commissionValue) || 0,
-    };
-
-    // Only send apartmentTargetGoal if toggle is on AND it's a positive number
-    if (formData.completeTarget && parseInt(formData.apartmentTargetGoal) > 0) {
-      payload.apartmentTargetGoal = parseInt(formData.apartmentTargetGoal);
-    } else {
-      delete payload.apartmentTargetGoal;
-    }
-
-    createMutation.mutate(payload);
+    createMutation.mutate(formData);
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
+  ) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   return (
     <Shell>
       <TopHeader />
-      
+
       <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-50 dark:from-gray-950 dark:via-gray-900 dark:to-gray-950">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8 pb-32">
-          
           {/* Header Section */}
           <div className="bg-white dark:bg-gray-900 rounded-md border border-gray-200 dark:border-gray-800 p-6 shadow-sm  relative group">
             <div className="absolute top-0 right-0 w-48 h-48 bg-gradient-to-br from-[#4A1B1B]/5 to-transparent rounded-md -translate-y-1/2 translate-x-1/2 blur-3xl" />
-            
+
             <div className="flex items-center gap-6 relative z-10">
-              <Link 
-                href="/salesman" 
+              <Link
+                href="/salesman"
                 className="p-2.5 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-md transition-all border border-transparent hover:border-gray-200 dark:hover:border-gray-700"
               >
                 <ArrowLeft className="w-5 h-5 text-gray-500 rtl:rotate-180" />
@@ -128,14 +114,14 @@ export default function CreateSalesman() {
                 <div className="flex items-center gap-2 mb-1">
                   <Sparkles className="w-4 h-4 text-[#B39371]" />
                   <p className="text-[10px] font-bold text-[#B39371] uppercase tracking-[0.2em]">
-                    {t('salesman.title')}
+                    {t("salesman.title")}
                   </p>
                 </div>
                 <h1 className="text-2xl font-extrabold text-gray-900 dark:text-white tracking-tight">
-                  {t('salesman.create')}
+                  {t("salesman.create")}
                 </h1>
                 <p className="text-sm text-gray-500 dark:text-gray-400 mt-1 font-medium">
-                  {t('salesman.description')}
+                  {t("salesman.description")}
                 </p>
               </div>
             </div>
@@ -143,7 +129,7 @@ export default function CreateSalesman() {
 
           <form onSubmit={handleSubmit} className="space-y-8">
             {/* Basic Information */}
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               className="bg-white dark:bg-gray-900 rounded-md border border-gray-200 dark:border-gray-800  shadow-sm"
@@ -154,22 +140,28 @@ export default function CreateSalesman() {
                     <UserIcon className="w-5 h-5" />
                   </div>
                   <div>
-                    <h2 className="text-lg font-bold text-gray-900 dark:text-white">{t('salesman.form.basicInfo')}</h2>
-                    <p className="text-xs text-gray-500 dark:text-gray-400 font-medium">{t('salesman.form.basicInfoDesc')}</p>
+                    <h2 className="text-lg font-bold text-gray-900 dark:text-white">
+                      {t("salesman.form.basicInfo")}
+                    </h2>
+                    <p className="text-xs text-gray-500 dark:text-gray-400 font-medium">
+                      {t("salesman.form.basicInfoDesc")}
+                    </p>
                   </div>
                 </div>
               </div>
-              
+
               <div className="p-8 space-y-8">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
                   {/* Full Name */}
                   <div className="space-y-2">
-                    <Label className="text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider">{t('salesman.fullName')}</Label>
+                    <Label className="text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
+                      {t("salesman.fullName")}
+                    </Label>
                     <div className="relative group">
                       <UserIcon className="absolute left-4 rtl:left-auto rtl:right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 group-focus-within:text-[#B39371] transition-colors" />
                       <Input
                         name="fullName"
-                        placeholder={t('salesman.form.placeholders.fullName')}
+                        placeholder={t("salesman.form.placeholders.fullName")}
                         className="h-12 pl-11 rtl:pl-4 rtl:pr-11 rounded-md bg-gray-50 dark:bg-gray-800/50 border-gray-100 dark:border-gray-800 focus:bg-white dark:focus:bg-gray-800 transition-all font-medium"
                         value={formData.fullName}
                         onChange={handleChange}
@@ -180,13 +172,15 @@ export default function CreateSalesman() {
 
                   {/* Email */}
                   <div className="space-y-2">
-                    <Label className="text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider">{t('salesman.email')}</Label>
+                    <Label className="text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
+                      {t("salesman.email")}
+                    </Label>
                     <div className="relative group">
                       <Mail className="absolute left-4 rtl:left-auto rtl:right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 group-focus-within:text-[#B39371] transition-colors" />
                       <Input
                         name="email"
                         type="email"
-                        placeholder={t('salesman.form.placeholders.email')}
+                        placeholder={t("salesman.form.placeholders.email")}
                         className="h-12 pl-11 rtl:pl-4 rtl:pr-11 rounded-md bg-gray-50 dark:bg-gray-800/50 border-gray-100 dark:border-gray-800 focus:bg-white dark:focus:bg-gray-800 transition-all font-medium"
                         value={formData.email}
                         onChange={handleChange}
@@ -197,12 +191,14 @@ export default function CreateSalesman() {
 
                   {/* Phone */}
                   <div className="space-y-2">
-                    <Label className="text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider">{t('salesman.phoneNumber')}</Label>
+                    <Label className="text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
+                      {t("salesman.phoneNumber")}
+                    </Label>
                     <div className="relative group">
                       <Phone className="absolute left-4 rtl:left-auto rtl:right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 group-focus-within:text-[#B39371] transition-colors" />
                       <Input
                         name="phoneNumber"
-                        placeholder={t('salesman.form.placeholders.phone')}
+                        placeholder={t("salesman.form.placeholders.phone")}
                         className="h-12 pl-11 rtl:pl-4 rtl:pr-11 rounded-md bg-gray-50 dark:bg-gray-800/50 border-gray-100 dark:border-gray-800 focus:bg-white dark:focus:bg-gray-800 transition-all font-medium"
                         value={formData.phoneNumber}
                         onChange={handleChange}
@@ -213,13 +209,15 @@ export default function CreateSalesman() {
 
                   {/* Password */}
                   <div className="space-y-2">
-                    <Label className="text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider">{t('salesman.password')}</Label>
+                    <Label className="text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
+                      {t("salesman.password")}
+                    </Label>
                     <div className="relative group">
                       <CreditCard className="absolute left-4 rtl:left-auto rtl:right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 group-focus-within:text-[#B39371] transition-colors" />
                       <Input
                         name="password"
                         type="password"
-                        placeholder={t('salesman.form.placeholders.password')}
+                        placeholder={t("salesman.form.placeholders.password")}
                         className="h-12 pl-11 rtl:pl-4 rtl:pr-11 rounded-md bg-gray-50 dark:bg-gray-800/50 border-gray-100 dark:border-gray-800 focus:bg-white dark:focus:bg-gray-800 transition-all font-medium"
                         value={formData.password}
                         onChange={handleChange}
@@ -230,7 +228,9 @@ export default function CreateSalesman() {
 
                   {/* Agent Type */}
                   <div className="space-y-2">
-                    <Label className="text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider">{t('salesman.agentType')}</Label>
+                    <Label className="text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
+                      {t("salesman.agentType")}
+                    </Label>
                     <div className="relative group">
                       <UsersIcon className="absolute left-4 rtl:left-auto rtl:right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 group-focus-within:text-[#B39371] transition-colors pointer-events-none" />
                       <select
@@ -239,137 +239,22 @@ export default function CreateSalesman() {
                         value={formData.agentType}
                         onChange={handleChange}
                       >
-                        <option value="INTERNAL">{t('salesman.types.internal')}</option>
-                        <option value="EXTERNAL">{t('salesman.types.external')}</option>
+                        <option value="INTERNAL">
+                          {t("salesman.types.internal")}
+                        </option>
+                        <option value="EXTERNAL">
+                          {t("salesman.types.external")}
+                        </option>
                       </select>
                       <ChevronRight className="absolute right-4 rtl:right-auto rtl:left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 group-focus-within:text-[#B39371] rotate-90 transition-colors pointer-events-none" />
                     </div>
                   </div>
-                </div>
-              </div>
-            </motion.div>
-
-            {/* Commission & Target */}
-            <motion.div 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.1 }}
-              className="bg-white dark:bg-gray-900 rounded-md border border-gray-200 dark:border-gray-800  shadow-sm"
-            >
-              <div className="p-6 border-b border-gray-100 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-800/50">
-                <div className="flex items-center gap-4">
-                  <div className="w-10 h-10 rounded-md bg-amber-50 dark:bg-amber-500/10 flex items-center justify-center text-amber-600">
-                    <Wallet className="w-5 h-5" />
-                  </div>
-                  <div>
-                    <h2 className="text-lg font-bold text-gray-900 dark:text-white">{t('salesman.form.commissionInfo')}</h2>
-                    <p className="text-xs text-gray-500 dark:text-gray-400 font-medium">{t('salesman.form.commissionInfoDesc')}</p>
-                  </div>
-                </div>
-              </div>
-
-              <div className="p-8 space-y-8">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
-                  {/* Payment Type */}
-                  <div className="space-y-2">
-                    <Label className="text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider">{t('salesman.paymentType')}</Label>
-                    <div className="relative group">
-                      <Wallet className="absolute left-4 rtl:left-auto rtl:right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 group-focus-within:text-[#B39371] transition-colors pointer-events-none" />
-                        <select
-                          name="paymentType"
-                          className="w-full h-12 pl-11 rtl:pl-4 rtl:pr-11 rounded-md bg-gray-50 dark:bg-gray-800/50 border border-gray-100 dark:border-gray-800 text-sm font-medium text-gray-700 dark:text-gray-200 outline-none focus:bg-white dark:focus:bg-gray-800 focus:ring-2 focus:ring-[#B39371]/10 transition-all appearance-none cursor-pointer"
-                          value={formData.paymentType}
-                          onChange={handleChange}
-                        >
-                          <option value="COMMISSION">{t('salesman.payments.commission')}</option>
-                          <option value="CASH">{t('salesman.payments.cash')}</option>
-                          <option value="INSTALLMENT">{t('salesman.payments.installment')}</option>
-                        </select>
-                      <ChevronRight className="absolute right-4 rtl:right-auto rtl:left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 group-focus-within:text-[#B39371] rotate-90 transition-colors pointer-events-none" />
-                    </div>
-                  </div>
-
-                  {/* Commission Base */}
-                  <div className="space-y-2">
-                    <Label className="text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider">{t('salesman.commissionBase')}</Label>
-                    <div className="relative group">
-                      <Percent className="absolute left-4 rtl:left-auto rtl:right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 group-focus-within:text-[#B39371] transition-colors pointer-events-none" />
-                      <select
-                        name="commissionBase"
-                        className="w-full h-12 pl-11 rtl:pl-4 rtl:pr-11 rounded-md bg-gray-50 dark:bg-gray-800/50 border border-gray-100 dark:border-gray-800 text-sm font-medium text-gray-700 dark:text-gray-200 outline-none focus:bg-white dark:focus:bg-gray-800 focus:ring-2 focus:ring-[#B39371]/10 transition-all appearance-none cursor-pointer"
-                        value={formData.commissionBase}
-                        onChange={handleChange}
-                      >
-                        <option value="PERCENTAGE">{t('salesman.bases.percentage')}</option>
-                        <option value="FIXED">{t('salesman.bases.fixed')}</option>
-                      </select>
-                      <ChevronRight className="absolute right-4 rtl:right-auto rtl:left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 group-focus-within:text-[#B39371] rotate-90 transition-colors pointer-events-none" />
-                    </div>
-                  </div>
-
-                  {/* Commission Value */}
-                  <div className="space-y-2">
-                    <Label className="text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider">{t('salesman.commissionValue')}</Label>
-                    <div className="relative group">
-                      <div className="absolute left-4 rtl:left-auto rtl:right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 group-focus-within:text-[#B39371] transition-colors flex items-center justify-center font-bold text-[10px]">
-                        {formData.commissionBase === 'PERCENTAGE' ? '%' : 'SAR'}
-                      </div>
-                      <Input
-                        name="commissionValue"
-                        type="number"
-                        step="0.01"
-                        placeholder={t('salesman.form.placeholders.commissionValue')}
-                        className="h-12 pl-11 rtl:pl-4 rtl:pr-11 rounded-md bg-gray-50 dark:bg-gray-800/50 border-gray-100 dark:border-gray-800 focus:bg-white dark:focus:bg-gray-800 transition-all font-medium"
-                        value={formData.commissionValue}
-                        onChange={handleChange}
-                      />
-                    </div>
-                  </div>
-
-                  {/* Target Completion Toggle */}
-                  <div className="md:col-span-2 p-6 bg-gray-50 dark:bg-gray-800/50 rounded-md border border-gray-100 dark:border-gray-800 flex items-center justify-between">
-                    <div className="flex items-center gap-4">
-                      <div className="w-10 h-10 rounded-md bg-emerald-50 dark:bg-emerald-500/10 flex items-center justify-center text-emerald-600">
-                        <CheckCircle2 className="w-5 h-5" />
-                      </div>
-                      <div>
-                        <h3 className="text-sm font-bold text-gray-900 dark:text-white">{t('salesman.hasTarget')}</h3>
-                        <p className="text-[10px] text-gray-500 font-medium">{t('salesman.hasTargetDesc')}</p>
-                      </div>
-                    </div>
-                    <Switch 
-                      checked={formData.completeTarget}
-                      onCheckedChange={(checked) => setFormData(prev => ({ ...prev, completeTarget: checked }))}
-                    />
-                  </div>
-
-                  {/* Apartment Target Goal - Conditional */}
-                  {formData.completeTarget && (
-                    <motion.div 
-                      className="md:col-span-2 space-y-2"
-                      initial={{ opacity: 0, height: 0 }}
-                      animate={{ opacity: 1, height: 'auto' }}
-                    >
-                      <Label className="text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider">{t('salesman.targetGoal')}</Label>
-                      <div className="relative group">
-                        <Target className="absolute left-4 rtl:left-auto rtl:right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 group-focus-within:text-[#B39371] transition-colors" />
-                        <Input
-                          name="apartmentTargetGoal"
-                          type="number"
-                          placeholder={t('salesman.form.placeholders.targetGoal')}
-                          className="h-12 pl-11 rtl:pl-4 rtl:pr-11 rounded-md bg-gray-50 dark:bg-gray-800/50 border-gray-100 dark:border-gray-800 focus:bg-white dark:focus:bg-gray-800 transition-all font-medium"
-                          value={formData.apartmentTargetGoal}
-                          onChange={handleChange}
-                        />
-                      </div>
-                    </motion.div>
-                  )}
                 </div>
               </div>
             </motion.div>
 
             {/* Schedule */}
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
@@ -381,8 +266,12 @@ export default function CreateSalesman() {
                     <Calendar className="w-5 h-5" />
                   </div>
                   <div>
-                    <h2 className="text-lg font-bold text-gray-900 dark:text-white">{t('salesman.form.scheduleInfo')}</h2>
-                    <p className="text-xs text-gray-500 dark:text-gray-400 font-medium">{t('salesman.form.scheduleInfoDesc')}</p>
+                    <h2 className="text-lg font-bold text-gray-900 dark:text-white">
+                      {t("salesman.form.scheduleInfo")}
+                    </h2>
+                    <p className="text-xs text-gray-500 dark:text-gray-400 font-medium">
+                      {t("salesman.form.scheduleInfoDesc")}
+                    </p>
                   </div>
                 </div>
               </div>
@@ -391,20 +280,28 @@ export default function CreateSalesman() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
                   {/* Start Date */}
                   <div className="space-y-2">
-                    <Label className="text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider">{t('salesman.startDate')}</Label>
+                    <Label className="text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
+                      {t("salesman.startDate")}
+                    </Label>
                     <DatePicker
                       value={formData.startDate}
-                      onChange={(date) => setFormData(prev => ({ ...prev, startDate: date }))}
+                      onChange={(date) =>
+                        setFormData((prev) => ({ ...prev, startDate: date }))
+                      }
                       required
                     />
                   </div>
 
                   {/* End Date */}
                   <div className="space-y-2">
-                    <Label className="text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider">{t('salesman.endDate')}</Label>
+                    <Label className="text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
+                      {t("salesman.endDate")}
+                    </Label>
                     <DatePicker
                       value={formData.endDate}
-                      onChange={(date) => setFormData(prev => ({ ...prev, endDate: date }))}
+                      onChange={(date) =>
+                        setFormData((prev) => ({ ...prev, endDate: date }))
+                      }
                       required
                     />
                   </div>
@@ -418,12 +315,12 @@ export default function CreateSalesman() {
                 <Button
                   type="button"
                   variant="ghost"
-                  onClick={() => setLocation('/salesman')}
+                  onClick={() => setLocation("/salesman")}
                   className="h-12 px-8 rounded-md font-bold text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white transition-all"
                 >
-                  {t('common.cancel')}
+                  {t("common.cancel")}
                 </Button>
-                
+
                 <Button
                   type="submit"
                   disabled={createMutation.isPending}
@@ -432,12 +329,12 @@ export default function CreateSalesman() {
                   {createMutation.isPending ? (
                     <>
                       <Loader2 className="w-5 h-5 animate-spin" />
-                      {t('common.processing')}
+                      {t("common.processing")}
                     </>
                   ) : (
                     <>
                       <UserPlus className="w-5 h-5" />
-                      {t('salesman.create')}
+                      {t("salesman.create")}
                     </>
                   )}
                 </Button>

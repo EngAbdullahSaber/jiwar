@@ -20,6 +20,8 @@ import {
   ArrowUpRight,
   ImageOff,
   FilePlus2,
+  Image,
+  ZoomIn,
 } from 'lucide-react';
 import { Shell } from '../../components/shared/Shell';
 import { cn } from '@/lib/utils';
@@ -45,9 +47,10 @@ interface Apartment {
   requestDate: string;
   requestNumber: string;
   meterNumber: number;
-  projectSakPdfUrl: string;
-  apartmentSakPdfUrl: string;
-  apartmentSubDivisionPdfUrl: string;
+  projectSakPdfUrl: string | null;
+  apartmentSakPdfUrl: string | null;
+  apartmentSubDivisionPdfUrl: string | null;
+  files: Array<{ title: string; url: string }>;
   project: { id: number; name: { arabic: string; english: string }; projectIdentity: string } | null;
   template: { id: number; name: { arabic: string; english: string }; totalRooms?: number; sku?: string } | null;
   createdBy: { id: number; email: string } | null;
@@ -182,11 +185,18 @@ export default function ViewApartment() {
     { id: 'structure',      icon: Ruler,    title: t('apartments.sections.locational'),     data: locationFields },
   ];
 
-  const documents = [
-    { label: t('apartments.labels.projectSak'),    url: apartment.projectSakPdfUrl,            color: 'text-blue-500',    bg: 'bg-blue-50 dark:bg-blue-950/30' },
-    { label: t('apartments.labels.apartmentSak'),  url: apartment.apartmentSakPdfUrl,           color: 'text-rose-500',    bg: 'bg-rose-50 dark:bg-rose-950/30' },
-    { label: t('apartments.labels.subDivision'),   url: apartment.apartmentSubDivisionPdfUrl,   color: 'text-emerald-500', bg: 'bg-emerald-50 dark:bg-emerald-950/30' },
-  ].filter(d => d.url);
+  const COLORS = [
+    { color: 'text-blue-500',    bg: 'bg-blue-50 dark:bg-blue-950/30' },
+    { color: 'text-rose-500',    bg: 'bg-rose-50 dark:bg-rose-950/30' },
+    { color: 'text-emerald-500', bg: 'bg-emerald-50 dark:bg-emerald-950/30' },
+    { color: 'text-violet-500',  bg: 'bg-violet-50 dark:bg-violet-950/30' },
+    { color: 'text-amber-500',   bg: 'bg-amber-50 dark:bg-amber-950/30' },
+  ];
+  const documents = (apartment.files || []).filter(f => f.url).map((f, i) => ({
+    label: f.title || t('apartments.labels.fileUrl'),
+    url: f.url,
+    ...COLORS[i % COLORS.length],
+  }));
 
   const baseUrl = import.meta.env.VITE_API_BASE_URL || '';
 
@@ -297,41 +307,6 @@ export default function ViewApartment() {
                   </div>
                 </div>
 
-                {/* Gallery placeholder */}
-                <div className="p-5">
-                  <div className="grid grid-cols-3 gap-3 h-52">
-                    {/* Main slot */}
-                    <div className="col-span-2 relative rounded-md overflow-hidden bg-gradient-to-br from-gray-100 to-gray-150 dark:from-gray-800 dark:to-gray-750 flex flex-col items-center justify-center border border-gray-200 dark:border-gray-700">
-                      <div
-                        className="absolute inset-0 opacity-[0.04] dark:opacity-[0.08]"
-                        style={{ backgroundImage: 'repeating-linear-gradient(0deg,#000 0,#000 1px,transparent 0,transparent 20px),repeating-linear-gradient(90deg,#000 0,#000 1px,transparent 0,transparent 20px)' }}
-                      />
-                      <div className="relative flex flex-col items-center gap-2.5">
-                        <div className="w-12 h-12 rounded-md bg-white/70 dark:bg-gray-900/60 flex items-center justify-center shadow-sm">
-                          <ImageOff className="w-5 h-5 text-gray-400" />
-                        </div>
-                        <span className="text-xs font-medium text-gray-400">{t('apartments.noImages')}</span>
-                      </div>
-                      <div className="absolute top-3 left-3 flex items-center gap-1.5 px-2.5 py-1 bg-white/80 dark:bg-gray-900/70 backdrop-blur-sm rounded-md border border-gray-200/60 dark:border-gray-700/60">
-                        <ImageOff className="w-3 h-3 text-gray-400" />
-                        <span className="text-[10px] text-gray-500 dark:text-gray-400 font-medium">{t('apartments.noImages')}</span>
-                      </div>
-                    </div>
-                    {/* Side slots */}
-                    <div className="grid grid-rows-2 gap-3">
-                      {[0, 1].map(i => (
-                        <div key={i} className="relative rounded-md overflow-hidden bg-gradient-to-br from-gray-100 to-gray-150 dark:from-gray-800 dark:to-gray-750 flex items-center justify-center border border-gray-200 dark:border-gray-700">
-                          <div
-                            className="absolute inset-0 opacity-[0.04] dark:opacity-[0.08]"
-                            style={{ backgroundImage: 'repeating-linear-gradient(0deg,#000 0,#000 1px,transparent 0,transparent 20px),repeating-linear-gradient(90deg,#000 0,#000 1px,transparent 0,transparent 20px)' }}
-                          />
-                          <ImageOff className="relative w-4 h-4 text-gray-300 dark:text-gray-600" />
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-
                 {/* Quick stats bar */}
                 <div className="grid grid-cols-2 sm:grid-cols-4 border-t border-gray-100 dark:border-gray-800 divide-x divide-y sm:divide-y-0 divide-gray-100 dark:divide-gray-800">
                   {quickStats.map((stat, i) => (
@@ -412,6 +387,51 @@ export default function ViewApartment() {
                   ))}
                 </div>
               </div>
+
+              {/* Sak Images */}
+              {(apartment.projectSakPdfUrl || apartment.apartmentSakPdfUrl || apartment.apartmentSubDivisionPdfUrl) && (
+                <div className="bg-white dark:bg-gray-900 rounded-md border border-gray-200 dark:border-gray-800 overflow-hidden">
+                  <div className="flex items-center gap-3 px-5 py-4 border-b border-gray-100 dark:border-gray-800">
+                    <div className="w-7 h-7 rounded-md bg-[#F5F1ED] dark:bg-gray-800 flex items-center justify-center">
+                      <Image className="w-3.5 h-3.5 text-[#B39371]" />
+                    </div>
+                    <h3 className="text-sm font-semibold text-gray-900 dark:text-white">{t('apartments.sections.sakImages')}</h3>
+                  </div>
+                  <div className="p-5 grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    {[
+                      { url: apartment.projectSakPdfUrl,            label: t('apartments.labels.projectSak') },
+                      { url: apartment.apartmentSakPdfUrl,          label: t('apartments.labels.apartmentSak') },
+                      { url: apartment.apartmentSubDivisionPdfUrl,  label: t('apartments.labels.subDivision') },
+                    ].map((item, i) => (
+                      <div key={i} className="space-y-2">
+                        <p className="text-[10px] text-gray-400 font-medium uppercase tracking-wide">{item.label}</p>
+                        {item.url ? (
+                          <a
+                            href={`${baseUrl}/${item.url}`}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="relative block rounded-md overflow-hidden border border-gray-200 dark:border-gray-700 hover:border-[#B39371]/60 transition-colors group aspect-[4/3] bg-gray-50 dark:bg-gray-800"
+                          >
+                            <img
+                              src={`${baseUrl}/${item.url}`}
+                              alt={item.label}
+                              className="w-full h-full object-cover"
+                            />
+                            <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center">
+                              <ZoomIn className="w-5 h-5 text-white opacity-0 group-hover:opacity-100 transition-opacity drop-shadow" />
+                            </div>
+                          </a>
+                        ) : (
+                          <div className="aspect-[4/3] rounded-md border border-dashed border-gray-200 dark:border-gray-700 flex flex-col items-center justify-center bg-gray-50 dark:bg-gray-800/50 gap-1.5">
+                            <ImageOff className="w-5 h-5 text-gray-300 dark:text-gray-600" />
+                            <span className="text-[10px] text-gray-400">{t('common.na')}</span>
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* ── Right sidebar ── */}

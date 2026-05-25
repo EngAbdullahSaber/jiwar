@@ -1,4 +1,4 @@
-﻿import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.css';
 import { useTranslation } from 'react-i18next';
@@ -18,10 +18,10 @@ interface DatePickerProps {
   mode?: 'single' | 'range';
 }
 
-const DatePicker: React.FC<DatePickerProps> = ({ 
-  value, 
-  onChange, 
-  placeholder, 
+const DatePicker: React.FC<DatePickerProps> = ({
+  value,
+  onChange,
+  placeholder,
   className,
   name,
   required,
@@ -30,6 +30,8 @@ const DatePicker: React.FC<DatePickerProps> = ({
   const { i18n } = useTranslation();
   const inputRef = useRef<HTMLInputElement>(null);
   const fp = useRef<any>(null);
+  const onChangeRef = useRef(onChange);
+  useEffect(() => { onChangeRef.current = onChange; });
 
   useEffect(() => {
     if (inputRef.current) {
@@ -50,20 +52,19 @@ const DatePicker: React.FC<DatePickerProps> = ({
                   const day = String(date.getDate()).padStart(2, '0');
                   return `${year}-${month}-${day}`;
                 };
-                onChange(`${formatDate(start)} to ${formatDate(end)}`);
+                onChangeRef.current(`${formatDate(start)} to ${formatDate(end)}`);
               }
             } else {
               const date = selectedDates[0];
               const year = date.getFullYear();
               const month = String(date.getMonth() + 1).padStart(2, '0');
               const day = String(date.getDate()).padStart(2, '0');
-              onChange(`${year}-${month}-${day}`);
+              onChangeRef.current(`${year}-${month}-${day}`);
             }
           } else {
-            onChange('');
+            onChangeRef.current('');
           }
         },
-        // Premium customization
         disableMobile: true,
       });
     }

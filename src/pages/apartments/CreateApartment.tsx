@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { TopHeader } from '../../components/TopHeader';
 import { Link, useLocation } from "wouter";
-import { 
+import {
   Building,
   ArrowLeft,
   AlertCircle,
@@ -10,7 +10,10 @@ import {
   FileText,
   Ruler,
   Tags,
-  Link as LinkIcon
+  Link as LinkIcon,
+  Plus,
+  X,
+  Image
 } from 'lucide-react';
 import { Input } from "@/components/ui/input";
 import {
@@ -62,8 +65,8 @@ const FormSection = ({ icon: Icon, title, description, children, delay = 0 }: an
 );
 
 // Form Field Component
-const FormField = ({ label, required = false, children, error, description }: any) => (
-  <div className="space-y-2">
+const FormField = ({ label, required = false, children, error, description, id }: any) => (
+  <div id={id} className="space-y-2">
     <div className="flex flex-col gap-1">
       <Label className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
         {label} {required && <span className="text-[#B39371]">*</span>}
@@ -113,8 +116,19 @@ export default function CreateApartment() {
     templateId: "",
     projectSakPdfUrl: "",
     apartmentSakPdfUrl: "",
-    apartmentSubDivisionPdfUrl: ""
+    apartmentSubDivisionPdfUrl: "",
+    files: [] as Array<{ title: string; url: string }>
   });
+
+  const addFile = () =>
+    setFormData(prev => ({ ...prev, files: [...prev.files, { title: '', url: '' }] }));
+  const removeFile = (idx: number) =>
+    setFormData(prev => ({ ...prev, files: prev.files.filter((_, i) => i !== idx) }));
+  const updateFile = (idx: number, field: 'title' | 'url', value: string) =>
+    setFormData(prev => ({
+      ...prev,
+      files: prev.files.map((f, i) => i === idx ? { ...f, [field]: value } : f)
+    }));
 
   const createMutation = useMutation({
     mutationFn: async (data: typeof formData) => {
@@ -409,6 +423,7 @@ export default function CreateApartment() {
                       <SelectItem value="commercial">{t('apartments.types.commercial')}</SelectItem>
                       <SelectItem value="penthouse">{t('apartments.types.penthouse')}</SelectItem>
                       <SelectItem value="duplex">{t('apartments.types.duplex')}</SelectItem>
+                      <SelectItem value="studio">{t('apartments.types.studio')}</SelectItem>
                     </SelectContent>
                   </Select>
                 </FormField>
@@ -438,10 +453,8 @@ export default function CreateApartment() {
                       <SelectValue placeholder={t('apartments.placeholders.selectOverallStatus')} />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="available">{t('apartments.statuses.available')}</SelectItem>
-                      <SelectItem value="sold">{t('apartments.statuses.sold')}</SelectItem>
-                      <SelectItem value="reserved">{t('apartments.statuses.reserved')}</SelectItem>
-                      <SelectItem value="reselling">{t('apartments.statuses.reselling')}</SelectItem>
+                      <SelectItem value="active">{t('apartments.statuses.active')}</SelectItem>
+                      <SelectItem value="inactive">{t('apartments.statuses.inactive')}</SelectItem>
                     </SelectContent>
                   </Select>
                 </FormField>
@@ -480,43 +493,91 @@ export default function CreateApartment() {
               </div>
             </FormSection>
 
-            {/* Attachments */}
-            <FormSection 
-              icon={LinkIcon}
-              title={t('apartments.sections.documents')}
-              description={t('apartments.sections.documentsDesc')}
+            {/* Sak Images */}
+            <FormSection
+              icon={Image}
+              title={t('apartments.sections.sakImages')}
+              description={t('apartments.sections.sakImagesDesc')}
               delay={0.4}
             >
-              <div className="grid grid-cols-1 gap-8">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <FormField label={t('apartments.labels.projectSak')}>
-                  <FileUpload 
+                  <FileUpload
                     onUploadSuccess={(url: string) => setFormData({ ...formData, projectSakPdfUrl: url })}
                     defaultValue={formData.projectSakPdfUrl}
-                    accept=".pdf"
-                    maxSizeMB={20}
+                    accept=".jpg,.jpeg,.png,.webp"
+                    maxSizeMB={10}
                     helperText={t('apartments.placeholders.uploadProjectSak')}
                   />
                 </FormField>
-
                 <FormField label={t('apartments.labels.apartmentSak')}>
-                  <FileUpload 
+                  <FileUpload
                     onUploadSuccess={(url: string) => setFormData({ ...formData, apartmentSakPdfUrl: url })}
                     defaultValue={formData.apartmentSakPdfUrl}
-                    accept=".pdf"
-                    maxSizeMB={20}
+                    accept=".jpg,.jpeg,.png,.webp"
+                    maxSizeMB={10}
                     helperText={t('apartments.placeholders.uploadApartmentSak')}
                   />
                 </FormField>
-
                 <FormField label={t('apartments.labels.subDivision')}>
-                  <FileUpload 
+                  <FileUpload
                     onUploadSuccess={(url: string) => setFormData({ ...formData, apartmentSubDivisionPdfUrl: url })}
                     defaultValue={formData.apartmentSubDivisionPdfUrl}
-                    accept=".pdf"
-                    maxSizeMB={20}
+                    accept=".jpg,.jpeg,.png,.webp"
+                    maxSizeMB={10}
                     helperText={t('apartments.placeholders.uploadSubDivision')}
                   />
                 </FormField>
+              </div>
+            </FormSection>
+
+            {/* Attachments */}
+            <FormSection
+              icon={LinkIcon}
+              title={t('apartments.sections.documents')}
+              description={t('apartments.sections.documentsDesc')}
+              delay={0.5}
+            >
+              <div className="space-y-4">
+                {formData.files.map((file, idx) => (
+                  <div key={idx} className="grid grid-cols-1 md:grid-cols-[1fr_2fr_auto] gap-3 p-4 bg-gray-50 dark:bg-gray-800/50 rounded-md border border-gray-100 dark:border-gray-700">
+                    <FormField label={t('apartments.labels.fileTitle')}>
+                      <Input
+                        placeholder={t('apartments.placeholders.fileTitle')}
+                        value={file.title}
+                        onChange={(e) => updateFile(idx, 'title', e.target.value)}
+                        className="h-10 bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md"
+                      />
+                    </FormField>
+                    <FormField label={t('apartments.labels.fileUrl')}>
+                      <FileUpload
+                        onUploadSuccess={(url: string) => updateFile(idx, 'url', url)}
+                        defaultValue={file.url}
+                        accept=".pdf,.jpg,.jpeg,.png,.doc,.docx,.xls,.xlsx"
+                        maxSizeMB={20}
+                        helperText={t('apartments.placeholders.uploadFile')}
+                      />
+                    </FormField>
+                    <div className="flex items-end pb-0.5">
+                      <button
+                        type="button"
+                        onClick={() => removeFile(idx)}
+                        className="h-10 w-10 flex items-center justify-center rounded-md border border-red-200 dark:border-red-800 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
+                      >
+                        <X className="w-4 h-4" />
+                      </button>
+                    </div>
+                  </div>
+                ))}
+
+                <button
+                  type="button"
+                  onClick={addFile}
+                  className="inline-flex items-center gap-2 h-10 px-4 rounded-md border border-dashed border-gray-300 dark:border-gray-600 text-[13px] font-medium text-gray-500 dark:text-gray-400 hover:border-[#B39371] hover:text-[#B39371] transition-colors"
+                >
+                  <Plus className="w-4 h-4" />
+                  {t('apartments.labels.addFile')}
+                </button>
               </div>
             </FormSection>
 
