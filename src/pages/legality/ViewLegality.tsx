@@ -1,7 +1,7 @@
 ﻿import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { TopHeader } from '../../components/TopHeader';
-import { Link, useRoute } from "wouter";
+import { Link, useRoute, useLocation } from "wouter";
 import { 
   ChevronDown,
   Gavel,
@@ -28,7 +28,6 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Shell } from '../../components/shared/Shell';
 import { useQuery } from '@tanstack/react-query';
 import api from '@/lib/api';
-import { UpdateStepDialog } from './UpdateStepDialog';
 
 interface LegalityStep {
   id: number;
@@ -151,9 +150,8 @@ export default function ViewLegality() {
   const [, params] = useRoute("/legality/:id");
   const {t,  i18n } = useTranslation();
   const id = params?.id;
+  const [, setLocation] = useLocation();
   const [expandedStep, setExpandedStep] = useState<number | null>(null);
-  const [isUpdateDialogOpen, setIsUpdateDialogOpen] = useState(false);
-  const [selectedStepData, setSelectedStepData] = useState<any>(null);
 
   const { data: response, isLoading, error } = useQuery<LegalityResponse>({
     queryKey: ['legality', id],
@@ -469,8 +467,7 @@ export default function ViewLegality() {
                         <button
                           onClick={(e) => {
                             e.stopPropagation();
-                            setSelectedStepData(item);
-                            setIsUpdateDialogOpen(true);
+                            setLocation(`/legality/${id}/steps/${item.id}/edit`);
                           }}
                           className="p-1 text-gray-400 hover:text-[#B39371] hover:bg-[#B39371]/10 rounded-md transition-all"
                         >
@@ -595,7 +592,7 @@ export default function ViewLegality() {
                                   {t('legality.profile.noDetails')}
                                 </p>
                                 <button
-                                  onClick={(e) => { e.stopPropagation(); setSelectedStepData(item); setIsUpdateDialogOpen(true); }}
+                                  onClick={(e) => { e.stopPropagation(); setLocation(`/legality/${id}/steps/${item.id}/edit`); }}
                                   className="mt-3 text-xs font-medium text-[#B39371] hover:text-[#8B6951] flex items-center gap-1 transition-colors"
                                 >
                                   <Edit className="w-3 h-3" />
@@ -618,18 +615,6 @@ export default function ViewLegality() {
         </div>
       </div>
 
-      {/* Update Step Dialog */}
-      {selectedStepData && (
-        <UpdateStepDialog
-          isOpen={isUpdateDialogOpen}
-          onClose={() => {
-            setIsUpdateDialogOpen(false);
-            setSelectedStepData(null);
-          }}
-          legalityId={id!}
-          stepData={selectedStepData}
-        />
-      )}
     </Shell>
   );
 }

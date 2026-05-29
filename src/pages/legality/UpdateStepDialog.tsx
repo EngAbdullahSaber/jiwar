@@ -1,26 +1,31 @@
-﻿import { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { 
-  Dialog, 
-  DialogContent, 
-  DialogHeader, 
-  DialogTitle, 
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
   DialogDescription,
-  DialogFooter
-} from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Label } from "@/components/ui/label";
-import { 
-  Calendar as CalendarIcon, 
-  DollarSign, 
-  FileText, 
-  Loader2, 
+  DialogFooter,
+} from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { Label } from '@/components/ui/label';
+import { Badge } from '@/components/ui/badge';
+import {
+  Calendar as CalendarIcon,
+  DollarSign,
+  FileText,
+  Loader2,
   Save,
   Paperclip,
   X,
- } from 'lucide-react';
+  CheckCircle2,
+  Clock,
+  ShieldCheck,
+  Info,
+} from 'lucide-react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import api from '@/lib/api';
 import { toast } from 'react-hot-toast';
@@ -36,11 +41,17 @@ interface UpdateStepDialogProps {
   stepData: any;
 }
 
-export function UpdateStepDialog({ isOpen, onClose, legalityId, stepData }: UpdateStepDialogProps) {
-  const { t,  i18n } = useTranslation();
+export function UpdateStepDialog({
+  isOpen,
+  onClose,
+  legalityId,
+  stepData,
+}: UpdateStepDialogProps) {
+  const { t, i18n } = useTranslation();
   const queryClient = useQueryClient();
-  
-  const isDefault = stepData?.step?.isDefault !== false; // disabled when isDefault is true or undefined
+
+  const isDefault = stepData?.step?.isDefault !== false;
+  const isCompleted = stepData?.step?.isUpdated || !!stepData?.step?.toDate;
 
   const [formData, setFormData] = useState({
     nameEn: '',
@@ -48,7 +59,7 @@ export function UpdateStepDialog({ isOpen, onClose, legalityId, stepData }: Upda
     details: '',
     fromDate: '',
     toDate: '',
-    amount: ''
+    amount: '',
   });
   const [files, setFiles] = useState<string[]>([]);
 
@@ -60,7 +71,7 @@ export function UpdateStepDialog({ isOpen, onClose, legalityId, stepData }: Upda
         details: stepData.step.details || '',
         fromDate: stepData.step.fromDate ? stepData.step.fromDate.split('T')[0] : '',
         toDate: stepData.step.toDate ? stepData.step.toDate.split('T')[0] : '',
-        amount: stepData.step.amount?.toString() || ''
+        amount: stepData.step.amount?.toString() || '',
       });
       setFiles(stepData.step.files || []);
     }
@@ -74,17 +85,18 @@ export function UpdateStepDialog({ isOpen, onClose, legalityId, stepData }: Upda
     onSuccess: () => {
       toast.success(t('common.successUpdate') || 'Step updated successfully', {
         icon: '✅',
-        style: { borderRadius: '1rem', background: '#10b981', color: '#fff' }
+        style: { borderRadius: '1rem', background: '#10b981', color: '#fff' },
       });
       queryClient.invalidateQueries({ queryKey: ['legality', legalityId.toString()] });
       onClose();
     },
     onError: (error: any) => {
-      toast.error(error.response?.data?.message?.[i18n.language === 'ar' ? 'arabic' : 'english'] || t('common.error'), {
-        icon: '❌',
-        style: { borderRadius: '1rem', background: '#ef4444', color: '#fff' }
-      });
-    }
+      toast.error(
+        error.response?.data?.message?.[i18n.language === 'ar' ? 'arabic' : 'english'] ||
+          t('common.error'),
+        { icon: '❌', style: { borderRadius: '1rem', background: '#ef4444', color: '#fff' } }
+      );
+    },
   });
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -101,14 +113,13 @@ export function UpdateStepDialog({ isOpen, onClose, legalityId, stepData }: Upda
       fromDate: formData.fromDate || null,
       toDate: formData.toDate || null,
       amount: formData.amount ? Number(formData.amount) : null,
-      files: files
+      files,
     };
 
-    // Only include name in payload when the step is not a default step
     if (!isDefault) {
       step.name = {
         english: formData.nameEn,
-        arabic: formData.nameAr
+        arabic: formData.nameAr,
       };
     }
 
@@ -119,186 +130,238 @@ export function UpdateStepDialog({ isOpen, onClose, legalityId, stepData }: Upda
     setFiles(prev => prev.filter((_, i) => i !== index));
   };
 
+  const stepDisplayName = i18n.language === 'ar'
+    ? stepData?.step?.name?.arabic
+    : (stepData?.step?.name?.english || '')
+        .split('_')
+        .map((w: string) => w.charAt(0).toUpperCase() + w.slice(1))
+        .join(' ');
+
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-2xl bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800 rounded-md p-0 overflow-hidden">
+      <DialogContent
+        className="max-w-2xl bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800 rounded-xl p-0 overflow-hidden"
+        onInteractOutside={(e) => {
+          if ((e.target as HTMLElement)?.closest?.('.flatpickr-calendar')) {
+            e.preventDefault();
+          }
+        }}
+      >
         <form onSubmit={handleSubmit}>
+          {/* Header */}
           <DialogHeader className="p-6 pb-0">
-            <div className="flex items-center gap-4 mb-4">
-              <div className="w-12 h-12 rounded-md bg-gradient-to-br from-[#4A1B1B] to-[#6B2727] flex items-center justify-center shadow-lg">
-                <FileText className="w-6 h-6 text-[#B39371]" />
+            <div className="flex items-start gap-4">
+              <div className="relative shrink-0">
+                <div className="absolute inset-0 bg-gradient-to-r from-[#4A1B1B] to-[#6B2727] rounded-xl blur-lg opacity-30" />
+                <div className="relative w-12 h-12 rounded-xl bg-gradient-to-br from-[#4A1B1B] to-[#6B2727] flex items-center justify-center shadow-lg">
+                  <FileText className="w-6 h-6 text-[#B39371]" />
+                </div>
               </div>
-              <div>
-                <DialogTitle className="text-xl font-bold text-gray-900 dark:text-white">
-                  {t('legality.updateStep') || 'Update Step Details'}
-                </DialogTitle>
-                <DialogDescription className="text-sm text-gray-500 dark:text-gray-400">
-                  {t('legality.updateStepDesc') || 'Modify step name, timing, and attachments.'}
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2 flex-wrap">
+                  <DialogTitle className="text-lg font-bold text-gray-900 dark:text-white">
+                    {t('legality.updateStep')}
+                  </DialogTitle>
+                  <Badge
+                    className={cn(
+                      'text-[10px] px-2 py-0.5 rounded-md font-medium',
+                      isCompleted
+                        ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-400 border-emerald-200 dark:border-emerald-500/20'
+                        : 'bg-amber-50 text-amber-700 dark:bg-amber-500/10 dark:text-amber-400 border-amber-200 dark:border-amber-500/20'
+                    )}
+                  >
+                    {isCompleted ? (
+                      <span className="flex items-center gap-1">
+                        <CheckCircle2 className="w-3 h-3" />
+                        {t('legality.completed')}
+                      </span>
+                    ) : (
+                      <span className="flex items-center gap-1">
+                        <Clock className="w-3 h-3" />
+                        {t('legality.pending')}
+                      </span>
+                    )}
+                  </Badge>
+                  {isDefault && (
+                    <Badge className="text-[10px] px-2 py-0.5 rounded-md font-medium bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400 border-gray-200 dark:border-gray-700">
+                      <span className="flex items-center gap-1">
+                        <ShieldCheck className="w-3 h-3" />
+                        {t('legality.profile.default')}
+                      </span>
+                    </Badge>
+                  )}
+                </div>
+                <DialogDescription className="text-sm text-gray-500 dark:text-gray-400 mt-0.5 truncate">
+                  {stepDisplayName}
                 </DialogDescription>
               </div>
             </div>
           </DialogHeader>
 
-          <div className="p-6 space-y-6 max-h-[70vh] overflow-y-auto custom-scrollbar">
-            {/* Step Name Section */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label className="text-xs font-semibold uppercase tracking-wider text-gray-400">
-                  {t('legality.labels.stepNameEn')}
-                </Label>
-                <Input
-                  value={formData.nameEn}
-                  onChange={(e) => setFormData(prev => ({ ...prev, nameEn: e.target.value }))}
-                  className={cn(
-                    "border-gray-200 dark:border-gray-700 h-11 rounded-md",
-                    isDefault
-                      ? "bg-gray-100 dark:bg-gray-800/50 cursor-not-allowed opacity-70"
-                      : "bg-gray-50 dark:bg-gray-800"
-                  )}
-                  placeholder={t('legality.placeholders.stepNameEn')}
-                  disabled={isDefault}
-                />
-              </div>
-              <div className="space-y-2 text-right">
-                <Label className="text-xs font-semibold uppercase tracking-wider text-gray-400">
-                  {t('legality.labels.stepNameAr')}
-                </Label>
-                <Input
-                  value={formData.nameAr}
-                  onChange={(e) => setFormData(prev => ({ ...prev, nameAr: e.target.value }))}
-                  dir="rtl"
-                  className={cn(
-                    "border-gray-200 dark:border-gray-700 h-11 rounded-md text-right",
-                    isDefault
-                      ? "bg-gray-100 dark:bg-gray-800/50 cursor-not-allowed opacity-70"
-                      : "bg-gray-50 dark:bg-gray-800"
-                  )}
-                  placeholder={t('legality.placeholders.stepNameAr')}
-                  disabled={isDefault}
-                />
-              </div>
-            </div>
+          {/* Body */}
+          <div className="p-6 space-y-5 max-h-[65vh] overflow-y-auto custom-scrollbar">
 
-            {/* Details Section */}
+            {/* Step Name — shown only for non-default steps */}
+            {!isDefault && (
+              <div className="bg-gray-50 dark:bg-gray-800/50 rounded-xl p-4 space-y-4 border border-gray-100 dark:border-gray-800">
+                <p className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                  {t('legality.labels.stepNameEn')} / {t('legality.labels.stepNameAr')}
+                </p>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  <div className="space-y-1.5">
+                    <Label className="text-xs text-gray-400">{t('legality.labels.stepNameEn')}</Label>
+                    <Input
+                      value={formData.nameEn}
+                      onChange={(e) => setFormData(prev => ({ ...prev, nameEn: e.target.value }))}
+                      className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 h-10 rounded-lg text-sm"
+                      placeholder={t('legality.placeholders.stepNameEn')}
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label className="text-xs text-gray-400">{t('legality.labels.stepNameAr')}</Label>
+                    <Input
+                      value={formData.nameAr}
+                      onChange={(e) => setFormData(prev => ({ ...prev, nameAr: e.target.value }))}
+                      dir="rtl"
+                      className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 h-10 rounded-lg text-sm text-right"
+                      placeholder={t('legality.placeholders.stepNameAr')}
+                    />
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Details */}
             <div className="space-y-2">
-              <Label className="text-xs font-semibold uppercase tracking-wider text-gray-400">
-                {t('legality.labels.details')}
-              </Label>
+              <div className="flex items-center gap-2 text-gray-400">
+                <Info className="w-3.5 h-3.5" />
+                <Label className="text-xs font-semibold uppercase tracking-wider">
+                  {t('legality.labels.details')}
+                </Label>
+              </div>
               <Textarea
                 value={formData.details}
                 onChange={(e) => setFormData(prev => ({ ...prev, details: e.target.value }))}
-                className="bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md min-h-[100px] resize-none"
+                className="bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-xl min-h-[90px] resize-none text-sm"
                 placeholder={t('legality.placeholders.details')}
               />
             </div>
 
-            {/* Dates and Amount Section */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {/* Dates + Amount */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
               <div className="space-y-2">
-                <div className="flex items-center gap-2 text-gray-400 mb-1">
+                <div className="flex items-center gap-2 text-gray-400">
                   <CalendarIcon className="w-3.5 h-3.5" />
-                  <Label className="text-xs font-semibold uppercase tracking-wider">{t('legality.labels.startDate')}</Label>
+                  <Label className="text-xs font-semibold uppercase tracking-wider">
+                    {t('legality.labels.startDate')}
+                  </Label>
                 </div>
                 <DatePicker
                   value={formData.fromDate}
                   onChange={(date) => setFormData(prev => ({ ...prev, fromDate: date }))}
-                  className="bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 h-11 rounded-md"
+                  className="bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 h-10 rounded-xl"
                 />
               </div>
               <div className="space-y-2">
-                <div className="flex items-center gap-2 text-gray-400 mb-1">
+                <div className="flex items-center gap-2 text-gray-400">
                   <CalendarIcon className="w-3.5 h-3.5" />
-                  <Label className="text-xs font-semibold uppercase tracking-wider">{t('legality.labels.endDate')}</Label>
+                  <Label className="text-xs font-semibold uppercase tracking-wider">
+                    {t('legality.labels.endDate')}
+                  </Label>
                 </div>
                 <DatePicker
                   value={formData.toDate}
                   onChange={(date) => setFormData(prev => ({ ...prev, toDate: date }))}
-                  className="bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 h-11 rounded-md"
+                  className="bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 h-10 rounded-xl"
                 />
               </div>
               <div className="space-y-2">
-                <div className="flex items-center gap-2 text-gray-400 mb-1">
+                <div className="flex items-center gap-2 text-gray-400">
                   <DollarSign className="w-3.5 h-3.5" />
-                  <Label className="text-xs font-semibold uppercase tracking-wider">{t('legality.labels.amount')}</Label>
+                  <Label className="text-xs font-semibold uppercase tracking-wider">
+                    {t('legality.labels.amount')}
+                  </Label>
                 </div>
                 <Input
                   type="number"
                   value={formData.amount}
                   onChange={(e) => setFormData(prev => ({ ...prev, amount: e.target.value }))}
-                  className="bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 h-11 rounded-md"
+                  className="bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 h-10 rounded-xl text-sm"
                   placeholder={t('legality.placeholders.amount')}
+                  min="0"
                 />
               </div>
             </div>
 
-            {/* Files Section */}
-            <div className="space-y-4">
+            {/* Attachments */}
+            <div className="space-y-3">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2 text-gray-400">
                   <Paperclip className="w-3.5 h-3.5" />
-                  <Label className="text-xs font-semibold uppercase tracking-wider">{t('legality.labels.attachments')}</Label>
+                  <Label className="text-xs font-semibold uppercase tracking-wider">
+                    {t('legality.labels.attachments')}
+                  </Label>
                 </div>
-                <span className="text-[10px] text-gray-500 font-medium">{files.length} {t('legality.labels.files')}</span>
+                {files.length > 0 && (
+                  <span className="text-[10px] font-medium px-2 py-0.5 bg-gray-100 dark:bg-gray-800 text-gray-500 rounded-md">
+                    {files.length} {t('legality.labels.files')}
+                  </span>
+                )}
               </div>
-              
-              {/* File List */}
-              <div className="space-y-2">
-                <AnimatePresence mode="popLayout">
-                  {files.map((file, idx) => (
-                    <motion.div
-                      layout
-                      initial={{ opacity: 0, scale: 0.95 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      exit={{ opacity: 0, scale: 0.95 }}
-                      key={idx}
-                      className="flex items-center gap-3 p-2 bg-gray-50 dark:bg-gray-800 rounded-md border border-gray-100 dark:border-gray-700 transition-all hover:border-[#B39371]/30"
-                    >
-                      <div className="w-8 h-8 rounded bg-white dark:bg-gray-900 flex items-center justify-center text-[#B39371]">
-                        <FileText className="w-4 h-4" />
-                      </div>
-                      <span className="text-xs text-gray-600 dark:text-gray-400 truncate flex-1">
-                        {file.split('/').pop()}
-                      </span>
-                      <button
-                        type="button"
-                        onClick={() => removeFile(idx)}
-                        className="p-1 px-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 rounded-md transition-colors"
-                      >
-                        <X className="w-3.5 h-3.5" />
-                      </button>
-                    </motion.div>
-                  ))}
-                </AnimatePresence>
-                
-                <div className="pt-2">
-                  <FileUpload
-                    multiple
-                    label={t('legality.placeholders.uploadFiles')}
-                    accept=".pdf,.jpg,.jpeg,.png,.doc,.docx"
-                    maxSizeMB={5}
-                    onUploadSuccess={(url) => setFiles(prev => [...prev, url])}
-                    onUploadMultipleSuccess={(urls) => setFiles(prev => [...prev, ...urls])}
-                  />
 
-                </div>
-              </div>
+              <AnimatePresence mode="popLayout">
+                {files.map((file, idx) => (
+                  <motion.div
+                    layout
+                    key={idx}
+                    initial={{ opacity: 0, scale: 0.97 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.97 }}
+                    className="flex items-center gap-3 p-2.5 bg-gray-50 dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 hover:border-[#B39371]/40 transition-colors"
+                  >
+                    <div className="w-8 h-8 rounded-lg bg-white dark:bg-gray-900 flex items-center justify-center text-[#B39371] shrink-0 border border-gray-100 dark:border-gray-700">
+                      <FileText className="w-4 h-4" />
+                    </div>
+                    <span className="text-xs text-gray-600 dark:text-gray-400 truncate flex-1">
+                      {file.split('/').pop()}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => removeFile(idx)}
+                      className="p-1 text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 rounded-md transition-colors shrink-0"
+                    >
+                      <X className="w-3.5 h-3.5" />
+                    </button>
+                  </motion.div>
+                ))}
+              </AnimatePresence>
+
+              <FileUpload
+                multiple
+                label={t('legality.placeholders.uploadFiles')}
+                accept=".pdf,.jpg,.jpeg,.png,.doc,.docx"
+                maxSizeMB={5}
+                onUploadSuccess={(url) => setFiles(prev => [...prev, url])}
+                onUploadMultipleSuccess={(urls) => setFiles(prev => [...prev, ...urls])}
+              />
             </div>
           </div>
 
-          <DialogFooter className="p-6 bg-gray-50 dark:bg-gray-800/50 border-t border-gray-200 dark:border-gray-800">
+          {/* Footer */}
+          <DialogFooter className="px-6 py-4 bg-gray-50 dark:bg-gray-800/50 border-t border-gray-100 dark:border-gray-800">
             <Button
               type="button"
               variant="outline"
               onClick={onClose}
               disabled={updateMutation.isPending}
-              className="rounded-md border-gray-200 dark:border-gray-700"
+              className="rounded-xl border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300"
             >
               {t('common.cancel')}
             </Button>
             <Button
               type="submit"
               disabled={updateMutation.isPending}
-              className="rounded-md bg-gradient-to-r from-[#4A1B1B] to-[#6B2727] text-white shadow-lg shadow-[#4A1B1B]/20"
+              className="rounded-xl bg-gradient-to-r from-[#4A1B1B] to-[#6B2727] text-white shadow-lg shadow-[#4A1B1B]/20 hover:shadow-xl transition-all"
             >
               {updateMutation.isPending ? (
                 <>
@@ -308,7 +371,7 @@ export function UpdateStepDialog({ isOpen, onClose, legalityId, stepData }: Upda
               ) : (
                 <>
                   <Save className="w-4 h-4 mr-2" />
-                  {t('common.save') || 'Save Changes'}
+                  {t('common.save')}
                 </>
               )}
             </Button>

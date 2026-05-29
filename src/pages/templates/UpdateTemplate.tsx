@@ -75,7 +75,7 @@ const FormSection = ({ icon: Icon, title, description, children, delay = 0 }: an
     initial={{ opacity: 0, y: 20 }}
     animate={{ opacity: 1, y: 0 }}
     transition={{ delay }}
-    className="bg-light dark:bg-dark rounded-md border border-gray-200 dark:border-gray-800 overflow-hidden shadow-sm hover:shadow-md transition-all"
+    className="bg-white dark:bg-gray-900 rounded-md border border-gray-200 dark:border-gray-800 overflow-hidden shadow-sm hover:shadow-md transition-all"
   >
     <div className="p-6 border-b border-gray-100 dark:border-gray-800 bg-gradient-to-r from-gray-50/50 to-white dark:from-gray-800/50 dark:to-gray-900">
       <div className="flex items-center gap-4">
@@ -219,7 +219,7 @@ export default function UpdateTemplate() {
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8 pb-32">
           
           {/* Header Section */}
-          <div className="bg-light dark:bg-dark rounded-md border border-gray-200 dark:border-gray-800 p-6 shadow-sm">
+          <div className="bg-white dark:bg-gray-900 rounded-md border border-gray-200 dark:border-gray-800 p-6 shadow-sm">
             <div className="flex items-center gap-4">
               <Link 
                 href="/templates" 

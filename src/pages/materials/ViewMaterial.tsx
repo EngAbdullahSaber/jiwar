@@ -58,7 +58,7 @@ interface MaterialDetail {
   approvalStatus: string;
   startDate?: string;
   endDate?: string;
-  notes?: string;
+  notes?: string[] | null;
   files: string[];
   createdAt: string;
   updatedAt: string | null;
@@ -379,18 +379,22 @@ export default function ViewMaterial() {
                 <DetailRow icon={Layers} label={t('materials.name')} value={material.name} />
                 <DetailRow icon={Hash} label={t('materials.quantity')} value={material.quantity.toLocaleString()} />
                 {material.startDate && (
-                  <DetailRow icon={Calendar} label={t('materials.startDate')} value={formatDate(material.startDate).split(' ')[0]} />
+                  <DetailRow icon={Calendar} label={t('materials.startDate')} value={formatDate(material.startDate)} />
                 )}
                 {material.endDate && (
-                  <DetailRow icon={Calendar} label={t('materials.endDate')} value={formatDate(material.endDate).split(' ')[0]} />
+                  <DetailRow icon={Calendar} label={t('materials.endDate')} value={formatDate(material.endDate)} />
                 )}
               </SectionCard>
 
               {/* Notes */}
-              {material.notes && (
+              {material.notes && material.notes.length > 0 && (
                 <SectionCard icon={FileText} title={t('materials.notes')} delay={0.11}>
-                  <div className="py-2 text-sm text-gray-600 dark:text-gray-400 whitespace-pre-wrap leading-relaxed">
-                    {material.notes}
+                  <div className="py-2 space-y-2">
+                    {material.notes.map((note, i) => (
+                      <p key={i} className="text-sm text-gray-600 dark:text-gray-400 whitespace-pre-wrap leading-relaxed">
+                        {note}
+                      </p>
+                    ))}
                   </div>
                 </SectionCard>
               )}

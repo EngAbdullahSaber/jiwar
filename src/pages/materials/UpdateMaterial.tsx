@@ -121,6 +121,8 @@ export default function UpdateMaterial() {
     endDate: "",
   });
 
+  const [projectLabel, setProjectLabel] = useState("");
+
   const [supplierData, setSupplierData] = useState({
     name: "",
     phoneNumber: "",
@@ -151,14 +153,18 @@ export default function UpdateMaterial() {
       const m = materialData.data;
       setFormData({
         name: m.name || "",
-        quantity: m.quantity || 0,
+        quantity: m.quantity || "",
         requestStatus: m.requestStatus || "pending",
         approvalStatus: m.approvalStatus || "draft",
         projectId: m.project?.id ? m.project.id.toString() : "",
-        notes: m.notes || "",
+        notes: Array.isArray(m.notes) ? m.notes[0] || "" : m.notes || "",
         startDate: m.startDate ? m.startDate.split("T")[0] : "",
         endDate: m.endDate ? m.endDate.split("T")[0] : "",
       });
+
+      if (m.project) {
+        setProjectLabel(m.project.name?.english || m.project.name?.arabic || `Project #${m.project.id}`);
+      }
 
       if (m.supplier) {
         setSupplierData({
@@ -200,7 +206,7 @@ export default function UpdateMaterial() {
           editPrice: Number(supplierData.editPrice),
           documents: supplierDocuments,
         },
-        notes: data.notes,
+        notes: data.notes ? [data.notes] : [],
         startDate: data.startDate,
         endDate: data.endDate,
       };
@@ -675,9 +681,11 @@ export default function UpdateMaterial() {
                     apiEndpoint="/project"
                     queryKey="projects-paginated"
                     value={formData.projectId.toString()}
-                    onChange={(val) =>
-                      setFormData((prev) => ({ ...prev, projectId: val }))
-                    }
+                    initialLabel={projectLabel}
+                    onChange={(val) => {
+                      setFormData((prev) => ({ ...prev, projectId: val }));
+                      setProjectLabel('');
+                    }}
                     placeholder={t("materials.linkedProject")}
                     searchPlaceholder={t("common.search")}
                     mapResponseToOptions={(pageData) => {

@@ -12,11 +12,10 @@ import { Badge } from "@/components/ui/badge";
 import { Link } from "wouter";
 import { Shell } from '../../components/shared/Shell';
 import { Can } from '../../components/shared/Can';
-import { 
+import {
   Plus,
   Eye,
   Pencil,
- 
   FileEdit,
   Sparkles,
   Home,
@@ -27,18 +26,26 @@ import {
   XCircle,
   AlertTriangle,
   RotateCcw,
-  Slash
+  Slash,
+  Calendar,
+  Paperclip,
+  Hash,
 } from 'lucide-react';
+import { format } from 'date-fns';
 import { motion } from 'framer-motion';
 
 interface Material {
   id: number;
   name: string;
-  supplier: string;
-  quantity: number;
+  quantity: string;
   requestStatus: string;
   approvalStatus: string;
+  files: string[];
+  startDate: string | null;
+  endDate: string | null;
+  notes: string[] | null;
   projectId: number;
+  supplierId: number;
   createdAt: string;
   updatedAt: string | null;
   projectStagesEstimateCost: number;
@@ -201,49 +208,70 @@ export default function Materials() {
     }
   ];
 
+  const formatDate = (d: string | null) => {
+    if (!d) return '—';
+    try { return format(new Date(d), 'MMM dd, yyyy'); } catch { return '—'; }
+  };
+
   const columns: Column<Material>[] = [
-    {
-      header: t('materials.materialId'),
-      accessorKey: "id",
-      className: "text-sm font-medium text-[#B39371]"
-    },
     {
       header: t('materials.name'),
       cell: (m) => (
-        <div>
+        <div className="flex flex-col gap-0.5">
           <p className="text-sm font-semibold text-gray-900 dark:text-white">{m.name || 'N/A'}</p>
+          <div className="flex items-center gap-1 text-[10px] text-gray-400">
+            <Hash className="w-3 h-3" />
+            <span>{m.quantity}</span>
+          </div>
         </div>
       )
     },
     {
-      header: t('materials.supplier'),
-      cell: (m) => (
-        <span className="text-sm text-gray-600 dark:text-gray-400">{m.supplier || 'N/A'}</span>
-      )
-    },
-    {
-      header: t('materials.quantity'),
-      cell: (m) => (
-        <span className="text-sm font-medium text-gray-900 dark:text-white">{m.quantity || 0}</span>
-      ),
-      className: "text-center",
-      headerClassName: "text-center"
-    },
-    {
       header: t('materials.requestStatus'),
-      cell: (m) => <StatusBadge status={m.requestStatus || "draft"} />
+      cell: (m) => <StatusBadge status={m.requestStatus || 'pending'} />
     },
     {
       header: t('materials.approvalStatus'),
-      cell: (m) => <StatusBadge status={m.approvalStatus || "draft"} />
+      cell: (m) => <StatusBadge status={m.approvalStatus || 'draft'} />
+    },
+    {
+      header: t('materials.dates'),
+      cell: (m) => (
+        <div className="flex flex-col gap-0.5 text-xs text-gray-500 dark:text-gray-400">
+          <div className="flex items-center gap-1">
+            <Calendar className="w-3 h-3 text-gray-400" />
+            <span className="text-[10px] font-bold text-gray-400 uppercase">{t('materials.startDate')}:</span>
+            <span>{formatDate(m.startDate)}</span>
+          </div>
+          <div className="flex items-center gap-1">
+            <Calendar className="w-3 h-3 text-gray-400" />
+            <span className="text-[10px] font-bold text-gray-400 uppercase">{t('materials.endDate')}:</span>
+            <span>{formatDate(m.endDate)}</span>
+          </div>
+        </div>
+      )
     },
     {
       header: t('materials.estimateCost'),
       cell: (m) => (
         <span className="text-sm font-semibold text-gray-900 dark:text-white">
-          {t('common.sar')} {m.projectStagesEstimateCost?.toLocaleString() || 0}
+          {(m.projectStagesEstimateCost || 0).toLocaleString()}
+          <span className="text-[10px] text-gray-400 ml-1">{t('common.sar')}</span>
         </span>
       )
+    },
+    {
+      header: t('materials.attachments'),
+      cell: (m) => (
+        <div className="flex items-center gap-1.5">
+          <Paperclip className="w-3.5 h-3.5 text-gray-400" />
+          <span className="text-sm text-gray-600 dark:text-gray-400">
+            {m.files?.length ?? 0}
+          </span>
+        </div>
+      ),
+      className: "text-center",
+      headerClassName: "text-center"
     },
     {
       header: t('common.actions'),

@@ -325,10 +325,10 @@ export default function CreateRole() {
                                       </div>
                                       <div className="space-y-0.5">
                                         <p className="text-sm font-black text-gray-900 dark:text-white uppercase tracking-tight">
-                                          {t(`roles.resources.${module.resource}`, { defaultValue: module.resource })}
+                                          {t(`roles.resources.${module.resource.toLowerCase()}`, { defaultValue: module.resource })}
                                         </p>
                                         <p className="text-[11px] text-gray-400 dark:text-gray-500 font-medium line-clamp-1">
-                                          {t(`roles.resourceDescriptions.${module.resource}`, { defaultValue: 'Module access' })}
+                                          {t(`roles.resourceDescriptions.${module.resource.toLowerCase()}`, { defaultValue: t('roles.moduleAccess') })}
                                         </p>
                                       </div>
                                     </div>

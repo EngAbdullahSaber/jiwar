@@ -304,11 +304,16 @@
       "city": "المدن",
       "material": "المواد",
       "role-permission": "صلاحيات الأدوار",
+      "stage": "مراحل المشروع",
+      "contract-approval": "اعتماد العقود",
+      "salesman-paid-log": "مدفوعات المندوبين",
+      "approve-contract": "مراجعة العقود واعتمادها",
       "RESOURCES-DASHBOARD": "لوحة بيانات الموارد",
       "FINANCE-DASHBOARD": "لوحة البيانات المالية",
       "resources-dashboard": "لوحة بيانات الموارد",
       "finance-dashboard": "لوحة البيانات المالية"
     },
+    "moduleAccess": "صلاحيات الوحدة",
     "resourceDescriptions": {
       "user": "إدارة مستخدمي النظام وإعدادات حساباتهم",
       "role": "تحديد مستويات الوصول وأذونات النظام",
@@ -326,6 +331,10 @@
       "city": "إدارة مدن العمليات",
       "material": "تتبع المواد والمخزون",
       "role-permission": "تكوين أذونات الأدوار التفصيلية",
+      "stage": "إدارة مراحل المشروع والأهداف",
+      "contract-approval": "مراجعة طلبات العقود واعتمادها",
+      "salesman-paid-log": "إدارة مدفوعات عمولات المندوبين",
+      "approve-contract": "مراجعة العقود المعلقة واعتمادها",
       "RESOURCES-DASHBOARD": "تتبع موارد النظام وتوافرها",
       "FINANCE-DASHBOARD": "عرض الإحصائيات والمؤشرات المالية",
       "resources-dashboard": "تتبع موارد النظام وتوافرها",
@@ -359,6 +368,8 @@
   "legality": {
     "title": "إدارة الملفات القانونية",
     "management": "إدارة الملفات القانونية",
+    "createdAt": "تاريخ الإنشاء",
+    "createdBy": "أنشئ بواسطة",
     "description": "تنظيم وتتبع الوضع القانوني والوثائق الخاصة بعملياتك.",
     "create": "إنشاء ملف قانوني",
     "newLegality": "سجل قانوني جديد",
@@ -805,6 +816,8 @@
     "location": "الموقع",
     "front": "أمامي",
     "back": "خلفي",
+    "available": "متاح",
+    "notAvailable": "غير متاح",
     "sort": {
       "newest": "الأحدث",
       "oldest": "الأقدم"
@@ -1237,6 +1250,7 @@
     "approvalStatus": "حالة الاعتماد",
     "startDate": "تاريخ البدء",
     "endDate": "تاريخ الانتهاء",
+    "dates": "التواريخ",
     "notes": "ملاحظات",
     "allStatus": "جميع الحالات",
     "materialId": "رقم المادة",

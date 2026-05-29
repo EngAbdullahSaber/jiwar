@@ -34,6 +34,7 @@ import UpdateMaterial from "@/pages/materials/UpdateMaterial";
 import ViewMaterial from "@/pages/materials/ViewMaterial";
  import CreateLegality from "@/pages/legality/CreateLegality";
 import UpdateLegality from "@/pages/legality/UpdateLegality";
+import UpdateStep from "@/pages/legality/UpdateStep";
 import ViewLegality from "@/pages/legality/ViewLegality";
 import CreateTemplate from "@/pages/templates/CreateTemplate";
 import ViewTemplate from "@/pages/templates/ViewTemplate";
@@ -167,6 +168,9 @@ function Router() {
       </Route>
       <Route path="/legality/:id/edit">
         <ProtectedRoute component={UpdateLegality} resource="legality" action="UPDATE" />
+      </Route>
+      <Route path="/legality/:id/steps/:stepId/edit">
+        <ProtectedRoute component={UpdateStep} resource="legality" action="UPDATE" />
       </Route>
       
       <Route path="/users">

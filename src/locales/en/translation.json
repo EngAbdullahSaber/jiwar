@@ -304,11 +304,16 @@
       "city": "Cities",
       "material": "Materials",
       "role-permission": "Role Permissions",
+      "stage": "Project Stages",
+      "contract-approval": "Contract Approvals",
+      "salesman-paid-log": "Salesman Payments",
+      "approve-contract": "Approve Contracts",
       "RESOURCES-DASHBOARD": "Resources Dashboard",
       "FINANCE-DASHBOARD": "Finance Dashboard",
       "resources-dashboard": "Resources Dashboard",
       "finance-dashboard": "Finance Dashboard"
     },
+    "moduleAccess": "Module access",
     "resourceDescriptions": {
       "user": "Manage system users and their account settings",
       "role": "Define access levels and system permissions",
@@ -326,6 +331,10 @@
       "city": "Manage operational cities",
       "material": "Track materials and inventory",
       "role-permission": "Configure fine-grained role permissions",
+      "stage": "Manage project stages and milestones",
+      "contract-approval": "Review and approve contract requests",
+      "salesman-paid-log": "Manage salesman commission payments",
+      "approve-contract": "Review and approve pending contracts",
       "RESOURCES-DASHBOARD": "Track system resources and availability",
       "FINANCE-DASHBOARD": "View financial statistics and metrics",
       "resources-dashboard": "Track system resources and availability",
@@ -359,6 +368,8 @@
   "legality": {
     "title": "Legality Management",
     "management": "Legality Management",
+    "createdAt": "Created At",
+    "createdBy": "Created By",
     "description": "Organize and track the legal status and documentation for your operations.",
     "create": "Create Legality",
     "newLegality": "New Legality Record",
@@ -805,6 +816,8 @@
     "location": "Location",
     "front": "Front",
     "back": "Back",
+    "available": "Available",
+    "notAvailable": "Not Available",
     "sort": {
       "newest": "Newest",
       "oldest": "Oldest"
@@ -1239,6 +1252,7 @@
     "approvalStatus": "Approval Status",
     "startDate": "Start Date",
     "endDate": "End Date",
+    "dates": "Dates",
     "notes": "Notes",
     "allStatus": "All Statuses",
     "materialId": "Material ID",
