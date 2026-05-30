@@ -34,6 +34,7 @@ interface Role {
 interface User {
   id: number;
   email: string;
+  fullName?: string;
   phoneNumber: string;
   isVerified: boolean;
   roleId: number;
@@ -128,12 +129,12 @@ export function UpdateUserDialog({ user, open, onOpenChange }: UpdateUserDialogP
                 <div className="bg-white dark:bg-gray-900 rounded-md p-4 shadow-xl border border-gray-100 dark:border-gray-800 flex items-center gap-4">
                   <Avatar className="w-14 h-14 border-4 border-white dark:border-gray-950 shadow-lg">
                     <AvatarFallback className="bg-gradient-to-br from-[#B39371] to-[#C4A484] text-white text-lg font-black">
-                      {user?.email.substring(0, 2).toUpperCase()}
+                      {(user?.fullName || user?.email || '').substring(0, 2).toUpperCase()}
                     </AvatarFallback>
                   </Avatar>
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-bold text-gray-900 dark:text-white truncate">
-                      {user?.email.split('@')[0]}
+                      {user?.fullName || user?.email.split('@')[0]}
                     </p>
                     <div className="flex items-center gap-2 mt-0.5">
                       <div className={cn(

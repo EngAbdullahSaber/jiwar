@@ -1,17 +1,17 @@
-﻿import { useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { useQuery } from '@tanstack/react-query';
-import api from '@/lib/api';
-import { TopHeader } from '../../components/TopHeader';
- import { DataTable } from '../../components/shared/DataTable';
-import type { Column } from '../../components/shared/DataTable';
-import { FilterBar } from '../../components/shared/FilterBar';
-import type { FilterField } from '../../components/shared/FilterBar';
+﻿import { useState } from "react";
+import { useTranslation } from "react-i18next";
+import { useQuery } from "@tanstack/react-query";
+import api from "@/lib/api";
+import { TopHeader } from "../../components/TopHeader";
+import { DataTable } from "../../components/shared/DataTable";
+import type { Column } from "../../components/shared/DataTable";
+import { FilterBar } from "../../components/shared/FilterBar";
+import type { FilterField } from "../../components/shared/FilterBar";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { Link } from "wouter";
-import { Shell } from '../../components/shared/Shell';
-import { Can } from '../../components/shared/Can';
+import { Shell } from "../../components/shared/Shell";
+import { Can } from "../../components/shared/Can";
 import {
   Plus,
   Eye,
@@ -30,14 +30,15 @@ import {
   Calendar,
   Paperclip,
   Hash,
-} from 'lucide-react';
-import { format } from 'date-fns';
-import { motion } from 'framer-motion';
+} from "lucide-react";
+import { format } from "date-fns";
+import { motion } from "framer-motion";
 
 interface Material {
   id: number;
   name: string;
   quantity: string;
+  price: number;
   requestStatus: string;
   approvalStatus: string;
   files: string[];
@@ -62,85 +63,99 @@ interface MaterialsResponse {
 // Status Badge Component
 const StatusBadge = ({ status }: { status: string }) => {
   const { t } = useTranslation();
-  const statusConfig: Record<string, { color: string; hover: string; icon: any; label: string }> = {
-    pending: { 
-      color: "bg-blue-50 text-blue-700 dark:bg-blue-500/10 dark:text-blue-400 border-blue-200 dark:border-blue-500/20", 
+  const statusConfig: Record<
+    string,
+    { color: string; hover: string; icon: any; label: string }
+  > = {
+    pending: {
+      color:
+        "bg-blue-50 text-blue-700 dark:bg-blue-500/10 dark:text-blue-400 border-blue-200 dark:border-blue-500/20",
       hover: "hover:bg-blue-100 dark:hover:bg-blue-500/20",
       icon: Clock,
-      label: t('materials.statuses.pending')
+      label: t("materials.statuses.pending"),
     },
-    draft: { 
-      color: "bg-gray-50 text-gray-700 dark:bg-gray-500/10 dark:text-gray-400 border-gray-200 dark:border-gray-500/20", 
+    draft: {
+      color:
+        "bg-gray-50 text-gray-700 dark:bg-gray-500/10 dark:text-gray-400 border-gray-200 dark:border-gray-500/20",
       hover: "hover:bg-gray-100 dark:hover:bg-gray-500/20",
       icon: FileEdit,
-      label: t('materials.statuses.draft')
+      label: t("materials.statuses.draft"),
     },
-    ordered: { 
-      color: "bg-amber-50 text-amber-700 dark:bg-amber-500/10 dark:text-amber-400 border-amber-200 dark:border-amber-500/20", 
+    ordered: {
+      color:
+        "bg-amber-50 text-amber-700 dark:bg-amber-500/10 dark:text-amber-400 border-amber-200 dark:border-amber-500/20",
       hover: "hover:bg-amber-100 dark:hover:bg-amber-500/20",
       icon: Layers,
-      label: t('materials.statuses.ordered')
+      label: t("materials.statuses.ordered"),
     },
-    received: { 
-      color: "bg-emerald-50 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-400 border-emerald-200 dark:border-emerald-500/20", 
+    received: {
+      color:
+        "bg-emerald-50 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-400 border-emerald-200 dark:border-emerald-500/20",
       hover: "hover:bg-emerald-100 dark:hover:bg-emerald-500/20",
       icon: CheckCircle2,
-      label: t('materials.statuses.received')
+      label: t("materials.statuses.received"),
     },
-    approved: { 
-      color: "bg-emerald-50 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-400 border-emerald-200 dark:border-emerald-500/20", 
+    approved: {
+      color:
+        "bg-emerald-50 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-400 border-emerald-200 dark:border-emerald-500/20",
       hover: "hover:bg-emerald-100 dark:hover:bg-emerald-500/20",
       icon: CheckCircle2,
-      label: t('materials.statuses.approved')
+      label: t("materials.statuses.approved"),
     },
-    finalized: { 
-      color: "bg-purple-50 text-purple-700 dark:bg-purple-500/10 dark:text-purple-400 border-purple-200 dark:border-purple-500/20", 
+    finalized: {
+      color:
+        "bg-purple-50 text-purple-700 dark:bg-purple-500/10 dark:text-purple-400 border-purple-200 dark:border-purple-500/20",
       hover: "hover:bg-purple-100 dark:hover:bg-purple-500/20",
       icon: CheckCircle2,
-      label: t('materials.statuses.finalized')
+      label: t("materials.statuses.finalized"),
     },
-    rejected: { 
-      color: "bg-red-50 text-red-700 dark:bg-red-500/10 dark:text-red-400 border-red-200 dark:border-red-500/20", 
+    rejected: {
+      color:
+        "bg-red-50 text-red-700 dark:bg-red-500/10 dark:text-red-400 border-red-200 dark:border-red-500/20",
       hover: "hover:bg-red-100 dark:hover:bg-red-500/20",
       icon: AlertCircle,
-      label: t('materials.statuses.rejected')
+      label: t("materials.statuses.rejected"),
     },
-    not_received: { 
-      color: "bg-orange-50 text-orange-700 dark:bg-orange-500/10 dark:text-orange-400 border-orange-200 dark:border-orange-500/20", 
+    not_received: {
+      color:
+        "bg-orange-50 text-orange-700 dark:bg-orange-500/10 dark:text-orange-400 border-orange-200 dark:border-orange-500/20",
       hover: "hover:bg-orange-100 dark:hover:bg-orange-500/20",
       icon: Slash,
-      label: t('materials.statuses.not_received')
+      label: t("materials.statuses.not_received"),
     },
-    pass_deadline: { 
-      color: "bg-rose-50 text-rose-700 dark:bg-rose-500/10 dark:text-rose-400 border-rose-200 dark:border-rose-500/20", 
+    pass_deadline: {
+      color:
+        "bg-rose-50 text-rose-700 dark:bg-rose-500/10 dark:text-rose-400 border-rose-200 dark:border-rose-500/20",
       hover: "hover:bg-rose-100 dark:hover:bg-rose-500/20",
       icon: AlertTriangle,
-      label: t('materials.statuses.pass_deadline')
+      label: t("materials.statuses.pass_deadline"),
     },
-    returned: { 
-      color: "bg-indigo-50 text-indigo-700 dark:bg-indigo-500/10 dark:text-indigo-400 border-indigo-200 dark:border-indigo-500/20", 
+    returned: {
+      color:
+        "bg-indigo-50 text-indigo-700 dark:bg-indigo-500/10 dark:text-indigo-400 border-indigo-200 dark:border-indigo-500/20",
       hover: "hover:bg-indigo-100 dark:hover:bg-indigo-500/20",
       icon: RotateCcw,
-      label: t('materials.statuses.returned')
+      label: t("materials.statuses.returned"),
     },
-    cancelled: { 
-      color: "bg-zinc-50 text-zinc-700 dark:bg-zinc-500/10 dark:text-zinc-400 border-zinc-200 dark:border-zinc-500/20", 
+    cancelled: {
+      color:
+        "bg-zinc-50 text-zinc-700 dark:bg-zinc-500/10 dark:text-zinc-400 border-zinc-200 dark:border-zinc-500/20",
       hover: "hover:bg-zinc-100 dark:hover:bg-zinc-500/20",
       icon: XCircle,
-      label: t('materials.statuses.cancelled')
-    }
+      label: t("materials.statuses.cancelled"),
+    },
   };
 
   const config = statusConfig[status.toLowerCase()] || statusConfig.draft;
   const Icon = config.icon;
 
   return (
-    <Badge 
+    <Badge
       className={cn(
         "rounded-md px-3 py-1 text-xs font-medium border shadow-sm transition-all duration-300",
         config.color,
         config.hover,
-        "hover:shadow-md hover:scale-[1.02] cursor-default"
+        "hover:shadow-md hover:scale-[1.02] cursor-default",
       )}
     >
       <Icon className="w-3.5 h-3.5 mr-1" />
@@ -151,117 +166,147 @@ const StatusBadge = ({ status }: { status: string }) => {
 
 export default function Materials() {
   const { t } = useTranslation();
-  const [filters, setFilters] = useState({ search: '', requestStatus: 'all', approvalStatus: 'all' });
+  const [filters, setFilters] = useState({
+    search: "",
+    requestStatus: "all",
+    approvalStatus: "all",
+  });
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 10;
 
   const { data: response, isLoading } = useQuery<MaterialsResponse>({
-    queryKey: ['materials', currentPage, pageSize, filters.search, filters.requestStatus, filters.approvalStatus],
+    queryKey: [
+      "materials",
+      currentPage,
+      pageSize,
+      filters.search,
+      filters.requestStatus,
+      filters.approvalStatus,
+    ],
     queryFn: async () => {
-      const res = await api.get('/material', {
+      const res = await api.get("/material", {
         params: {
           page: currentPage,
           pageSize,
           search: filters.search || undefined,
-          requestStatus: filters.requestStatus !== 'all' ? filters.requestStatus : undefined,
-          approvalStatus: filters.approvalStatus !== 'all' ? filters.approvalStatus : undefined
-        }
+          requestStatus:
+            filters.requestStatus !== "all" ? filters.requestStatus : undefined,
+          approvalStatus:
+            filters.approvalStatus !== "all"
+              ? filters.approvalStatus
+              : undefined,
+        },
       });
       return res.data;
-    }
+    },
   });
 
   const filterFields: FilterField[] = [
     {
-      type: 'search',
-      label: t('common.search'),
-      placeholder: t('materials.name'),
-      key: 'search'
+      type: "search",
+      label: t("common.search"),
+      placeholder: t("materials.name"),
+      key: "search",
     },
     {
-      type: 'select',
-      label: t('materials.requestStatus'),
-      placeholder: t('materials.allStatus'),
-      key: 'requestStatus',
+      type: "select",
+      label: t("materials.requestStatus"),
+      placeholder: t("materials.allStatus"),
+      key: "requestStatus",
       options: [
-        { value: 'all', label: t('materials.allStatus') },
-        { value: 'pending', label: t('materials.statuses.pending') },
-        { value: 'ordered', label: t('materials.statuses.ordered') },
-        { value: 'received', label: t('materials.statuses.received') },
-        { value: 'not_received', label: t('materials.statuses.not_received') },
-        { value: 'pass_deadline', label: t('materials.statuses.pass_deadline') },
-        { value: 'returned', label: t('materials.statuses.returned') },
-        { value: 'cancelled', label: t('materials.statuses.cancelled') },
-      ]
+        { value: "all", label: t("materials.allStatus") },
+        { value: "pending", label: t("materials.statuses.pending") },
+        { value: "ordered", label: t("materials.statuses.ordered") },
+        { value: "received", label: t("materials.statuses.received") },
+        { value: "not_received", label: t("materials.statuses.not_received") },
+        {
+          value: "pass_deadline",
+          label: t("materials.statuses.pass_deadline"),
+        },
+        { value: "returned", label: t("materials.statuses.returned") },
+        { value: "cancelled", label: t("materials.statuses.cancelled") },
+      ],
     },
     {
-      type: 'select',
-      label: t('materials.approvalStatus'),
-      placeholder: t('materials.allStatus'),
-      key: 'approvalStatus',
+      type: "select",
+      label: t("materials.approvalStatus"),
+      placeholder: t("materials.allStatus"),
+      key: "approvalStatus",
       options: [
-        { value: 'all', label: t('materials.allStatus') },
-        { value: 'draft', label: t('materials.statuses.draft') },
-        { value: 'approved', label: t('materials.statuses.approved') },
-        { value: 'finalized', label: t('materials.statuses.finalized') },
-      ]
-    }
+        { value: "all", label: t("materials.allStatus") },
+        { value: "draft", label: t("materials.statuses.draft") },
+        { value: "approved", label: t("materials.statuses.approved") },
+        { value: "finalized", label: t("materials.statuses.finalized") },
+      ],
+    },
   ];
 
   const formatDate = (d: string | null) => {
-    if (!d) return '—';
-    try { return format(new Date(d), 'MMM dd, yyyy'); } catch { return '—'; }
+    if (!d) return "—";
+    try {
+      return format(new Date(d), "MMM dd, yyyy");
+    } catch {
+      return "—";
+    }
   };
 
   const columns: Column<Material>[] = [
     {
-      header: t('materials.name'),
+      header: t("materials.name"),
       cell: (m) => (
         <div className="flex flex-col gap-0.5">
-          <p className="text-sm font-semibold text-gray-900 dark:text-white">{m.name || 'N/A'}</p>
+          <p className="text-sm font-semibold text-gray-900 dark:text-white">
+            {m.name || "N/A"}
+          </p>
           <div className="flex items-center gap-1 text-[10px] text-gray-400">
             <Hash className="w-3 h-3" />
             <span>{m.quantity}</span>
           </div>
         </div>
-      )
+      ),
     },
     {
-      header: t('materials.requestStatus'),
-      cell: (m) => <StatusBadge status={m.requestStatus || 'pending'} />
+      header: t("materials.requestStatus"),
+      cell: (m) => <StatusBadge status={m.requestStatus || "pending"} />,
     },
     {
-      header: t('materials.approvalStatus'),
-      cell: (m) => <StatusBadge status={m.approvalStatus || 'draft'} />
+      header: t("materials.approvalStatus"),
+      cell: (m) => <StatusBadge status={m.approvalStatus || "draft"} />,
     },
     {
-      header: t('materials.dates'),
+      header: t("materials.dates"),
       cell: (m) => (
         <div className="flex flex-col gap-0.5 text-xs text-gray-500 dark:text-gray-400">
           <div className="flex items-center gap-1">
             <Calendar className="w-3 h-3 text-gray-400" />
-            <span className="text-[10px] font-bold text-gray-400 uppercase">{t('materials.startDate')}:</span>
+            <span className="text-[10px] font-bold text-gray-400 uppercase">
+              {t("materials.startDate")}:
+            </span>
             <span>{formatDate(m.startDate)}</span>
           </div>
           <div className="flex items-center gap-1">
             <Calendar className="w-3 h-3 text-gray-400" />
-            <span className="text-[10px] font-bold text-gray-400 uppercase">{t('materials.endDate')}:</span>
+            <span className="text-[10px] font-bold text-gray-400 uppercase">
+              {t("materials.endDate")}:
+            </span>
             <span>{formatDate(m.endDate)}</span>
           </div>
         </div>
-      )
+      ),
     },
     {
-      header: t('materials.estimateCost'),
+      header: t("materials.estimateCost"),
       cell: (m) => (
         <span className="text-sm font-semibold text-gray-900 dark:text-white">
-          {(m.projectStagesEstimateCost || 0).toLocaleString()}
-          <span className="text-[10px] text-gray-400 ml-1">{t('common.sar')}</span>
+          {(m.price || 0).toLocaleString()}
+          <span className="text-[10px] text-gray-400 ml-1">
+            {t("common.sar")}
+          </span>
         </span>
-      )
+      ),
     },
     {
-      header: t('materials.attachments'),
+      header: t("materials.attachments"),
       cell: (m) => (
         <div className="flex items-center gap-1.5">
           <Paperclip className="w-3.5 h-3.5 text-gray-400" />
@@ -271,41 +316,46 @@ export default function Materials() {
         </div>
       ),
       className: "text-center",
-      headerClassName: "text-center"
+      headerClassName: "text-center",
     },
     {
-      header: t('common.actions'),
+      header: t("common.actions"),
       headerClassName: "text-center",
       cell: (m) => (
         <div className="flex items-center justify-center gap-2">
           <Can I="READ" a="material">
             <Link href={`/materials/${m.id}`}>
-              <button className="p-2 hover:bg-[#F5F1ED] dark:hover:bg-gray-800 rounded-md text-gray-400 hover:text-[#4A1B1B] dark:hover:text-[#B39371] transition-colors" title={t('materials.view')}>
+              <button
+                className="p-2 hover:bg-[#F5F1ED] dark:hover:bg-gray-800 rounded-md text-gray-400 hover:text-[#4A1B1B] dark:hover:text-[#B39371] transition-colors"
+                title={t("materials.view")}
+              >
                 <Eye className="w-4 h-4" />
               </button>
             </Link>
           </Can>
           <Can I="UPDATE" a="material">
             <Link href={`/materials/${m.id}/edit`}>
-              <button className="p-2 hover:bg-[#F5F1ED] dark:hover:bg-gray-800 rounded-md text-gray-400 hover:text-[#4A1B1B] dark:hover:text-[#B39371] transition-colors" title={t('common.edit')}>
+              <button
+                className="p-2 hover:bg-[#F5F1ED] dark:hover:bg-gray-800 rounded-md text-gray-400 hover:text-[#4A1B1B] dark:hover:text-[#B39371] transition-colors"
+                title={t("common.edit")}
+              >
                 <Pencil className="w-4 h-4" />
               </button>
             </Link>
           </Can>
         </div>
-      )
-    }
+      ),
+    },
   ];
 
   const materials = response?.data || [];
- 
+
   return (
     <Shell>
       <TopHeader />
-      
+
       <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-50 dark:from-gray-950 dark:via-gray-900 dark:to-gray-950">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
-          
           {/* Header Section */}
           <div className="bg-white dark:bg-gray-900 rounded-md border border-gray-200 dark:border-gray-800 p-6 shadow-sm">
             <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
@@ -320,14 +370,14 @@ export default function Materials() {
                   <div className="flex items-center gap-2 mb-1">
                     <Sparkles className="w-4 h-4 text-[#B39371]" />
                     <p className="text-xs font-medium text-[#B39371] uppercase tracking-wider">
-                      {t('materials.title')}
+                      {t("materials.title")}
                     </p>
                   </div>
                   <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
-                    {t('materials.subtitle')}
+                    {t("materials.subtitle")}
                   </h1>
                   <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                    {t('materials.description')}
+                    {t("materials.description")}
                   </p>
                 </div>
               </div>
@@ -341,7 +391,7 @@ export default function Materials() {
                       className="flex items-center gap-2 px-6 py-2.5 bg-gradient-to-r from-[#4A1B1B] to-[#6B2727] text-white rounded-md text-sm font-medium shadow-lg shadow-[#4A1B1B]/20 hover:shadow-xl transition-all"
                     >
                       <Plus className="w-5 h-5" />
-                      {t('materials.create')}
+                      {t("materials.create")}
                     </motion.button>
                   </Link>
                 </Can>
@@ -349,23 +399,21 @@ export default function Materials() {
             </div>
           </div>
 
-         
-
           {/* Filter Bar */}
-          <FilterBar 
-            fields={filterFields} 
-            values={filters} 
+          <FilterBar
+            fields={filterFields}
+            values={filters}
             onChange={(key, value) => {
-              setFilters(prev => ({ ...prev, [key]: value }));
+              setFilters((prev) => ({ ...prev, [key]: value }));
               setCurrentPage(1);
-            }} 
+            }}
           />
- 
-          <DataTable 
-            columns={columns} 
+
+          <DataTable
+            columns={columns}
             data={materials}
             isLoading={isLoading}
-            loadingMessage={t('common.loading')}
+            loadingMessage={t("common.loading")}
             currentPage={currentPage}
             totalPages={response?.totalPages}
             totalItems={response?.totalItems}
@@ -384,21 +432,25 @@ export default function Materials() {
                 <Home className="w-8 h-8 text-gray-400" />
               </div>
               <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
-                {t('materials.empty')}
+                {t("materials.empty")}
               </h3>
               <p className="text-sm text-gray-500 dark:text-gray-400 mb-8 max-w-md mx-auto">
-                {filters.search || filters.requestStatus !== 'all' || filters.approvalStatus !== 'all'
-                  ? t('materials.emptyDesc')
-                  : t('materials.createFirst')}
+                {filters.search ||
+                filters.requestStatus !== "all" ||
+                filters.approvalStatus !== "all"
+                  ? t("materials.emptyDesc")
+                  : t("materials.createFirst")}
               </p>
-              {!filters.search && filters.requestStatus === 'all' && filters.approvalStatus === 'all' && (
-                <Link href="/materials/new">
-                  <button className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-[#4A1B1B] to-[#6B2727] text-white rounded-md text-sm font-medium shadow-lg shadow-[#4A1B1B]/20 hover:shadow-xl transition-all">
-                    <Plus className="w-5 h-5" />
-                    {t('materials.create')}
-                  </button>
-                </Link>
-              )}
+              {!filters.search &&
+                filters.requestStatus === "all" &&
+                filters.approvalStatus === "all" && (
+                  <Link href="/materials/new">
+                    <button className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-[#4A1B1B] to-[#6B2727] text-white rounded-md text-sm font-medium shadow-lg shadow-[#4A1B1B]/20 hover:shadow-xl transition-all">
+                      <Plus className="w-5 h-5" />
+                      {t("materials.create")}
+                    </button>
+                  </Link>
+                )}
             </motion.div>
           )}
         </div>

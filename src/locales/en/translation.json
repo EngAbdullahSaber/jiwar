@@ -69,6 +69,7 @@
     "viewReceipt": "View Receipt",
     "createdBy": "Created by",
     "createdAt": "Created",
+    "updatedAt": "Last updated",
     "lastUpdated": "Last updated",
     "id": "ID",
     "optional": "optional",
@@ -311,7 +312,8 @@
       "RESOURCES-DASHBOARD": "Resources Dashboard",
       "FINANCE-DASHBOARD": "Finance Dashboard",
       "resources-dashboard": "Resources Dashboard",
-      "finance-dashboard": "Finance Dashboard"
+      "finance-dashboard": "Finance Dashboard",
+      "project-media": "Project Media"
     },
     "moduleAccess": "Module access",
     "resourceDescriptions": {
@@ -338,7 +340,8 @@
       "RESOURCES-DASHBOARD": "Track system resources and availability",
       "FINANCE-DASHBOARD": "View financial statistics and metrics",
       "resources-dashboard": "Track system resources and availability",
-      "finance-dashboard": "View financial statistics and metrics"
+      "finance-dashboard": "View financial statistics and metrics",
+      "project-media": "Manage project images and media files"
     },
     "modules": {
       "dashboard": "Dashboard",
@@ -554,6 +557,7 @@
       "create": "Failed to create project",
       "update": "Failed to update project",
       "fillRequired": "Please fill in all required fields",
+      "fieldRequired": "This field is required",
       "loadDetails": "Failed to load project details."
     },
     "empty": {
@@ -610,6 +614,7 @@
       "documents": "Project Documents",
       "blueprints": "Engineering Plans",
       "uploadImages": "Upload Images",
+      "mainImage": "Main",
       "save": "Save Media & Documents",
       "success": "Project assets saved successfully!",
       "error": "Failed to save project assets.",

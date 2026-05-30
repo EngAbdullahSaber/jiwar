@@ -14,7 +14,6 @@ import {
   Tags,
   Phone,
   Mail,
-  Scale,
   DollarSign,
   FileText,
 } from "lucide-react";
@@ -113,6 +112,7 @@ export default function UpdateMaterial() {
   const [formData, setFormData] = useState({
     name: "",
     quantity: "",
+    price: 0,
     requestStatus: "",
     approvalStatus: "",
     projectId: "",
@@ -128,10 +128,6 @@ export default function UpdateMaterial() {
     phoneNumber: "",
     optionalPhoneNumber: "",
     email: "",
-    quantityText: "",
-    price: 0,
-    editPrice: 0,
-    editPriceDate: "",
   });
 
   const [attachments, setAttachments] = useState<string[]>([]);
@@ -154,6 +150,7 @@ export default function UpdateMaterial() {
       setFormData({
         name: m.name || "",
         quantity: m.quantity || "",
+        price: m.price || 0,
         requestStatus: m.requestStatus || "pending",
         approvalStatus: m.approvalStatus || "draft",
         projectId: m.project?.id ? m.project.id.toString() : "",
@@ -172,12 +169,6 @@ export default function UpdateMaterial() {
           phoneNumber: m.supplier.phoneNumber || "",
           optionalPhoneNumber: m.supplier.optionalPhoneNumber || "",
           email: m.supplier.email || "",
-          quantityText: m.supplier.quantityText || "",
-          price: m.supplier.price || 0,
-          editPrice: m.supplier.editPrice || 0,
-          editPriceDate: m.supplier.editPriceDate
-            ? m.supplier.editPriceDate.split("T")[0]
-            : "",
         });
         if (Array.isArray(m.supplier.documents)) {
           setSupplierDocuments(m.supplier.documents);
@@ -198,12 +189,11 @@ export default function UpdateMaterial() {
       const payload: any = {
         ...data,
         quantity: data.quantity,
+        price: Number(data.price),
         projectId: Number(data.projectId),
         files: attachments,
         supplier: {
           ...supplierData,
-          price: Number(supplierData.price),
-          editPrice: Number(supplierData.editPrice),
           documents: supplierDocuments,
         },
         notes: data.notes ? [data.notes] : [],
@@ -393,6 +383,25 @@ export default function UpdateMaterial() {
                     </div>
                   </FormField>
                 </div>
+
+                {/* Price */}
+                <FormField label={t("materials.price")}>
+                  <div className="relative">
+                    <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 rtl:left-auto rtl:right-3" />
+                    <Input
+                      type="number"
+                      placeholder="0.00"
+                      value={formData.price}
+                      onChange={(e) =>
+                        setFormData((prev) => ({
+                          ...prev,
+                          price: Number(e.target.value),
+                        }))
+                      }
+                      className="pl-10 rtl:pl-3 rtl:pr-10 h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md"
+                    />
+                  </div>
+                </FormField>
               </div>
             </FormSection>
 
@@ -479,78 +488,6 @@ export default function UpdateMaterial() {
                       className="pl-10 rtl:pl-3 rtl:pr-10 h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md"
                     />
                   </div>
-                </FormField>
-
-                {/* Quantity Text */}
-                <FormField label={t("materials.quantityText")}>
-                  <div className="relative">
-                    <Scale className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 rtl:left-auto rtl:right-3" />
-                    <Input
-                      placeholder={
-                        t("materials.quantityPlaceholder") || "e.g. 100 tons"
-                      }
-                      value={supplierData.quantityText}
-                      onChange={(e) =>
-                        setSupplierData((prev) => ({
-                          ...prev,
-                          quantityText: e.target.value,
-                        }))
-                      }
-                      className="pl-10 rtl:pl-3 rtl:pr-10 h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md"
-                    />
-                  </div>
-                </FormField>
-
-                {/* Price */}
-                <FormField label={t("materials.price")}>
-                  <div className="relative">
-                    <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 rtl:left-auto rtl:right-3" />
-                    <Input
-                      type="number"
-                      placeholder="0.00"
-                      value={supplierData.price}
-                      onChange={(e) =>
-                        setSupplierData((prev) => ({
-                          ...prev,
-                          price: Number(e.target.value),
-                        }))
-                      }
-                      className="pl-10 rtl:pl-3 rtl:pr-10 h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md"
-                    />
-                  </div>
-                </FormField>
-
-                {/* Edit Price */}
-                <FormField label={t("materials.editPrice")}>
-                  <div className="relative">
-                    <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 rtl:left-auto rtl:right-3" />
-                    <Input
-                      type="number"
-                      placeholder="0.00"
-                      value={supplierData.editPrice}
-                      onChange={(e) =>
-                        setSupplierData((prev) => ({
-                          ...prev,
-                          editPrice: Number(e.target.value),
-                        }))
-                      }
-                      className="pl-10 rtl:pl-3 rtl:pr-10 h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md"
-                    />
-                  </div>
-                </FormField>
-
-                {/* Edit Price Date */}
-                <FormField label={t("materials.editPriceDate")}>
-                  <DatePicker
-                    value={supplierData.editPriceDate}
-                    onChange={(date) =>
-                      setSupplierData((prev) => ({
-                        ...prev,
-                        editPriceDate: date,
-                      }))
-                    }
-                    placeholder={t("materials.editPriceDate")}
-                  />
                 </FormField>
 
                 {/* Supplier Documents */}

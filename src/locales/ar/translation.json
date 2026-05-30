@@ -69,6 +69,7 @@
     "viewReceipt": "عرض الإيصال",
     "createdBy": "أنشئ بواسطة",
     "createdAt": "تاريخ الإنشاء",
+    "updatedAt": "آخر تحديث",
     "lastUpdated": "آخر تحديث",
     "id": "المعرف",
     "optional": "اختياري",
@@ -311,7 +312,8 @@
       "RESOURCES-DASHBOARD": "لوحة بيانات الموارد",
       "FINANCE-DASHBOARD": "لوحة البيانات المالية",
       "resources-dashboard": "لوحة بيانات الموارد",
-      "finance-dashboard": "لوحة البيانات المالية"
+      "finance-dashboard": "لوحة البيانات المالية",
+      "project-media": "وسائط المشروع"
     },
     "moduleAccess": "صلاحيات الوحدة",
     "resourceDescriptions": {
@@ -338,7 +340,8 @@
       "RESOURCES-DASHBOARD": "تتبع موارد النظام وتوافرها",
       "FINANCE-DASHBOARD": "عرض الإحصائيات والمؤشرات المالية",
       "resources-dashboard": "تتبع موارد النظام وتوافرها",
-      "finance-dashboard": "عرض الإحصائيات والمؤشرات المالية"
+      "finance-dashboard": "عرض الإحصائيات والمؤشرات المالية",
+      "project-media": "إدارة صور ووسائط المشروع"
     },
     "modules": {
       "dashboard": "لوحة القيادة",
@@ -554,6 +557,7 @@
       "create": "فشل إنشاء المشروع",
       "update": "فشل تحديث المشروع",
       "fillRequired": "يرجى ملء جميع الحقول المطلوبة",
+      "fieldRequired": "هذا الحقل مطلوب",
       "loadDetails": "فشل في تحميل تفاصيل المشروع."
     },
     "empty": {
@@ -610,6 +614,7 @@
       "documents": "مستندات المشروع",
       "blueprints": "المخططات الهندسية",
       "uploadImages": "تحميل الصور",
+      "mainImage": "رئيسية",
       "save": "حفظ الوسائط والمستندات",
       "success": "تم حفظ أصول المشروع بنجاح!",
       "error": "فشل في حفظ أصول المشروع.",

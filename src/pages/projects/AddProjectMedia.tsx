@@ -77,6 +77,7 @@ export default function AddProjectMedia() {
         style: { borderRadius: '1rem', background: '#10b981', color: '#fff' }
       });
       queryClient.invalidateQueries({ queryKey: ['project', projectId] });
+      queryClient.invalidateQueries({ queryKey: ['projects'] });
       setLocation(`/projects/${projectId}`);
     },
     onError: (error: any) => {
