@@ -142,8 +142,7 @@ export function AddClientPaymentDialog({
                      <DatePicker
                        value={formData.paymentDate}
                        onChange={(date) => setFormData(prev => ({ ...prev, paymentDate: date }))}
-                       required
-                       className="h-12 rounded-md border-gray-100 bg-gray-50 dark:bg-gray-800/50 dark:border-gray-700"
+                        className="h-12 rounded-md border-gray-100 bg-gray-50 dark:bg-gray-800/50 dark:border-gray-700"
                      />
                    </div>
 
@@ -155,8 +154,7 @@ export function AddClientPaymentDialog({
                      </Label>
                      <Input 
                        type="number"
-                       required
-                       placeholder="0.00"
+                        placeholder="0.00"
                        className="h-12 rounded-md border-gray-100 bg-gray-50 dark:bg-gray-800/50 dark:border-gray-700 font-bold text-lg"
                        value={formData.amount}
                        onChange={(e) => setFormData(prev => ({ ...prev, amount: e.target.value }))}

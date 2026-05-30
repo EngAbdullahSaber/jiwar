@@ -3,11 +3,11 @@ import { useLocation } from "wouter";
 import { useTranslation } from 'react-i18next';
 import { TopHeader } from '../../components/TopHeader';
 import { Shell } from '../../components/shared/Shell';
-import { 
-  Users as UsersIcon, 
-  UserPlus, 
-  Mail, 
-  Lock, 
+import {
+  Users as UsersIcon,
+  UserPlus,
+  Mail,
+  Lock,
   User as UserIcon,
    ArrowLeft,
   CheckCircle2,
@@ -16,15 +16,16 @@ import {
   Shield,
   Phone
 } from 'lucide-react';
+import { FormField } from '@/components/shared/FormField';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import api from '@/lib/api';
 import { motion } from 'framer-motion';
  import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { toast } from "react-hot-toast";
 import { Link } from 'wouter';
 import { PaginatedSelect } from '@/components/shared/PaginatedSelect';
 import { FormActions } from '@/components/shared/FormActions';
+import { scrollToFirstError } from '@/lib/utils';
 
 export default function CreateUser() {
   const [, setLocation] = useLocation();
@@ -39,6 +40,7 @@ export default function CreateUser() {
     confirmPassword: '',
     roleId: ''
   });
+  const [errors, setErrors] = useState<Record<string, string>>({});
 
   const createMutation = useMutation({
     mutationFn: async (userData: any) => {
@@ -57,14 +59,19 @@ export default function CreateUser() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
-    if (formData.password !== formData.confirmPassword) {
-      toast.error(t('users.passwordsDontMatch'));
-      return;
-    }
 
-    if (!formData.roleId) {
-      toast.error(t('users.pleaseSelectRole'));
+    const newErrors: Record<string, string> = {};
+    if (!formData.fullName) newErrors.fullName = t('common.fieldRequired');
+    if (!formData.email) newErrors.email = t('common.fieldRequired');
+    if (!formData.password) newErrors.password = t('common.fieldRequired');
+    if (!formData.confirmPassword) newErrors.confirmPassword = t('common.fieldRequired');
+    if (formData.password && formData.confirmPassword && formData.password !== formData.confirmPassword) {
+      newErrors.confirmPassword = t('users.passwordsDontMatch');
+    }
+    if (!formData.roleId) newErrors.roleId = t('common.fieldRequired');
+    setErrors(newErrors);
+    if (Object.keys(newErrors).length > 0) {
+      scrollToFirstError();
       return;
     }
 
@@ -84,6 +91,7 @@ export default function CreateUser() {
 
   const handleRoleChange = (value: string) => {
     setFormData(prev => ({ ...prev, roleId: value }));
+    if (errors.roleId) setErrors(p => { const { roleId, ...r } = p; return r; });
   };
 
   return (
@@ -149,107 +157,55 @@ export default function CreateUser() {
               
               <div className="p-8 lg:p-12 space-y-10">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
-                  {/* Full Name */}
-                  <div className="space-y-2.5">
-                    <Label className="text-sm font-semibold text-gray-700 dark:text-gray-300">{t('users.fullName')}</Label>
+                  <FormField label={t('users.fullName')} required error={errors.fullName}>
                     <div className="relative group">
                       <UserIcon className="absolute left-4 rtl:left-auto rtl:right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 group-focus-within:text-[#B39371] transition-colors" />
-                      <Input
-                        name="fullName"
-                        placeholder={t('users.placeholders.fullName')}
-                        className="h-12 pl-11 rtl:pl-4 rtl:pr-11 rounded-md bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700 focus:bg-gray-50 dark:focus:bg-gray-800 focus:ring-2 focus:ring-[#B39371]/10 transition-all"
-                        value={formData.fullName}
-                        onChange={handleChange}
-                      />
+                      <Input name="fullName" placeholder={t('users.placeholders.fullName')} className="h-12 pl-11 rtl:pl-4 rtl:pr-11 rounded-md bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700 focus:bg-gray-50 dark:focus:bg-gray-800 focus:ring-2 focus:ring-[#B39371]/10 transition-all" value={formData.fullName} onChange={(e) => { handleChange(e); if (errors.fullName) setErrors(p => { const { fullName, ...r } = p; return r; }); }} />
                     </div>
-                  </div>
+                  </FormField>
 
-                  {/* Work Email */}
-                  <div className="space-y-2.5">
-                    <Label className="text-sm font-semibold text-gray-700 dark:text-gray-300">{t('users.workEmail')}</Label>
+                  <FormField label={t('users.workEmail')} required error={errors.email}>
                     <div className="relative group">
                       <Mail className="absolute left-4 rtl:left-auto rtl:right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 group-focus-within:text-[#B39371] transition-colors" />
-                      <Input
-                        name="email"
-                        type="email"
-                        required
-                        placeholder={t('users.placeholders.email')}
-                        className="h-12 pl-11 rtl:pl-4 rtl:pr-11 rounded-md bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700 focus:bg-gray-50 dark:focus:bg-gray-800 focus:ring-2 focus:ring-[#B39371]/10 transition-all"
-                        value={formData.email}
-                        onChange={handleChange}
-                      />
+                      <Input name="email" type="email" placeholder={t('users.placeholders.email')} className="h-12 pl-11 rtl:pl-4 rtl:pr-11 rounded-md bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700 focus:bg-gray-50 dark:focus:bg-gray-800 focus:ring-2 focus:ring-[#B39371]/10 transition-all" value={formData.email} onChange={(e) => { handleChange(e); if (errors.email) setErrors(p => { const { email, ...r } = p; return r; }); }} />
                     </div>
-                  </div>
+                  </FormField>
 
-                  {/* Phone Number */}
-                  <div className="space-y-2.5">
-                    <Label className="text-sm font-semibold text-gray-700 dark:text-gray-300">{t('users.phoneNumber')}</Label>
+                  <FormField label={t('users.phoneNumber')}>
                     <div className="relative group">
                       <Phone className="absolute left-4 rtl:left-auto rtl:right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 group-focus-within:text-[#B39371] transition-colors" />
-                      <Input
-                        name="phoneNumber"
-                        type="tel"
-                        placeholder={t('users.placeholders.phoneNumber')}
-                        className="h-12 pl-11 rtl:pl-4 rtl:pr-11 rounded-md bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700 focus:bg-gray-50 dark:focus:bg-gray-800 focus:ring-2 focus:ring-[#B39371]/10 transition-all"
-                        value={formData.phoneNumber}
-                        onChange={handleChange}
-                      />
+                      <Input name="phoneNumber" type="tel" placeholder={t('users.placeholders.phoneNumber')} className="h-12 pl-11 rtl:pl-4 rtl:pr-11 rounded-md bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700 focus:bg-gray-50 dark:focus:bg-gray-800 focus:ring-2 focus:ring-[#B39371]/10 transition-all" value={formData.phoneNumber} onChange={handleChange} />
                     </div>
-                  </div>
+                  </FormField>
 
-                  {/* Password */}
-                  <div className="space-y-2.5">
-                    <Label className="text-sm font-semibold text-gray-700 dark:text-gray-300">{t('users.password')}</Label>
+                  <FormField label={t('users.password')} required error={errors.password}>
                     <div className="relative group">
                       <Lock className="absolute left-4 rtl:left-auto rtl:right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 group-focus-within:text-[#B39371] transition-colors" />
-                      <Input
-                        name="password"
-                        type="password"
-                        required
-                        placeholder={t('users.placeholders.password')}
-                        className="h-12 pl-11 rtl:pl-4 rtl:pr-11 rounded-md bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700 focus:bg-gray-50 dark:focus:bg-gray-800 focus:ring-2 focus:ring-[#B39371]/10 transition-all"
-                        value={formData.password}
-                        onChange={handleChange}
-                      />
+                      <Input name="password" type="password" placeholder={t('users.placeholders.password')} className="h-12 pl-11 rtl:pl-4 rtl:pr-11 rounded-md bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700 focus:bg-gray-50 dark:focus:bg-gray-800 focus:ring-2 focus:ring-[#B39371]/10 transition-all" value={formData.password} onChange={(e) => { handleChange(e); if (errors.password) setErrors(p => { const { password, ...r } = p; return r; }); }} />
                     </div>
-                  </div>
+                  </FormField>
 
-                  {/* Confirm Password */}
-                  <div className="space-y-2.5">
-                    <Label className="text-sm font-semibold text-gray-700 dark:text-gray-300">{t('users.confirmPassword')}</Label>
+                  <FormField label={t('users.confirmPassword')} required error={errors.confirmPassword}>
                     <div className="relative group">
                       <Lock className="absolute left-4 rtl:left-auto rtl:right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 group-focus-within:text-[#B39371] transition-colors" />
-                      <Input
-                        name="confirmPassword"
-                        type="password"
-                        required
-                        placeholder={t('users.placeholders.password')}
-                        className="h-12 pl-11 rtl:pl-4 rtl:pr-11 rounded-md bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700 focus:bg-gray-50 dark:focus:bg-gray-800 focus:ring-2 focus:ring-[#B39371]/10 transition-all"
-                        value={formData.confirmPassword}
-                        onChange={handleChange}
-                      />
+                      <Input name="confirmPassword" type="password" placeholder={t('users.placeholders.password')} className="h-12 pl-11 rtl:pl-4 rtl:pr-11 rounded-md bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700 focus:bg-gray-50 dark:focus:bg-gray-800 focus:ring-2 focus:ring-[#B39371]/10 transition-all" value={formData.confirmPassword} onChange={(e) => { handleChange(e); if (errors.confirmPassword) setErrors(p => { const { confirmPassword, ...r } = p; return r; }); }} />
                     </div>
-                  </div>
+                  </FormField>
 
-                  {/* Role Assignment */}
-                  <div className="md:col-span-2 space-y-2.5">
-                    <Label className="text-sm font-semibold text-gray-700 dark:text-gray-300">{t('users.roleAssignment')}</Label>
-                    <PaginatedSelect
-                      apiEndpoint="/role-permission"
-                      queryKey="roles"
-                      value={formData.roleId}
-                      onChange={handleRoleChange}
-                      placeholder={t('users.selectRole')}
-                      searchPlaceholder={t('users.searchRoles')}
-                      mapResponseToOptions={(res) => res.data
-                        .filter((role: any) => role.id !== 5 && role.id !== 6)
-                        .map((role: any) => ({
-                          value: role.id.toString(),
-                          label: role.name,
-                          description: role.description,
-                          icon: <Shield className="w-4 h-4" />
-                        }))}
-                    />
+                  <div className="md:col-span-2">
+                    <FormField label={t('users.roleAssignment')} required error={errors.roleId}>
+                      <PaginatedSelect
+                        apiEndpoint="/role-permission"
+                        queryKey="roles"
+                        value={formData.roleId}
+                        onChange={handleRoleChange}
+                        placeholder={t('users.selectRole')}
+                        searchPlaceholder={t('users.searchRoles')}
+                        mapResponseToOptions={(res) => res.data
+                          .filter((role: any) => role.id !== 5 && role.id !== 6)
+                          .map((role: any) => ({ value: role.id.toString(), label: role.name, description: role.description, icon: <Shield className="w-4 h-4" /> }))}
+                      />
+                    </FormField>
                   </div>
                 </div>
               </div>

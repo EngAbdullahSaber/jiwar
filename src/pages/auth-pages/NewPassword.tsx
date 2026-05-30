@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useLocation } from "wouter";
-import { ArrowLeftIcon, EyeIcon, EyeOffIcon, LockIcon, MailIcon } from "lucide-react";
+import { ArrowLeftIcon, EyeIcon, EyeOffIcon, LockIcon, MailIcon, AlertCircle } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { LanguageSwitcher } from "@/components/shared/LanguageSwitcher";
 import toast from "react-hot-toast";
@@ -16,6 +16,7 @@ export const NewPassword = (): JSX.Element => {
   const [newPassword, setNewPassword] = useState("");
   const [retypeNewPassword, setRetypeNewPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [errors, setErrors] = useState<{ email?: string; newPassword?: string; retypeNewPassword?: string }>({});
 
   // Simple password strength calculation
   const getStrength = () => {
@@ -41,20 +42,14 @@ export const NewPassword = (): JSX.Element => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!email) {
-      toast.error(t("auth.errorEmptyFields"));
-      return;
-    }
-
-    if (newPassword !== retypeNewPassword) {
-      toast.error(t("auth.errorPasswordsDontMatch"));
-      return;
-    }
-
-    if (newPassword.length < 8) {
-      toast.error(t("auth.errorPasswordTooShort"));
-      return;
-    }
+    const newErrors: { email?: string; newPassword?: string; retypeNewPassword?: string } = {};
+    if (!email) newErrors.email = t("auth.errorEmptyFields");
+    if (!newPassword) newErrors.newPassword = t("auth.errorEmptyFields");
+    else if (newPassword.length < 8) newErrors.newPassword = t("auth.errorPasswordTooShort");
+    if (!retypeNewPassword) newErrors.retypeNewPassword = t("auth.errorEmptyFields");
+    else if (newPassword && newPassword !== retypeNewPassword) newErrors.retypeNewPassword = t("auth.errorPasswordsDontMatch");
+    setErrors(newErrors);
+    if (Object.keys(newErrors).length > 0) return;
 
     setIsLoading(true);
     try {
@@ -113,10 +108,8 @@ export const NewPassword = (): JSX.Element => {
 
           <form onSubmit={handleSubmit} className="auth-form">
             {/* Email */}
-            <div className="auth-field">
-              <label htmlFor="email" className="auth-label">
-                {t("auth.email")}
-              </label>
+            <div className="auth-field" {...(errors.email ? { "data-field-error": "true" } : {})}>
+              <label htmlFor="email" className="auth-label">{t("auth.email")}</label>
               <div className="auth-input-wrap">
                 <MailIcon className="auth-input-icon" />
                 <input
@@ -124,19 +117,17 @@ export const NewPassword = (): JSX.Element => {
                   type="email"
                   placeholder={t("auth.emailPlaceholder")}
                   value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  onChange={(e) => { setEmail(e.target.value); if (errors.email) setErrors(p => ({ ...p, email: undefined })); }}
                   className="auth-input"
                   disabled={isLoading}
-                  required
                 />
               </div>
+              {errors.email && <p className="auth-error"><AlertCircle />{errors.email}</p>}
             </div>
 
             {/* New Password */}
-            <div className="auth-field">
-              <label htmlFor="new-password" className="auth-label">
-                {t("auth.password")}
-              </label>
+            <div className="auth-field" {...(errors.newPassword ? { "data-field-error": "true" } : {})}>
+              <label htmlFor="new-password" className="auth-label">{t("auth.password")}</label>
               <div className="auth-input-wrap">
                 <LockIcon className="auth-input-icon" />
                 <input
@@ -144,49 +135,36 @@ export const NewPassword = (): JSX.Element => {
                   type={showNewPassword ? "text" : "password"}
                   placeholder={t("auth.passwordPlaceholder")}
                   value={newPassword}
-                  onChange={(e) => setNewPassword(e.target.value)}
+                  onChange={(e) => { setNewPassword(e.target.value); if (errors.newPassword) setErrors(p => ({ ...p, newPassword: undefined })); }}
                   className="auth-input auth-input-password"
                   disabled={isLoading}
-                  required
                 />
-                <button
-                  type="button"
-                  className="auth-eye-btn"
-                  onClick={() => setShowNewPassword(!showNewPassword)}
-                >
+                <button type="button" className="auth-eye-btn" onClick={() => setShowNewPassword(!showNewPassword)}>
                   {showNewPassword ? <EyeOffIcon /> : <EyeIcon />}
                 </button>
               </div>
+              {errors.newPassword && <p className="auth-error"><AlertCircle />{errors.newPassword}</p>}
 
               {/* Password strength */}
               {newPassword.length > 0 && (
                 <div className="auth-strength">
                   <div className="auth-strength-header">
                     <span className="auth-strength-label">{t("auth.strengthLabel")}</span>
-                    <span className={`auth-strength-level ${strengthClass}`}>
-                      {getStrengthLabel()}
-                    </span>
+                    <span className={`auth-strength-level ${strengthClass}`}>{getStrengthLabel()}</span>
                   </div>
                   <div className="auth-strength-bars">
                     {[0, 1, 2, 3].map((i) => (
-                      <div
-                        key={i}
-                        className={`auth-strength-bar ${i < strength ? "auth-strength-bar--filled" : ""}`}
-                      />
+                      <div key={i} className={`auth-strength-bar ${i < strength ? "auth-strength-bar--filled" : ""}`} />
                     ))}
                   </div>
-                  <p className="auth-strength-hint">
-                    {t("auth.strengthHint")}
-                  </p>
+                  <p className="auth-strength-hint">{t("auth.strengthHint")}</p>
                 </div>
               )}
             </div>
 
             {/* Confirm Password */}
-            <div className="auth-field">
-              <label htmlFor="confirm-password" className="auth-label">
-                {t("auth.confirmPassword")}
-              </label>
+            <div className="auth-field" {...(errors.retypeNewPassword ? { "data-field-error": "true" } : {})}>
+              <label htmlFor="confirm-password" className="auth-label">{t("auth.confirmPassword")}</label>
               <div className="auth-input-wrap">
                 <LockIcon className="auth-input-icon" />
                 <input
@@ -194,19 +172,15 @@ export const NewPassword = (): JSX.Element => {
                   type={showConfirmPassword ? "text" : "password"}
                   placeholder={t("auth.confirmPasswordPlaceholder")}
                   value={retypeNewPassword}
-                  onChange={(e) => setRetypeNewPassword(e.target.value)}
+                  onChange={(e) => { setRetypeNewPassword(e.target.value); if (errors.retypeNewPassword) setErrors(p => ({ ...p, retypeNewPassword: undefined })); }}
                   className="auth-input auth-input-password"
                   disabled={isLoading}
-                  required
                 />
-                <button
-                  type="button"
-                  className="auth-eye-btn"
-                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                >
+                <button type="button" className="auth-eye-btn" onClick={() => setShowConfirmPassword(!showConfirmPassword)}>
                   {showConfirmPassword ? <EyeOffIcon /> : <EyeIcon />}
                 </button>
               </div>
+              {errors.retypeNewPassword && <p className="auth-error"><AlertCircle />{errors.retypeNewPassword}</p>}
             </div>
 
             {/* Submit */}

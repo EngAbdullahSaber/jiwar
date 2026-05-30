@@ -4,7 +4,6 @@ import { TopHeader } from "../../components/TopHeader";
 import { Link, useLocation, useRoute } from "wouter";
 import {
   ArrowLeft,
-  AlertCircle,
   Package,
   Layers,
   Sparkles,
@@ -33,9 +32,10 @@ import DatePicker from "../../components/shared/DatePicker";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import api from "@/lib/api";
 import toast from "react-hot-toast";
-import { cn } from "@/lib/utils";
+import { scrollToFirstError } from "@/lib/utils";
 import { motion } from "framer-motion";
 import { Textarea } from "@/components/ui/textarea";
+import { FormField } from "../../components/shared/FormField";
 
 // Form Section Component
 const FormSection = ({
@@ -73,35 +73,6 @@ const FormSection = ({
   </motion.div>
 );
 
-// Form Field Component
-const FormField = ({ label, required = false, children, error }: any) => (
-  <div className="space-y-2">
-    <Label className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-      {label} {required && <span className="text-[#B39371]">*</span>}
-    </Label>
-    {children}
-    {error && (
-      <p className="text-xs text-red-500 dark:text-red-400 font-medium flex items-center gap-1">
-        <AlertCircle className="w-3.5 h-3.5" />
-        {error}
-      </p>
-    )}
-  </div>
-);
-
-// Label Component
-const Label = ({ children, className, ...props }: any) => (
-  <label
-    className={cn(
-      "text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70",
-      className,
-    )}
-    {...props}
-  >
-    {children}
-  </label>
-);
-
 export default function UpdateMaterial() {
   const { t } = useTranslation();
   const [, setLocation] = useLocation();
@@ -121,6 +92,7 @@ export default function UpdateMaterial() {
     endDate: "",
   });
 
+  const [errors, setErrors] = useState<Record<string, string>>({});
   const [projectLabel, setProjectLabel] = useState("");
 
   const [supplierData, setSupplierData] = useState({
@@ -160,7 +132,11 @@ export default function UpdateMaterial() {
       });
 
       if (m.project) {
-        setProjectLabel(m.project.name?.english || m.project.name?.arabic || `Project #${m.project.id}`);
+        setProjectLabel(
+          m.project.name?.english ||
+            m.project.name?.arabic ||
+            `Project #${m.project.id}`,
+        );
       }
 
       if (m.supplier) {
@@ -223,16 +199,14 @@ export default function UpdateMaterial() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (
-      !formData.name ||
-      !supplierData.name ||
-      !formData.quantity ||
-      !formData.projectId
-    ) {
-      toast.error(t("materials.formError"), {
-        icon: "⚠️",
-        style: { borderRadius: "1rem", background: "#ef4444", color: "#fff" },
-      });
+    const newErrors: Record<string, string> = {};
+    if (!formData.name) newErrors.name = t("common.fieldRequired");
+    if (!supplierData.name) newErrors.supplierName = t("common.fieldRequired");
+    if (!formData.quantity) newErrors.quantity = t("common.fieldRequired");
+    if (!formData.projectId) newErrors.projectId = t("common.fieldRequired");
+    setErrors(newErrors);
+    if (Object.keys(newErrors).length > 0) {
+      scrollToFirstError();
       return;
     }
     updateMutation.mutate(formData);
@@ -300,7 +274,11 @@ export default function UpdateMaterial() {
             >
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {/* Material Name */}
-                <FormField label={t("materials.name")} required>
+                <FormField
+                  label={t("materials.name")}
+                  required
+                  error={errors.name}
+                >
                   <div className="relative">
                     <Layers className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 rtl:left-auto rtl:right-3" />
                     <Input
@@ -308,33 +286,45 @@ export default function UpdateMaterial() {
                         t("materials.namePlaceholder") || "e.g. Steel Beams"
                       }
                       value={formData.name}
-                      onChange={(e) =>
+                      onChange={(e) => {
                         setFormData((prev) => ({
                           ...prev,
                           name: e.target.value,
-                        }))
-                      }
+                        }));
+                        if (errors.name)
+                          setErrors((p) => {
+                            const { name, ...r } = p;
+                            return r;
+                          });
+                      }}
                       className="pl-10 rtl:pl-3 rtl:pr-10 h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md"
-                      required
                     />
                   </div>
                 </FormField>
 
                 {/* Quantity */}
-                <FormField label={t("materials.quantity")} required>
+                <FormField
+                  label={t("materials.quantity")}
+                  required
+                  error={errors.quantity}
+                >
                   <div className="relative">
                     <Hash className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 rtl:left-auto rtl:right-3" />
                     <Input
                       type="text"
                       value={formData.quantity}
-                      onChange={(e) =>
+                      onChange={(e) => {
                         setFormData((prev) => ({
                           ...prev,
                           quantity: e.target.value,
-                        }))
-                      }
+                        }));
+                        if (errors.quantity)
+                          setErrors((p) => {
+                            const { quantity, ...r } = p;
+                            return r;
+                          });
+                      }}
                       className="pl-10 rtl:pl-3 rtl:pr-10 h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md"
-                      required
                     />
                   </div>
                 </FormField>
@@ -414,7 +404,11 @@ export default function UpdateMaterial() {
             >
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {/* Supplier Name */}
-                <FormField label={t("materials.supplierName")} required>
+                <FormField
+                  label={t("materials.supplierName")}
+                  required
+                  error={errors.supplierName}
+                >
                   <div className="relative">
                     <Building2 className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 rtl:left-auto rtl:right-3" />
                     <Input
@@ -423,14 +417,18 @@ export default function UpdateMaterial() {
                         "e.g. Al-Rajhi Materials"
                       }
                       value={supplierData.name}
-                      onChange={(e) =>
+                      onChange={(e) => {
                         setSupplierData((prev) => ({
                           ...prev,
                           name: e.target.value,
-                        }))
-                      }
+                        }));
+                        if (errors.supplierName)
+                          setErrors((p) => {
+                            const { supplierName, ...r } = p;
+                            return r;
+                          });
+                      }}
                       className="pl-10 rtl:pl-3 rtl:pr-10 h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md"
-                      required
                     />
                   </div>
                 </FormField>
@@ -613,7 +611,11 @@ export default function UpdateMaterial() {
                 </FormField>
 
                 {/* Linked Project */}
-                <FormField label={t("materials.linkedProject")} required>
+                <FormField
+                  label={t("materials.linkedProject")}
+                  required
+                  error={errors.projectId}
+                >
                   <PaginatedSelect
                     apiEndpoint="/project"
                     queryKey="projects-paginated"
@@ -621,7 +623,12 @@ export default function UpdateMaterial() {
                     initialLabel={projectLabel}
                     onChange={(val) => {
                       setFormData((prev) => ({ ...prev, projectId: val }));
-                      setProjectLabel('');
+                      setProjectLabel("");
+                      if (errors.projectId)
+                        setErrors((p) => {
+                          const { projectId, ...r } = p;
+                          return r;
+                        });
                     }}
                     placeholder={t("materials.linkedProject")}
                     searchPlaceholder={t("common.search")}

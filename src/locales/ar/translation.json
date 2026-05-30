@@ -15,6 +15,7 @@
     "signOut": "تسجيل الخروج",
     "refresh": "تحديث",
     "fillRequiredFields": "يرجى ملء جميع الحقول المطلوبة",
+    "fieldRequired": "هذا الحقل مطلوب",
     "startDateBeforeEndDate": "تاريخ البدء يجب أن يكون قبل تاريخ الانتهاء",
     "startDate": "تاريخ البدء",
     "endDate": "تاريخ الانتهاء",

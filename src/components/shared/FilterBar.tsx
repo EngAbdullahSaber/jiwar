@@ -93,7 +93,7 @@ export function FilterBar({
       )} />
       <Input
         className={cn(
-          "pl-9 h-10 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-md text-sm transition-all rtl:pl-3 rtl:pr-9",
+          "pl-9 h-12 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-md text-sm transition-all rtl:pl-3 rtl:pr-9",
           "placeholder:text-gray-400 dark:placeholder:text-gray-500",
           "hover:border-gray-300 dark:hover:border-gray-600",
           "focus:border-[#B39371] focus:ring-2 focus:ring-[#B39371]/20",
@@ -120,7 +120,7 @@ export function FilterBar({
       onValueChange={(value) => onChange(field.key, value)}
     >
       <SelectTrigger className={cn(
-        "h-10 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-md text-sm transition-all",
+        "h-12 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-md text-sm transition-all",
         "hover:border-gray-300 dark:hover:border-gray-600",
         "focus:border-[#B39371] focus:ring-2 focus:ring-[#B39371]/20",
         values[field.key] && values[field.key] !== 'all' && "border-[#B39371]/50 bg-[#B39371]/5"
@@ -150,7 +150,7 @@ export function FilterBar({
     <DatePicker
       value={values[field.key] || ''}
       onChange={(date) => onChange(field.key, date)}
-      className="h-10 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-md text-sm"
+      className="h-12 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-md text-sm"
     />
   );
 
@@ -162,7 +162,7 @@ export function FilterBar({
         <Input
           type="number"
           placeholder={t('common.min')}
-          className="h-10 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-md text-sm"
+          className="h-12 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-md text-sm"
           value={min || ''}
           onChange={(e) => {
             const newMin = e.target.value;
@@ -174,7 +174,7 @@ export function FilterBar({
         <Input
           type="number"
           placeholder={t('common.max')}
-          className="h-10 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-md text-sm"
+          className="h-12 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-md text-sm"
           value={max || ''}
           onChange={(e) => {
             const newMax = e.target.value;

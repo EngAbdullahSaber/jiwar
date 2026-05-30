@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useLocation } from "wouter";
-import { EyeIcon, EyeOffIcon, LockIcon, UserIcon } from "lucide-react";
+import { EyeIcon, EyeOffIcon, LockIcon, UserIcon, AlertCircle } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { LanguageSwitcher } from "@/components/shared/LanguageSwitcher";
 import toast from "react-hot-toast";
@@ -17,14 +17,16 @@ export const Login = (): JSX.Element => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    if (!email || !password) {
-      toast.error(t("auth.errorEmptyFields"));
-      return;
-    }
+
+    const newErrors: { email?: string; password?: string } = {};
+    if (!email) newErrors.email = t("auth.errorEmptyFields");
+    if (!password) newErrors.password = t("auth.errorEmptyFields");
+    setErrors(newErrors);
+    if (Object.keys(newErrors).length > 0) return;
 
     setIsLoading(true);
     try {
@@ -133,7 +135,7 @@ export const Login = (): JSX.Element => {
 
           <form onSubmit={handleLogin} className="auth-form">
             {/* Email */}
-            <div className="auth-field">
+            <div className="auth-field" {...(errors.email ? { "data-field-error": "true" } : {})}>
               <label htmlFor="email" className="auth-label">
                 {t("auth.email")}
               </label>
@@ -145,15 +147,15 @@ export const Login = (): JSX.Element => {
                   placeholder={t("auth.emailPlaceholder")}
                   className="auth-input"
                   value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  onChange={(e) => { setEmail(e.target.value); if (errors.email) setErrors(p => ({ ...p, email: undefined })); }}
                   disabled={isLoading}
-                  required
                 />
               </div>
+              {errors.email && <p className="auth-error"><AlertCircle />{errors.email}</p>}
             </div>
 
             {/* Password */}
-            <div className="auth-field">
+            <div className="auth-field" {...(errors.password ? { "data-field-error": "true" } : {})}>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                 <label htmlFor="password" className="auth-label">
                   {t("auth.password")}
@@ -174,9 +176,8 @@ export const Login = (): JSX.Element => {
                   placeholder={t("auth.passwordPlaceholder")}
                   className="auth-input auth-input-password"
                   value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  onChange={(e) => { setPassword(e.target.value); if (errors.password) setErrors(p => ({ ...p, password: undefined })); }}
                   disabled={isLoading}
-                  required
                 />
                 <button
                   type="button"
@@ -186,6 +187,7 @@ export const Login = (): JSX.Element => {
                   {showPassword ? <EyeOffIcon /> : <EyeIcon />}
                 </button>
               </div>
+              {errors.password && <p className="auth-error"><AlertCircle />{errors.password}</p>}
             </div>
 
             {/* Submit */}

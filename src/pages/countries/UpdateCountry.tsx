@@ -1,9 +1,8 @@
 import { useState, useEffect } from 'react';
 import { TopHeader } from '../../components/TopHeader';
 import { Link, useLocation, useParams } from "wouter";
-import { 
+import {
   ArrowLeft,
-  AlertCircle,
   Globe,
   Sparkles,
   MapPin,
@@ -12,12 +11,14 @@ import {
 } from 'lucide-react';
 import { Input } from "@/components/ui/input";
 import { FormActions } from '../../components/shared/FormActions';
+import { FormField } from '../../components/shared/FormField';
 import { Shell } from '../../components/shared/Shell';
 import { useMutation, useQueryClient, useQuery } from '@tanstack/react-query';
 import api from '@/lib/api';
 import toast from 'react-hot-toast';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
+import { scrollToFirstError } from '@/lib/utils';
 
 // Form Section Component
 const FormSection = ({ icon: Icon, title, description, children, delay = 0 }: any) => (
@@ -47,22 +48,6 @@ const FormSection = ({ icon: Icon, title, description, children, delay = 0 }: an
   </motion.div>
 );
 
-// Form Field Component
-const FormField = ({ label, required = false, children, error }: any) => (
-  <div className="space-y-2">
-    <label className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider block">
-      {label} {required && <span className="text-[#B39371]">*</span>}
-    </label>
-    {children}
-    {error && (
-      <p className="text-xs text-red-500 dark:text-red-400 font-medium flex items-center gap-1">
-        <AlertCircle className="w-3.5 h-3.5" />
-        {error}
-      </p>
-    )}
-  </div>
-);
-
 export default function UpdateCountry() {
   const { t } = useTranslation();
   const { id } = useParams();
@@ -74,6 +59,7 @@ export default function UpdateCountry() {
       english: ""
     }
   });
+  const [errors, setErrors] = useState<Record<string, string>>({});
 
   const { data: countryData, isLoading: isFetching } = useQuery({
     queryKey: ['country', id],
@@ -119,13 +105,11 @@ export default function UpdateCountry() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formData.name.arabic || !formData.name.english) {
-      toast.error(t('common.fillRequiredFields'), { 
-        icon: '⚠️',
-        style: { borderRadius: '1rem', background: '#ef4444', color: '#fff' } 
-      });
-      return;
-    }
+    const newErrors: Record<string, string> = {};
+    if (!formData.name.english) newErrors.nameEn = t('common.fieldRequired');
+    if (!formData.name.arabic) newErrors.nameAr = t('common.fieldRequired');
+    setErrors(newErrors);
+    if (Object.keys(newErrors).length > 0) { scrollToFirstError(); return; }
     updateMutation.mutate(formData);
   };
 
@@ -190,36 +174,28 @@ export default function UpdateCountry() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 
                 {/* English Name */}
-                <FormField label={t('countries.nameEn')} required>
+                <FormField label={t('countries.nameEn')} required error={errors.nameEn}>
                   <div className="relative">
                     <Type className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-                    <Input 
+                    <Input
                       placeholder={t('countries.nameEnPlaceholder')}
                       value={formData.name.english}
-                      onChange={(e) => setFormData({ 
-                        ...formData, 
-                        name: { ...formData.name, english: e.target.value } 
-                      })}
+                      onChange={(e) => { setFormData({ ...formData, name: { ...formData.name, english: e.target.value } }); if (errors.nameEn) setErrors(p => { const { nameEn, ...r } = p; return r; }); }}
                       className="pl-10 h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md"
-                      required
                     />
                   </div>
                 </FormField>
 
                 {/* Arabic Name */}
-                <FormField label={t('countries.nameAr')} required>
+                <FormField label={t('countries.nameAr')} required error={errors.nameAr}>
                   <div className="relative">
                     <Type className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-                    <Input 
+                    <Input
                       placeholder={t('countries.nameArPlaceholder')}
                       value={formData.name.arabic}
-                      onChange={(e) => setFormData({ 
-                        ...formData, 
-                        name: { ...formData.name, arabic: e.target.value } 
-                      })}
+                      onChange={(e) => { setFormData({ ...formData, name: { ...formData.name, arabic: e.target.value } }); if (errors.nameAr) setErrors(p => { const { nameAr, ...r } = p; return r; }); }}
                       className="pr-10 h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md text-right"
                       dir="rtl"
-                      required
                     />
                   </div>
                 </FormField>

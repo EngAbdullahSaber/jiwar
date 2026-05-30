@@ -602,6 +602,29 @@
     font-size: 1.5rem;
   }
 }
+/* Inline validation error */
+.auth-error {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #ef4444;
+  margin-top: 2px;
+  animation: fadeIn 0.2s ease;
+}
+
+.auth-error svg {
+  width: 13px;
+  height: 13px;
+  flex-shrink: 0;
+}
+
+.auth-field[data-field-error="true"] .auth-input {
+  border-color: #ef4444 !important;
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1) !important;
+}
+
 /* Password input special padding (icon + eye button) */
 .auth-input-password {
   padding-right: 48px !important;

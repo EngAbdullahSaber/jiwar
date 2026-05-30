@@ -5,7 +5,6 @@ import { Link, useLocation, useRoute } from "wouter";
 import {
   Building,
   ArrowLeft,
-  AlertCircle,
   Sparkles,
   FileText,
   Ruler,
@@ -32,9 +31,10 @@ import { Shell } from '../../components/shared/Shell';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import api from '@/lib/api';
 import toast from 'react-hot-toast';
-import { cn } from '@/lib/utils';
+import { cn, scrollToFirstError } from '@/lib/utils';
 import { motion } from 'framer-motion';
 import DatePicker from '../../components/shared/DatePicker';
+import { FormField } from '../../components/shared/FormField';
 
 // Form Section Component
 const FormSection = ({ icon: Icon, title, description, children, delay = 0 }: any) => (
@@ -62,25 +62,6 @@ const FormSection = ({ icon: Icon, title, description, children, delay = 0 }: an
       {children}
     </div>
   </motion.div>
-);
-
-// Form Field Component
-const FormField = ({ label, required = false, children, error, description }: any) => (
-  <div className="space-y-2">
-    <div className="flex flex-col gap-1">
-      <Label className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-        {label} {required && <span className="text-[#B39371]">*</span>}
-      </Label>
-      {description && <span className="text-xs text-gray-400">{description}</span>}
-    </div>
-    {children}
-    {error && (
-      <p className="text-xs text-red-500 dark:text-red-400 font-medium flex items-center gap-1">
-        <AlertCircle className="w-3.5 h-3.5" />
-        {error}
-      </p>
-    )}
-  </div>
 );
 
 // Label Component
@@ -122,6 +103,8 @@ export default function UpdateApartment() {
     apartmentSubDivisionPdfUrl: "",
     files: [] as Array<{ title: string; url: string }>
   });
+
+  const [errors, setErrors] = useState<Record<string, string>>({});
 
   const addFile = () =>
     setFormData(prev => ({ ...prev, files: [...prev.files, { title: '', url: '' }] }));
@@ -205,11 +188,14 @@ export default function UpdateApartment() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formData.mainName.english || !formData.mainName.arabic || !formData.projectId || !formData.templateId) {
-      toast.error(t('apartments.errors.fillRequired'), { 
-        icon: '⚠️',
-        style: { borderRadius: '1rem', background: '#ef4444', color: '#fff' } 
-      });
+    const newErrors: Record<string, string> = {};
+    if (!formData.mainName.english) newErrors.mainNameEn = t('common.fieldRequired');
+    if (!formData.mainName.arabic) newErrors.mainNameAr = t('common.fieldRequired');
+    if (!formData.projectId) newErrors.projectId = t('common.fieldRequired');
+    if (!formData.templateId) newErrors.templateId = t('common.fieldRequired');
+    setErrors(newErrors);
+    if (Object.keys(newErrors).length > 0) {
+      scrollToFirstError();
       return;
     }
     updateMutation.mutate(formData);
@@ -276,24 +262,28 @@ export default function UpdateApartment() {
             >
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 
-                <FormField label={t('apartments.labels.majorNameEn')} required>
-                  <Input 
+                <FormField label={t('apartments.labels.majorNameEn')} required error={errors.mainNameEn}>
+                  <Input
                     placeholder={t('apartments.placeholders.majorNameEn')}
                     value={formData.mainName.english}
-                    onChange={(e) => setFormData({ ...formData, mainName: { ...formData.mainName, english: e.target.value } })}
+                    onChange={(e) => {
+                      setFormData({ ...formData, mainName: { ...formData.mainName, english: e.target.value } });
+                      if (errors.mainNameEn) setErrors(p => { const { mainNameEn, ...r } = p; return r; });
+                    }}
                     className="h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md"
-                    required
-                  />
+                   />
                 </FormField>
-                <FormField label={t('apartments.labels.majorNameAr')} required>
-                  <Input 
+                <FormField label={t('apartments.labels.majorNameAr')} required error={errors.mainNameAr}>
+                  <Input
                     dir="rtl"
                     placeholder={t('apartments.placeholders.majorNameAr')}
                     value={formData.mainName.arabic}
-                    onChange={(e) => setFormData({ ...formData, mainName: { ...formData.mainName, arabic: e.target.value } })}
+                    onChange={(e) => {
+                      setFormData({ ...formData, mainName: { ...formData.mainName, arabic: e.target.value } });
+                      if (errors.mainNameAr) setErrors(p => { const { mainNameAr, ...r } = p; return r; });
+                    }}
                     className="h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md text-right"
-                    required
-                  />
+                   />
                 </FormField>
                 
                 <FormField label={t('apartments.labels.secondaryNameEn')}>
@@ -407,12 +397,15 @@ export default function UpdateApartment() {
                   </Select>
                 </FormField>
  
-                <FormField label={t('apartments.labels.linkedProject')} required>
+                <FormField label={t('apartments.labels.linkedProject')} required error={errors.projectId}>
                   <PaginatedSelect
                     apiEndpoint="/project"
                     queryKey="projects-paginated"
                     value={formData.projectId.toString()}
-                    onChange={(val) => setFormData({ ...formData, projectId: val })}
+                    onChange={(val) => {
+                      setFormData({ ...formData, projectId: val });
+                      if (errors.projectId) setErrors(p => { const { projectId, ...r } = p; return r; });
+                    }}
                     placeholder={t('apartments.placeholders.selectProject')}
                     searchPlaceholder={t('apartments.placeholders.searchProject')}
                     initialLabel={apartmentResponse?.data?.project ? (i18n.language === 'ar' ? apartmentResponse.data.project.name.arabic : apartmentResponse.data.project.name.english) : ''}
@@ -426,12 +419,15 @@ export default function UpdateApartment() {
                   />
                 </FormField>
  
-                <FormField label={t('apartments.labels.linkedTemplate')} required>
+                <FormField label={t('apartments.labels.linkedTemplate')} required error={errors.templateId}>
                   <PaginatedSelect
                     apiEndpoint="/template"
                     queryKey="templates-paginated"
                     value={formData.templateId.toString()}
-                    onChange={(val) => setFormData({ ...formData, templateId: val })}
+                    onChange={(val) => {
+                      setFormData({ ...formData, templateId: val });
+                      if (errors.templateId) setErrors(p => { const { templateId, ...r } = p; return r; });
+                    }}
                     placeholder={t('apartments.placeholders.selectTemplate')}
                     searchPlaceholder={t('apartments.placeholders.searchTemplate')}
                     initialLabel={apartmentResponse?.data?.template ? (i18n.language === 'ar' ? apartmentResponse.data.template.name.arabic : apartmentResponse.data.template.name.english) : ''}

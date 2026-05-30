@@ -1,11 +1,10 @@
-import { useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { TopHeader } from '../../components/TopHeader';
+import { useState } from "react";
+import { useTranslation } from "react-i18next";
+import { TopHeader } from "../../components/TopHeader";
 import { Link, useLocation } from "wouter";
 import {
   Building,
   ArrowLeft,
-  AlertCircle,
   Sparkles,
   FileText,
   Ruler,
@@ -13,8 +12,8 @@ import {
   Link as LinkIcon,
   Plus,
   X,
-  Image
-} from 'lucide-react';
+  Image,
+} from "lucide-react";
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -24,20 +23,27 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
-import { PaginatedSelect } from '../../components/shared/PaginatedSelect';
-import { FileUpload } from '../../components/shared/FileUpload';
-import { FormActions } from '../../components/shared/FormActions';
+import { PaginatedSelect } from "../../components/shared/PaginatedSelect";
+import { FileUpload } from "../../components/shared/FileUpload";
+import { FormActions } from "../../components/shared/FormActions";
 
-import { Shell } from '../../components/shared/Shell';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import api from '@/lib/api';
-import toast from 'react-hot-toast';
-import { cn } from '@/lib/utils';
-import { motion } from 'framer-motion';
-import DatePicker from '../../components/shared/DatePicker';
+import { Shell } from "../../components/shared/Shell";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import api from "@/lib/api";
+import toast from "react-hot-toast";
+import { cn, scrollToFirstError } from "@/lib/utils";
+import { motion } from "framer-motion";
+import DatePicker from "../../components/shared/DatePicker";
+import { FormField } from "../../components/shared/FormField";
 
 // Form Section Component
-const FormSection = ({ icon: Icon, title, description, children, delay = 0 }: any) => (
+const FormSection = ({
+  icon: Icon,
+  title,
+  description,
+  children,
+  delay = 0,
+}: any) => (
   <motion.div
     initial={{ opacity: 0, y: 20 }}
     animate={{ opacity: 1, y: 0 }}
@@ -53,39 +59,28 @@ const FormSection = ({ icon: Icon, title, description, children, delay = 0 }: an
           </div>
         </div>
         <div>
-          <h2 className="text-lg font-semibold text-gray-900 dark:text-white">{title}</h2>
-          <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">{description}</p>
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
+            {title}
+          </h2>
+          <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">
+            {description}
+          </p>
         </div>
       </div>
     </div>
-    <div className="p-6">
-      {children}
-    </div>
+    <div className="p-6">{children}</div>
   </motion.div>
-);
-
-// Form Field Component
-const FormField = ({ label, required = false, children, error, description, id }: any) => (
-  <div id={id} className="space-y-2">
-    <div className="flex flex-col gap-1">
-      <Label className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-        {label} {required && <span className="text-[#B39371]">*</span>}
-      </Label>
-      {description && <span className="text-xs text-gray-400">{description}</span>}
-    </div>
-    {children}
-    {error && (
-      <p className="text-xs text-red-500 dark:text-red-400 font-medium flex items-center gap-1">
-        <AlertCircle className="w-3.5 h-3.5" />
-        {error}
-      </p>
-    )}
-  </div>
 );
 
 // Label Component
 const Label = ({ children, className, ...props }: any) => (
-  <label className={cn("text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70", className)} {...props}>
+  <label
+    className={cn(
+      "text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70",
+      className,
+    )}
+    {...props}
+  >
     {children}
   </label>
 );
@@ -117,17 +112,27 @@ export default function CreateApartment() {
     projectSakPdfUrl: "",
     apartmentSakPdfUrl: "",
     apartmentSubDivisionPdfUrl: "",
-    files: [] as Array<{ title: string; url: string }>
+    files: [] as Array<{ title: string; url: string }>,
   });
 
+  const [errors, setErrors] = useState<Record<string, string>>({});
+
   const addFile = () =>
-    setFormData(prev => ({ ...prev, files: [...prev.files, { title: '', url: '' }] }));
-  const removeFile = (idx: number) =>
-    setFormData(prev => ({ ...prev, files: prev.files.filter((_, i) => i !== idx) }));
-  const updateFile = (idx: number, field: 'title' | 'url', value: string) =>
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      files: prev.files.map((f, i) => i === idx ? { ...f, [field]: value } : f)
+      files: [...prev.files, { title: "", url: "" }],
+    }));
+  const removeFile = (idx: number) =>
+    setFormData((prev) => ({
+      ...prev,
+      files: prev.files.filter((_, i) => i !== idx),
+    }));
+  const updateFile = (idx: number, field: "title" | "url", value: string) =>
+    setFormData((prev) => ({
+      ...prev,
+      files: prev.files.map((f, i) =>
+        i === idx ? { ...f, [field]: value } : f,
+      ),
     }));
 
   const createMutation = useMutation({
@@ -137,34 +142,42 @@ export default function CreateApartment() {
         floorNumber: Number(data.floorNumber),
         projectId: Number(data.projectId),
         templateId: Number(data.templateId),
-        meterNumber: Number(data.meterNumber) || 0
+        meterNumber: Number(data.meterNumber) || 0,
       };
-      const response = await api.post('/apartment', payload);
+      const response = await api.post("/apartment", payload);
       return response.data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['apartments'] });
-      toast.success(t('apartments.success.create'), {
-        icon: '🎉',
-        style: { borderRadius: '1rem', background: '#10b981', color: '#fff' }
+      queryClient.invalidateQueries({ queryKey: ["apartments"] });
+      toast.success(t("apartments.success.create"), {
+        icon: "🎉",
+        style: { borderRadius: "1rem", background: "#10b981", color: "#fff" },
       });
-      setLocation('/apartments');
+      setLocation("/apartments");
     },
     onError: (error: any) => {
-      toast.error(error.response?.data?.message || t('apartments.errors.create'), {
-        icon: '❌',
-        style: { borderRadius: '1rem', background: '#ef4444', color: '#fff' }
-      });
-    }
+      toast.error(
+        error.response?.data?.message || t("apartments.errors.create"),
+        {
+          icon: "❌",
+          style: { borderRadius: "1rem", background: "#ef4444", color: "#fff" },
+        },
+      );
+    },
   });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formData.mainName.english || !formData.mainName.arabic || !formData.projectId || !formData.templateId) {
-      toast.error(t('apartments.errors.fillRequired'), { 
-        icon: '⚠️',
-        style: { borderRadius: '1rem', background: '#ef4444', color: '#fff' } 
-      });
+    const newErrors: Record<string, string> = {};
+    if (!formData.mainName.english)
+      newErrors.mainNameEn = t("common.fieldRequired");
+    if (!formData.mainName.arabic)
+      newErrors.mainNameAr = t("common.fieldRequired");
+    if (!formData.projectId) newErrors.projectId = t("common.fieldRequired");
+    if (!formData.templateId) newErrors.templateId = t("common.fieldRequired");
+    setErrors(newErrors);
+    if (Object.keys(newErrors).length > 0) {
+      scrollToFirstError();
       return;
     }
     createMutation.mutate(formData);
@@ -173,15 +186,14 @@ export default function CreateApartment() {
   return (
     <Shell>
       <TopHeader />
-      
+
       <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-50 dark:from-gray-950 dark:via-gray-900 dark:to-gray-950">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8 pb-32">
-          
           {/* Header Section */}
           <div className="bg-white dark:bg-gray-900 rounded-md border border-gray-200 dark:border-gray-800 p-6 shadow-sm">
             <div className="flex items-center gap-4">
-              <Link 
-                href="/apartments" 
+              <Link
+                href="/apartments"
                 className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-md transition-colors"
               >
                 <ArrowLeft className="w-5 h-5 text-gray-500" />
@@ -196,91 +208,151 @@ export default function CreateApartment() {
                 <div className="flex items-center gap-2 mb-1">
                   <Sparkles className="w-4 h-4 text-[#B39371]" />
                   <p className="text-xs font-medium text-[#B39371] uppercase tracking-wider">
-                    {t('apartments.create')}
+                    {t("apartments.create")}
                   </p>
                 </div>
                 <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-                  {t('apartments.new')}
+                  {t("apartments.new")}
                 </h1>
                 <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                  {t('apartments.description')}
+                  {t("apartments.description")}
                 </p>
               </div>
             </div>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-6">
-            
             {/* Identification Section */}
-            <FormSection 
+            <FormSection
               icon={FileText}
-              title={t('apartments.sections.identification')}
-              description={t('apartments.sections.identificationDesc')}
+              title={t("apartments.sections.identification")}
+              description={t("apartments.sections.identificationDesc")}
               delay={0.1}
             >
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                
-                <FormField label={t('apartments.labels.majorNameEn')} required>
-                  <Input 
-                    placeholder={t('apartments.placeholders.majorNameEn')}
+                <FormField
+                  label={t("apartments.labels.majorNameEn")}
+                  required
+                  error={errors.mainNameEn}
+                >
+                  <Input
+                    placeholder={t("apartments.placeholders.majorNameEn")}
                     value={formData.mainName.english}
-                    onChange={(e) => setFormData({ ...formData, mainName: { ...formData.mainName, english: e.target.value } })}
+                    onChange={(e) => {
+                      setFormData({
+                        ...formData,
+                        mainName: {
+                          ...formData.mainName,
+                          english: e.target.value,
+                        },
+                      });
+                      if (errors.mainNameEn)
+                        setErrors((p) => {
+                          const { mainNameEn, ...r } = p;
+                          return r;
+                        });
+                    }}
                     className="h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md"
-                    required
                   />
                 </FormField>
-                <FormField label={t('apartments.labels.majorNameAr')} required>
-                  <Input 
+                <FormField
+                  label={t("apartments.labels.majorNameAr")}
+                  required
+                  error={errors.mainNameAr}
+                >
+                  <Input
                     dir="rtl"
-                    placeholder={t('apartments.placeholders.majorNameAr')}
+                    placeholder={t("apartments.placeholders.majorNameAr")}
                     value={formData.mainName.arabic}
-                    onChange={(e) => setFormData({ ...formData, mainName: { ...formData.mainName, arabic: e.target.value } })}
+                    onChange={(e) => {
+                      setFormData({
+                        ...formData,
+                        mainName: {
+                          ...formData.mainName,
+                          arabic: e.target.value,
+                        },
+                      });
+                      if (errors.mainNameAr)
+                        setErrors((p) => {
+                          const { mainNameAr, ...r } = p;
+                          return r;
+                        });
+                    }}
                     className="h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md text-right"
-                    required
                   />
                 </FormField>
-                
-                <FormField label={t('apartments.labels.secondaryNameEn')}>
-                  <Input 
-                    placeholder={t('apartments.placeholders.secondaryNameEn')}
+
+                <FormField label={t("apartments.labels.secondaryNameEn")}>
+                  <Input
+                    placeholder={t("apartments.placeholders.secondaryNameEn")}
                     value={formData.secondaryName.english}
-                    onChange={(e) => setFormData({ ...formData, secondaryName: { ...formData.secondaryName, english: e.target.value } })}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        secondaryName: {
+                          ...formData.secondaryName,
+                          english: e.target.value,
+                        },
+                      })
+                    }
                     className="h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md"
                   />
                 </FormField>
-                <FormField label={t('apartments.labels.secondaryNameAr')}>
-                  <Input 
+                <FormField label={t("apartments.labels.secondaryNameAr")}>
+                  <Input
                     dir="rtl"
-                    placeholder={t('apartments.placeholders.secondaryNameAr')}
+                    placeholder={t("apartments.placeholders.secondaryNameAr")}
                     value={formData.secondaryName.arabic}
-                    onChange={(e) => setFormData({ ...formData, secondaryName: { ...formData.secondaryName, arabic: e.target.value } })}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        secondaryName: {
+                          ...formData.secondaryName,
+                          arabic: e.target.value,
+                        },
+                      })
+                    }
                     className="h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md text-right"
                   />
                 </FormField>
 
-                <FormField label={t('apartments.labels.serialNumber')}>
-                  <Input 
-                    placeholder={t('apartments.placeholders.serialNumber')}
+                <FormField label={t("apartments.labels.serialNumber")}>
+                  <Input
+                    placeholder={t("apartments.placeholders.serialNumber")}
                     value={formData.serialNumber}
-                    onChange={(e) => setFormData({ ...formData, serialNumber: e.target.value })}
+                    onChange={(e) =>
+                      setFormData({ ...formData, serialNumber: e.target.value })
+                    }
                     className="h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md"
                   />
                 </FormField>
 
-                 <FormField label={t('apartments.labels.accountNumber')}>
-                  <Input 
-                    placeholder={t('apartments.placeholders.accountNumber')}
+                <FormField label={t("apartments.labels.accountNumber")}>
+                  <Input
+                    placeholder={t("apartments.placeholders.accountNumber")}
                     value={formData.accountNumber}
-                    onChange={(e) => setFormData({ ...formData, accountNumber: e.target.value })}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        accountNumber: e.target.value,
+                      })
+                    }
                     className="h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md"
                   />
                 </FormField>
-                
-                 <FormField label={t('apartments.labels.subscriptionNumber')}>
-                  <Input 
-                    placeholder={t('apartments.placeholders.subscriptionNumber')}
+
+                <FormField label={t("apartments.labels.subscriptionNumber")}>
+                  <Input
+                    placeholder={t(
+                      "apartments.placeholders.subscriptionNumber",
+                    )}
                     value={formData.subscriptionNumber}
-                    onChange={(e) => setFormData({ ...formData, subscriptionNumber: e.target.value })}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        subscriptionNumber: e.target.value,
+                      })
+                    }
                     className="h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md"
                   />
                 </FormField>
@@ -288,190 +360,288 @@ export default function CreateApartment() {
             </FormSection>
 
             {/* Structure & Mapping Section */}
-            <FormSection 
+            <FormSection
               icon={Ruler}
-              title={t('apartments.sections.locational')}
-              description={t('apartments.sections.locationalDesc')}
+              title={t("apartments.sections.locational")}
+              description={t("apartments.sections.locationalDesc")}
               delay={0.2}
             >
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                
-                <FormField label={t('apartments.labels.buildingOrBlock')}>
-                  <Input 
-                    placeholder={t('apartments.placeholders.building')}
+                <FormField label={t("apartments.labels.buildingOrBlock")}>
+                  <Input
+                    placeholder={t("apartments.placeholders.building")}
                     value={formData.buildingOrBlock}
-                    onChange={(e) => setFormData({ ...formData, buildingOrBlock: e.target.value })}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        buildingOrBlock: e.target.value,
+                      })
+                    }
                     className="h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md"
                   />
                 </FormField>
 
-                <FormField label={t('apartments.labels.floorNo')}>
-                  <Input 
+                <FormField label={t("apartments.labels.floorNo")}>
+                  <Input
                     type="number"
-                    placeholder={t('apartments.placeholders.floor')}
+                    placeholder={t("apartments.placeholders.floor")}
                     value={formData.floorNumber}
-                    onChange={(e) => setFormData({ ...formData, floorNumber: Number(e.target.value) })}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        floorNumber: Number(e.target.value),
+                      })
+                    }
                     className="h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md"
                   />
                 </FormField>
 
-                <FormField label={t('apartments.labels.size')}>
-                  <Input 
+                <FormField label={t("apartments.labels.size")}>
+                  <Input
                     type="number"
-                    placeholder={t('apartments.placeholders.size')}
+                    placeholder={t("apartments.placeholders.size")}
                     value={formData.size}
-                    onChange={(e) => setFormData({ ...formData, size: e.target.value })}
+                    onChange={(e) =>
+                      setFormData({ ...formData, size: e.target.value })
+                    }
                     className="h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md"
                   />
                 </FormField>
-                
-                <FormField label={t('apartments.labels.meterNumber')}>
-                  <Input 
+
+                <FormField label={t("apartments.labels.meterNumber")}>
+                  <Input
                     type="number"
                     step="any"
-                    placeholder={t('apartments.placeholders.meter')}
+                    placeholder={t("apartments.placeholders.meter")}
                     value={formData.meterNumber}
-                    onChange={(e) => setFormData({ ...formData, meterNumber: e.target.value })}
+                    onChange={(e) =>
+                      setFormData({ ...formData, meterNumber: e.target.value })
+                    }
                     className="h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md"
                   />
                 </FormField>
 
-                <FormField label={t('apartments.labels.streetCount')}>
-                  <Select 
-                    value={formData.streetCount} 
-                    onValueChange={(val) => setFormData({ ...formData, streetCount: val })}
+                <FormField label={t("apartments.labels.streetCount")}>
+                  <Select
+                    value={formData.streetCount}
+                    onValueChange={(val) =>
+                      setFormData({ ...formData, streetCount: val })
+                    }
                   >
                     <SelectTrigger className="h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md">
-                      <SelectValue placeholder={t('apartments.placeholders.selectType')} />
+                      <SelectValue
+                        placeholder={t("apartments.placeholders.selectType")}
+                      />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="ONE_STREET">{t('apartments.streetCounts.ONE_STREET')}</SelectItem>
-                      <SelectItem value="TWO_STREET">{t('apartments.streetCounts.TWO_STREET')}</SelectItem>
+                      <SelectItem value="ONE_STREET">
+                        {t("apartments.streetCounts.ONE_STREET")}
+                      </SelectItem>
+                      <SelectItem value="TWO_STREET">
+                        {t("apartments.streetCounts.TWO_STREET")}
+                      </SelectItem>
                     </SelectContent>
                   </Select>
                 </FormField>
 
-                <FormField label={t('apartments.labels.linkedProject')} required>
+                <FormField
+                  label={t("apartments.labels.linkedProject")}
+                  required
+                  error={errors.projectId}
+                >
                   <PaginatedSelect
                     apiEndpoint="/project"
                     queryKey="projects-paginated"
                     value={formData.projectId.toString()}
-                    onChange={(val) => setFormData({ ...formData, projectId: val })}
-                    placeholder={t('apartments.placeholders.selectProject')}
-                    searchPlaceholder={t('apartments.placeholders.searchProject')}
+                    onChange={(val) => {
+                      setFormData({ ...formData, projectId: val });
+                      if (errors.projectId)
+                        setErrors((p) => {
+                          const { projectId, ...r } = p;
+                          return r;
+                        });
+                    }}
+                    placeholder={t("apartments.placeholders.selectProject")}
+                    searchPlaceholder={t(
+                      "apartments.placeholders.searchProject",
+                    )}
                     mapResponseToOptions={(pageData) => {
                       const data = pageData.data || [];
                       return data.map((project: any) => ({
                         value: project.id,
-                        label: i18n.language === 'ar' ? (project.name?.arabic || project.name?.english) : (project.name?.english || project.name?.arabic) || `Project #${project.id}`,
+                        label:
+                          i18n.language === "ar"
+                            ? project.name?.arabic || project.name?.english
+                            : project.name?.english ||
+                              project.name?.arabic ||
+                              `Project #${project.id}`,
                       }));
                     }}
                   />
                 </FormField>
 
-                <FormField label={t('apartments.labels.linkedTemplate')} required>
+                <FormField
+                  label={t("apartments.labels.linkedTemplate")}
+                  required
+                  error={errors.templateId}
+                >
                   <PaginatedSelect
                     apiEndpoint="/template"
                     queryKey="templates-paginated"
                     value={formData.templateId.toString()}
-                    onChange={(val) => setFormData({ ...formData, templateId: val })}
-                    placeholder={t('apartments.placeholders.selectTemplate')}
-                    searchPlaceholder={t('apartments.placeholders.searchTemplate')}
+                    onChange={(val) => {
+                      setFormData({ ...formData, templateId: val });
+                      if (errors.templateId)
+                        setErrors((p) => {
+                          const { templateId, ...r } = p;
+                          return r;
+                        });
+                    }}
+                    placeholder={t("apartments.placeholders.selectTemplate")}
+                    searchPlaceholder={t(
+                      "apartments.placeholders.searchTemplate",
+                    )}
                     mapResponseToOptions={(pageData) => {
                       const data = pageData.data || [];
                       return data.map((template: any) => ({
                         value: template.id,
-                        label: i18n.language === 'ar' ? (template.name?.arabic || template.name?.english) : (template.name?.english || template.name?.arabic) || `Template #${template.id}`,
+                        label:
+                          i18n.language === "ar"
+                            ? template.name?.arabic || template.name?.english
+                            : template.name?.english ||
+                              template.name?.arabic ||
+                              `Template #${template.id}`,
                       }));
                     }}
                   />
                 </FormField>
-
               </div>
             </FormSection>
 
             {/* Financial & Status Section */}
-            <FormSection 
+            <FormSection
               icon={Tags}
-              title={t('apartments.sections.economics')}
-              description={t('apartments.sections.economicsDesc')}
+              title={t("apartments.sections.economics")}
+              description={t("apartments.sections.economicsDesc")}
               delay={0.3}
             >
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-
-                <FormField label={t('apartments.labels.basePrice')}>
-                  <Input 
+                <FormField label={t("apartments.labels.basePrice")}>
+                  <Input
                     type="number"
                     step="any"
-                    placeholder={t('apartments.placeholders.basePrice')}
+                    placeholder={t("apartments.placeholders.basePrice")}
                     value={formData.basePrice}
-                    onChange={(e) => setFormData({ ...formData, basePrice: e.target.value })}
+                    onChange={(e) =>
+                      setFormData({ ...formData, basePrice: e.target.value })
+                    }
                     className="h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md"
                   />
                 </FormField>
 
-                <FormField label={t('apartments.labels.apartmentType')}>
-                  <Select 
-                    value={formData.apartmentType} 
-                    onValueChange={(val) => setFormData({ ...formData, apartmentType: val })}
+                <FormField label={t("apartments.labels.apartmentType")}>
+                  <Select
+                    value={formData.apartmentType}
+                    onValueChange={(val) =>
+                      setFormData({ ...formData, apartmentType: val })
+                    }
                   >
                     <SelectTrigger className="h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md">
-                      <SelectValue placeholder={t('apartments.placeholders.selectType')} />
+                      <SelectValue
+                        placeholder={t("apartments.placeholders.selectType")}
+                      />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="residential">{t('apartments.types.residential')}</SelectItem>
-                      <SelectItem value="commercial">{t('apartments.types.commercial')}</SelectItem>
-                      <SelectItem value="penthouse">{t('apartments.types.penthouse')}</SelectItem>
-                      <SelectItem value="duplex">{t('apartments.types.duplex')}</SelectItem>
-                      <SelectItem value="studio">{t('apartments.types.studio')}</SelectItem>
+                      <SelectItem value="residential">
+                        {t("apartments.types.residential")}
+                      </SelectItem>
+                      <SelectItem value="commercial">
+                        {t("apartments.types.commercial")}
+                      </SelectItem>
+                      <SelectItem value="penthouse">
+                        {t("apartments.types.penthouse")}
+                      </SelectItem>
+                      <SelectItem value="duplex">
+                        {t("apartments.types.duplex")}
+                      </SelectItem>
+                      <SelectItem value="studio">
+                        {t("apartments.types.studio")}
+                      </SelectItem>
                     </SelectContent>
                   </Select>
                 </FormField>
 
-                <FormField label={t('apartments.labels.ownerStatus')}>
-                  <Select 
-                    value={formData.ownerStatus} 
-                    onValueChange={(val) => setFormData({ ...formData, ownerStatus: val })}
+                <FormField label={t("apartments.labels.ownerStatus")}>
+                  <Select
+                    value={formData.ownerStatus}
+                    onValueChange={(val) =>
+                      setFormData({ ...formData, ownerStatus: val })
+                    }
                   >
                     <SelectTrigger className="h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md">
-                      <SelectValue placeholder={t('apartments.placeholders.selectStatus')} />
+                      <SelectValue
+                        placeholder={t("apartments.placeholders.selectStatus")}
+                      />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="owned">{t('apartments.owners.owned')}</SelectItem>
-                      <SelectItem value="rented">{t('apartments.owners.rented')}</SelectItem>
-                      <SelectItem value="company_owned">{t('apartments.owners.company_owned')}</SelectItem>
+                      <SelectItem value="owned">
+                        {t("apartments.owners.owned")}
+                      </SelectItem>
+                      <SelectItem value="rented">
+                        {t("apartments.owners.rented")}
+                      </SelectItem>
+                      <SelectItem value="company_owned">
+                        {t("apartments.owners.company_owned")}
+                      </SelectItem>
                     </SelectContent>
                   </Select>
                 </FormField>
 
-                <FormField label={t('apartments.labels.status')}>
-                   <Select 
-                    value={formData.status} 
-                    onValueChange={(val) => setFormData({ ...formData, status: val })}
+                <FormField label={t("apartments.labels.status")}>
+                  <Select
+                    value={formData.status}
+                    onValueChange={(val) =>
+                      setFormData({ ...formData, status: val })
+                    }
                   >
                     <SelectTrigger className="h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md">
-                      <SelectValue placeholder={t('apartments.placeholders.selectOverallStatus')} />
+                      <SelectValue
+                        placeholder={t(
+                          "apartments.placeholders.selectOverallStatus",
+                        )}
+                      />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="active">{t('apartments.statuses.active')}</SelectItem>
-                      <SelectItem value="inactive">{t('apartments.statuses.inactive')}</SelectItem>
+                      <SelectItem value="active">
+                        {t("apartments.statuses.active")}
+                      </SelectItem>
+                      <SelectItem value="inactive">
+                        {t("apartments.statuses.inactive")}
+                      </SelectItem>
                     </SelectContent>
                   </Select>
                 </FormField>
 
-                <FormField label={t('apartments.labels.requestDate')}>
-                  <DatePicker 
+                <FormField label={t("apartments.labels.requestDate")}>
+                  <DatePicker
                     value={formData.requestDate}
-                    onChange={(date) => setFormData({ ...formData, requestDate: date })}
+                    onChange={(date) =>
+                      setFormData({ ...formData, requestDate: date })
+                    }
                     className="h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md"
                   />
                 </FormField>
-                
-                <FormField label={t('apartments.labels.requestNumber')}>
-                  <Input 
-                    placeholder={t('apartments.placeholders.requestNumber')}
+
+                <FormField label={t("apartments.labels.requestNumber")}>
+                  <Input
+                    placeholder={t("apartments.placeholders.requestNumber")}
                     value={formData.requestNumber}
-                    onChange={(e) => setFormData({ ...formData, requestNumber: e.target.value })}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        requestNumber: e.target.value,
+                      })
+                    }
                     className="h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md"
                   />
                 </FormField>
@@ -479,53 +649,65 @@ export default function CreateApartment() {
                 <div className="flex items-center gap-4 py-4 px-4 bg-gray-50 dark:bg-gray-800/50 rounded-md border border-gray-100 dark:border-gray-800 md:col-span-2">
                   <div className="flex-1">
                     <Label className="text-sm font-semibold text-gray-900 dark:text-white mb-1 block">
-                      {t('apartments.labels.isAvailable')}
+                      {t("apartments.labels.isAvailable")}
                     </Label>
-                    <span className="text-xs text-gray-500">{t('apartments.labels.isAvailableDesc')}</span>
+                    <span className="text-xs text-gray-500">
+                      {t("apartments.labels.isAvailableDesc")}
+                    </span>
                   </div>
-                  <Switch 
+                  <Switch
                     checked={formData.isAvailable}
-                    onCheckedChange={(val) => setFormData({ ...formData, isAvailable: val })}
+                    onCheckedChange={(val) =>
+                      setFormData({ ...formData, isAvailable: val })
+                    }
                     className="data-[state=checked]:bg-[#B39371]"
                   />
                 </div>
-
               </div>
             </FormSection>
 
             {/* Sak Images */}
             <FormSection
               icon={Image}
-              title={t('apartments.sections.sakImages')}
-              description={t('apartments.sections.sakImagesDesc')}
+              title={t("apartments.sections.sakImages")}
+              description={t("apartments.sections.sakImagesDesc")}
               delay={0.4}
             >
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <FormField label={t('apartments.labels.projectSak')}>
+                <FormField label={t("apartments.labels.projectSak")}>
                   <FileUpload
-                    onUploadSuccess={(url: string) => setFormData({ ...formData, projectSakPdfUrl: url })}
+                    onUploadSuccess={(url: string) =>
+                      setFormData({ ...formData, projectSakPdfUrl: url })
+                    }
                     defaultValue={formData.projectSakPdfUrl}
                     accept=".jpg,.jpeg,.png,.webp"
                     maxSizeMB={10}
-                    helperText={t('apartments.placeholders.uploadProjectSak')}
+                    helperText={t("apartments.placeholders.uploadProjectSak")}
                   />
                 </FormField>
-                <FormField label={t('apartments.labels.apartmentSak')}>
+                <FormField label={t("apartments.labels.apartmentSak")}>
                   <FileUpload
-                    onUploadSuccess={(url: string) => setFormData({ ...formData, apartmentSakPdfUrl: url })}
+                    onUploadSuccess={(url: string) =>
+                      setFormData({ ...formData, apartmentSakPdfUrl: url })
+                    }
                     defaultValue={formData.apartmentSakPdfUrl}
                     accept=".jpg,.jpeg,.png,.webp"
                     maxSizeMB={10}
-                    helperText={t('apartments.placeholders.uploadApartmentSak')}
+                    helperText={t("apartments.placeholders.uploadApartmentSak")}
                   />
                 </FormField>
-                <FormField label={t('apartments.labels.subDivision')}>
+                <FormField label={t("apartments.labels.subDivision")}>
                   <FileUpload
-                    onUploadSuccess={(url: string) => setFormData({ ...formData, apartmentSubDivisionPdfUrl: url })}
+                    onUploadSuccess={(url: string) =>
+                      setFormData({
+                        ...formData,
+                        apartmentSubDivisionPdfUrl: url,
+                      })
+                    }
                     defaultValue={formData.apartmentSubDivisionPdfUrl}
                     accept=".jpg,.jpeg,.png,.webp"
                     maxSizeMB={10}
-                    helperText={t('apartments.placeholders.uploadSubDivision')}
+                    helperText={t("apartments.placeholders.uploadSubDivision")}
                   />
                 </FormField>
               </div>
@@ -534,28 +716,35 @@ export default function CreateApartment() {
             {/* Attachments */}
             <FormSection
               icon={LinkIcon}
-              title={t('apartments.sections.documents')}
-              description={t('apartments.sections.documentsDesc')}
+              title={t("apartments.sections.documents")}
+              description={t("apartments.sections.documentsDesc")}
               delay={0.5}
             >
               <div className="space-y-4">
                 {formData.files.map((file, idx) => (
-                  <div key={idx} className="grid grid-cols-1 md:grid-cols-[1fr_2fr_auto] gap-3 p-4 bg-gray-50 dark:bg-gray-800/50 rounded-md border border-gray-100 dark:border-gray-700">
-                    <FormField label={t('apartments.labels.fileTitle')}>
+                  <div
+                    key={idx}
+                    className="grid grid-cols-1 md:grid-cols-[1fr_2fr_auto] gap-3 p-4 bg-gray-50 dark:bg-gray-800/50 rounded-md border border-gray-100 dark:border-gray-700"
+                  >
+                    <FormField label={t("apartments.labels.fileTitle")}>
                       <Input
-                        placeholder={t('apartments.placeholders.fileTitle')}
+                        placeholder={t("apartments.placeholders.fileTitle")}
                         value={file.title}
-                        onChange={(e) => updateFile(idx, 'title', e.target.value)}
+                        onChange={(e) =>
+                          updateFile(idx, "title", e.target.value)
+                        }
                         className="h-10 bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md"
                       />
                     </FormField>
-                    <FormField label={t('apartments.labels.fileUrl')}>
+                    <FormField label={t("apartments.labels.fileUrl")}>
                       <FileUpload
-                        onUploadSuccess={(url: string) => updateFile(idx, 'url', url)}
+                        onUploadSuccess={(url: string) =>
+                          updateFile(idx, "url", url)
+                        }
                         defaultValue={file.url}
                         accept=".pdf,.jpg,.jpeg,.png,.doc,.docx,.xls,.xlsx"
                         maxSizeMB={20}
-                        helperText={t('apartments.placeholders.uploadFile')}
+                        helperText={t("apartments.placeholders.uploadFile")}
                       />
                     </FormField>
                     <div className="flex items-end pb-0.5">
@@ -576,16 +765,16 @@ export default function CreateApartment() {
                   className="inline-flex items-center gap-2 h-10 px-4 rounded-md border border-dashed border-gray-300 dark:border-gray-600 text-[13px] font-medium text-gray-500 dark:text-gray-400 hover:border-[#B39371] hover:text-[#B39371] transition-colors"
                 >
                   <Plus className="w-4 h-4" />
-                  {t('apartments.labels.addFile')}
+                  {t("apartments.labels.addFile")}
                 </button>
               </div>
             </FormSection>
 
             <FormActions
-              onCancel={() => setLocation('/apartments')}
+              onCancel={() => setLocation("/apartments")}
               isSubmitting={createMutation.isPending}
-              submitText={t('apartments.create')}
-              submittingText={t('common.saving')}
+              submitText={t("apartments.create")}
+              submittingText={t("common.saving")}
               align="between"
             />
           </form>
@@ -594,4 +783,3 @@ export default function CreateApartment() {
     </Shell>
   );
 }
-

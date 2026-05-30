@@ -4,7 +4,6 @@ import { TopHeader } from "../../components/TopHeader";
 import { Link, useLocation } from "wouter";
 import {
   ArrowLeft,
-  AlertCircle,
   Package,
   Layers,
   Sparkles,
@@ -32,9 +31,10 @@ import DatePicker from "../../components/shared/DatePicker";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import api from "@/lib/api";
 import toast from "react-hot-toast";
-import { cn } from "@/lib/utils";
+import { scrollToFirstError } from "@/lib/utils";
 import { motion } from "framer-motion";
 import { Textarea } from "@/components/ui/textarea";
+import { FormField } from "../../components/shared/FormField";
 
 // Form Section Component
 const FormSection = ({
@@ -70,35 +70,6 @@ const FormSection = ({
     </div>
     <div className="p-6">{children}</div>
   </motion.div>
-);
-
-// Form Field Component
-const FormField = ({ label, required = false, children, error }: any) => (
-  <div className="space-y-2">
-    <Label className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-      {label} {required && <span className="text-[#B39371]">*</span>}
-    </Label>
-    {children}
-    {error && (
-      <p className="text-xs text-red-500 dark:text-red-400 font-medium flex items-center gap-1">
-        <AlertCircle className="w-3.5 h-3.5" />
-        {error}
-      </p>
-    )}
-  </div>
-);
-
-// Label Component
-const Label = ({ children, className, ...props }: any) => (
-  <label
-    className={cn(
-      "text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70",
-      className,
-    )}
-    {...props}
-  >
-    {children}
-  </label>
 );
 
 export default function CreateMaterial() {
@@ -183,10 +154,7 @@ export default function CreateMaterial() {
     setErrors(newErrors);
 
     if (Object.keys(newErrors).length > 0) {
-      toast.error(t("materials.formError"), {
-        icon: "⚠️",
-        style: { borderRadius: "1rem", background: "#ef4444", color: "#fff" },
-      });
+      scrollToFirstError();
       return;
     }
     createMutation.mutate(formData);
@@ -264,7 +232,6 @@ export default function CreateMaterial() {
                           });
                       }}
                       className="pl-10 rtl:pl-3 rtl:pr-10 h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md"
-                      required
                     />
                   </div>
                 </FormField>
@@ -292,7 +259,6 @@ export default function CreateMaterial() {
                           });
                       }}
                       className="pl-10 rtl:pl-3 rtl:pr-10 h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md"
-                      required
                     />
                   </div>
                 </FormField>
@@ -413,7 +379,6 @@ export default function CreateMaterial() {
                           });
                       }}
                       className="pl-10 rtl:pl-3 rtl:pr-10 h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md"
-                      required
                     />
                   </div>
                 </FormField>

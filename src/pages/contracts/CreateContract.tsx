@@ -2,10 +2,9 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { TopHeader } from '../../components/TopHeader';
 import { Link, useLocation, useSearch } from "wouter";
-import { 
+import {
   FileText,
   ArrowLeft,
-  AlertCircle,
   Sparkles,
   Calendar,
   User,
@@ -26,10 +25,11 @@ import { Shell } from '../../components/shared/Shell';
 import { useMutation } from '@tanstack/react-query';
 import api from '@/lib/api';
 import toast from 'react-hot-toast';
-import { cn } from '@/lib/utils';
+import { cn, scrollToFirstError } from '@/lib/utils';
 import { motion } from 'framer-motion';
 import DatePicker from '../../components/shared/DatePicker';
 import HijriDatePicker from '../../components/shared/HijriDatePicker';
+import { FormField } from '../../components/shared/FormField';
 
 // Form Section Component
 const FormSection = ({ icon: Icon, title, description, children, delay = 0 }: any) => (
@@ -59,32 +59,6 @@ const FormSection = ({ icon: Icon, title, description, children, delay = 0 }: an
   </motion.div>
 );
 
-// Form Field Component
-const FormField = ({ label, required = false, children, error, description }: any) => (
-  <div className="space-y-2">
-    <div className="flex flex-col gap-1">
-      <Label className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-        {label} {required && <span className="text-[#B39371]">*</span>}
-      </Label>
-      {description && <span className="text-xs text-gray-400">{description}</span>}
-    </div>
-    {children}
-    {error && (
-      <p className="text-xs text-red-500 dark:text-red-400 font-medium flex items-center gap-1">
-        <AlertCircle className="w-3.5 h-3.5" />
-        {error}
-      </p>
-    )}
-  </div>
-);
-
-// Label Component
-const Label = ({ children, className, ...props }: any) => (
-  <label className={cn("text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70", className)} {...props}>
-    {children}
-  </label>
-);
-
 export default function CreateContract() {
   const [, setLocation] = useLocation();
   const { t, i18n } = useTranslation();
@@ -92,6 +66,8 @@ export default function CreateContract() {
   const searchParams = new URLSearchParams(searchString);
   const preselectedApartmentId = searchParams.get('apartmentId') || '';
   const preselectedApartmentName = searchParams.get('apartmentName') || '';
+
+  const [errors, setErrors] = useState<Record<string, string>>({});
 
   const [formData, setFormData] = useState({
     type: "apartment_sale",
@@ -202,13 +178,31 @@ export default function CreateContract() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // Basic validation
     const isLandPartnership = formData.type === 'land_partnership';
-    if (!formData.clientId || (!isLandPartnership && !formData.apartmentId) || !formData.contractDate || !formData.paidAmount) {
-      toast.error(t('contracts.fillRequiredFields'), { 
-        icon: '⚠️',
-        style: { borderRadius: '1rem', background: '#ef4444', color: '#fff' } 
-      });
+    const isPartial = formData.type === 'apartment_partial_sale';
+    const newErrors: Record<string, string> = {};
+
+    if (!formData.clientId) newErrors.clientId = t('common.fieldRequired');
+    if (!isLandPartnership && !formData.apartmentId) newErrors.apartmentId = t('common.fieldRequired');
+    if (!formData.contractDate) newErrors.contractDate = t('common.fieldRequired');
+    if (!formData.paymentType) newErrors.paymentType = t('common.fieldRequired');
+    if (!formData.paidAmount) newErrors.paidAmount = t('common.fieldRequired');
+
+    if (isPartial || isLandPartnership) {
+      if (!formData.deedDate) newErrors.deedDate = t('common.fieldRequired');
+    }
+    if (isPartial) {
+      if (!formData.sharePercentage) newErrors.sharePercentage = t('common.fieldRequired');
+    }
+    if (isLandPartnership) {
+      if (!formData.landValue) newErrors.landValue = t('common.fieldRequired');
+      if (!formData.investmentAmount) newErrors.investmentAmount = t('common.fieldRequired');
+      if (!formData.totalContractValue) newErrors.totalContractValue = t('common.fieldRequired');
+    }
+
+    setErrors(newErrors);
+    if (Object.keys(newErrors).length > 0) {
+      scrollToFirstError();
       return;
     }
     createMutation.mutate(formData);
@@ -292,10 +286,13 @@ export default function CreateContract() {
                   </FormField>
                 )}
 
-                <FormField label={t('contracts.labels.contractDate')} required>
-                  <DatePicker 
+                <FormField label={t('contracts.labels.contractDate')} required error={errors.contractDate}>
+                  <DatePicker
                     value={formData.contractDate}
-                    onChange={(date) => setFormData({ ...formData, contractDate: date })}
+                    onChange={(date) => {
+                      setFormData({ ...formData, contractDate: date });
+                      if (errors.contractDate) setErrors(p => { const { contractDate, ...r } = p; return r; });
+                    }}
                     className="w-full h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md"
                   />
                 </FormField>
@@ -328,12 +325,15 @@ export default function CreateContract() {
             >
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full">
                 
-                <FormField label={t('contracts.labels.client')} required>
+                <FormField label={t('contracts.labels.client')} required error={errors.clientId}>
                   <PaginatedSelect
                     apiEndpoint="/client"
                     queryKey="clients-paginated"
                     value={formData.clientId.toString()}
-                    onChange={(val) => setFormData({ ...formData, clientId: val })}
+                    onChange={(val) => {
+                      setFormData({ ...formData, clientId: val });
+                      if (errors.clientId) setErrors(p => { const { clientId, ...r } = p; return r; });
+                    }}
                     placeholder={t('contracts.placeholders.selectClient')}
                     searchPlaceholder={t('clients.placeholders.search')}
                     mapResponseToOptions={(pageData) => {
@@ -368,12 +368,15 @@ export default function CreateContract() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full">
                 
                 {formData.type !== 'land_partnership' && (
-                  <FormField label={t('contracts.labels.apartment')} required>
+                  <FormField label={t('contracts.labels.apartment')} required error={errors.apartmentId}>
                     <PaginatedSelect
                       apiEndpoint="/apartment"
                       queryKey="apartments-paginated"
                       value={formData.apartmentId.toString()}
-                      onChange={(val) => setFormData({ ...formData, apartmentId: val })}
+                      onChange={(val) => {
+                        setFormData({ ...formData, apartmentId: val });
+                        if (errors.apartmentId) setErrors(p => { const { apartmentId, ...r } = p; return r; });
+                      }}
                       placeholder={t('contracts.placeholders.selectApartment')}
                       searchPlaceholder={t('apartments.placeholders.search')}
                       initialLabel={preselectedApartmentName}
@@ -428,21 +431,21 @@ export default function CreateContract() {
 
                 {(formData.type === 'apartment_partial_sale' || formData.type === 'land_partnership') && (
                   <>
-                    <FormField label={t('contracts.labels.deedDate')}>
-                      <DatePicker 
+                    <FormField label={t('contracts.labels.deedDate')} required error={errors.deedDate}>
+                      <DatePicker
                         value={formData.deedDate}
-                        onChange={(date) => setFormData({ ...formData, deedDate: date })}
+                        onChange={(date) => { setFormData({ ...formData, deedDate: date }); if (errors.deedDate) setErrors(p => { const { deedDate, ...r } = p; return r; }); }}
                         className="w-full h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md"
                       />
                     </FormField>
 
                     {formData.type === 'apartment_partial_sale' && (
-                      <FormField label={t('contracts.labels.sharePercentage')}>
-                        <Input 
+                      <FormField label={t('contracts.labels.sharePercentage')} required error={errors.sharePercentage}>
+                        <Input
                           type="number"
                           placeholder="25"
                           value={formData.sharePercentage}
-                          onChange={(e) => setFormData({ ...formData, sharePercentage: e.target.value })}
+                          onChange={(e) => { setFormData({ ...formData, sharePercentage: e.target.value }); if (errors.sharePercentage) setErrors(p => { const { sharePercentage, ...r } = p; return r; }); }}
                           className="h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md"
                         />
                       </FormField>
@@ -452,18 +455,18 @@ export default function CreateContract() {
 
                 {formData.type === 'land_partnership' && (
                   <>
-                    <FormField label={t('contracts.labels.landValue')}>
-                      <Input 
+                    <FormField label={t('contracts.labels.landValue')} required error={errors.landValue}>
+                      <Input
                         type="number"
                         placeholder="2000000"
                         value={formData.landValue}
-                        onChange={(e) => setFormData({ ...formData, landValue: e.target.value })}
+                        onChange={(e) => { setFormData({ ...formData, landValue: e.target.value }); if (errors.landValue) setErrors(p => { const { landValue, ...r } = p; return r; }); }}
                         className="h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md"
                       />
                     </FormField>
 
                     <FormField label={t('contracts.labels.landValueText')}>
-                      <Input 
+                      <Input
                         placeholder={t('contracts.labels.landValueText')}
                         value={formData.landValueText}
                         onChange={(e) => setFormData({ ...formData, landValueText: e.target.value })}
@@ -471,18 +474,18 @@ export default function CreateContract() {
                       />
                     </FormField>
 
-                    <FormField label={t('contracts.labels.investmentAmount')}>
-                      <Input 
+                    <FormField label={t('contracts.labels.investmentAmount')} required error={errors.investmentAmount}>
+                      <Input
                         type="number"
                         placeholder="500000"
                         value={formData.investmentAmount}
-                        onChange={(e) => setFormData({ ...formData, investmentAmount: e.target.value })}
+                        onChange={(e) => { setFormData({ ...formData, investmentAmount: e.target.value }); if (errors.investmentAmount) setErrors(p => { const { investmentAmount, ...r } = p; return r; }); }}
                         className="h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md"
                       />
                     </FormField>
 
                     <FormField label={t('contracts.labels.investmentAmountText')}>
-                      <Input 
+                      <Input
                         placeholder={t('contracts.labels.investmentAmountText')}
                         value={formData.investmentAmountText}
                         onChange={(e) => setFormData({ ...formData, investmentAmountText: e.target.value })}
@@ -490,18 +493,18 @@ export default function CreateContract() {
                       />
                     </FormField>
 
-                    <FormField label={t('contracts.labels.totalContractValue')}>
-                      <Input 
+                    <FormField label={t('contracts.labels.totalContractValue')} required error={errors.totalContractValue}>
+                      <Input
                         type="number"
                         placeholder="500000"
                         value={formData.totalContractValue}
-                        onChange={(e) => setFormData({ ...formData, totalContractValue: e.target.value })}
+                        onChange={(e) => { setFormData({ ...formData, totalContractValue: e.target.value }); if (errors.totalContractValue) setErrors(p => { const { totalContractValue, ...r } = p; return r; }); }}
                         className="h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md"
                       />
                     </FormField>
 
                     <FormField label={t('contracts.labels.totalContractValueText')}>
-                      <Input 
+                      <Input
                         placeholder={t('contracts.labels.totalContractValueText')}
                         value={formData.totalContractValueText}
                         onChange={(e) => setFormData({ ...formData, totalContractValueText: e.target.value })}
@@ -522,10 +525,10 @@ export default function CreateContract() {
             >
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full">
                 
-                <FormField label={t('contracts.labels.paymentType')}>
-                   <Select 
-                    value={formData.paymentType} 
-                    onValueChange={(val) => setFormData({ ...formData, paymentType: val })}
+                <FormField label={t('contracts.labels.paymentType')} required error={errors.paymentType}>
+                   <Select
+                    value={formData.paymentType}
+                    onValueChange={(val) => { setFormData({ ...formData, paymentType: val }); if (errors.paymentType) setErrors(p => { const { paymentType, ...r } = p; return r; }); }}
                     dir={i18n.language === 'ar' ? 'rtl' : 'ltr'}
                   >
                     <SelectTrigger className={cn("h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md", i18n.language === 'ar' && "flex-row-reverse text-right")}>
@@ -550,12 +553,15 @@ export default function CreateContract() {
                   </Select>
                 </FormField>
 
-                <FormField label={t('contracts.labels.paidAmount')} required>
-                  <Input 
+                <FormField label={t('contracts.labels.paidAmount')} required error={errors.paidAmount}>
+                  <Input
                     type="number"
                     placeholder="50000"
                     value={formData.paidAmount}
-                    onChange={(e) => setFormData({ ...formData, paidAmount: e.target.value })}
+                    onChange={(e) => {
+                      setFormData({ ...formData, paidAmount: e.target.value });
+                      if (errors.paidAmount) setErrors(p => { const { paidAmount, ...r } = p; return r; });
+                    }}
                     className="h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md"
                   />
                 </FormField>

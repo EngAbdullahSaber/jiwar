@@ -33,7 +33,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import api from "@/lib/api";
 import toast from "react-hot-toast";
-import { cn } from "@/lib/utils";
+import { cn, scrollToFirstError } from "@/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
 import { FileUpload } from "../../components/shared/FileUpload";
 
@@ -101,7 +101,7 @@ const FormSection = ({
 
 // Form Field Component
 const FormField = ({ label, required = false, children, error }: any) => (
-  <div className="space-y-2">
+  <div className="space-y-2" {...(error ? { 'data-field-error': 'true' } : {})}>
     <Label className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
       {label} {required && <span className="text-[#B39371]">*</span>}
     </Label>
@@ -224,7 +224,7 @@ export default function CreateTemplate() {
             </div>
           </div>
 
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+          <form onSubmit={handleSubmit(onSubmit, () => scrollToFirstError())} className="space-y-6">
             {/* Section 1: General Information */}
             <FormSection
               icon={Info}

@@ -15,6 +15,7 @@
     "signOut": "Sign Out",
     "refresh": "Refresh",
     "fillRequiredFields": "Please fill in all required fields",
+    "fieldRequired": "This field is required",
     "startDateBeforeEndDate": "Start date must be before end date",
     "startDate": "Start Date",
     "endDate": "End Date",

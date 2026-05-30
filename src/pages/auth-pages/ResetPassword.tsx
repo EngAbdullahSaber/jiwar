@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useLocation } from "wouter";
-import { ArrowLeftIcon, MailIcon } from "lucide-react";
+import { ArrowLeftIcon, MailIcon, AlertCircle } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { LanguageSwitcher } from "@/components/shared/LanguageSwitcher";
 import "./auth.css";
@@ -9,9 +9,15 @@ export const ResetPassword = (): JSX.Element => {
   const { t } = useTranslation();
   const [, setLocation] = useLocation();
   const [email, setEmail] = useState("");
+  const [errors, setErrors] = useState<{ email?: string }>({});
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    if (!email) {
+      setErrors({ email: t("auth.errorEmptyFields") });
+      return;
+    }
+    setErrors({});
     localStorage.setItem("resetEmail", email);
     setLocation("/verify");
   };
@@ -50,7 +56,7 @@ export const ResetPassword = (): JSX.Element => {
 
           <form onSubmit={handleSubmit} className="auth-form">
             {/* Email */}
-            <div className="auth-field">
+            <div className="auth-field" {...(errors.email ? { "data-field-error": "true" } : {})}>
               <label htmlFor="email" className="auth-label">
                 {t("auth.email")}
               </label>
@@ -61,11 +67,11 @@ export const ResetPassword = (): JSX.Element => {
                   type="email"
                   placeholder={t("auth.emailPlaceholder")}
                   value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  required
+                  onChange={(e) => { setEmail(e.target.value); if (errors.email) setErrors({}); }}
                   className="auth-input"
                 />
               </div>
+              {errors.email && <p className="auth-error"><AlertCircle />{errors.email}</p>}
             </div>
 
             {/* Submit */}

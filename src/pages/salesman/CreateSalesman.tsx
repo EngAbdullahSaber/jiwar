@@ -21,10 +21,11 @@ import api from "@/lib/api";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { toast } from "react-hot-toast";
+import { FormField } from "../../components/shared/FormField";
 import { Link } from "wouter";
 import DatePicker from "../../components/shared/DatePicker";
+import { scrollToFirstError } from "@/lib/utils";
 
 export default function CreateSalesman() {
   const [, setLocation] = useLocation();
@@ -40,6 +41,7 @@ export default function CreateSalesman() {
     endDate: "",
     password: "",
   });
+  const [errors, setErrors] = useState<Record<string, string>>({});
 
   const createMutation = useMutation({
     mutationFn: async (salesmanData: any) => {
@@ -59,21 +61,19 @@ export default function CreateSalesman() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Validation
-    if (
-      !formData.fullName ||
-      !formData.email ||
-      !formData.phoneNumber ||
-      !formData.startDate ||
-      !formData.endDate ||
-      !formData.password
-    ) {
-      toast.error(t("common.fillRequiredFields"));
-      return;
+    const newErrors: Record<string, string> = {};
+    if (!formData.fullName) newErrors.fullName = t("common.fieldRequired");
+    if (!formData.email) newErrors.email = t("common.fieldRequired");
+    if (!formData.phoneNumber) newErrors.phoneNumber = t("common.fieldRequired");
+    if (!formData.password) newErrors.password = t("common.fieldRequired");
+    if (!formData.startDate) newErrors.startDate = t("common.fieldRequired");
+    if (!formData.endDate) newErrors.endDate = t("common.fieldRequired");
+    if (formData.startDate && formData.endDate && new Date(formData.startDate) > new Date(formData.endDate)) {
+      newErrors.endDate = t("common.startDateBeforeEndDate");
     }
-
-    if (new Date(formData.startDate) > new Date(formData.endDate)) {
-      toast.error(t("common.startDateBeforeEndDate"));
+    setErrors(newErrors);
+    if (Object.keys(newErrors).length > 0) {
+      scrollToFirstError();
       return;
     }
 
@@ -152,103 +152,44 @@ export default function CreateSalesman() {
 
               <div className="p-8 space-y-8">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
-                  {/* Full Name */}
-                  <div className="space-y-2">
-                    <Label className="text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
-                      {t("salesman.fullName")}
-                    </Label>
+                  <FormField label={t("salesman.fullName")} required error={errors.fullName}>
                     <div className="relative group">
                       <UserIcon className="absolute left-4 rtl:left-auto rtl:right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 group-focus-within:text-[#B39371] transition-colors" />
-                      <Input
-                        name="fullName"
-                        placeholder={t("salesman.form.placeholders.fullName")}
-                        className="h-12 pl-11 rtl:pl-4 rtl:pr-11 rounded-md bg-gray-50 dark:bg-gray-800/50 border-gray-100 dark:border-gray-800 focus:bg-white dark:focus:bg-gray-800 transition-all font-medium"
-                        value={formData.fullName}
-                        onChange={handleChange}
-                        required
-                      />
+                      <Input name="fullName" placeholder={t("salesman.form.placeholders.fullName")} className="h-12 pl-11 rtl:pl-4 rtl:pr-11 rounded-md bg-gray-50 dark:bg-gray-800/50 border-gray-100 dark:border-gray-800 focus:bg-white dark:focus:bg-gray-800 transition-all font-medium" value={formData.fullName} onChange={(e) => { handleChange(e); if (errors.fullName) setErrors(p => { const { fullName, ...r } = p; return r; }); }} />
                     </div>
-                  </div>
+                  </FormField>
 
-                  {/* Email */}
-                  <div className="space-y-2">
-                    <Label className="text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
-                      {t("salesman.email")}
-                    </Label>
+                  <FormField label={t("salesman.email")} required error={errors.email}>
                     <div className="relative group">
                       <Mail className="absolute left-4 rtl:left-auto rtl:right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 group-focus-within:text-[#B39371] transition-colors" />
-                      <Input
-                        name="email"
-                        type="email"
-                        placeholder={t("salesman.form.placeholders.email")}
-                        className="h-12 pl-11 rtl:pl-4 rtl:pr-11 rounded-md bg-gray-50 dark:bg-gray-800/50 border-gray-100 dark:border-gray-800 focus:bg-white dark:focus:bg-gray-800 transition-all font-medium"
-                        value={formData.email}
-                        onChange={handleChange}
-                        required
-                      />
+                      <Input name="email" type="email" placeholder={t("salesman.form.placeholders.email")} className="h-12 pl-11 rtl:pl-4 rtl:pr-11 rounded-md bg-gray-50 dark:bg-gray-800/50 border-gray-100 dark:border-gray-800 focus:bg-white dark:focus:bg-gray-800 transition-all font-medium" value={formData.email} onChange={(e) => { handleChange(e); if (errors.email) setErrors(p => { const { email, ...r } = p; return r; }); }} />
                     </div>
-                  </div>
+                  </FormField>
 
-                  {/* Phone */}
-                  <div className="space-y-2">
-                    <Label className="text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
-                      {t("salesman.phoneNumber")}
-                    </Label>
+                  <FormField label={t("salesman.phoneNumber")} required error={errors.phoneNumber}>
                     <div className="relative group">
                       <Phone className="absolute left-4 rtl:left-auto rtl:right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 group-focus-within:text-[#B39371] transition-colors" />
-                      <Input
-                        name="phoneNumber"
-                        placeholder={t("salesman.form.placeholders.phone")}
-                        className="h-12 pl-11 rtl:pl-4 rtl:pr-11 rounded-md bg-gray-50 dark:bg-gray-800/50 border-gray-100 dark:border-gray-800 focus:bg-white dark:focus:bg-gray-800 transition-all font-medium"
-                        value={formData.phoneNumber}
-                        onChange={handleChange}
-                        required
-                      />
+                      <Input name="phoneNumber" placeholder={t("salesman.form.placeholders.phone")} className="h-12 pl-11 rtl:pl-4 rtl:pr-11 rounded-md bg-gray-50 dark:bg-gray-800/50 border-gray-100 dark:border-gray-800 focus:bg-white dark:focus:bg-gray-800 transition-all font-medium" value={formData.phoneNumber} onChange={(e) => { handleChange(e); if (errors.phoneNumber) setErrors(p => { const { phoneNumber, ...r } = p; return r; }); }} />
                     </div>
-                  </div>
+                  </FormField>
 
-                  {/* Password */}
-                  <div className="space-y-2">
-                    <Label className="text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
-                      {t("salesman.password")}
-                    </Label>
+                  <FormField label={t("salesman.password")} required error={errors.password}>
                     <div className="relative group">
                       <CreditCard className="absolute left-4 rtl:left-auto rtl:right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 group-focus-within:text-[#B39371] transition-colors" />
-                      <Input
-                        name="password"
-                        type="password"
-                        placeholder={t("salesman.form.placeholders.password")}
-                        className="h-12 pl-11 rtl:pl-4 rtl:pr-11 rounded-md bg-gray-50 dark:bg-gray-800/50 border-gray-100 dark:border-gray-800 focus:bg-white dark:focus:bg-gray-800 transition-all font-medium"
-                        value={formData.password}
-                        onChange={handleChange}
-                        required
-                      />
+                      <Input name="password" type="password" placeholder={t("salesman.form.placeholders.password")} className="h-12 pl-11 rtl:pl-4 rtl:pr-11 rounded-md bg-gray-50 dark:bg-gray-800/50 border-gray-100 dark:border-gray-800 focus:bg-white dark:focus:bg-gray-800 transition-all font-medium" value={formData.password} onChange={(e) => { handleChange(e); if (errors.password) setErrors(p => { const { password, ...r } = p; return r; }); }} />
                     </div>
-                  </div>
+                  </FormField>
 
-                  {/* Agent Type */}
-                  <div className="space-y-2">
-                    <Label className="text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
-                      {t("salesman.agentType")}
-                    </Label>
+                  <FormField label={t("salesman.agentType")}>
                     <div className="relative group">
                       <UsersIcon className="absolute left-4 rtl:left-auto rtl:right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 group-focus-within:text-[#B39371] transition-colors pointer-events-none" />
-                      <select
-                        name="agentType"
-                        className="w-full h-12 pl-11 rtl:pl-4 rtl:pr-11 rounded-md bg-gray-50 dark:bg-gray-800/50 border border-gray-100 dark:border-gray-800 text-sm font-medium text-gray-700 dark:text-gray-200 outline-none focus:bg-white dark:focus:bg-gray-800 focus:ring-2 focus:ring-[#B39371]/10 transition-all appearance-none cursor-pointer"
-                        value={formData.agentType}
-                        onChange={handleChange}
-                      >
-                        <option value="INTERNAL">
-                          {t("salesman.types.internal")}
-                        </option>
-                        <option value="EXTERNAL">
-                          {t("salesman.types.external")}
-                        </option>
+                      <select name="agentType" className="w-full h-12 pl-11 rtl:pl-4 rtl:pr-11 rounded-md bg-gray-50 dark:bg-gray-800/50 border border-gray-100 dark:border-gray-800 text-sm font-medium text-gray-700 dark:text-gray-200 outline-none focus:bg-white dark:focus:bg-gray-800 focus:ring-2 focus:ring-[#B39371]/10 transition-all appearance-none cursor-pointer" value={formData.agentType} onChange={handleChange}>
+                        <option value="INTERNAL">{t("salesman.types.internal")}</option>
+                        <option value="EXTERNAL">{t("salesman.types.external")}</option>
                       </select>
                       <ChevronRight className="absolute right-4 rtl:right-auto rtl:left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 group-focus-within:text-[#B39371] rotate-90 transition-colors pointer-events-none" />
                     </div>
-                  </div>
+                  </FormField>
                 </div>
               </div>
             </motion.div>
@@ -266,45 +207,21 @@ export default function CreateSalesman() {
                     <Calendar className="w-5 h-5" />
                   </div>
                   <div>
-                    <h2 className="text-lg font-bold text-gray-900 dark:text-white">
-                      {t("salesman.form.scheduleInfo")}
-                    </h2>
-                    <p className="text-xs text-gray-500 dark:text-gray-400 font-medium">
-                      {t("salesman.form.scheduleInfoDesc")}
-                    </p>
+                    <h2 className="text-lg font-bold text-gray-900 dark:text-white">{t("salesman.form.scheduleInfo")}</h2>
+                    <p className="text-xs text-gray-500 dark:text-gray-400 font-medium">{t("salesman.form.scheduleInfoDesc")}</p>
                   </div>
                 </div>
               </div>
 
               <div className="p-8 space-y-8">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
-                  {/* Start Date */}
-                  <div className="space-y-2">
-                    <Label className="text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
-                      {t("salesman.startDate")}
-                    </Label>
-                    <DatePicker
-                      value={formData.startDate}
-                      onChange={(date) =>
-                        setFormData((prev) => ({ ...prev, startDate: date }))
-                      }
-                      required
-                    />
-                  </div>
+                  <FormField label={t("salesman.startDate")} required error={errors.startDate}>
+                    <DatePicker value={formData.startDate} onChange={(date) => { setFormData((prev) => ({ ...prev, startDate: date })); if (errors.startDate) setErrors(p => { const { startDate, ...r } = p; return r; }); }} />
+                  </FormField>
 
-                  {/* End Date */}
-                  <div className="space-y-2">
-                    <Label className="text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
-                      {t("salesman.endDate")}
-                    </Label>
-                    <DatePicker
-                      value={formData.endDate}
-                      onChange={(date) =>
-                        setFormData((prev) => ({ ...prev, endDate: date }))
-                      }
-                      required
-                    />
-                  </div>
+                  <FormField label={t("salesman.endDate")} required error={errors.endDate}>
+                    <DatePicker value={formData.endDate} onChange={(date) => { setFormData((prev) => ({ ...prev, endDate: date })); if (errors.endDate) setErrors(p => { const { endDate, ...r } = p; return r; }); }} />
+                  </FormField>
                 </div>
               </div>
             </motion.div>

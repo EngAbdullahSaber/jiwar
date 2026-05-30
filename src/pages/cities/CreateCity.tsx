@@ -1,9 +1,8 @@
 import { useState } from 'react';
 import { TopHeader } from '../../components/TopHeader';
 import { Link, useLocation } from "wouter";
-import { 
+import {
   ArrowLeft,
-  AlertCircle,
   Building2,
   Sparkles,
   MapPin,
@@ -12,6 +11,7 @@ import {
 } from 'lucide-react';
 import { Input } from "@/components/ui/input";
 import { FormActions } from '../../components/shared/FormActions';
+import { FormField } from '../../components/shared/FormField';
 import { Shell } from '../../components/shared/Shell';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import api from '@/lib/api';
@@ -19,6 +19,7 @@ import toast from 'react-hot-toast';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { PaginatedSelect } from '../../components/shared/PaginatedSelect';
+import { scrollToFirstError } from '@/lib/utils';
 
 // Form Section Component
 const FormSection = ({ icon: Icon, title, description, children, delay = 0 }: any) => (
@@ -48,85 +49,47 @@ const FormSection = ({ icon: Icon, title, description, children, delay = 0 }: an
   </motion.div>
 );
 
-// Form Field Component
-const FormField = ({ label, required = false, children, error }: any) => (
-  <div className="space-y-2">
-    <label className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider block">
-      {label} {required && <span className="text-[#B39371]">*</span>}
-    </label>
-    {children}
-    {error && (
-      <p className="text-xs text-red-500 dark:text-red-400 font-medium flex items-center gap-1">
-        <AlertCircle className="w-3.5 h-3.5" />
-        {error}
-      </p>
-    )}
-  </div>
-);
-
 export default function CreateCity() {
   const { t } = useTranslation();
   const [, setLocation] = useLocation();
   const queryClient = useQueryClient();
-  const [formData, setFormData] = useState({
-    name: {
-      arabic: "",
-      english: ""
-    },
-    countryId: ""
-  });
+  const [formData, setFormData] = useState({ name: { arabic: "", english: "" }, countryId: "" });
+  const [errors, setErrors] = useState<Record<string, string>>({});
+
   const createMutation = useMutation({
     mutationFn: async (data: any) => {
-      const payload = {
-        name: data.name,
-        countryId: parseInt(data.countryId)
-      };
-      const response = await api.post('/city', payload);
+      const response = await api.post('/city', { name: data.name, countryId: parseInt(data.countryId) });
       return response.data;
     },
     onSuccess: () => {
-      toast.success(t('cities.createSuccess'), {
-        icon: '🏙️',
-        style: { borderRadius: '1rem', background: '#10b981', color: '#fff' }
-      });
+      toast.success(t('cities.createSuccess'), { icon: '🏙️', style: { borderRadius: '1rem', background: '#10b981', color: '#fff' } });
       queryClient.invalidateQueries({ queryKey: ['cities'] });
       setLocation('/cities');
     },
     onError: (error: any) => {
-      toast.error(error.response?.data?.message || t('common.error'), {
-        icon: '❌',
-        style: { borderRadius: '1rem', background: '#ef4444', color: '#fff' }
-      });
+      toast.error(error.response?.data?.message || t('common.error'), { icon: '❌', style: { borderRadius: '1rem', background: '#ef4444', color: '#fff' } });
     }
   });
 
-
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formData.name.arabic || !formData.name.english || !formData.countryId) {
-      toast.error(t('common.fillRequiredFields'), { 
-        icon: '⚠️',
-        style: { borderRadius: '1rem', background: '#ef4444', color: '#fff' } 
-      });
-      return;
-    }
+    const newErrors: Record<string, string> = {};
+    if (!formData.countryId) newErrors.countryId = t('common.fieldRequired');
+    if (!formData.name.english) newErrors.nameEn = t('common.fieldRequired');
+    if (!formData.name.arabic) newErrors.nameAr = t('common.fieldRequired');
+    setErrors(newErrors);
+    if (Object.keys(newErrors).length > 0) { scrollToFirstError(); return; }
     createMutation.mutate(formData);
   };
 
   return (
     <Shell>
       <TopHeader />
-      
       <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-50 dark:from-gray-950 dark:via-gray-900 dark:to-gray-950">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8 pb-32">
-          
-          {/* Header Section */}
           <div className="bg-white dark:bg-gray-900 rounded-md border border-gray-200 dark:border-gray-800 p-6 shadow-sm">
             <div className="flex items-center gap-4">
-              <Link 
-                href="/cities" 
-                className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-md transition-colors"
-              >
+              <Link href="/cities" className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-md transition-colors">
                 <ArrowLeft className="w-5 h-5 text-gray-500" />
               </Link>
               <div className="relative">
@@ -138,81 +101,51 @@ export default function CreateCity() {
               <div>
                 <div className="flex items-center gap-2 mb-1">
                   <Sparkles className="w-4 h-4 text-[#B39371]" />
-                  <p className="text-xs font-medium text-[#B39371] uppercase tracking-wider">
-                    {t('cities.add')}
-                  </p>
+                  <p className="text-xs font-medium text-[#B39371] uppercase tracking-wider">{t('cities.add')}</p>
                 </div>
-                <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-                  {t('cities.new')}
-                </h1>
-                <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                  {t('cities.description')}
-                </p>
+                <h1 className="text-2xl font-bold text-gray-900 dark:text-white">{t('cities.new')}</h1>
+                <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">{t('cities.description')}</p>
               </div>
             </div>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-6">
-            
-            {/* Country and Names Section */}
-            <FormSection 
-              icon={MapPin}
-              title={t('cities.geographicDetails')}
-              description={t('cities.geographicDetailsDesc')}
-              delay={0.1}
-            >
+            <FormSection icon={MapPin} title={t('cities.geographicDetails')} description={t('cities.geographicDetailsDesc')} delay={0.1}>
               <div className="space-y-6">
-                {/* Country Selection */}
-                <PaginatedSelect
-                  label={t('cities.country')}
-                  apiEndpoint="/country"
-                  queryKey="countries-paginated"
-                  value={formData.countryId}
-                  onChange={(value) => setFormData({ ...formData, countryId: value })}
-                  placeholder={t('cities.selectCountry')}
-                  searchPlaceholder={t('countries.searchPlaceholder')}
-                  mapResponseToOptions={(data: any) => 
-                    data.data.map((country: any) => ({
-                      value: country.id,
-                      label: country.name.english,
-                      description: country.name.arabic,
-                      icon: <Globe className="w-4 h-4" />
-                    }))
-                  }
-                />
+                <FormField label={t('cities.country')} required error={errors.countryId}>
+                  <PaginatedSelect
+                    apiEndpoint="/country"
+                    queryKey="countries-paginated"
+                    value={formData.countryId}
+                    onChange={(value) => { setFormData({ ...formData, countryId: value }); if (errors.countryId) setErrors(p => { const { countryId, ...r } = p; return r; }); }}
+                    placeholder={t('cities.selectCountry')}
+                    searchPlaceholder={t('countries.searchPlaceholder')}
+                    mapResponseToOptions={(data: any) => data.data.map((c: any) => ({ value: c.id, label: c.name.english, description: c.name.arabic, icon: <Globe className="w-4 h-4" /> }))}
+                  />
+                </FormField>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {/* English Name */}
-                  <FormField label={t('cities.nameEn')} required>
+                  <FormField label={t('cities.nameEn')} required error={errors.nameEn}>
                     <div className="relative">
                       <Type className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-                      <Input 
+                      <Input
                         placeholder={t('cities.nameEnPlaceholder')}
                         value={formData.name.english}
-                        onChange={(e) => setFormData({ 
-                          ...formData, 
-                          name: { ...formData.name, english: e.target.value } 
-                        })}
+                        onChange={(e) => { setFormData({ ...formData, name: { ...formData.name, english: e.target.value } }); if (errors.nameEn) setErrors(p => { const { nameEn, ...r } = p; return r; }); }}
                         className="pl-10 h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md"
-                        required
                       />
                     </div>
                   </FormField>
 
-                  {/* Arabic Name */}
-                  <FormField label={t('cities.nameAr')} required>
+                  <FormField label={t('cities.nameAr')} required error={errors.nameAr}>
                     <div className="relative">
                       <Type className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-                      <Input 
+                      <Input
                         placeholder={t('cities.nameArPlaceholder')}
                         value={formData.name.arabic}
-                        onChange={(e) => setFormData({ 
-                          ...formData, 
-                          name: { ...formData.name, arabic: e.target.value } 
-                        })}
+                        onChange={(e) => { setFormData({ ...formData, name: { ...formData.name, arabic: e.target.value } }); if (errors.nameAr) setErrors(p => { const { nameAr, ...r } = p; return r; }); }}
                         className="pr-10 h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md text-right"
                         dir="rtl"
-                        required
                       />
                     </div>
                   </FormField>
@@ -220,13 +153,7 @@ export default function CreateCity() {
               </div>
             </FormSection>
 
-            <FormActions
-              onCancel={() => setLocation('/cities')}
-              isSubmitting={createMutation.isPending}
-              submitText={t('common.save')}
-              submittingText={t('common.processing')}
-              align="between"
-            />
+            <FormActions onCancel={() => setLocation('/cities')} isSubmitting={createMutation.isPending} submitText={t('common.save')} submittingText={t('common.processing')} align="between" />
           </form>
         </div>
       </div>

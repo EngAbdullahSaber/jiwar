@@ -3,7 +3,6 @@ import { TopHeader } from '../../components/TopHeader';
 import { Link, useLocation } from 'wouter';
 import {
   ArrowLeft,
-  AlertCircle,
   GitBranch,
   Sparkles,
   Type,
@@ -23,6 +22,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { PaginatedSelect } from '../../components/shared/PaginatedSelect';
 import DatePicker from '../../components/shared/DatePicker';
+import { FormField } from '../../components/shared/FormField';
+import { scrollToFirstError } from '@/lib/utils';
 
 const FormSection = ({ icon: Icon, title, description, children, delay = 0 }: any) => (
   <motion.div
@@ -47,21 +48,6 @@ const FormSection = ({ icon: Icon, title, description, children, delay = 0 }: an
     </div>
     <div className="p-6">{children}</div>
   </motion.div>
-);
-
-const FormField = ({ label, required = false, children, error }: any) => (
-  <div className="space-y-2">
-    <label className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider block">
-      {label} {required && <span className="text-[#B39371]">*</span>}
-    </label>
-    {children}
-    {error && (
-      <p className="text-xs text-red-500 dark:text-red-400 font-medium flex items-center gap-1">
-        <AlertCircle className="w-3.5 h-3.5" />
-        {error}
-      </p>
-    )}
-  </div>
 );
 
 interface SubStage {
@@ -92,6 +78,7 @@ export default function CreateStage() {
   });
 
   const [subStages, setSubStages] = useState<SubStage[]>([]);
+  const [errors, setErrors] = useState<Record<string, string>>({});
 
   const createMutation = useMutation({
     mutationFn: async () => {
@@ -130,10 +117,16 @@ export default function CreateStage() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const { projectId, name, estimateCost, fromDate, toDate } = formData;
-    if (!projectId || !name.arabic || !name.english || !estimateCost || !fromDate || !toDate) {
-      toast.error(t('common.fillRequiredFields'), {
-        style: { borderRadius: '1rem', background: '#ef4444', color: '#fff' },
-      });
+    const newErrors: Record<string, string> = {};
+    if (!projectId) newErrors.projectId = t('common.fieldRequired');
+    if (!name.english) newErrors.nameEn = t('common.fieldRequired');
+    if (!name.arabic) newErrors.nameAr = t('common.fieldRequired');
+    if (!estimateCost) newErrors.estimateCost = t('common.fieldRequired');
+    if (!fromDate) newErrors.fromDate = t('common.fieldRequired');
+    if (!toDate) newErrors.toDate = t('common.fieldRequired');
+    setErrors(newErrors);
+    if (Object.keys(newErrors).length > 0) {
+      scrollToFirstError();
       return;
     }
     for (const [i, s] of subStages.entries()) {
@@ -215,12 +208,15 @@ export default function CreateStage() {
               <div className="space-y-6">
 
                 {/* Project */}
-                <FormField label={t('stages.labels.projectId')} required>
+                <FormField label={t('stages.labels.projectId')} required error={errors.projectId}>
                   <PaginatedSelect
                     apiEndpoint="/project"
                     queryKey="projects-create-stage"
                     value={formData.projectId}
-                    onChange={value => setFormData(prev => ({ ...prev, projectId: value }))}
+                    onChange={value => {
+                      setFormData(prev => ({ ...prev, projectId: value }));
+                      if (errors.projectId) setErrors(p => { const { projectId, ...r } = p; return r; });
+                    }}
                     placeholder={t('stages.placeholders.selectProject')}
                     searchPlaceholder={t('stages.placeholders.searchProject')}
                     mapResponseToOptions={(data: any) =>
@@ -236,28 +232,30 @@ export default function CreateStage() {
 
                 {/* Stage Name */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <FormField label={t('stages.labels.nameEn')} required>
+                  <FormField label={t('stages.labels.nameEn')} required error={errors.nameEn}>
                     <div className="relative">
                       <Type className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                       <Input
                         placeholder={t('stages.placeholders.nameEn')}
                         value={formData.name.english}
-                        onChange={e =>
-                          setFormData(prev => ({ ...prev, name: { ...prev.name, english: e.target.value } }))
-                        }
+                        onChange={e => {
+                          setFormData(prev => ({ ...prev, name: { ...prev.name, english: e.target.value } }));
+                          if (errors.nameEn) setErrors(p => { const { nameEn, ...r } = p; return r; });
+                        }}
                         className="pl-10 h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md"
                       />
                     </div>
                   </FormField>
-                  <FormField label={t('stages.labels.nameAr')} required>
+                  <FormField label={t('stages.labels.nameAr')} required error={errors.nameAr}>
                     <div className="relative">
                       <Type className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                       <Input
                         placeholder={t('stages.placeholders.nameAr')}
                         value={formData.name.arabic}
-                        onChange={e =>
-                          setFormData(prev => ({ ...prev, name: { ...prev.name, arabic: e.target.value } }))
-                        }
+                        onChange={e => {
+                          setFormData(prev => ({ ...prev, name: { ...prev.name, arabic: e.target.value } }));
+                          if (errors.nameAr) setErrors(p => { const { nameAr, ...r } = p; return r; });
+                        }}
                         className="pr-10 h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md text-right"
                         dir="rtl"
                       />
@@ -266,7 +264,7 @@ export default function CreateStage() {
                 </div>
 
                 {/* Estimate Cost */}
-                <FormField label={t('stages.labels.estimateCost')} required>
+                <FormField label={t('stages.labels.estimateCost')} required error={errors.estimateCost}>
                   <div className="relative">
                     <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                     <Input
@@ -275,9 +273,10 @@ export default function CreateStage() {
                       step="0.01"
                       placeholder={t('stages.placeholders.estimateCost')}
                       value={formData.estimateCost}
-                      onChange={e =>
-                        setFormData(prev => ({ ...prev, estimateCost: e.target.value }))
-                      }
+                      onChange={e => {
+                        setFormData(prev => ({ ...prev, estimateCost: e.target.value }));
+                        if (errors.estimateCost) setErrors(p => { const { estimateCost, ...r } = p; return r; });
+                      }}
                       className="pl-10 h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md"
                     />
                   </div>
@@ -285,17 +284,23 @@ export default function CreateStage() {
 
                 {/* Dates */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <FormField label={t('common.startDate')} required>
+                  <FormField label={t('common.startDate')} required error={errors.fromDate}>
                     <DatePicker
                       value={formData.fromDate}
-                      onChange={date => setFormData(prev => ({ ...prev, fromDate: date }))}
+                      onChange={date => {
+                        setFormData(prev => ({ ...prev, fromDate: date }));
+                        if (errors.fromDate) setErrors(p => { const { fromDate, ...r } = p; return r; });
+                      }}
                       placeholder={t('stages.placeholders.fromDate')}
                     />
                   </FormField>
-                  <FormField label={t('common.endDate')} required>
+                  <FormField label={t('common.endDate')} required error={errors.toDate}>
                     <DatePicker
                       value={formData.toDate}
-                      onChange={date => setFormData(prev => ({ ...prev, toDate: date }))}
+                      onChange={date => {
+                        setFormData(prev => ({ ...prev, toDate: date }));
+                        if (errors.toDate) setErrors(p => { const { toDate, ...r } = p; return r; });
+                      }}
                       placeholder={t('stages.placeholders.toDate')}
                     />
                   </FormField>
