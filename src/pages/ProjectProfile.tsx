@@ -19,7 +19,6 @@ import {
   CalendarDays,
   Clock,
 } from "lucide-react";
-import { cn } from "@/lib/utils";
 import { Shell } from "../components/shared/Shell";
 import { useTranslation } from "react-i18next";
 import { useQuery } from "@tanstack/react-query";
@@ -61,33 +60,6 @@ interface ProjectData {
   updatedBy?: { id: number; email: string } | null;
   stages: ProjectStage[];
 }
-
-const statusConfig: Record<string, { dot: string; pill: string }> = {
-  planning: {
-    dot: "bg-blue-500",
-    pill: "bg-blue-50 text-blue-700 ring-blue-200 dark:bg-blue-950/30 dark:text-blue-400 dark:ring-blue-800/40",
-  },
-  evacuation: {
-    dot: "bg-orange-500",
-    pill: "bg-orange-50 text-orange-700 ring-orange-200 dark:bg-orange-950/30 dark:text-orange-400 dark:ring-orange-800/40",
-  },
-  demolition: {
-    dot: "bg-red-500",
-    pill: "bg-red-50 text-red-700 ring-red-200 dark:bg-red-950/30 dark:text-red-400 dark:ring-red-800/40",
-  },
-  construction: {
-    dot: "bg-amber-500",
-    pill: "bg-amber-50 text-amber-700 ring-amber-200 dark:bg-amber-950/30 dark:text-amber-400 dark:ring-amber-800/40",
-  },
-  handover: {
-    dot: "bg-emerald-500",
-    pill: "bg-emerald-50 text-emerald-700 ring-emerald-200 dark:bg-emerald-950/30 dark:text-emerald-400 dark:ring-emerald-800/40",
-  },
-  onhold: {
-    dot: "bg-gray-400",
-    pill: "bg-gray-100 text-gray-600 ring-gray-200 dark:bg-gray-800 dark:text-gray-400 dark:ring-gray-700",
-  },
-};
 
 export default function ProjectProfile() {
   const { t, i18n } = useTranslation();
@@ -653,7 +625,8 @@ export default function ProjectProfile() {
                   ) : (
                     <div className="space-y-2">
                       {allDocs.map((doc, i) => {
-                        const fileName = doc.url.split("/").pop() || `file-${i + 1}`;
+                        const fileName =
+                          doc.url.split("/").pop() || `file-${i + 1}`;
                         return (
                           <a
                             key={i}
