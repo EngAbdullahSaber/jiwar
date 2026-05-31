@@ -343,17 +343,17 @@ export function FileUpload({
       )}
 
       <motion.div
-        whileHover={{ scale: 1.01 }}
-        whileTap={{ scale: 0.99 }}
+        whileHover={{ scale: 1.005 }}
+        whileTap={{ scale: 0.995 }}
         className={cn(
-          "relative group cursor-pointer transition-all duration-300",
-          "min-h-[200px] flex flex-col items-center justify-center p-8",
+          "relative group cursor-pointer transition-all duration-200",
+          "min-h-[150px] flex flex-col items-center justify-center p-5",
           "rounded-md border-2 border-dashed",
-          "bg-gradient-to-br from-white to-gray-50 dark:from-gray-900 dark:to-gray-800/50",
-          dragActive 
-                ? "border-[#B39371] bg-[#B39371]/5 shadow-lg shadow-[#B39371]/20" 
-            : "border-gray-200 dark:border-gray-700 hover:border-[#B39371] hover:bg-[#B39371]/5 hover:shadow-lg hover:shadow-[#B39371]/10",
-          preview && !multiple && "border-emerald-500/30 bg-gradient-to-br from-emerald-50/30 to-transparent"
+          "bg-gray-50/50 dark:bg-gray-800/30",
+          dragActive
+            ? "border-[#B39371] bg-[#B39371]/5"
+            : "border-gray-200 dark:border-gray-700 hover:border-[#B39371]/60 hover:bg-[#B39371]/5",
+          preview && !multiple && "border-emerald-500/40 bg-emerald-50/20 dark:bg-emerald-500/5"
         )}
         onDragEnter={onDrag}
         onDragLeave={onDrag}
@@ -371,176 +371,121 @@ export function FileUpload({
           disabled={isUploading}
         />
 
-        {/* Decorative Elements */}
-        <div className="absolute inset-0 overflow-hidden rounded-md pointer-events-none">
-          <div className="absolute -top-20 -right-20 w-40 h-40 bg-[#B39371]/5 rounded-md blur-3xl" />
-          <div className="absolute -bottom-20 -left-20 w-40 h-40 bg-[#B39371]/5 rounded-md blur-3xl" />
-        </div>
-
         <AnimatePresence mode="wait">
           {isUploading ? (
             <motion.div
               key="uploading"
-              initial={{ opacity: 0, scale: 0.9 }}
+              initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.9 }}
-              className="flex flex-col items-center gap-6 z-10"
+              exit={{ opacity: 0, scale: 0.95 }}
+              className="flex flex-col items-center gap-3 z-10"
             >
-              <div className="relative">
-                <motion.div
-                  animate={{ rotate: 360 }}
-                  transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
-                >
-                  <Loader2 className="w-16 h-16 text-[#B39371]" />
-                </motion.div>
-                <div className="absolute inset-0 blur-2xl bg-[#B39371]/30 animate-pulse" />
-              </div>
-              
-              <div className="text-center space-y-2">
-                <p className="text-lg font-bold text-gray-800 dark:text-white">
-                  Uploading {multiple ? 'Files' : 'File'}...
-                </p>
-                <p className="text-sm text-gray-500">
-                  {uploadProgress}% complete
+              <motion.div
+                animate={{ rotate: 360 }}
+                transition={{ duration: 1.5, repeat: Infinity, ease: "linear" }}
+              >
+                <Loader2 className="w-8 h-8 text-[#B39371]" />
+              </motion.div>
+              <div className="text-center space-y-1">
+                <p className="text-sm font-semibold text-gray-700 dark:text-gray-300">
+                  جاري الرفع... {uploadProgress}%
                 </p>
               </div>
-
-              {/* Progress Bar */}
-              <div className="w-64 h-2 bg-gray-200 dark:bg-gray-700 rounded-md overflow-hidden">
+              <div className="w-40 h-1.5 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
                 <motion.div
                   initial={{ width: 0 }}
                   animate={{ width: `${uploadProgress}%` }}
-                  className="h-full bg-gradient-to-r from-[#B39371] to-[#8B7355] rounded-md"
+                  className="h-full bg-[#B39371] rounded-full"
                 />
               </div>
             </motion.div>
           ) : preview && !multiple ? (
             <motion.div
               key="preview"
-              initial={{ opacity: 0, y: 10 }}
+              initial={{ opacity: 0, y: 6 }}
               animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              className="w-full space-y-6 z-10"
+              exit={{ opacity: 0, y: -6 }}
+              className="w-full z-10"
               onClick={(e) => e.stopPropagation()}
             >
-              <div className="flex items-center gap-4 bg-white dark:bg-gray-800 p-4 rounded-md shadow-lg border border-emerald-100 dark:border-emerald-500/20">
-                <div className="relative">
-                  <div className="absolute inset-0 bg-emerald-500/20 rounded-md blur-md" />
-                  <div className="relative w-14 h-14 rounded-md bg-gradient-to-br from-emerald-500/10 to-emerald-500/5 flex items-center justify-center">
-                    {fileInfo?.type.startsWith('image/') ? (
-                      fileInfo.url ? (
-                        <img 
-                          src={fileInfo.url} 
-                          alt="Preview"
-                          className="w-full h-full object-cover rounded-md"
-                        />
-                      ) : (
-                        <Image className="w-7 h-7 text-emerald-600" />
-                      )
-                    ) : (
-                      getFileIcon(fileInfo?.name || '', fileInfo?.type || '')
-                    )}
-                  </div>
+              <div className="flex items-center gap-3 bg-white dark:bg-gray-800 p-3 rounded-md border border-emerald-100 dark:border-emerald-500/20">
+                <div className="w-10 h-10 rounded-md bg-emerald-50 dark:bg-emerald-500/10 flex items-center justify-center flex-shrink-0">
+                  {fileInfo?.type.startsWith('image/') && fileInfo.url ? (
+                    <img
+                      src={fileInfo.url}
+                      alt="Preview"
+                      className="w-full h-full object-cover rounded-md"
+                    />
+                  ) : (
+                    getFileIcon(fileInfo?.name || '', fileInfo?.type || '')
+                  )}
                 </div>
 
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-bold text-gray-900 dark:text-white truncate">
+                  <p className="text-sm font-medium text-gray-900 dark:text-white truncate">
                     {fileInfo?.name}
                   </p>
-                  <div className="flex items-center gap-2 mt-1">
+                  <div className="flex items-center gap-1.5 mt-0.5">
                     {fileInfo?.size !== undefined && fileInfo.size > 0 && (
-                      <>
-                        <span className="text-xs text-gray-500 font-medium">
-                          {formatFileSize(fileInfo.size)}
-                        </span>
-                        <span className="w-1 h-1 bg-gray-300 rounded-md" />
-                      </>
+                      <span className="text-xs text-gray-400">{formatFileSize(fileInfo.size)}</span>
                     )}
-                    <span className="text-xs text-emerald-600 font-medium">
-                      Ready
+                    <span className="text-xs text-emerald-500 flex items-center gap-1">
+                      <CheckCircle2 className="w-3 h-3" /> تم الرفع
                     </span>
                   </div>
                 </div>
 
                 <div className="flex items-center gap-1">
                   <motion.a
-                    whileHover={{ scale: 1.1 }}
-                    whileTap={{ scale: 0.95 }}
+                    whileHover={{ scale: 1.05 }}
                     href={preview.startsWith('http') ? preview : `${import.meta.env.VITE_API_BASE_URL}/${preview}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     onClick={(e) => e.stopPropagation()}
-                    className="p-2.5 rounded-md bg-gray-50 dark:bg-gray-700 text-gray-500 hover:text-[#B39371] hover:bg-[#B39371]/10 transition-all"
-                    title="View file"
+                    className="p-1.5 rounded-md text-gray-400 hover:text-[#B39371] hover:bg-[#B39371]/10 transition-all"
                   >
-                    <Eye className="w-5 h-5" />
+                    <Eye className="w-4 h-4" />
                   </motion.a>
                   <motion.button
-                    whileHover={{ scale: 1.1 }}
-                    whileTap={{ scale: 0.95 }}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      removeFile();
-                    }}
-                    className="p-2.5 rounded-md bg-gray-50 dark:bg-gray-700 text-gray-500 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 transition-all"
-                    title="Remove file"
+                    whileHover={{ scale: 1.05 }}
+                    onClick={(e) => { e.stopPropagation(); removeFile(); }}
+                    className="p-1.5 rounded-md text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 transition-all"
                   >
-                    <Trash2 className="w-5 h-5" />
+                    <Trash2 className="w-4 h-4" />
                   </motion.button>
                 </div>
               </div>
-
-              <motion.div 
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                className="flex items-center justify-center gap-2 text-emerald-600 bg-emerald-50 dark:bg-emerald-500/10 py-2 px-4 rounded-md w-fit mx-auto"
-              >
-                <CheckCircle2 className="w-4 h-4" />
-                <span className="text-xs font-bold uppercase tracking-wider">File uploaded successfully</span>
-              </motion.div>
             </motion.div>
           ) : (
             <motion.div
               key="upload"
-              initial={{ opacity: 0, scale: 0.9 }}
+              initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.9 }}
-              className="flex flex-col items-center text-center space-y-6 z-10"
+              exit={{ opacity: 0, scale: 0.95 }}
+              className="flex flex-col items-center text-center gap-3 z-10"
             >
-              <div className="relative">
-                <motion.div
-                  animate={{ 
-                    y: [0, -10, 0],
-                    rotate: [0, 5, -5, 0]
-                  }}
-                  transition={{ duration: 4, repeat: Infinity }}
-                  className="relative"
-                >
-                  <div className="absolute inset-0 blur-3xl bg-[#B39371]/20 group-hover:bg-[#B39371]/30 transition-all" />
-                  <div className="relative w-20 h-20 rounded-md bg-gradient-to-br from-[#B39371]/10 to-[#8B7355]/5 flex items-center justify-center border-2 border-gray-200 dark:border-gray-700 group-hover:border-[#B39371]/30 transition-all">
-                    {multiple ? (
-                      <Files className="w-10 h-10 text-gray-400 group-hover:text-[#B39371] transition-colors" />
-                    ) : (
-                      <Upload className="w-10 h-10 text-gray-400 group-hover:text-[#B39371] transition-colors" />
-                    )}
-                  </div>
-                </motion.div>
+              <div className="w-12 h-12 rounded-md bg-gray-100 dark:bg-gray-700/60 border border-gray-200 dark:border-gray-600 group-hover:border-[#B39371]/40 group-hover:bg-[#B39371]/5 flex items-center justify-center transition-all">
+                {multiple ? (
+                  <Files className="w-6 h-6 text-gray-400 group-hover:text-[#B39371] transition-colors" />
+                ) : (
+                  <Upload className="w-6 h-6 text-gray-400 group-hover:text-[#B39371] transition-colors" />
+                )}
               </div>
 
-              <div className="space-y-2">
-                <p className="text-lg font-bold text-gray-900 dark:text-white">
-                  {multiple ? 'Drop files here or click to upload' : 'Drop file here or click to upload'}
+              <div className="space-y-1">
+                <p className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                  {multiple ? 'اسحب الملفات هنا أو اضغط للرفع' : 'اسحب الملف هنا أو اضغط للرفع'}
                 </p>
-                <p className="text-sm text-gray-500 dark:text-gray-400 max-w-md">
-                  {helperText || `Maximum file size: ${maxSizeMB}MB`}
-                </p>
+                {helperText && (
+                  <p className="text-xs text-gray-400 dark:text-gray-500">{helperText}</p>
+                )}
               </div>
 
-              <div className="flex flex-wrap items-center justify-center gap-2">
+              <div className="flex flex-wrap items-center justify-center gap-1">
                 {accept.split(',').map((type, i) => (
-                  <span 
+                  <span
                     key={i}
-                    className="text-xs px-3 py-1 bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 rounded-md font-medium"
+                    className="text-[11px] px-2 py-0.5 bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400 rounded-md"
                   >
                     {type.trim()}
                   </span>

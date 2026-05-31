@@ -554,34 +554,60 @@ export default function UpdateApartment() {
               description={t('apartments.sections.sakImagesDesc')}
               delay={0.4}
             >
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <FormField label={t('apartments.labels.projectSak')}>
-                  <FileUpload
-                    onUploadSuccess={(url: string) => setFormData({ ...formData, projectSakPdfUrl: url })}
-                    defaultValue={formData.projectSakPdfUrl}
-                    accept=".jpg,.jpeg,.png,.webp"
-                    maxSizeMB={10}
-                    helperText={t('apartments.placeholders.uploadProjectSak')}
-                  />
-                </FormField>
-                <FormField label={t('apartments.labels.apartmentSak')}>
-                  <FileUpload
-                    onUploadSuccess={(url: string) => setFormData({ ...formData, apartmentSakPdfUrl: url })}
-                    defaultValue={formData.apartmentSakPdfUrl}
-                    accept=".jpg,.jpeg,.png,.webp"
-                    maxSizeMB={10}
-                    helperText={t('apartments.placeholders.uploadApartmentSak')}
-                  />
-                </FormField>
-                <FormField label={t('apartments.labels.subDivision')}>
-                  <FileUpload
-                    onUploadSuccess={(url: string) => setFormData({ ...formData, apartmentSubDivisionPdfUrl: url })}
-                    defaultValue={formData.apartmentSubDivisionPdfUrl}
-                    accept=".jpg,.jpeg,.png,.webp"
-                    maxSizeMB={10}
-                    helperText={t('apartments.placeholders.uploadSubDivision')}
-                  />
-                </FormField>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="flex flex-col rounded-md border border-gray-200 dark:border-gray-700 overflow-hidden">
+                  <div className="px-4 py-3 bg-gray-50 dark:bg-gray-800/60 border-b border-gray-200 dark:border-gray-700 flex items-center gap-2">
+                    <div className="w-1.5 h-1.5 rounded-full bg-[#B39371]" />
+                    <span className="text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
+                      {t('apartments.labels.projectSak')}
+                    </span>
+                  </div>
+                  <div className="p-4 flex-1">
+                    <FileUpload
+                      onUploadSuccess={(url: string) => setFormData({ ...formData, projectSakPdfUrl: url })}
+                      defaultValue={formData.projectSakPdfUrl}
+                      accept=".jpg,.jpeg,.png,.webp"
+                      maxSizeMB={10}
+                      helperText={t('apartments.placeholders.uploadProjectSak')}
+                    />
+                  </div>
+                </div>
+
+                <div className="flex flex-col rounded-md border border-gray-200 dark:border-gray-700 overflow-hidden">
+                  <div className="px-4 py-3 bg-gray-50 dark:bg-gray-800/60 border-b border-gray-200 dark:border-gray-700 flex items-center gap-2">
+                    <div className="w-1.5 h-1.5 rounded-full bg-[#B39371]" />
+                    <span className="text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
+                      {t('apartments.labels.apartmentSak')}
+                    </span>
+                  </div>
+                  <div className="p-4 flex-1">
+                    <FileUpload
+                      onUploadSuccess={(url: string) => setFormData({ ...formData, apartmentSakPdfUrl: url })}
+                      defaultValue={formData.apartmentSakPdfUrl}
+                      accept=".jpg,.jpeg,.png,.webp"
+                      maxSizeMB={10}
+                      helperText={t('apartments.placeholders.uploadApartmentSak')}
+                    />
+                  </div>
+                </div>
+
+                <div className="flex flex-col rounded-md border border-gray-200 dark:border-gray-700 overflow-hidden">
+                  <div className="px-4 py-3 bg-gray-50 dark:bg-gray-800/60 border-b border-gray-200 dark:border-gray-700 flex items-center gap-2">
+                    <div className="w-1.5 h-1.5 rounded-full bg-[#B39371]" />
+                    <span className="text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
+                      {t('apartments.labels.subDivision')}
+                    </span>
+                  </div>
+                  <div className="p-4 flex-1">
+                    <FileUpload
+                      onUploadSuccess={(url: string) => setFormData({ ...formData, apartmentSubDivisionPdfUrl: url })}
+                      defaultValue={formData.apartmentSubDivisionPdfUrl}
+                      accept=".jpg,.jpeg,.png,.webp"
+                      maxSizeMB={10}
+                      helperText={t('apartments.placeholders.uploadSubDivision')}
+                    />
+                  </div>
+                </div>
               </div>
             </FormSection>
 
@@ -594,16 +620,26 @@ export default function UpdateApartment() {
             >
               <div className="space-y-4">
                 {formData.files.map((file, idx) => (
-                  <div key={idx} className="grid grid-cols-1 md:grid-cols-[1fr_2fr_auto] gap-3 p-4 bg-gray-50 dark:bg-gray-800/50 rounded-md border border-gray-100 dark:border-gray-700">
-                    <FormField label={t('apartments.labels.fileTitle')}>
+                  <div key={idx} className="rounded-md border border-gray-200 dark:border-gray-700 overflow-hidden">
+                    <div className="flex items-center gap-3 px-4 py-3 bg-gray-50 dark:bg-gray-800/60 border-b border-gray-200 dark:border-gray-700">
+                      <span className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider whitespace-nowrap">
+                        {t('apartments.labels.fileTitle')}
+                      </span>
                       <Input
                         placeholder={t('apartments.placeholders.fileTitle')}
                         value={file.title}
                         onChange={(e) => updateFile(idx, 'title', e.target.value)}
-                        className="h-10 bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md"
+                        className="h-8 flex-1 bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md"
                       />
-                    </FormField>
-                    <FormField label={t('apartments.labels.fileUrl')}>
+                      <button
+                        type="button"
+                        onClick={() => removeFile(idx)}
+                        className="h-8 w-8 flex-shrink-0 flex items-center justify-center rounded-md border border-red-200 dark:border-red-800 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
+                      >
+                        <X className="w-4 h-4" />
+                      </button>
+                    </div>
+                    <div className="p-4">
                       <FileUpload
                         onUploadSuccess={(url: string) => updateFile(idx, 'url', url)}
                         defaultValue={file.url}
@@ -611,15 +647,6 @@ export default function UpdateApartment() {
                         maxSizeMB={20}
                         helperText={t('apartments.placeholders.uploadFile')}
                       />
-                    </FormField>
-                    <div className="flex items-end pb-0.5">
-                      <button
-                        type="button"
-                        onClick={() => removeFile(idx)}
-                        className="h-10 w-10 flex items-center justify-center rounded-md border border-red-200 dark:border-red-800 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
-                      >
-                        <X className="w-4 h-4" />
-                      </button>
                     </div>
                   </div>
                 ))}
