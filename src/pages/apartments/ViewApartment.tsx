@@ -241,7 +241,7 @@ export default function ViewApartment() {
             </div>
 
             <div className="flex items-center gap-2 shrink-0">
-              {apartment.status === 'available' && (
+              {apartment.isAvailable && (
                 <motion.button
                   whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.99 }}
                   onClick={() => {

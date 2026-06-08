@@ -120,6 +120,7 @@
     "salesTeam": "فريق المبيعات",
     "contracts": "العقود",
     "approveContracts": "اعتماد العقود",
+    "contractTemplates": "قوالب العقود",
     "finance": "المالية",
     "materials": "المشتريات",
     "countries": "الدول",
@@ -315,7 +316,8 @@
       "FINANCE-DASHBOARD": "لوحة البيانات المالية",
       "resources-dashboard": "لوحة بيانات الموارد",
       "finance-dashboard": "لوحة البيانات المالية",
-      "project-media": "وسائط المشروع"
+      "project-media": "وسائط المشروع",
+      "contract-template": "قوالب العقود"
     },
     "moduleAccess": "صلاحيات الوحدة",
     "resourceDescriptions": {
@@ -343,7 +345,8 @@
       "FINANCE-DASHBOARD": "عرض الإحصائيات والمؤشرات المالية",
       "resources-dashboard": "تتبع موارد النظام وتوافرها",
       "finance-dashboard": "عرض الإحصائيات والمؤشرات المالية",
-      "project-media": "إدارة صور ووسائط المشروع"
+      "project-media": "إدارة صور ووسائط المشروع",
+      "contract-template": "إدارة قوالب العقود PDF والحقول الديناميكية"
     },
     "modules": {
       "dashboard": "لوحة القيادة",
@@ -1063,6 +1066,9 @@
       "contractDate": "تاريخ العقد",
       "paidAmount": "المبلغ المدفوع",
       "type": "نوع العقد",
+      "templateSection": "قالب العقد",
+      "templateSectionDesc": "اختر قالب PDF الذي يحدد هيكل العقد وحقوله الديناميكية",
+      "contractTemplate": "قالب العقد",
       "basicInfo": "معلومات أساسية",
       "basicInfoDesc": "توقيت العقد الأساسي وتصنيف النوع",
       "clientSection": "العميل والهوية",
@@ -1071,6 +1077,10 @@
       "propertySectionDesc": "تفاصيل الوحدة الفعلية ومعرفات الأرض القانونية",
       "financialSection": "الشروط المالية",
       "financialSectionDesc": "تفاصيل الدفع وأرقام المراجع والرسوم",
+      "detailsSection": "تفاصيل العقد",
+      "detailsSectionDesc": "أدخل الحقول الخاصة بالقالب لهذا العقد",
+      "noFields": "هذا القالب لا يحتوي على حقول قابلة للتكوين.",
+      "totalContractValue": "إجمالي قيمة العقد",
       "hijriDate": "التاريخ الهجري",
       "contractCity": "مدينة العقد",
       "buyerTitle": "لقب المشتري",
@@ -1109,7 +1119,8 @@
       "selectClient": "اختر العميل...",
       "selectApartment": "اختر الوحدة...",
       "selectPaymentType": "اختر طريقة الدفع",
-      "selectReferenceType": "اختر نوع المرجع"
+      "selectReferenceType": "اختر نوع المرجع",
+      "selectTemplate": "اختر قالب العقد..."
     },
     "paymentMethods": {
       "bank_transfer": "تحويل بنكي",
@@ -1434,6 +1445,72 @@
     "empty": {
       "title": "لم يتم العثور على مراحل",
       "description": "لا توجد مراحل بناء تطابق معايير البحث الحالية."
+    }
+  },
+  "contractTemplates": {
+    "title": "قوالب العقود",
+    "management": "إدارة قوالب العقود",
+    "description": "إدارة قوالب عقود PDF القابلة لإعادة الاستخدام لأنواع المعاملات المختلفة",
+    "add": "إضافة قالب",
+    "create": "إنشاء قالب",
+    "new": "قالب عقد جديد",
+    "notFound": "قالب العقد غير موجود",
+    "downloadPdf": "تحميل PDF",
+    "labels": {
+      "name": "اسم القالب",
+      "nameEn": "الاسم (إنجليزي)",
+      "nameAr": "الاسم (عربي)",
+      "templateId": "معرّف القالب",
+      "createdBy": "أنشئ بواسطة",
+      "updatedBy": "حُدِّث بواسطة",
+      "createdAt": "تاريخ الإنشاء",
+      "updatedAt": "تاريخ التحديث"
+    },
+    "placeholders": {
+      "search": "البحث في القوالب...",
+      "nameEn": "مثال: Apartment Sale Template",
+      "nameAr": "مثال: قالب بيع شقة",
+      "uploadPdf": "ارفع ملف قالب العقد بصيغة PDF (الحد الأقصى 20 ميجابايت)"
+    },
+    "sections": {
+      "naming": "هوية القالب",
+      "namingDesc": "أدخل الاسمين باللغتين للتعريف بقالب العقد هذا",
+      "document": "مستند PDF",
+      "documentDesc": "ارفع ملف قالب العقد بصيغة PDF",
+      "details": "تفاصيل القالب",
+      "audit": "معلومات التدقيق",
+      "pdfPreview": "معاينة PDF"
+    },
+    "stats": {
+      "total": "إجمالي القوالب",
+      "available": "عبر جميع أنواع العقود",
+      "pages": "إجمالي الصفحات",
+      "pagesDesc": "صفحات سجلات القوالب"
+    },
+    "deleteTitle": "حذف قالب العقد",
+    "deleteDescription": "هل أنت متأكد من حذف \"{{name}}\"؟ لا يمكن التراجع عن هذا الإجراء.",
+    "edit": "تعديل القالب",
+    "editTitle": "تعديل قالب العقد",
+    "editDescription": "تحديث الاسم الثنائي اللغة لقالب العقد هذا",
+    "success": {
+      "create": "تم إنشاء قالب العقد بنجاح",
+      "update": "تم تحديث قالب العقد بنجاح",
+      "delete": "تم حذف قالب العقد بنجاح"
+    },
+    "errors": {
+      "create": "فشل إنشاء قالب العقد",
+      "update": "فشل تحديث قالب العقد",
+      "delete": "فشل حذف قالب العقد"
+    },
+    "empty": {
+      "title": "لم يتم العثور على قوالب عقود",
+      "description": "لا توجد قوالب تطابق معايير البحث.",
+      "createFirst": "ابدأ برفع أول قالب عقد"
+    },
+    "fieldNamesHint": {
+      "title": "أسماء الحقول المطلوبة في PDF",
+      "description": "يجب أن يحتوي ملف PDF على أسماء الحقول التالية بالضبط حتى يتمكن النظام من استخراجها وملئها تلقائياً:",
+      "note": "أي أسماء حقول أخرى في PDF ستُعامل كحقول نصية حرة."
     }
   }
 }

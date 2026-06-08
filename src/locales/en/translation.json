@@ -119,6 +119,7 @@
     "salesTeam": "Sales Team",
     "contracts": "Contracts",
     "approveContracts": "Approve Contracts",
+    "contractTemplates": "Contract Templates",
     "finance": "Finance",
     "materials": "Purchases",
     "countries": "Countries",
@@ -314,7 +315,8 @@
       "FINANCE-DASHBOARD": "Finance Dashboard",
       "resources-dashboard": "Resources Dashboard",
       "finance-dashboard": "Finance Dashboard",
-      "project-media": "Project Media"
+      "project-media": "Project Media",
+      "contract-template": "Contract Templates"
     },
     "moduleAccess": "Module access",
     "resourceDescriptions": {
@@ -342,7 +344,8 @@
       "FINANCE-DASHBOARD": "View financial statistics and metrics",
       "resources-dashboard": "Track system resources and availability",
       "finance-dashboard": "View financial statistics and metrics",
-      "project-media": "Manage project images and media files"
+      "project-media": "Manage project images and media files",
+      "contract-template": "Manage PDF contract templates and dynamic fields"
     },
     "modules": {
       "dashboard": "Dashboard",
@@ -1064,6 +1067,9 @@
       "contractDate": "Contract Date",
       "paidAmount": "Paid Amount",
       "type": "Contract Type",
+      "templateSection": "Contract Template",
+      "templateSectionDesc": "Select the PDF template that defines this contract's structure and dynamic fields",
+      "contractTemplate": "Contract Template",
       "basicInfo": "Basic Information",
       "basicInfoDesc": "Core contract timing and type classification",
       "clientSection": "Client & Identification",
@@ -1072,6 +1078,10 @@
       "propertySectionDesc": "Physical unit details and legal plot identifiers",
       "financialSection": "Financial Terms",
       "financialSectionDesc": "Payment details, reference numbers, and fees",
+      "detailsSection": "Contract Details",
+      "detailsSectionDesc": "Fill in the template-specific fields for this contract",
+      "noFields": "This template has no configurable fields.",
+      "totalContractValue": "Total Contract Value",
       "hijriDate": "Hijri Date",
       "contractCity": "Contract City",
       "buyerTitle": "Buyer Title",
@@ -1110,7 +1120,8 @@
       "selectClient": "Select client...",
       "selectApartment": "Select apartment...",
       "selectPaymentType": "Select payment type",
-      "selectReferenceType": "Select reference type"
+      "selectReferenceType": "Select reference type",
+      "selectTemplate": "Select contract template..."
     },
     "paymentMethods": {
       "bank_transfer": "Bank Transfer",
@@ -1435,6 +1446,72 @@
     "empty": {
       "title": "No Stages Found",
       "description": "No construction stages match your current search criteria."
+    }
+  },
+  "contractTemplates": {
+    "title": "Contract Templates",
+    "management": "Contract Template Management",
+    "description": "Manage reusable PDF contract templates for different transaction types",
+    "add": "Add Template",
+    "create": "Create Template",
+    "new": "New Contract Template",
+    "notFound": "Contract template not found",
+    "downloadPdf": "Download PDF",
+    "labels": {
+      "name": "Template Name",
+      "nameEn": "Name (English)",
+      "nameAr": "Name (Arabic)",
+      "templateId": "Template ID",
+      "createdBy": "Created By",
+      "updatedBy": "Updated By",
+      "createdAt": "Created At",
+      "updatedAt": "Updated At"
+    },
+    "placeholders": {
+      "search": "Search templates...",
+      "nameEn": "e.g. Apartment Sale Template",
+      "nameAr": "مثال: قالب بيع شقة",
+      "uploadPdf": "Upload the contract PDF template (max 20 MB)"
+    },
+    "sections": {
+      "naming": "Template Identity",
+      "namingDesc": "Provide bilingual names to identify this contract template",
+      "document": "PDF Document",
+      "documentDesc": "Upload the contract template PDF file",
+      "details": "Template Details",
+      "audit": "Audit Information",
+      "pdfPreview": "PDF Preview"
+    },
+    "stats": {
+      "total": "Total Templates",
+      "available": "Across all contract types",
+      "pages": "Total Pages",
+      "pagesDesc": "Pages of template records"
+    },
+    "deleteTitle": "Delete Contract Template",
+    "deleteDescription": "Are you sure you want to delete \"{{name}}\"? This action cannot be undone.",
+    "edit": "Edit Template",
+    "editTitle": "Edit Contract Template",
+    "editDescription": "Update the bilingual name of this contract template",
+    "success": {
+      "create": "Contract template created successfully",
+      "update": "Contract template updated successfully",
+      "delete": "Contract template deleted successfully"
+    },
+    "errors": {
+      "create": "Failed to create contract template",
+      "update": "Failed to update contract template",
+      "delete": "Failed to delete contract template"
+    },
+    "empty": {
+      "title": "No Contract Templates Found",
+      "description": "No templates match your search criteria.",
+      "createFirst": "Start by uploading your first contract template"
+    },
+    "fieldNamesHint": {
+      "title": "Required PDF Field Names",
+      "description": "Your PDF template must use the following exact field names so the system can extract and fill them automatically:",
+      "note": "Any other field names in the PDF will be treated as free-text fields."
     }
   }
 }

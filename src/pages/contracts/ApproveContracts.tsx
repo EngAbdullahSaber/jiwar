@@ -177,34 +177,37 @@ export default function ApproveContracts() {
           </div>
           <div>
             <p className="text-sm font-semibold text-gray-900 dark:text-white">
-              {c.client?.fullName}
+              {c.client?.fullName || t('common.noData')}
             </p>
-            <p className="text-xs text-gray-500 dark:text-gray-400">
-              {c.nationalId}
-            </p>
+            {c.nationalId && (
+              <p className="text-xs text-gray-500 dark:text-gray-400">{c.nationalId}</p>
+            )}
           </div>
         </div>
       )
     },
     {
       header: t('contracts.labels.apartment'),
-      cell: (c) => (
-        <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-md bg-[#F5F1ED] dark:bg-gray-800 flex items-center justify-center">
-            <Building2 className="w-4 h-4 text-[#4A1B1B] dark:text-[#B39371]" />
+      cell: (c) => {
+        const location = [c.district || c.projectDistrict, c.contractCity].filter(Boolean).join(', ');
+        return (
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 rounded-md bg-[#F5F1ED] dark:bg-gray-800 flex items-center justify-center">
+              <Building2 className="w-4 h-4 text-[#4A1B1B] dark:text-[#B39371]" />
+            </div>
+            <div>
+              <p className="text-sm font-medium text-gray-900 dark:text-white">
+                {c.apartment
+                  ? (i18n.language === 'ar' ? c.apartment?.mainName?.arabic : c.apartment?.mainName?.english)
+                  : t('common.noData')}
+              </p>
+              {location && (
+                <p className="text-xs text-gray-500 dark:text-gray-400">{location}</p>
+              )}
+            </div>
           </div>
-          <div>
-            <p className="text-sm font-medium text-gray-900 dark:text-white">
-              {c.apartment 
-                ? (i18n.language === 'ar' ? c.apartment?.mainName?.arabic : c.apartment?.mainName?.english)
-                : t('common.noData')}
-            </p>
-            <p className="text-xs text-gray-500 dark:text-gray-400">
-              {c.district || c.projectDistrict}, {c.contractCity}
-            </p>
-          </div>
-        </div>
-      )
+        );
+      }
     },
     {
       header: t('contracts.labels.contractDate'),
@@ -212,9 +215,11 @@ export default function ApproveContracts() {
         <div className="flex flex-col">
           <div className="flex items-center gap-1 text-sm text-gray-900 dark:text-white">
             <Calendar className="w-3.5 h-3.5 text-gray-400" />
-            {format(new Date(c.contractDate), 'dd/MM/yyyy')}
+            {c.contractDate ? format(new Date(c.contractDate), 'dd/MM/yyyy') : t('common.noData')}
           </div>
-          <p className="text-xs text-gray-500 dark:text-gray-400">{c.hijriDate}</p>
+          {c.hijriDate && (
+            <p className="text-xs text-gray-500 dark:text-gray-400">{c.hijriDate}</p>
+          )}
         </div>
       )
     },
@@ -223,9 +228,11 @@ export default function ApproveContracts() {
       cell: (c) => (
         <div className="flex flex-col">
           <span className="text-sm font-bold text-[#4A1B1B] dark:text-[#B39371]">
-            {c.paidAmount.toLocaleString()} {t('common.sar')}
+            {(c.paidAmount ?? 0).toLocaleString()} {t('common.sar')}
           </span>
-          <span className="text-xs text-gray-500 dark:text-gray-400">{t(`contracts.paymentMethods.${c.paymentType}`)}</span>
+          {c.paymentType && (
+            <span className="text-xs text-gray-500 dark:text-gray-400">{t(`contracts.paymentMethods.${c.paymentType}`)}</span>
+          )}
         </div>
       )
     },
@@ -233,7 +240,7 @@ export default function ApproveContracts() {
       header: t('contracts.labels.type'),
       cell: (c) => (
         <span className="inline-flex items-center px-2.5 py-0.5 rounded-md text-xs font-medium bg-[#F5F1ED] text-[#4A1B1B] dark:bg-gray-800 dark:text-[#B39371]">
-          {t(`contracts.types.${c.type}`)}
+          {t(`contracts.types.${c.type}`, { defaultValue: c.type })}
         </span>
       )
     },
@@ -287,9 +294,9 @@ export default function ApproveContracts() {
 
           {c.pdfUrl && (
             <Can I="READ" a="contract-approval">
-              <a 
-                href={`${import.meta.env.VITE_API_BASE_URL}/${c.pdfUrl}`} 
-                target="_blank" 
+              <a
+                href={`${import.meta.env.VITE_API_BASE_URL}/${c.pdfUrl.replace(/^\//, '')}`}
+                target="_blank"
                 rel="noopener noreferrer"
                 className="p-2 hover:bg-[#F5F1ED] dark:hover:bg-gray-800 rounded-md text-gray-400 hover:text-[#4A1B1B] dark:hover:text-[#B39371] transition-colors"
                 title={t('common.download')}

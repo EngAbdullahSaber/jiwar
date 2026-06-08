@@ -1,38 +1,88 @@
-import { useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { TopHeader } from '../../components/TopHeader';
+import { useState } from "react";
+import { useTranslation } from "react-i18next";
+import { TopHeader } from "../../components/TopHeader";
 import { Link, useLocation, useSearch } from "wouter";
-import {
-  FileText,
-  ArrowLeft,
-  Sparkles,
-  Calendar,
-  User,
-  Building2,
-  CreditCard
-} from 'lucide-react';
+import { FileText, ArrowLeft, Sparkles, LayoutList, Building2 } from "lucide-react";
 import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { PaginatedSelect } from '../../components/shared/PaginatedSelect';
-import { FormActions } from '../../components/shared/FormActions';
-import { Shell } from '../../components/shared/Shell';
-import { useMutation } from '@tanstack/react-query';
-import api from '@/lib/api';
-import toast from 'react-hot-toast';
-import { cn, scrollToFirstError } from '@/lib/utils';
-import { motion } from 'framer-motion';
-import DatePicker from '../../components/shared/DatePicker';
-import HijriDatePicker from '../../components/shared/HijriDatePicker';
-import { FormField } from '../../components/shared/FormField';
+import { PaginatedSelect } from "../../components/shared/PaginatedSelect";
+import { FormActions } from "../../components/shared/FormActions";
+import { Shell } from "../../components/shared/Shell";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import api from "@/lib/api";
+import toast from "react-hot-toast";
+import { scrollToFirstError } from "@/lib/utils";
+import { motion, AnimatePresence } from "framer-motion";
+import DatePicker from "../../components/shared/DatePicker";
+import { FormField } from "../../components/shared/FormField";
 
-// Form Section Component
-const FormSection = ({ icon: Icon, title, description, children, delay = 0 }: any) => (
+// ── Types ────────────────────────────────────────────────────────────────────
+
+type FieldKind = "client_picker" | "date" | "text" | "number";
+
+interface TemplateField {
+  name: string;
+  kind: FieldKind;
+  required: boolean;
+}
+
+interface ContractTemplate {
+  id: number;
+  name: { arabic: string; english: string };
+  templateId: string;
+  fields: TemplateField[];
+}
+
+interface TemplateResponse {
+  code: number;
+  data: ContractTemplate;
+}
+
+// ── Field label map (name → bilingual label) ─────────────────────────────────
+const FIELD_LABELS: Record<string, { arabic: string; english: string }> = {
+  clientId: { arabic: "العميل", english: "Client" },
+  contractDate: { arabic: "تاريخ العقد", english: "Contract Date" },
+  notes: { arabic: "ملاحظات", english: "Notes" },
+  paidAmount: { arabic: "المبلغ المدفوع", english: "Paid Amount" },
+  serviceName: { arabic: "اسم الخدمة", english: "Service Name" },
+  totalValue: { arabic: "القيمة الإجمالية", english: "Total Value" },
+  totalContractValue: {
+    arabic: "إجمالي قيمة العقد",
+    english: "Total Contract Value",
+  },
+  district: { arabic: "الحي", english: "District" },
+  plotNumber: { arabic: "رقم القطعة", english: "Plot Number" },
+  deedNumber: { arabic: "رقم الصك", english: "Deed Number" },
+  type: { arabic: "نوع العقد", english: "Contract Type" },
+  apartmentId: { arabic: "الوحدة", english: "Apartment" },
+  projectId: { arabic: "المشروع", english: "Project" },
+  description: { arabic: "الوصف", english: "Description" },
+  price: { arabic: "السعر", english: "Price" },
+  area: { arabic: "المساحة", english: "Area" },
+};
+
+/** Convert camelCase / snake_case to readable words for unknown fields */
+function toReadableLabel(name: string): string {
+  return name
+    .replace(/_/g, " ")
+    .replace(/([a-z])([A-Z])/g, "$1 $2")
+    .replace(/^./, (c) => c.toUpperCase());
+}
+
+function getLabel(name: string, lang: string): string {
+  const entry = FIELD_LABELS[name];
+  if (entry) return lang === "ar" ? entry.arabic : entry.english;
+  return toReadableLabel(name);
+}
+
+// ── FormSection ───────────────────────────────────────────────────────────────
+
+const FormSection = ({
+  icon: Icon,
+  title,
+  description,
+  children,
+  delay = 0,
+}: any) => (
   <motion.div
     initial={{ opacity: 0, y: 20 }}
     animate={{ opacity: 1, y: 0 }}
@@ -48,178 +98,259 @@ const FormSection = ({ icon: Icon, title, description, children, delay = 0 }: an
           </div>
         </div>
         <div>
-          <h2 className="text-lg font-semibold text-gray-900 dark:text-white">{title}</h2>
-          <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">{description}</p>
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
+            {title}
+          </h2>
+          <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">
+            {description}
+          </p>
         </div>
       </div>
     </div>
-    <div className="p-6">
-      {children}
-    </div>
+    <div className="p-6">{children}</div>
   </motion.div>
 );
+
+const CONTRACT_TYPE_OPTIONS = [
+  { value: "apartment", labelAr: "وحدة سكنية", labelEn: "Apartment" },
+
+  { value: "land", labelAr: " أرض", labelEn: "Land" },
+];
+
+// ── Dynamic field renderer ────────────────────────────────────────────────────
+
+function DynamicField({
+  field,
+  value,
+  onChange,
+  error,
+  lang,
+}: {
+  field: TemplateField;
+  value: any;
+  onChange: (val: any) => void;
+  error?: string;
+  lang: string;
+}) {
+  const label = getLabel(field.name, lang);
+
+  if (field.name === "type") {
+    return (
+      <FormField label={label} required={field.required} error={error}>
+        <select
+          value={value ?? ""}
+          onChange={(e) => onChange(e.target.value)}
+          className="w-full h-12 px-3 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-md text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#4A1B1B]"
+        >
+          <option value="" disabled>
+            {lang === "ar" ? "اختر نوع العقد" : "Select contract type"}
+          </option>
+          {CONTRACT_TYPE_OPTIONS.map((opt) => (
+            <option key={opt.value} value={opt.value}>
+              {lang === "ar" ? opt.labelAr : opt.labelEn}
+            </option>
+          ))}
+        </select>
+      </FormField>
+    );
+  }
+
+  if (field.kind === "client_picker") {
+    return (
+      <FormField label={label} required={field.required} error={error}>
+        <PaginatedSelect
+          apiEndpoint="/client"
+          queryKey={`clients-paginated-${field.name}`}
+          value={value?.toString() ?? ""}
+          onChange={(val) => onChange(val)}
+          placeholder={lang === "ar" ? "اختر العميل..." : "Select client..."}
+          searchPlaceholder={
+            lang === "ar" ? "البحث في العملاء..." : "Search clients..."
+          }
+          mapResponseToOptions={(pageData) =>
+            (pageData.data || []).map((c: any) => ({
+              value: c.id,
+              label: c.fullName || `Client #${c.id}`,
+            }))
+          }
+        />
+      </FormField>
+    );
+  }
+
+  if (field.kind === "date") {
+    return (
+      <FormField label={label} required={field.required} error={error}>
+        <DatePicker
+          value={value ?? ""}
+          onChange={onChange}
+          className="w-full h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md"
+        />
+      </FormField>
+    );
+  }
+
+  return (
+    <FormField label={label} required={field.required} error={error}>
+      <Input
+        type={field.kind === "number" ? "number" : "text"}
+        placeholder={label}
+        value={value ?? ""}
+        onChange={(e) => onChange(e.target.value)}
+        className="h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md"
+      />
+    </FormField>
+  );
+}
+
+// ── Page component ─────────────────────────────────────────────────────────────
 
 export default function CreateContract() {
   const [, setLocation] = useLocation();
   const { t, i18n } = useTranslation();
-  const searchString = useSearch();
-  const searchParams = new URLSearchParams(searchString);
-  const preselectedApartmentId = searchParams.get('apartmentId') || '';
-  const preselectedApartmentName = searchParams.get('apartmentName') || '';
+  const search = useSearch();
 
+  const searchParams = new URLSearchParams(search);
+  const prefilledApartmentId = searchParams.get("apartmentId") || "";
+  const prefilledApartmentName = searchParams.get("apartmentName") || "";
+
+  const [contractTemplateId, setContractTemplateId] = useState("");
+  const [contractType, setContractType] = useState(prefilledApartmentId ? "apartment" : "");
+  const [apartmentId, setApartmentId] = useState(prefilledApartmentId);
+  const [fieldValues, setFieldValues] = useState<Record<string, any>>({});
   const [errors, setErrors] = useState<Record<string, string>>({});
 
-  const [formData, setFormData] = useState({
-    type: "apartment_sale",
-    hijriDate: "",
-    contractDate: "",
-    contractCity: "",
-    clientId: "",
-    district: "",
-    nationalId: "",
-    apartmentId: preselectedApartmentId,
-    projectDistrict: "",
-    plotNumber: "",
-    deedNumber: "",
-    delayPenaltyAmount: "",
-    paymentType: "",
-    paidAmount: "",
-    referenceType: "",
-    paymentReferenceNumber: "",
-    maintenanceFee: "",
-    buyerTitle: "",
-    deedDate: "",
-    sharePercentage: "",
-    penaltyText: "",
-    paidAmountText: "",
-    transferNumber: "",
-    maintenanceFeeText: "",
-    landValue: "",
-    landValueText: "",
-    investmentAmount: "",
-    investmentAmountText: "",
-    totalContractValue: "",
-    totalContractValueText: ""
-  });
+  // ── Fetch template fields when a template is selected ──────────────────────
+  const { data: templateResponse, isFetching: loadingFields } =
+    useQuery<TemplateResponse>({
+      queryKey: ["contract-template", contractTemplateId],
+      queryFn: async () => {
+        const res = await api.get(`/contract-template/${contractTemplateId}`);
+        return res.data;
+      },
+      enabled: !!contractTemplateId,
+      staleTime: Infinity,
+    });
 
+  const selectedTemplate = templateResponse?.data;
+  const fields: TemplateField[] = selectedTemplate?.fields ?? [];
+
+  const handleTemplateChange = (id: string) => {
+    setContractTemplateId(id);
+    setFieldValues({});
+    setErrors({});
+  };
+
+  const setFieldValue = (name: string, value: any) => {
+    setFieldValues((prev) => ({ ...prev, [name]: value }));
+    setErrors((prev) => {
+      const c = { ...prev };
+      delete c[name];
+      return c;
+    });
+  };
+
+  // Fields that belong at the top level of the request body
+  const TOP_LEVEL_FIELDS = new Set([
+    "type",
+    "clientId",
+    "salesManId",
+    "apartmentId",
+    "contractDate",
+    "paidAmount",
+    "totalContractValue",
+    "commissionBase",
+    "commissionValue",
+  ]);
+
+  // ── Submit ─────────────────────────────────────────────────────────────────
   const createMutation = useMutation({
-    mutationFn: async (data: typeof formData) => {
-      const isPartial = data.type === 'apartment_partial_sale';
-      const isLandPartnership = data.type === 'land_partnership';
-      
-      const payload: any = {
-        hijriDate: data.hijriDate,
-        contractDate: data.contractDate,
-        contractCity: data.contractCity,
-        district: data.district,
-        nationalId: data.nationalId,
-        clientId: Number(data.clientId),
-        projectDistrict: data.projectDistrict,
-        plotNumber: data.plotNumber,
-        deedNumber: data.deedNumber,
-        delayPenaltyAmount: Number(data.delayPenaltyAmount),
-        paymentType: data.paymentType,
-        paidAmount: Number(data.paidAmount),
-        maintenanceFee: Number(data.maintenanceFee),
+    mutationFn: async () => {
+      const payload: Record<string, any> = {
+        contractTemplateId: Number(contractTemplateId),
+        type: contractType,
+        ...(apartmentId ? { apartmentId: Number(apartmentId) } : {}),
       };
+      const details: Record<string, any> = {};
 
-      if (!isLandPartnership) {
-        payload.apartmentId = Number(data.apartmentId);
+      fields.forEach((f) => {
+        if (f.name === "type" || f.name === "apartmentId") return; // already set above
+        const raw = fieldValues[f.name];
+        const value =
+          f.kind === "number" || f.kind === "client_picker"
+            ? raw !== undefined && raw !== "" ? Number(raw) : undefined
+            : raw ?? "";
+
+        if (TOP_LEVEL_FIELDS.has(f.name)) {
+          payload[f.name] = value;
+        } else {
+          details[f.name] = value;
+        }
+      });
+
+      if (Object.keys(details).length > 0) {
+        payload.details = details;
       }
 
-      if (isPartial) {
-        payload.buyerTitle = data.buyerTitle;
-        payload.deedDate = data.deedDate;
-        payload.sharePercentage = Number(data.sharePercentage);
-        payload.penaltyText = data.penaltyText;
-        payload.paidAmountText = data.paidAmountText;
-        payload.transferNumber = data.transferNumber;
-        payload.maintenanceFeeText = data.maintenanceFeeText;
-      } else if (isLandPartnership) {
-        payload.buyerTitle = data.buyerTitle;
-        payload.deedDate = data.deedDate;
-        payload.landValue = Number(data.landValue);
-        payload.landValueText = data.landValueText;
-        payload.investmentAmount = Number(data.investmentAmount);
-        payload.investmentAmountText = data.investmentAmountText;
-        payload.totalContractValue = Number(data.totalContractValue);
-        payload.totalContractValueText = data.totalContractValueText;
-        payload.paidAmountText = data.paidAmountText;
-        payload.transferNumber = data.transferNumber;
-      } else {
-        payload.type = "apartment_sale";
-        payload.referenceType = data.referenceType;
-        payload.paymentReferenceNumber = data.paymentReferenceNumber;
-      }
-      
-      const endpoint = isLandPartnership 
-        ? '/contract/land-partnership'
-        : isPartial 
-          ? '/contract/apartment-partial-sale' 
-          : '/contract/apartment-sale';
-        
-      const response = await api.post(endpoint, payload);
-      return response.data;
+      const res = await api.post("/contract", payload);
+      return res.data;
     },
     onSuccess: () => {
-      toast.success(t('contracts.successCreate'), {
-        icon: '🎉',
-        style: { borderRadius: '1rem', background: '#10b981', color: '#fff' }
+      toast.success(t("contracts.successCreate"), {
+        icon: "🎉",
+        style: { borderRadius: "1rem", background: "#10b981", color: "#fff" },
       });
-      setLocation('/contracts');
+      setLocation("/contracts");
     },
     onError: (error: any) => {
-      toast.error(error.response?.data?.message || t('contracts.errorCreate'), {
-        icon: '❌',
-        style: { borderRadius: '1rem', background: '#ef4444', color: '#fff' }
+      toast.error(error.response?.data?.message || t("contracts.errorCreate"), {
+        icon: "❌",
+        style: { borderRadius: "1rem", background: "#ef4444", color: "#fff" },
       });
-    }
+    },
   });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const isLandPartnership = formData.type === 'land_partnership';
-    const isPartial = formData.type === 'apartment_partial_sale';
     const newErrors: Record<string, string> = {};
 
-    if (!formData.clientId) newErrors.clientId = t('common.fieldRequired');
-    if (!isLandPartnership && !formData.apartmentId) newErrors.apartmentId = t('common.fieldRequired');
-    if (!formData.contractDate) newErrors.contractDate = t('common.fieldRequired');
-    if (!formData.paymentType) newErrors.paymentType = t('common.fieldRequired');
-    if (!formData.paidAmount) newErrors.paidAmount = t('common.fieldRequired');
+    if (!contractTemplateId) {
+      newErrors.contractTemplateId = t("common.fieldRequired");
+    }
 
-    if (isPartial || isLandPartnership) {
-      if (!formData.deedDate) newErrors.deedDate = t('common.fieldRequired');
+    if (!contractType) {
+      newErrors.contractType = t("common.fieldRequired");
     }
-    if (isPartial) {
-      if (!formData.sharePercentage) newErrors.sharePercentage = t('common.fieldRequired');
-    }
-    if (isLandPartnership) {
-      if (!formData.landValue) newErrors.landValue = t('common.fieldRequired');
-      if (!formData.investmentAmount) newErrors.investmentAmount = t('common.fieldRequired');
-      if (!formData.totalContractValue) newErrors.totalContractValue = t('common.fieldRequired');
-    }
+
+    fields.forEach((f) => {
+      if (f.name === "type" || f.name === "apartmentId") return;
+      const val = fieldValues[f.name];
+      if (f.required && (val === undefined || val === "" || val === null)) {
+        newErrors[f.name] = t("common.fieldRequired");
+      }
+    });
 
     setErrors(newErrors);
     if (Object.keys(newErrors).length > 0) {
       scrollToFirstError();
       return;
     }
-    createMutation.mutate(formData);
+    createMutation.mutate();
   };
+
+  const lang = i18n.language;
 
   return (
     <Shell>
       <TopHeader />
-      
+
       <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-50 dark:from-gray-950 dark:via-gray-900 dark:to-gray-950">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8 pb-32">
-          
-          {/* Header Section */}
+          {/* Page Header */}
           <div className="bg-white dark:bg-gray-900 rounded-md border border-gray-200 dark:border-gray-800 p-6 shadow-sm">
             <div className="flex items-center gap-4">
-              <Link 
-                href="/contracts" 
+              <Link
+                href="/contracts"
                 className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-md transition-colors"
               >
                 <ArrowLeft className="w-5 h-5 text-gray-500" />
@@ -234,440 +365,186 @@ export default function CreateContract() {
                 <div className="flex items-center gap-2 mb-1">
                   <Sparkles className="w-4 h-4 text-[#B39371]" />
                   <p className="text-xs font-medium text-[#B39371] uppercase tracking-wider">
-                    {t('contracts.management')}
+                    {t("contracts.management")}
                   </p>
                 </div>
                 <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-                  {t('contracts.create')}
+                  {t("contracts.create")}
                 </h1>
                 <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                  {t('contracts.description')}
+                  {t("contracts.description")}
                 </p>
               </div>
             </div>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-6" dir={i18n.language === 'ar' ? 'rtl' : 'ltr'}>
-            
-            {/* General Information Section */}
-            <FormSection 
-              icon={Calendar}
-              title={t('contracts.labels.basicInfo')}
-              description={t('contracts.labels.basicInfoDesc')}
+          <form
+            onSubmit={handleSubmit}
+            className="space-y-6"
+            dir={lang === "ar" ? "rtl" : "ltr"}
+          >
+            {/* ── Step 1: Template selector (always visible) ───────────────── */}
+            <FormSection
+              icon={FileText}
+              title={t("contracts.labels.templateSection")}
+              description={t("contracts.labels.templateSectionDesc")}
               delay={0.1}
             >
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full">
-                
-                <FormField label={t('contracts.labels.type')} required>
-                  <Select 
-                    value={formData.type} 
-                    onValueChange={(val) => setFormData({ ...formData, type: val })}
-                    dir={i18n.language === 'ar' ? 'rtl' : 'ltr'}
-                  >
-                    <SelectTrigger className={cn("h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md", i18n.language === 'ar' && "flex-row-reverse text-right")}>
-                      <SelectValue placeholder={t('contracts.placeholders.selectType')} />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="apartment_sale">{t('contracts.types.apartment_sale')}</SelectItem>
-                      <SelectItem value="apartment_partial_sale">{t('contracts.types.apartment_partial_sale')}</SelectItem>
-                      <SelectItem value="land_partnership">{t('contracts.types.land_partnership')}</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </FormField>
-
-                {(formData.type === 'apartment_partial_sale' || formData.type === 'land_partnership') && (
-                  <FormField label={t('contracts.labels.buyerTitle')}>
-                    <Input 
-                      placeholder={t('contracts.labels.buyerTitle')}
-                      value={formData.buyerTitle}
-                      onChange={(e) => setFormData({ ...formData, buyerTitle: e.target.value })}
-                      className="h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md"
-                    />
-                  </FormField>
-                )}
-
-                <FormField label={t('contracts.labels.contractDate')} required error={errors.contractDate}>
-                  <DatePicker
-                    value={formData.contractDate}
-                    onChange={(date) => {
-                      setFormData({ ...formData, contractDate: date });
-                      if (errors.contractDate) setErrors(p => { const { contractDate, ...r } = p; return r; });
-                    }}
-                    className="w-full h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md"
-                  />
-                </FormField>
-
-                <FormField label={t('contracts.labels.hijriDate')}>
-                  <HijriDatePicker 
-                    value={formData.hijriDate}
-                    onChange={(date) => setFormData({ ...formData, hijriDate: date })}
-                    className="w-full h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md"
-                  />
-                </FormField>
-
-                <FormField label={t('contracts.labels.contractCity')}>
-                  <Input 
-                    placeholder={t('contracts.labels.contractCity')}
-                    value={formData.contractCity}
-                    onChange={(e) => setFormData({ ...formData, contractCity: e.target.value })}
-                    className="h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md"
-                  />
-                </FormField>
-              </div>
-            </FormSection>
-
-            {/* Client & Identification Section */}
-            <FormSection 
-              icon={User}
-              title={t('contracts.labels.clientSection')}
-              description={t('contracts.labels.clientSectionDesc')}
-              delay={0.2}
-            >
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full">
-                
-                <FormField label={t('contracts.labels.client')} required error={errors.clientId}>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <FormField
+                  label={t("contracts.labels.contractTemplate")}
+                  required
+                  error={errors.contractTemplateId}
+                >
                   <PaginatedSelect
-                    apiEndpoint="/client"
-                    queryKey="clients-paginated"
-                    value={formData.clientId.toString()}
-                    onChange={(val) => {
-                      setFormData({ ...formData, clientId: val });
-                      if (errors.clientId) setErrors(p => { const { clientId, ...r } = p; return r; });
-                    }}
-                    placeholder={t('contracts.placeholders.selectClient')}
-                    searchPlaceholder={t('clients.placeholders.search')}
-                    mapResponseToOptions={(pageData) => {
-                      const data = pageData.data || [];
-                      return data.map((client: any) => ({
-                        value: client.id,
-                        label: client.fullName || `${t('contracts.labels.client')} #${client.id}`,
-                      }));
-                    }}
+                    apiEndpoint="/contract-template"
+                    queryKey="contract-templates-paginated"
+                    value={contractTemplateId}
+                    onChange={handleTemplateChange}
+                    placeholder={t("contracts.placeholders.selectTemplate")}
+                    searchPlaceholder={t("contractTemplates.placeholders.search")}
+                    mapResponseToOptions={(pageData) =>
+                      (pageData.data || []).map((tpl: any) => ({
+                        value: tpl.id,
+                        label:
+                          lang === "ar"
+                            ? tpl.name?.arabic || tpl.name?.english
+                            : tpl.name?.english ||
+                              tpl.name?.arabic ||
+                              `Template #${tpl.id}`,
+                      }))
+                    }
                   />
                 </FormField>
 
-                <FormField label={t('contracts.labels.nationalId')}>
-                  <Input 
-                    type="number"
-                    placeholder="1234567890"
-                    value={formData.nationalId}
-                    onChange={(e) => setFormData({ ...formData, nationalId: e.target.value })}
-                    className="h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md"
-                  />
+                <FormField
+                  label={t("contracts.labels.type")}
+                  required
+                  error={errors.contractType}
+                >
+                  <select
+                    value={contractType}
+                    onChange={(e) => {
+                      setContractType(e.target.value);
+                      setErrors((prev) => { const c = { ...prev }; delete c.contractType; return c; });
+                    }}
+                    className="w-full h-12 px-3 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-md text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#4A1B1B]"
+                  >
+                    <option value="" disabled>
+                      {lang === "ar" ? "اختر نوع العقد" : "Select contract type"}
+                    </option>
+                    {CONTRACT_TYPE_OPTIONS.map((opt) => (
+                      <option key={opt.value} value={opt.value}>
+                        {lang === "ar" ? opt.labelAr : opt.labelEn}
+                      </option>
+                    ))}
+                  </select>
                 </FormField>
-              </div>
-            </FormSection>
 
-            {/* Apartment & Property Details Section */}
-            <FormSection 
-              icon={Building2}
-              title={t('contracts.labels.propertySection')}
-              description={t('contracts.labels.propertySectionDesc')}
-              delay={0.3}
-            >
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full">
-                
-                {formData.type !== 'land_partnership' && (
-                  <FormField label={t('contracts.labels.apartment')} required error={errors.apartmentId}>
+                <FormField
+                  label={t("contracts.labels.apartment")}
+                  error={errors.apartmentId}
+                >
+                  {prefilledApartmentId && apartmentId === prefilledApartmentId ? (
+                    <div className="h-12 flex items-center gap-3 px-3 bg-[#F5F1ED] dark:bg-gray-800 border border-[#E8DDD3] dark:border-gray-700 rounded-md">
+                      <Building2 className="w-4 h-4 text-[#B39371] shrink-0" />
+                      <span className="text-sm font-medium text-gray-900 dark:text-white truncate">
+                        {prefilledApartmentName || `Apartment #${prefilledApartmentId}`}
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => setApartmentId("")}
+                        className="ms-auto text-xs text-gray-400 hover:text-red-500 transition-colors shrink-0"
+                      >
+                        ✕
+                      </button>
+                    </div>
+                  ) : (
                     <PaginatedSelect
                       apiEndpoint="/apartment"
-                      queryKey="apartments-paginated"
-                      value={formData.apartmentId.toString()}
+                      queryKey="apartments-paginated-contract"
+                      value={apartmentId}
                       onChange={(val) => {
-                        setFormData({ ...formData, apartmentId: val });
-                        if (errors.apartmentId) setErrors(p => { const { apartmentId, ...r } = p; return r; });
+                        setApartmentId(val);
+                        setErrors((prev) => { const c = { ...prev }; delete c.apartmentId; return c; });
                       }}
-                      placeholder={t('contracts.placeholders.selectApartment')}
-                      searchPlaceholder={t('apartments.placeholders.search')}
-                      initialLabel={preselectedApartmentName}
-                      mapResponseToOptions={(pageData) => {
-                        const data = pageData.data || [];
-                        return data.map((apt: any) => ({
+                      placeholder={t("contracts.placeholders.selectApartment")}
+                      searchPlaceholder={lang === "ar" ? "البحث في الوحدات..." : "Search apartments..."}
+                      mapResponseToOptions={(pageData) =>
+                        (pageData.data || []).map((apt: any) => ({
                           value: apt.id,
-                          label: (i18n.language === 'ar' ? apt.mainName?.arabic : apt.mainName?.english) || `${t('contracts.labels.apartment')} #${apt.id}`,
-                        }));
-                      }}
+                          label:
+                            lang === "ar"
+                              ? apt.mainName?.arabic || apt.mainName?.english
+                              : apt.mainName?.english || apt.mainName?.arabic || `Apartment #${apt.id}`,
+                        }))
+                      }
                     />
-                  </FormField>
-                )}
-
-                <FormField label={t('contracts.labels.district')}>
-                  <Input 
-                    placeholder={t('contracts.labels.district')}
-                    value={formData.district}
-                    onChange={(e) => setFormData({ ...formData, district: e.target.value })}
-                    className="h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md"
-                  />
+                  )}
                 </FormField>
-
-                <FormField label={t('contracts.labels.projectDistrict')}>
-                  <Input 
-                    placeholder={t('contracts.labels.projectDistrict')}
-                    value={formData.projectDistrict}
-                    onChange={(e) => setFormData({ ...formData, projectDistrict: e.target.value })}
-                    className="h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md"
-                  />
-                </FormField>
-
-                <FormField label={t('contracts.labels.plotNumber')}>
-                  <Input 
-                    type="number"
-                    placeholder="١٢٣"
-                    value={formData.plotNumber}
-                    onChange={(e) => setFormData({ ...formData, plotNumber: e.target.value })}
-                    className="h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md"
-                  />
-                </FormField>
-
-                <FormField label={t('contracts.labels.deedNumber')}>
-                  <Input 
-                    type="number"
-                    placeholder="٤٥٦٧٨٩"
-                    value={formData.deedNumber}
-                    onChange={(e) => setFormData({ ...formData, deedNumber: e.target.value })}
-                    className="h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md"
-                  />
-                </FormField>
-
-                {(formData.type === 'apartment_partial_sale' || formData.type === 'land_partnership') && (
-                  <>
-                    <FormField label={t('contracts.labels.deedDate')} required error={errors.deedDate}>
-                      <DatePicker
-                        value={formData.deedDate}
-                        onChange={(date) => { setFormData({ ...formData, deedDate: date }); if (errors.deedDate) setErrors(p => { const { deedDate, ...r } = p; return r; }); }}
-                        className="w-full h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md"
-                      />
-                    </FormField>
-
-                    {formData.type === 'apartment_partial_sale' && (
-                      <FormField label={t('contracts.labels.sharePercentage')} required error={errors.sharePercentage}>
-                        <Input
-                          type="number"
-                          placeholder="25"
-                          value={formData.sharePercentage}
-                          onChange={(e) => { setFormData({ ...formData, sharePercentage: e.target.value }); if (errors.sharePercentage) setErrors(p => { const { sharePercentage, ...r } = p; return r; }); }}
-                          className="h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md"
-                        />
-                      </FormField>
-                    )}
-                  </>
-                )}
-
-                {formData.type === 'land_partnership' && (
-                  <>
-                    <FormField label={t('contracts.labels.landValue')} required error={errors.landValue}>
-                      <Input
-                        type="number"
-                        placeholder="2000000"
-                        value={formData.landValue}
-                        onChange={(e) => { setFormData({ ...formData, landValue: e.target.value }); if (errors.landValue) setErrors(p => { const { landValue, ...r } = p; return r; }); }}
-                        className="h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md"
-                      />
-                    </FormField>
-
-                    <FormField label={t('contracts.labels.landValueText')}>
-                      <Input
-                        placeholder={t('contracts.labels.landValueText')}
-                        value={formData.landValueText}
-                        onChange={(e) => setFormData({ ...formData, landValueText: e.target.value })}
-                        className="h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md"
-                      />
-                    </FormField>
-
-                    <FormField label={t('contracts.labels.investmentAmount')} required error={errors.investmentAmount}>
-                      <Input
-                        type="number"
-                        placeholder="500000"
-                        value={formData.investmentAmount}
-                        onChange={(e) => { setFormData({ ...formData, investmentAmount: e.target.value }); if (errors.investmentAmount) setErrors(p => { const { investmentAmount, ...r } = p; return r; }); }}
-                        className="h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md"
-                      />
-                    </FormField>
-
-                    <FormField label={t('contracts.labels.investmentAmountText')}>
-                      <Input
-                        placeholder={t('contracts.labels.investmentAmountText')}
-                        value={formData.investmentAmountText}
-                        onChange={(e) => setFormData({ ...formData, investmentAmountText: e.target.value })}
-                        className="h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md"
-                      />
-                    </FormField>
-
-                    <FormField label={t('contracts.labels.totalContractValue')} required error={errors.totalContractValue}>
-                      <Input
-                        type="number"
-                        placeholder="500000"
-                        value={formData.totalContractValue}
-                        onChange={(e) => { setFormData({ ...formData, totalContractValue: e.target.value }); if (errors.totalContractValue) setErrors(p => { const { totalContractValue, ...r } = p; return r; }); }}
-                        className="h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md"
-                      />
-                    </FormField>
-
-                    <FormField label={t('contracts.labels.totalContractValueText')}>
-                      <Input
-                        placeholder={t('contracts.labels.totalContractValueText')}
-                        value={formData.totalContractValueText}
-                        onChange={(e) => setFormData({ ...formData, totalContractValueText: e.target.value })}
-                        className="h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md"
-                      />
-                    </FormField>
-                  </>
-                )}
               </div>
             </FormSection>
 
-            {/* Financial Details Section */}
-            <FormSection 
-              icon={CreditCard}
-              title={t('contracts.labels.financialSection')}
-              description={t('contracts.labels.financialSectionDesc')}
-              delay={0.4}
-            >
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full">
-                
-                <FormField label={t('contracts.labels.paymentType')} required error={errors.paymentType}>
-                   <Select
-                    value={formData.paymentType}
-                    onValueChange={(val) => { setFormData({ ...formData, paymentType: val }); if (errors.paymentType) setErrors(p => { const { paymentType, ...r } = p; return r; }); }}
-                    dir={i18n.language === 'ar' ? 'rtl' : 'ltr'}
+            {/* ── Step 2: Dynamic fields (appear after template is selected) ── */}
+            <AnimatePresence mode="wait">
+              {contractTemplateId && (
+                <motion.div
+                  key={contractTemplateId}
+                  initial={{ opacity: 0, y: 16 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -8 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  <FormSection
+                    icon={LayoutList}
+                    title={
+                      selectedTemplate
+                        ? lang === "ar"
+                          ? selectedTemplate.name.arabic
+                          : selectedTemplate.name.english
+                        : t("contracts.labels.detailsSection")
+                    }
+                    description={t("contracts.labels.detailsSectionDesc")}
+                    delay={0}
                   >
-                    <SelectTrigger className={cn("h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md", i18n.language === 'ar' && "flex-row-reverse text-right")}>
-                      <SelectValue placeholder={t('contracts.placeholders.selectPaymentType')} />
-                    </SelectTrigger>
-                    <SelectContent>
-                    {(formData.type === 'apartment_partial_sale' || formData.type === 'land_partnership') ? (
-                        <>
-                          <SelectItem value="تحويل بنكي">{t('contracts.paymentMethods.bank_transfer')}</SelectItem>
-                          <SelectItem value="نقدي">{t('contracts.paymentMethods.cash')}</SelectItem>
-                          <SelectItem value="شيك">{t('contracts.paymentMethods.check')}</SelectItem>
-                          {formData.type === 'land_partnership' && <SelectItem value="الدفعة الأولى">{t('contracts.paymentMethods.first_installment')}</SelectItem>}
-                        </>
-                      ) : (
-                        <>
-                          <SelectItem value="عربون">{t('contracts.paymentMethods.deposit')}</SelectItem>
-                          <SelectItem value="دفعة مقدمة">{t('contracts.paymentMethods.down_payment')}</SelectItem>
-                          <SelectItem value="كامل المبلغ">{t('contracts.paymentMethods.full_amount')}</SelectItem>
-                        </>
-                      )}
-                    </SelectContent>
-                  </Select>
-                </FormField>
-
-                <FormField label={t('contracts.labels.paidAmount')} required error={errors.paidAmount}>
-                  <Input
-                    type="number"
-                    placeholder="50000"
-                    value={formData.paidAmount}
-                    onChange={(e) => {
-                      setFormData({ ...formData, paidAmount: e.target.value });
-                      if (errors.paidAmount) setErrors(p => { const { paidAmount, ...r } = p; return r; });
-                    }}
-                    className="h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md"
-                  />
-                </FormField>
-
-                {formData.type === 'apartment_sale' && (
-                  <>
-                    <FormField label={t('contracts.labels.referenceType')}>
-                      <Select 
-                        value={formData.referenceType} 
-                        onValueChange={(val) => setFormData({ ...formData, referenceType: val })}
-                        dir={i18n.language === 'ar' ? 'rtl' : 'ltr'}
-                      >
-                        <SelectTrigger className={cn("h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md", i18n.language === 'ar' && "flex-row-reverse text-right")}>
-                          <SelectValue placeholder={t('contracts.placeholders.selectReferenceType')} />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="حوالة بنكية">{t('contracts.paymentMethods.bank_transfer')}</SelectItem>
-                          <SelectItem value="نقدي">{t('contracts.paymentMethods.cash')}</SelectItem>
-                          <SelectItem value="شيك">{t('contracts.paymentMethods.check')}</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </FormField>
-
-                    <FormField label={t('contracts.labels.referenceNumber')}>
-                      <Input 
-                        placeholder="TXN123456789"
-                        value={formData.paymentReferenceNumber}
-                        onChange={(e) => setFormData({ ...formData, paymentReferenceNumber: e.target.value })}
-                        className="h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md"
-                      />
-                    </FormField>
-                  </>
-                )}
-
-                <FormField label={t('contracts.labels.delayPenalty')}>
-                  <Input 
-                    type="number"
-                    placeholder="5000"
-                    value={formData.delayPenaltyAmount}
-                    onChange={(e) => setFormData({ ...formData, delayPenaltyAmount: e.target.value })}
-                    className="h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md"
-                  />
-                </FormField>
-
-                 <FormField label={t('contracts.labels.maintenanceFee')}>
-                  <Input 
-                    type="number"
-                    placeholder="2000"
-                    value={formData.maintenanceFee}
-                    onChange={(e) => setFormData({ ...formData, maintenanceFee: e.target.value })}
-                    className="h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md"
-                  />
-                </FormField>
-
-                {(formData.type === 'apartment_partial_sale' || formData.type === 'land_partnership') && (
-                  <>
-                    {formData.type === 'apartment_partial_sale' && (
-                      <FormField label={t('contracts.labels.penaltyText')}>
-                        <Input 
-                          placeholder={t('contracts.labels.penaltyText')}
-                          value={formData.penaltyText}
-                          onChange={(e) => setFormData({ ...formData, penaltyText: e.target.value })}
-                          className="h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md"
-                        />
-                      </FormField>
+                    {loadingFields ? (
+                      /* Loading skeleton */
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        {[1, 2, 3, 4].map((i) => (
+                          <div key={i} className="space-y-2">
+                            <div className="h-4 w-24 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
+                            <div className="h-12 bg-gray-100 dark:bg-gray-800 rounded-md animate-pulse" />
+                          </div>
+                        ))}
+                      </div>
+                    ) : fields.length === 0 ? (
+                      <p className="text-sm text-gray-400 dark:text-gray-500 py-4 text-center">
+                        {t("contracts.labels.noFields")}
+                      </p>
+                    ) : (
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        {fields.filter((f) => f.name !== "type" && f.name !== "apartmentId").map((field) => (
+                          <DynamicField
+                            key={field.name}
+                            field={field}
+                            value={fieldValues[field.name]}
+                            onChange={(val) => setFieldValue(field.name, val)}
+                            error={errors[field.name]}
+                            lang={lang}
+                          />
+                        ))}
+                      </div>
                     )}
-
-                    <FormField label={t('contracts.labels.paidAmountText')}>
-                      <Input 
-                        placeholder={t('contracts.labels.paidAmountText')}
-                        value={formData.paidAmountText}
-                        onChange={(e) => setFormData({ ...formData, paidAmountText: e.target.value })}
-                        className="h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md"
-                      />
-                    </FormField>
-
-                    <FormField label={t('contracts.labels.transferNumber')}>
-                      <Input 
-                        type="number"
-                        placeholder={t('contracts.labels.transferNumber')}
-                        value={formData.transferNumber}
-                        onChange={(e) => setFormData({ ...formData, transferNumber: e.target.value })}
-                        className="h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md"
-                      />
-                    </FormField>
-
-                    {formData.type === 'apartment_partial_sale' && (
-                      <FormField label={t('contracts.labels.maintenanceFeeText')}>
-                        <Input 
-                          placeholder={t('contracts.labels.maintenanceFeeText')}
-                          value={formData.maintenanceFeeText}
-                          onChange={(e) => setFormData({ ...formData, maintenanceFeeText: e.target.value })}
-                          className="h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md"
-                        />
-                      </FormField>
-                    )}
-                  </>
-                )}
-              </div>
-            </FormSection>
+                  </FormSection>
+                </motion.div>
+              )}
+            </AnimatePresence>
 
             <FormActions
-              onCancel={() => setLocation('/contracts')}
+              onCancel={() => setLocation("/contracts")}
               isSubmitting={createMutation.isPending}
-              submitText={t('contracts.create')}
-              submittingText={t('common.saving')}
+              submitText={t("contracts.create")}
+              submittingText={t("common.saving")}
               align="between"
             />
           </form>

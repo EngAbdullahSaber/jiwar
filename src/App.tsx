@@ -70,6 +70,10 @@ import CreateSalesman from "@/pages/salesman/CreateSalesman";
 import UpdateSalesman from "@/pages/salesman/UpdateSalesman";
 import ViewSalesman from "@/pages/salesman/ViewSalesman";
 import FinanceDashboard from "@/pages/finance/FinanceDashboard";
+import ContractTemplates from "@/pages/contract-templates/ContractTemplates";
+import CreateContractTemplate from "@/pages/contract-templates/CreateContractTemplate";
+import ViewContractTemplate from "@/pages/contract-templates/ViewContractTemplate";
+import UpdateContractTemplate from "@/pages/contract-templates/UpdateContractTemplate";
 
 import { useLocation } from "wouter";
 
@@ -255,6 +259,18 @@ function Router() {
       </Route>
       <Route path="/approve-contracts">
         <ProtectedRoute component={ApproveContracts} resource="contract-approval" action="UPDATE" />
+      </Route>
+      <Route path="/contract-templates">
+        <ProtectedRoute component={ContractTemplates} resource="contract-template" />
+      </Route>
+      <Route path="/contract-templates/new">
+        <ProtectedRoute component={CreateContractTemplate} resource="contract-template" action="CREATE" />
+      </Route>
+      <Route path="/contract-templates/:id/edit">
+        <ProtectedRoute component={UpdateContractTemplate} resource="contract-template" action="UPDATE" />
+      </Route>
+      <Route path="/contract-templates/:id">
+        <ProtectedRoute component={ViewContractTemplate} resource="contract-template" />
       </Route>
       <Route path="/contracts/new">
         <ProtectedRoute component={CreateContract} resource="contract" action="CREATE" />

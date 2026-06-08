@@ -60,6 +60,7 @@ const RESOURCE_ICONS: Record<string, any> = {
   "client-payment": Wallet,
   salesman: Users,
   contract: FileText,
+  "contract-template": FileText,
   statics: ClipboardList,
   country: LayoutGrid,
   bank: Wallet,
@@ -90,28 +91,41 @@ export default function CreateRole() {
 
   const [selectedIds, setSelectedIds] = useState<number[]>([]);
 
-  // Group permissions by resource for display
-  const groupedPermissions = permissionsData?.data.reduce(
-    (acc, p) => {
-      let resource = p.resource;
-      let action = p.actions[0]; // The backend sends one action per entry in this format
+  // Group permissions by resource for display.
+  // Sort so specific entries ("create:user" → id 208) come before bulk entries
+  // ("user" → id 269 with all actions), ensuring each action gets its own id.
+  const groupedPermissions = permissionsData?.data
+    .slice()
+    .sort((a, b) => {
+      const aSpecific = a.resource.includes(":") ? 0 : 1;
+      const bSpecific = b.resource.includes(":") ? 0 : 1;
+      return aSpecific - bSpecific;
+    })
+    .reduce(
+      (acc, p) => {
+        let resource = p.resource;
 
-      if (resource.includes(":")) {
-        const parts = resource.split(":");
-        resource = parts[1];
-      }
+        if (resource.includes(":")) {
+          const parts = resource.split(":");
+          resource = parts[1];
+        }
 
-      if (!acc[resource]) {
-        acc[resource] = {
-          resource,
-          actions: {} as Record<string, number>,
-        };
-      }
-      acc[resource].actions[action] = p.id;
-      return acc;
-    },
-    {} as Record<string, { resource: string; actions: Record<string, number> }>,
-  );
+        if (!acc[resource]) {
+          acc[resource] = {
+            resource,
+            actions: {} as Record<string, number>,
+          };
+        }
+        // First-write wins — specific entries already processed, bulk fills only gaps
+        p.actions.forEach((action) => {
+          if (!acc[resource].actions[action]) {
+            acc[resource].actions[action] = p.id;
+          }
+        });
+        return acc;
+      },
+      {} as Record<string, { resource: string; actions: Record<string, number> }>,
+    );
 
   const modules = groupedPermissions ? Object.values(groupedPermissions) : [];
 
