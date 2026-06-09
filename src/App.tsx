@@ -58,6 +58,7 @@ import Clients from "@/pages/clients/Clients";
 import CreateClient from "@/pages/clients/CreateClient";
 import UpdateClient from "@/pages/clients/UpdateClient";
 import ViewClient from "@/pages/clients/ViewClient";
+import AddClientPayment from "@/pages/clients/AddClientPayment";
 import Contracts from "@/pages/contracts/Contracts";
 import ApproveContracts from "@/pages/contracts/ApproveContracts";
 
@@ -69,6 +70,7 @@ import Salesman from "@/pages/salesman/Salesman";
 import CreateSalesman from "@/pages/salesman/CreateSalesman";
 import UpdateSalesman from "@/pages/salesman/UpdateSalesman";
 import ViewSalesman from "@/pages/salesman/ViewSalesman";
+import PaySalesman from "@/pages/salesman/PaySalesman";
 import FinanceDashboard from "@/pages/finance/FinanceDashboard";
 import ContractTemplates from "@/pages/contract-templates/ContractTemplates";
 import CreateContractTemplate from "@/pages/contract-templates/CreateContractTemplate";
@@ -193,6 +195,9 @@ function Router() {
       <Route path="/salesman/:id/edit">
         <ProtectedRoute component={UpdateSalesman} resource="salesman" action="UPDATE" />
       </Route>
+      <Route path="/salesman/:id/pay">
+        <ProtectedRoute component={PaySalesman} resource="salesman" action="UPDATE" />
+      </Route>
       <Route path="/salesman/:id">
         <ProtectedRoute component={ViewSalesman} resource="salesman" />
       </Route>
@@ -249,6 +254,9 @@ function Router() {
       </Route>
       <Route path="/clients/:id/edit">
         <ProtectedRoute component={UpdateClient} resource="client" action="UPDATE" />
+      </Route>
+      <Route path="/clients/:id/pay">
+        <ProtectedRoute component={AddClientPayment} resource="client" action="UPDATE" />
       </Route>
       <Route path="/clients/:id">
         <ProtectedRoute component={ViewClient} resource="client" />

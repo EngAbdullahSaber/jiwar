@@ -1,7 +1,8 @@
-﻿import { useTranslation } from 'react-i18next';
-import { useQuery } from '@tanstack/react-query';
-import api from '@/lib/api';
-import { TopHeader } from '../../components/TopHeader';
+﻿import { useTranslation } from "react-i18next";
+import { useQuery } from "@tanstack/react-query";
+import api from "@/lib/api";
+import { useAppSelector } from "@/hooks/useRedux";
+import { TopHeader } from "../../components/TopHeader";
 import { Link, useRoute, useLocation } from "wouter";
 import {
   Building,
@@ -22,11 +23,11 @@ import {
   FilePlus2,
   Image,
   ZoomIn,
-} from 'lucide-react';
-import { Shell } from '../../components/shared/Shell';
-import { cn } from '@/lib/utils';
-import { motion } from 'framer-motion';
-import { format } from 'date-fns';
+} from "lucide-react";
+import { Shell } from "../../components/shared/Shell";
+import { cn } from "@/lib/utils";
+import { motion } from "framer-motion";
+import { format } from "date-fns";
 
 interface Apartment {
   id: number;
@@ -51,8 +52,17 @@ interface Apartment {
   apartmentSakPdfUrl: string | null;
   apartmentSubDivisionPdfUrl: string | null;
   files: Array<{ title: string; url: string }>;
-  project: { id: number; name: { arabic: string; english: string }; projectIdentity: string } | null;
-  template: { id: number; name: { arabic: string; english: string }; totalRooms?: number; sku?: string } | null;
+  project: {
+    id: number;
+    name: { arabic: string; english: string };
+    projectIdentity: string;
+  } | null;
+  template: {
+    id: number;
+    name: { arabic: string; english: string };
+    totalRooms?: number;
+    sku?: string;
+  } | null;
   createdBy: { id: number; email: string } | null;
   updatedBy: { id: number; email: string } | null;
   createdAt: string;
@@ -74,20 +84,41 @@ interface DataField {
 }
 
 const statusConfig: Record<string, { dot: string; pill: string }> = {
-  available: { dot: 'bg-emerald-500', pill: 'bg-emerald-50 text-emerald-700 ring-emerald-200 dark:bg-emerald-950/30 dark:text-emerald-400 dark:ring-emerald-800/40' },
-  sold:      { dot: 'bg-red-500',     pill: 'bg-red-50 text-red-700 ring-red-200 dark:bg-red-950/30 dark:text-red-400 dark:ring-red-800/40' },
-  reserved:  { dot: 'bg-amber-500',   pill: 'bg-amber-50 text-amber-700 ring-amber-200 dark:bg-amber-950/30 dark:text-amber-400 dark:ring-amber-800/40' },
-  reselling: { dot: 'bg-blue-500',    pill: 'bg-blue-50 text-blue-700 ring-blue-200 dark:bg-blue-950/30 dark:text-blue-400 dark:ring-blue-800/40' },
+  available: {
+    dot: "bg-emerald-500",
+    pill: "bg-emerald-50 text-emerald-700 ring-emerald-200 dark:bg-emerald-950/30 dark:text-emerald-400 dark:ring-emerald-800/40",
+  },
+  sold: {
+    dot: "bg-red-500",
+    pill: "bg-red-50 text-red-700 ring-red-200 dark:bg-red-950/30 dark:text-red-400 dark:ring-red-800/40",
+  },
+  reserved: {
+    dot: "bg-amber-500",
+    pill: "bg-amber-50 text-amber-700 ring-amber-200 dark:bg-amber-950/30 dark:text-amber-400 dark:ring-amber-800/40",
+  },
+  reselling: {
+    dot: "bg-blue-500",
+    pill: "bg-blue-50 text-blue-700 ring-blue-200 dark:bg-blue-950/30 dark:text-blue-400 dark:ring-blue-800/40",
+  },
 };
 
 export default function ViewApartment() {
   const { t, i18n } = useTranslation();
-  const [, params] = useRoute('/apartments/:id');
+  const [, params] = useRoute("/apartments/:id");
   const [, setLocation] = useLocation();
   const id = params?.id;
+  const { user } = useAppSelector((state) => state.auth);
+  const roleName = user?.role?.name?.toLowerCase() ?? "";
+  const canCreateContract =
+    roleName === "admin" ||
+    roleName === "salesman" ||
+    roleName === "sales Man" ||
+    roleName === "sales man" ||
+    roleName === "Sales man" ||
+    roleName === "Sales Man";
 
   const { data: response, isLoading } = useQuery<ApartmentResponse>({
-    queryKey: ['apartment', id],
+    queryKey: ["apartment", id],
     queryFn: async () => {
       const res = await api.get(`/apartment/${id}`);
       return res.data;
@@ -98,14 +129,19 @@ export default function ViewApartment() {
   const apartment = response?.data;
 
   const formatDate = (dateString: string) => {
-    if (!dateString) return t('common.na');
-    try { return format(new Date(dateString), 'MMM dd, yyyy'); }
-    catch { return dateString; }
+    if (!dateString) return t("common.na");
+    try {
+      return format(new Date(dateString), "MMM dd, yyyy");
+    } catch {
+      return dateString;
+    }
   };
 
   const formatPrice = (price: string) => {
     const num = Number(price);
-    return isNaN(num) ? price : num.toLocaleString(i18n.language === 'ar' ? 'ar-SA' : 'en-US');
+    return isNaN(num)
+      ? price
+      : num.toLocaleString(i18n.language === "ar" ? "ar-SA" : "en-US");
   };
 
   /* ─── loading ─── */
@@ -135,11 +171,15 @@ export default function ViewApartment() {
           <div className="w-20 h-20 bg-red-50 dark:bg-red-900/10 rounded-md flex items-center justify-center mx-auto mb-5">
             <XCircle className="w-10 h-10 text-red-400" />
           </div>
-          <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-2">{t('apartments.notFound')}</h2>
-          <p className="text-sm text-gray-500 dark:text-gray-400 mb-8">{t('apartments.notFoundDesc')}</p>
+          <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
+            {t("apartments.notFound")}
+          </h2>
+          <p className="text-sm text-gray-500 dark:text-gray-400 mb-8">
+            {t("apartments.notFoundDesc")}
+          </p>
           <Link href="/apartments">
             <button className="inline-flex items-center gap-2 px-5 py-2.5 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-md text-sm font-medium hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">
-              <ArrowLeft className="w-4 h-4" /> {t('common.back')}
+              <ArrowLeft className="w-4 h-4" /> {t("common.back")}
             </button>
           </Link>
         </div>
@@ -148,70 +188,159 @@ export default function ViewApartment() {
   }
 
   /* ─── derived data ─── */
-  const currentStatus = statusConfig[apartment.status] ?? statusConfig.reselling;
+  const currentStatus =
+    statusConfig[apartment.status] ?? statusConfig.reselling;
 
   const identificationFields: DataField[] = [
-    { label: t('apartments.labels.majorNameEn'),        value: apartment.mainName.english },
-    { label: t('apartments.labels.majorNameAr'),        value: apartment.mainName.arabic, dir: 'rtl' },
-    { label: t('apartments.labels.secondaryNameEn'),    value: apartment.secondaryName.english || t('common.na') },
-    { label: t('apartments.labels.secondaryNameAr'),    value: apartment.secondaryName.arabic  || t('common.na'), dir: 'rtl' },
-    { label: t('apartments.labels.serialNumber'),       value: apartment.serialNumber       || t('common.na') },
-    { label: t('apartments.labels.accountNumber'),      value: apartment.accountNumber      || t('common.na') },
-    { label: t('apartments.labels.subscriptionNumber'), value: apartment.subscriptionNumber || t('common.na') },
+    {
+      label: t("apartments.labels.majorNameEn"),
+      value: apartment.mainName.english,
+    },
+    {
+      label: t("apartments.labels.majorNameAr"),
+      value: apartment.mainName.arabic,
+      dir: "rtl",
+    },
+    {
+      label: t("apartments.labels.secondaryNameEn"),
+      value: apartment.secondaryName.english || t("common.na"),
+    },
+    {
+      label: t("apartments.labels.secondaryNameAr"),
+      value: apartment.secondaryName.arabic || t("common.na"),
+      dir: "rtl",
+    },
+    {
+      label: t("apartments.labels.serialNumber"),
+      value: apartment.serialNumber || t("common.na"),
+    },
+    {
+      label: t("apartments.labels.accountNumber"),
+      value: apartment.accountNumber || t("common.na"),
+    },
+    {
+      label: t("apartments.labels.subscriptionNumber"),
+      value: apartment.subscriptionNumber || t("common.na"),
+    },
   ];
 
   const locationFields: DataField[] = [
-    { label: t('apartments.labels.buildingOrBlock'), value: apartment.buildingOrBlock || t('common.na') },
-    { label: t('apartments.labels.floorNo'),         value: apartment.floorNumber },
-    { label: t('apartments.labels.size'),            value: `${apartment.size} ${t('apartments.labels.sqmLabel')}` },
-    { label: t('apartments.labels.meterNumber'),     value: apartment.meterNumber || '0' },
-    { label: t('apartments.labels.streetCount'),     value: apartment.streetCount ? t(`apartments.streetCounts.${apartment.streetCount}`) : t('common.na') },
     {
-      label: t('apartments.labels.linkedProject'),
-      value: apartment.project ? (i18n.language === 'ar' ? apartment.project.name.arabic : apartment.project.name.english) : t('common.na'),
+      label: t("apartments.labels.buildingOrBlock"),
+      value: apartment.buildingOrBlock || t("common.na"),
+    },
+    { label: t("apartments.labels.floorNo"), value: apartment.floorNumber },
+    {
+      label: t("apartments.labels.size"),
+      value: `${apartment.size} ${t("apartments.labels.sqmLabel")}`,
+    },
+    {
+      label: t("apartments.labels.meterNumber"),
+      value: apartment.meterNumber || "0",
+    },
+    {
+      label: t("apartments.labels.streetCount"),
+      value: apartment.streetCount
+        ? t(`apartments.streetCounts.${apartment.streetCount}`)
+        : t("common.na"),
+    },
+    {
+      label: t("apartments.labels.linkedProject"),
+      value: apartment.project
+        ? i18n.language === "ar"
+          ? apartment.project.name.arabic
+          : apartment.project.name.english
+        : t("common.na"),
       isLink: !!apartment.project,
       href: apartment.project ? `/projects/${apartment.project.id}` : undefined,
     },
     {
-      label: t('apartments.labels.linkedTemplate'),
-      value: apartment.template ? (i18n.language === 'ar' ? apartment.template.name.arabic : apartment.template.name.english) : t('common.na'),
+      label: t("apartments.labels.linkedTemplate"),
+      value: apartment.template
+        ? i18n.language === "ar"
+          ? apartment.template.name.arabic
+          : apartment.template.name.english
+        : t("common.na"),
       isLink: !!apartment.template,
-      href: apartment.template ? `/templates/${apartment.template.id}` : undefined,
+      href: apartment.template
+        ? `/templates/${apartment.template.id}`
+        : undefined,
     },
   ];
 
   const specSections = [
-    { id: 'identification', icon: FileText, title: t('apartments.sections.identification'), data: identificationFields },
-    { id: 'structure',      icon: Ruler,    title: t('apartments.sections.locational'),     data: locationFields },
+    {
+      id: "identification",
+      icon: FileText,
+      title: t("apartments.sections.identification"),
+      data: identificationFields,
+    },
+    {
+      id: "structure",
+      icon: Ruler,
+      title: t("apartments.sections.locational"),
+      data: locationFields,
+    },
   ];
 
   const COLORS = [
-    { color: 'text-blue-500',    bg: 'bg-blue-50 dark:bg-blue-950/30' },
-    { color: 'text-rose-500',    bg: 'bg-rose-50 dark:bg-rose-950/30' },
-    { color: 'text-emerald-500', bg: 'bg-emerald-50 dark:bg-emerald-950/30' },
-    { color: 'text-violet-500',  bg: 'bg-violet-50 dark:bg-violet-950/30' },
-    { color: 'text-amber-500',   bg: 'bg-amber-50 dark:bg-amber-950/30' },
+    { color: "text-blue-500", bg: "bg-blue-50 dark:bg-blue-950/30" },
+    { color: "text-rose-500", bg: "bg-rose-50 dark:bg-rose-950/30" },
+    { color: "text-emerald-500", bg: "bg-emerald-50 dark:bg-emerald-950/30" },
+    { color: "text-violet-500", bg: "bg-violet-50 dark:bg-violet-950/30" },
+    { color: "text-amber-500", bg: "bg-amber-50 dark:bg-amber-950/30" },
   ];
-  const documents = (apartment.files || []).filter(f => f.url).map((f, i) => ({
-    label: f.title || t('apartments.labels.fileUrl'),
-    url: f.url,
-    ...COLORS[i % COLORS.length],
-  }));
+  const documents = (apartment.files || [])
+    .filter((f) => f.url)
+    .map((f, i) => ({
+      label: f.title || t("apartments.labels.fileUrl"),
+      url: f.url,
+      ...COLORS[i % COLORS.length],
+    }));
 
-  const baseUrl = import.meta.env.VITE_API_BASE_URL || '';
+  const baseUrl = import.meta.env.VITE_API_BASE_URL || "";
 
   const quickStats = [
-    { icon: Layout,       label: t('apartments.unitType'),       value: t(`apartments.types.${apartment.apartmentType}`) },
-    { icon: Ruler,        label: t('apartments.totalArea'),      value: `${apartment.size} ${t('apartments.labels.sqmLabel')}` },
-    { icon: Building,     label: t('apartments.floorLevel'),     value: t('apartments.level', { level: apartment.floorNumber }) },
-    { icon: CheckCircle2, label: t('apartments.ownershipStatus'),value: t(`apartments.owners.${apartment.ownerStatus}`) },
+    {
+      icon: Layout,
+      label: t("apartments.unitType"),
+      value: t(`apartments.types.${apartment.apartmentType}`),
+    },
+    {
+      icon: Ruler,
+      label: t("apartments.totalArea"),
+      value: `${apartment.size} ${t("apartments.labels.sqmLabel")}`,
+    },
+    {
+      icon: Building,
+      label: t("apartments.floorLevel"),
+      value: t("apartments.level", { level: apartment.floorNumber }),
+    },
+    {
+      icon: CheckCircle2,
+      label: t("apartments.ownershipStatus"),
+      value: t(`apartments.owners.${apartment.ownerStatus}`),
+    },
   ];
 
   const financials = [
-    { label: t('apartments.valuation'),  value: `${formatPrice(apartment.basePrice)} ${t('common.sar')}`, accent: true },
-    { label: t('apartments.requestId'),  value: apartment.requestNumber || t('common.pending') },
-    { label: t('apartments.submission'), value: formatDate(apartment.requestDate) },
-    { label: t('apartments.meterId'),    value: `#${apartment.meterNumber || '0000'}` },
+    {
+      label: t("apartments.valuation"),
+      value: `${formatPrice(apartment.basePrice)} ${t("common.sar")}`,
+      accent: true,
+    },
+    {
+      label: t("apartments.requestId"),
+      value: apartment.requestNumber || t("common.pending"),
+    },
+    {
+      label: t("apartments.submission"),
+      value: formatDate(apartment.requestDate),
+    },
+    {
+      label: t("apartments.meterId"),
+      value: `#${apartment.meterNumber || "0000"}`,
+    },
   ];
 
   /* ─── render ─── */
@@ -221,7 +350,6 @@ export default function ViewApartment() {
 
       <div className="min-h-screen bg-gray-50 dark:bg-gray-950">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
-
           {/* ── Top bar ── */}
           <div className="bg-white dark:bg-gray-900 rounded-md border border-gray-200 dark:border-gray-800 px-5 py-3.5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
             <div className="flex items-center gap-2.5 min-w-0">
@@ -232,35 +360,49 @@ export default function ViewApartment() {
               </Link>
               <div className="h-4 w-px bg-gray-200 dark:bg-gray-700 shrink-0" />
               <div className="flex items-center gap-1.5 text-xs text-gray-500 min-w-0">
-                <Link href="/apartments" className="hover:text-[#B39371] transition-colors shrink-0">{t('apartments.title')}</Link>
+                <Link
+                  href="/apartments"
+                  className="hover:text-[#B39371] transition-colors shrink-0"
+                >
+                  {t("apartments.title")}
+                </Link>
                 <ChevronRight className="w-3 h-3 shrink-0" />
                 <span className="font-medium text-gray-900 dark:text-white truncate">
-                  {i18n.language === 'ar' ? apartment.mainName.arabic : apartment.mainName.english}
+                  {i18n.language === "ar"
+                    ? apartment.mainName.arabic
+                    : apartment.mainName.english}
                 </span>
               </div>
             </div>
 
             <div className="flex items-center gap-2 shrink-0">
-              {apartment.isAvailable && (
+              {apartment.isAvailable && canCreateContract && (
                 <motion.button
-                  whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.99 }}
+                  whileHover={{ scale: 1.01 }}
+                  whileTap={{ scale: 0.99 }}
                   onClick={() => {
-                    const name = i18n.language === 'ar' ? apartment.mainName.arabic : apartment.mainName.english;
-                    setLocation(`/contracts/new?apartmentId=${apartment.id}&apartmentName=${encodeURIComponent(name)}`);
+                    const name =
+                      i18n.language === "ar"
+                        ? apartment.mainName.arabic
+                        : apartment.mainName.english;
+                    setLocation(
+                      `/contracts/new?apartmentId=${apartment.id}&apartmentName=${encodeURIComponent(name)}`,
+                    );
                   }}
                   className="flex items-center gap-2 px-4 py-2 bg-[#4A1B1B] hover:bg-[#3a1515] text-white rounded-md text-sm font-medium transition-colors"
                 >
                   <FilePlus2 className="w-4 h-4" />
-                  {t('contracts.create')}
+                  {t("contracts.create")}
                 </motion.button>
               )}
               <Link href={`/apartments/${apartment.id}/edit`}>
                 <motion.button
-                  whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.99 }}
+                  whileHover={{ scale: 1.01 }}
+                  whileTap={{ scale: 0.99 }}
                   className="flex items-center gap-2 px-4 py-2 border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 rounded-md text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
                 >
                   <Pencil className="w-4 h-4 text-[#B39371]" />
-                  {t('common.edit')}
+                  {t("common.edit")}
                 </motion.button>
               </Link>
             </div>
@@ -268,42 +410,54 @@ export default function ViewApartment() {
 
           {/* ── Main grid: 2/3 + 1/3 ── */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-
             {/* ── Left column ── */}
             <div className="lg:col-span-2 space-y-6">
-
               {/* Hero card */}
               <div className="bg-white dark:bg-gray-900 rounded-md border border-gray-200 dark:border-gray-800 overflow-hidden">
-
                 {/* Name + Price */}
                 <div className="px-6 pt-6 pb-5 flex flex-col sm:flex-row items-start justify-between gap-4 border-b border-gray-100 dark:border-gray-800">
                   <div>
                     <div className="flex items-center gap-2 mb-2.5">
-                      <span className={cn(
-                        'inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-semibold ring-1',
-                        currentStatus.pill
-                      )}>
-                        <span className={cn('w-1.5 h-1.5 rounded-md', currentStatus.dot)} />
+                      <span
+                        className={cn(
+                          "inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-semibold ring-1",
+                          currentStatus.pill,
+                        )}
+                      >
+                        <span
+                          className={cn(
+                            "w-1.5 h-1.5 rounded-md",
+                            currentStatus.dot,
+                          )}
+                        />
                         {t(`apartments.statuses.${apartment.status}`)}
                       </span>
-                      <span className="text-xs font-mono text-gray-400">#{apartment.id.toString().padStart(4, '0')}</span>
+                      <span className="text-xs font-mono text-gray-400">
+                        #{apartment.id.toString().padStart(4, "0")}
+                      </span>
                     </div>
                     <h1 className="text-2xl font-bold text-gray-900 dark:text-white leading-tight">
-                      {i18n.language === 'ar' ? apartment.mainName.arabic : apartment.mainName.english}
+                      {i18n.language === "ar"
+                        ? apartment.mainName.arabic
+                        : apartment.mainName.english}
                     </h1>
                     <p className="text-sm text-gray-400 mt-1 italic">
-                      {i18n.language === 'ar' ? apartment.mainName.english : apartment.mainName.arabic}
+                      {i18n.language === "ar"
+                        ? apartment.mainName.english
+                        : apartment.mainName.arabic}
                     </p>
                   </div>
 
                   <div className="sm:text-right shrink-0 p-4 rounded-md bg-[#F5F1ED] dark:bg-gray-800 border border-[#E8DDD3] dark:border-gray-700">
                     <p className="text-[10px] text-[#B39371] font-semibold uppercase tracking-widest mb-1">
-                      {t('apartments.labels.basePrice')}
+                      {t("apartments.labels.basePrice")}
                     </p>
                     <p className="text-2xl font-black text-[#4A1B1B] dark:text-[#B39371] leading-none">
                       {formatPrice(apartment.basePrice)}
                     </p>
-                    <p className="text-xs text-[#B39371] font-medium mt-0.5">{t('common.sar')}</p>
+                    <p className="text-xs text-[#B39371] font-medium mt-0.5">
+                      {t("common.sar")}
+                    </p>
                   </div>
                 </div>
 
@@ -315,8 +469,12 @@ export default function ViewApartment() {
                         <stat.icon className="w-4 h-4 text-[#B39371]" />
                       </div>
                       <div className="min-w-0">
-                        <p className="text-[10px] text-gray-400 font-medium uppercase tracking-wide leading-tight">{stat.label}</p>
-                        <p className="text-sm font-semibold text-gray-900 dark:text-white truncate leading-snug">{stat.value}</p>
+                        <p className="text-[10px] text-gray-400 font-medium uppercase tracking-wide leading-tight">
+                          {stat.label}
+                        </p>
+                        <p className="text-sm font-semibold text-gray-900 dark:text-white truncate leading-snug">
+                          {stat.value}
+                        </p>
                       </div>
                     </div>
                   ))}
@@ -337,24 +495,33 @@ export default function ViewApartment() {
                       <div className="w-7 h-7 rounded-md bg-[#F5F1ED] dark:bg-gray-800 flex items-center justify-center">
                         <section.icon className="w-3.5 h-3.5 text-[#B39371]" />
                       </div>
-                      <h3 className="text-sm font-semibold text-gray-900 dark:text-white">{section.title}</h3>
+                      <h3 className="text-sm font-semibold text-gray-900 dark:text-white">
+                        {section.title}
+                      </h3>
                     </div>
                     <div className="divide-y divide-gray-50 dark:divide-gray-800/50">
                       {section.data.map((item, i) => (
-                        <div key={i} className="flex items-start justify-between gap-3 px-5 py-3 hover:bg-gray-50/50 dark:hover:bg-gray-800/30 transition-colors">
-                          <span className="text-[11px] text-gray-400 shrink-0 mt-0.5 w-28 leading-tight">{item.label}</span>
+                        <div
+                          key={i}
+                          className="flex items-start justify-between gap-3 px-5 py-3 hover:bg-gray-50/50 dark:hover:bg-gray-800/30 transition-colors"
+                        >
+                          <span className="text-[11px] text-gray-400 shrink-0 mt-0.5 w-28 leading-tight">
+                            {item.label}
+                          </span>
                           {item.isLink ? (
-                            <Link href={item.href || '#'}>
+                            <Link href={item.href || "#"}>
                               <span className="text-xs font-medium text-[#B39371] hover:text-[#4A1B1B] dark:hover:text-[#d4b08a] transition-colors flex items-center gap-1 cursor-pointer">
                                 {item.value}
                                 <ArrowUpRight className="w-3 h-3 shrink-0" />
                               </span>
                             </Link>
                           ) : (
-                            <span className={cn(
-                              'text-xs font-medium text-gray-900 dark:text-white text-right break-words',
-                              item.dir === 'rtl' && 'font-normal'
-                            )}>
+                            <span
+                              className={cn(
+                                "text-xs font-medium text-gray-900 dark:text-white text-right break-words",
+                                item.dir === "rtl" && "font-normal",
+                              )}
+                            >
                               {item.value}
                             </span>
                           )}
@@ -371,16 +538,24 @@ export default function ViewApartment() {
                   <div className="w-7 h-7 rounded-md bg-[#F5F1ED] dark:bg-gray-800 flex items-center justify-center">
                     <Tags className="w-3.5 h-3.5 text-[#B39371]" />
                   </div>
-                  <h3 className="text-sm font-semibold text-gray-900 dark:text-white">{t('apartments.sections.economics')}</h3>
+                  <h3 className="text-sm font-semibold text-gray-900 dark:text-white">
+                    {t("apartments.sections.economics")}
+                  </h3>
                 </div>
                 <div className="grid grid-cols-2 sm:grid-cols-4 divide-x divide-y sm:divide-y-0 divide-gray-100 dark:divide-gray-800">
                   {financials.map((item, i) => (
                     <div key={i} className="px-5 py-4">
-                      <p className="text-[10px] text-gray-400 font-medium uppercase tracking-wide mb-1">{item.label}</p>
-                      <p className={cn(
-                        'text-sm font-semibold',
-                        item.accent ? 'text-[#4A1B1B] dark:text-[#B39371]' : 'text-gray-900 dark:text-white'
-                      )}>
+                      <p className="text-[10px] text-gray-400 font-medium uppercase tracking-wide mb-1">
+                        {item.label}
+                      </p>
+                      <p
+                        className={cn(
+                          "text-sm font-semibold",
+                          item.accent
+                            ? "text-[#4A1B1B] dark:text-[#B39371]"
+                            : "text-gray-900 dark:text-white",
+                        )}
+                      >
                         {item.value}
                       </p>
                     </div>
@@ -389,22 +564,37 @@ export default function ViewApartment() {
               </div>
 
               {/* Sak Images */}
-              {(apartment.projectSakPdfUrl || apartment.apartmentSakPdfUrl || apartment.apartmentSubDivisionPdfUrl) && (
+              {(apartment.projectSakPdfUrl ||
+                apartment.apartmentSakPdfUrl ||
+                apartment.apartmentSubDivisionPdfUrl) && (
                 <div className="bg-white dark:bg-gray-900 rounded-md border border-gray-200 dark:border-gray-800 overflow-hidden">
                   <div className="flex items-center gap-3 px-5 py-4 border-b border-gray-100 dark:border-gray-800">
                     <div className="w-7 h-7 rounded-md bg-[#F5F1ED] dark:bg-gray-800 flex items-center justify-center">
                       <Image className="w-3.5 h-3.5 text-[#B39371]" />
                     </div>
-                    <h3 className="text-sm font-semibold text-gray-900 dark:text-white">{t('apartments.sections.sakImages')}</h3>
+                    <h3 className="text-sm font-semibold text-gray-900 dark:text-white">
+                      {t("apartments.sections.sakImages")}
+                    </h3>
                   </div>
                   <div className="p-5 grid grid-cols-1 sm:grid-cols-3 gap-4">
                     {[
-                      { url: apartment.projectSakPdfUrl,            label: t('apartments.labels.projectSak') },
-                      { url: apartment.apartmentSakPdfUrl,          label: t('apartments.labels.apartmentSak') },
-                      { url: apartment.apartmentSubDivisionPdfUrl,  label: t('apartments.labels.subDivision') },
+                      {
+                        url: apartment.projectSakPdfUrl,
+                        label: t("apartments.labels.projectSak"),
+                      },
+                      {
+                        url: apartment.apartmentSakPdfUrl,
+                        label: t("apartments.labels.apartmentSak"),
+                      },
+                      {
+                        url: apartment.apartmentSubDivisionPdfUrl,
+                        label: t("apartments.labels.subDivision"),
+                      },
                     ].map((item, i) => (
                       <div key={i} className="space-y-2">
-                        <p className="text-[10px] text-gray-400 font-medium uppercase tracking-wide">{item.label}</p>
+                        <p className="text-[10px] text-gray-400 font-medium uppercase tracking-wide">
+                          {item.label}
+                        </p>
                         {item.url ? (
                           <a
                             href={`${baseUrl}/${item.url}`}
@@ -424,7 +614,9 @@ export default function ViewApartment() {
                         ) : (
                           <div className="aspect-[4/3] rounded-md border border-dashed border-gray-200 dark:border-gray-700 flex flex-col items-center justify-center bg-gray-50 dark:bg-gray-800/50 gap-1.5">
                             <ImageOff className="w-5 h-5 text-gray-300 dark:text-gray-600" />
-                            <span className="text-[10px] text-gray-400">{t('common.na')}</span>
+                            <span className="text-[10px] text-gray-400">
+                              {t("common.na")}
+                            </span>
                           </div>
                         )}
                       </div>
@@ -436,22 +628,28 @@ export default function ViewApartment() {
 
             {/* ── Right sidebar ── */}
             <div className="space-y-5">
-
               {/* Availability */}
-              <div className={cn(
-                'rounded-md border p-4 flex items-center gap-3',
-                apartment.isAvailable
-                  ? 'bg-emerald-50 dark:bg-emerald-950/20 border-emerald-200 dark:border-emerald-800/40'
-                  : 'bg-gray-50 dark:bg-gray-800/50 border-gray-200 dark:border-gray-700'
-              )}>
-                {apartment.isAvailable
-                  ? <CheckCircle2 className="w-5 h-5 text-emerald-500 shrink-0" />
-                  : <XCircle      className="w-5 h-5 text-gray-400 shrink-0" />
-                }
+              <div
+                className={cn(
+                  "rounded-md border p-4 flex items-center gap-3",
+                  apartment.isAvailable
+                    ? "bg-emerald-50 dark:bg-emerald-950/20 border-emerald-200 dark:border-emerald-800/40"
+                    : "bg-gray-50 dark:bg-gray-800/50 border-gray-200 dark:border-gray-700",
+                )}
+              >
+                {apartment.isAvailable ? (
+                  <CheckCircle2 className="w-5 h-5 text-emerald-500 shrink-0" />
+                ) : (
+                  <XCircle className="w-5 h-5 text-gray-400 shrink-0" />
+                )}
                 <div>
-                  <p className="text-sm font-semibold text-gray-900 dark:text-white">{t('apartments.labels.isAvailable')}</p>
+                  <p className="text-sm font-semibold text-gray-900 dark:text-white">
+                    {t("apartments.labels.isAvailable")}
+                  </p>
                   <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
-                    {apartment.isAvailable ? t('common.available') : t('common.notAvailable')}
+                    {apartment.isAvailable
+                      ? t("common.available")
+                      : t("common.notAvailable")}
                   </p>
                 </div>
               </div>
@@ -462,13 +660,17 @@ export default function ViewApartment() {
                   <div className="w-7 h-7 rounded-md bg-[#F5F1ED] dark:bg-gray-800 flex items-center justify-center">
                     <LinkIcon className="w-3.5 h-3.5 text-[#B39371]" />
                   </div>
-                  <h3 className="text-sm font-semibold text-gray-900 dark:text-white">{t('apartments.structuralLinkage')}</h3>
+                  <h3 className="text-sm font-semibold text-gray-900 dark:text-white">
+                    {t("apartments.structuralLinkage")}
+                  </h3>
                 </div>
 
                 <div className="p-4 space-y-4">
                   {/* Project */}
                   <div>
-                    <p className="text-[10px] text-gray-400 font-medium uppercase tracking-wide mb-2">{t('apartments.masterProject')}</p>
+                    <p className="text-[10px] text-gray-400 font-medium uppercase tracking-wide mb-2">
+                      {t("apartments.masterProject")}
+                    </p>
                     {apartment.project ? (
                       <Link href={`/projects/${apartment.project.id}`}>
                         <div className="flex items-center gap-3 p-3 rounded-md border border-gray-100 dark:border-gray-800 hover:border-[#B39371]/40 hover:bg-[#F5F1ED]/40 dark:hover:bg-gray-800 transition-all group cursor-pointer">
@@ -477,23 +679,31 @@ export default function ViewApartment() {
                           </div>
                           <div className="flex-1 min-w-0">
                             <p className="text-sm font-medium text-gray-900 dark:text-white truncate">
-                              {i18n.language === 'ar' ? apartment.project.name.arabic : apartment.project.name.english}
+                              {i18n.language === "ar"
+                                ? apartment.project.name.arabic
+                                : apartment.project.name.english}
                             </p>
-                            <p className="text-[10px] text-gray-400 truncate mt-0.5">{apartment.project.projectIdentity}</p>
+                            <p className="text-[10px] text-gray-400 truncate mt-0.5">
+                              {apartment.project.projectIdentity}
+                            </p>
                           </div>
                           <ChevronRight className="w-4 h-4 text-gray-300 group-hover:text-[#B39371] group-hover:translate-x-0.5 transition-all shrink-0" />
                         </div>
                       </Link>
                     ) : (
                       <div className="p-3 rounded-md border border-dashed border-gray-200 dark:border-gray-700 text-center">
-                        <p className="text-xs text-gray-400 italic">{t('apartments.noProjectLinked')}</p>
+                        <p className="text-xs text-gray-400 italic">
+                          {t("apartments.noProjectLinked")}
+                        </p>
                       </div>
                     )}
                   </div>
 
                   {/* Template */}
                   <div>
-                    <p className="text-[10px] text-gray-400 font-medium uppercase tracking-wide mb-2">{t('apartments.architecturalTemplate')}</p>
+                    <p className="text-[10px] text-gray-400 font-medium uppercase tracking-wide mb-2">
+                      {t("apartments.architecturalTemplate")}
+                    </p>
                     {apartment.template ? (
                       <div className="space-y-2">
                         <Link href={`/templates/${apartment.template.id}`}>
@@ -503,11 +713,14 @@ export default function ViewApartment() {
                             </div>
                             <div className="flex-1 min-w-0">
                               <p className="text-sm font-medium text-[#B39371] truncate">
-                                {i18n.language === 'ar' ? apartment.template.name.arabic : apartment.template.name.english}
+                                {i18n.language === "ar"
+                                  ? apartment.template.name.arabic
+                                  : apartment.template.name.english}
                               </p>
                               {apartment.template.totalRooms != null && (
                                 <p className="text-[10px] text-gray-400 mt-0.5">
-                                  {apartment.template.totalRooms} {t('apartments.labels.rooms')}
+                                  {apartment.template.totalRooms}{" "}
+                                  {t("apartments.labels.rooms")}
                                 </p>
                               )}
                             </div>
@@ -516,14 +729,20 @@ export default function ViewApartment() {
                         </Link>
                         {apartment.template.sku && (
                           <div className="flex items-center justify-between px-3 py-2 rounded-md bg-gray-50 dark:bg-gray-800 border border-gray-100 dark:border-gray-700">
-                            <span className="text-[10px] text-gray-400 font-medium">{t('apartments.designSku')}</span>
-                            <span className="text-xs font-mono font-semibold text-[#B39371]">{apartment.template.sku}</span>
+                            <span className="text-[10px] text-gray-400 font-medium">
+                              {t("apartments.designSku")}
+                            </span>
+                            <span className="text-xs font-mono font-semibold text-[#B39371]">
+                              {apartment.template.sku}
+                            </span>
                           </div>
                         )}
                       </div>
                     ) : (
                       <div className="p-3 rounded-md border border-dashed border-gray-200 dark:border-gray-700 text-center">
-                        <p className="text-xs text-gray-400 italic">{t('apartments.noTemplateLinked')}</p>
+                        <p className="text-xs text-gray-400 italic">
+                          {t("apartments.noTemplateLinked")}
+                        </p>
                       </div>
                     )}
                   </div>
@@ -537,12 +756,14 @@ export default function ViewApartment() {
                     <div className="w-7 h-7 rounded-md bg-[#F5F1ED] dark:bg-gray-800 flex items-center justify-center">
                       <FileText className="w-3.5 h-3.5 text-[#B39371]" />
                     </div>
-                    <h3 className="text-sm font-semibold text-gray-900 dark:text-white">{t('apartments.sections.documents')}</h3>
+                    <h3 className="text-sm font-semibold text-gray-900 dark:text-white">
+                      {t("apartments.sections.documents")}
+                    </h3>
                   </div>
                   {documents.length > 0 && (
                     <button className="flex items-center gap-1 text-xs text-[#B39371] hover:text-[#4A1B1B] transition-colors">
                       <Download className="w-3 h-3" />
-                      {t('apartments.archiveAll')}
+                      {t("apartments.archiveAll")}
                     </button>
                   )}
                 </div>
@@ -558,10 +779,17 @@ export default function ViewApartment() {
                           rel="noreferrer"
                           className="flex items-center gap-3 p-3 rounded-md hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors group"
                         >
-                          <div className={cn('w-8 h-8 rounded-md flex items-center justify-center shrink-0', doc.bg)}>
-                            <FileText className={cn('w-4 h-4', doc.color)} />
+                          <div
+                            className={cn(
+                              "w-8 h-8 rounded-md flex items-center justify-center shrink-0",
+                              doc.bg,
+                            )}
+                          >
+                            <FileText className={cn("w-4 h-4", doc.color)} />
                           </div>
-                          <span className="flex-1 text-xs font-medium text-gray-700 dark:text-gray-300 truncate">{doc.label}</span>
+                          <span className="flex-1 text-xs font-medium text-gray-700 dark:text-gray-300 truncate">
+                            {doc.label}
+                          </span>
                           <Download className="w-3.5 h-3.5 text-gray-300 group-hover:text-[#B39371] transition-colors shrink-0" />
                         </a>
                       ))}
@@ -569,7 +797,9 @@ export default function ViewApartment() {
                   ) : (
                     <div className="py-8 text-center">
                       <FileText className="w-7 h-7 text-gray-200 dark:text-gray-700 mx-auto mb-2" />
-                      <p className="text-xs text-gray-400">{t('apartments.noDocuments')}</p>
+                      <p className="text-xs text-gray-400">
+                        {t("apartments.noDocuments")}
+                      </p>
                     </div>
                   )}
                 </div>
@@ -581,7 +811,9 @@ export default function ViewApartment() {
                   <div className="w-7 h-7 rounded-md bg-[#F5F1ED] dark:bg-gray-800 flex items-center justify-center">
                     <Clock className="w-3.5 h-3.5 text-[#B39371]" />
                   </div>
-                  <h3 className="text-sm font-semibold text-gray-900 dark:text-white">{t('apartments.unitHistory')}</h3>
+                  <h3 className="text-sm font-semibold text-gray-900 dark:text-white">
+                    {t("apartments.unitHistory")}
+                  </h3>
                 </div>
 
                 <div className="p-5">
@@ -594,12 +826,18 @@ export default function ViewApartment() {
                       <div className="flex gap-4">
                         <div className="w-3 h-3 rounded-md bg-[#B39371] border-2 border-white dark:border-gray-900 shrink-0 mt-0.5 relative z-10" />
                         <div className="min-w-0 pb-1">
-                          <p className="text-xs font-semibold text-gray-900 dark:text-white">{t('apartments.recordCreated')}</p>
+                          <p className="text-xs font-semibold text-gray-900 dark:text-white">
+                            {t("apartments.recordCreated")}
+                          </p>
                           <p className="text-[11px] text-gray-500 dark:text-gray-400 mt-0.5">
-                            {t('apartments.initialEntry', { date: formatDate(apartment.createdAt) })}
+                            {t("apartments.initialEntry", {
+                              date: formatDate(apartment.createdAt),
+                            })}
                           </p>
                           {apartment.createdBy && (
-                            <p className="text-[10px] text-gray-400 mt-0.5 truncate">{apartment.createdBy.email}</p>
+                            <p className="text-[10px] text-gray-400 mt-0.5 truncate">
+                              {apartment.createdBy.email}
+                            </p>
                           )}
                         </div>
                       </div>
@@ -609,12 +847,18 @@ export default function ViewApartment() {
                         <div className="flex gap-4">
                           <div className="w-3 h-3 rounded-md bg-emerald-400 border-2 border-white dark:border-gray-900 shrink-0 mt-0.5 relative z-10" />
                           <div className="min-w-0">
-                            <p className="text-xs font-semibold text-gray-900 dark:text-white">{t('apartments.lastModification')}</p>
+                            <p className="text-xs font-semibold text-gray-900 dark:text-white">
+                              {t("apartments.lastModification")}
+                            </p>
                             <p className="text-[11px] text-gray-500 dark:text-gray-400 mt-0.5">
-                              {t('apartments.updatedOn', { date: formatDate(apartment.updatedAt) })}
+                              {t("apartments.updatedOn", {
+                                date: formatDate(apartment.updatedAt),
+                              })}
                             </p>
                             {apartment.updatedBy && (
-                              <p className="text-[10px] text-gray-400 mt-0.5 truncate">{apartment.updatedBy.email}</p>
+                              <p className="text-[10px] text-gray-400 mt-0.5 truncate">
+                                {apartment.updatedBy.email}
+                              </p>
                             )}
                           </div>
                         </div>
@@ -622,7 +866,9 @@ export default function ViewApartment() {
                         <div className="flex gap-4">
                           <div className="w-3 h-3 rounded-md bg-gray-200 dark:bg-gray-700 border-2 border-white dark:border-gray-900 shrink-0 mt-0.5 relative z-10" />
                           <div>
-                            <p className="text-[11px] text-gray-400 italic">{t('apartments.originalState')}</p>
+                            <p className="text-[11px] text-gray-400 italic">
+                              {t("apartments.originalState")}
+                            </p>
                           </div>
                         </div>
                       )}
@@ -630,7 +876,6 @@ export default function ViewApartment() {
                   </div>
                 </div>
               </div>
-
             </div>
           </div>
         </div>

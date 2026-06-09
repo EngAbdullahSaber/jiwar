@@ -770,8 +770,11 @@ export default function ViewSalesman() {
         onOpenChange={(open) => !open && setPayDialogOpen(false)}
       >
         <DialogContent
-          className="sm:max-w-[440px] rounded-md border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-0 overflow-hidden"
+          className="sm:max-w-[440px] rounded-md border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-0 overflow-visible"
           onOpenAutoFocus={(e) => e.preventDefault()}
+          onPointerDownOutside={(e) => {
+            if ((e.target as HTMLElement).closest('.flatpickr-calendar')) e.preventDefault();
+          }}
         >
           <div className="p-6 border-b border-gray-100 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-800/50">
             <div className="flex items-center gap-3">

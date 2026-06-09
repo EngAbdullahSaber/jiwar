@@ -74,6 +74,8 @@ export function AddClientPaymentDialog({
         style: { borderRadius: '1rem', background: '#4A1B1B', color: '#fff' }
       });
       queryClient.invalidateQueries({ queryKey: ['clients'] });
+      queryClient.invalidateQueries({ queryKey: ['client', String(clientId)] });
+      queryClient.invalidateQueries({ queryKey: ['client-payments', String(clientId)] });
       onClose();
     },
     onError: (error: any) => {
@@ -100,7 +102,12 @@ export function AddClientPaymentDialog({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[750px] max-h-[90vh] overflow-y-auto rounded-md sm:rounded-md border-none shadow-2xl p-0">
+      <DialogContent
+        className="sm:max-w-[750px] max-h-[90vh] overflow-y-auto rounded-md sm:rounded-md border-none shadow-2xl p-0"
+        onPointerDownOutside={(e) => {
+          if ((e.target as HTMLElement).closest('.flatpickr-calendar')) e.preventDefault();
+        }}
+      >
         <div className="relative overflow-hidden">
           {/* Decorative Header Background */}
           <div className="absolute top-0 left-0 right-0 h-32 bg-gradient-to-r from-[#4A1B1B] to-[#6B2727] opacity-10 dark:opacity-20" />

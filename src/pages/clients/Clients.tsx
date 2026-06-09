@@ -75,7 +75,7 @@ interface Client {
     id: number;
     email: string;
   } | null;
-  activeContract: number;
+  activeContract: number | { id: number; totalPaid: number; totalValue: number; remaining: number };
   totalValution: number;
 }
 
@@ -216,11 +216,11 @@ export default function Clients() {
           <div className="flex items-center gap-1.5">
             <Badge variant="outline" className={cn(
               "px-2 py-0 text-[10px] font-medium rounded-md",
-              client.activeContract > 0 
-                ? "bg-emerald-50 text-emerald-600 border-emerald-100" 
+              client.activeContract && client.activeContract !== 0
+                ? "bg-emerald-50 text-emerald-600 border-emerald-100"
                 : "bg-gray-50 text-gray-400 border-gray-100"
             )}>
-              {client.activeContract} {t('contracts.title')}
+              {client.activeContract && client.activeContract !== 0 ? 1 : 0} {t('contracts.title')}
             </Badge>
           </div>
           <div className="text-[11px] font-bold text-[#B39371]">

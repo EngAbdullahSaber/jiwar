@@ -140,7 +140,7 @@ export function UpdateStepDialog({
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent
-        className="max-w-2xl bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800 rounded-xl p-0 overflow-hidden"
+        className="max-w-2xl bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800 rounded-xl p-0 overflow-visible"
         onInteractOutside={(e) => {
           if ((e.target as HTMLElement)?.closest?.('.flatpickr-calendar')) {
             e.preventDefault();

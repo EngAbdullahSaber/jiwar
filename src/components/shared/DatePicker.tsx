@@ -66,6 +66,7 @@ const DatePicker: React.FC<DatePickerProps> = ({
           }
         },
         disableMobile: true,
+        appendTo: document.body,
       });
     }
 
