@@ -10,7 +10,7 @@ export function Shell({ children }: LayoutProps) {
   const { isExpanded } = useSidebarStore();
 
   return (
-    <div className="min-h-screen bg-light dark:bg-dark">
+    <div className="bg-light dark:bg-dark">
       <Sidebar />
       <main className={cn(
         "transition-all duration-500",

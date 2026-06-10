@@ -284,7 +284,7 @@
     },
     "modifyRole": "تعديل الدور الأمني",
     "protocolUpdate": "تحديث البروتوكول",
-    "updateDescription": "تحديث مستويات الصلاحيات لـ <1>\"{{name}}\"</1> وتحسين الوصول عبر وحدات النظام.",
+    "updateDescription": "تحديث مستويات الصلاحيات لـ \"{{name}}\" وتحسين الوصول عبر وحدات النظام.",
     "securityChangesInstant": "يتم نشر التغييرات الأمنية فوراً عبر جميع الحسابات المرتبطة.",
     "modifyingCoreStability": "قد يؤثر تعديل الأذونات الأساسية على استقرار النظام. تحقق قبل الاعتماد.",
     "protocolModificationAuth": "تفويض تعديل البروتوكول",
@@ -317,6 +317,7 @@
       "resources-dashboard": "لوحة بيانات الموارد",
       "finance-dashboard": "لوحة البيانات المالية",
       "project-media": "وسائط المشروع",
+      "apartment-media": "وسائط الشقة",
       "contract-template": "قوالب العقود"
     },
     "moduleAccess": "صلاحيات الوحدة",
@@ -346,6 +347,7 @@
       "resources-dashboard": "تتبع موارد النظام وتوافرها",
       "finance-dashboard": "عرض الإحصائيات والمؤشرات المالية",
       "project-media": "إدارة صور ووسائط المشروع",
+      "apartment-media": "إدارة صور ووسائط الشقة",
       "contract-template": "إدارة قوالب العقود PDF والحقول الديناميكية"
     },
     "modules": {
@@ -922,6 +924,7 @@
     "password": "كلمة المرور",
     "startDate": "تاريخ البدء",
     "endDate": "تاريخ الانتهاء",
+    "viewDetails": "بيانات المندوب",
     "actions": "الإجراءات",
     "successCreate": "تم إنشاء مندوب المبيعات بنجاح",
     "successUpdate": "تم تحديث بيانات مندوب المبيعات بنجاح",

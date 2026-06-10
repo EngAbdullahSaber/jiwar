@@ -283,7 +283,7 @@
     },
     "modifyRole": "Modify Security Role",
     "protocolUpdate": "Protocol Update",
-    "updateDescription": "Update clearance levels for <0>{{name}}</0> and refine access across system modules.",
+    "updateDescription": "Update clearance levels for {{name}} and refine access across system modules.",
     "securityChangesInstant": "Security changes are deployed instantly across all associated accounts.",
     "modifyingCoreStability": "Modifying core permissions may affect system stability. Verify before committing.",
     "protocolModificationAuth": "Protocol modification authorization",
@@ -316,6 +316,7 @@
       "resources-dashboard": "Resources Dashboard",
       "finance-dashboard": "Finance Dashboard",
       "project-media": "Project Media",
+      "apartment-media": "Apartment Media",
       "contract-template": "Contract Templates"
     },
     "moduleAccess": "Module access",
@@ -345,6 +346,7 @@
       "resources-dashboard": "Track system resources and availability",
       "finance-dashboard": "View financial statistics and metrics",
       "project-media": "Manage project images and media files",
+      "apartment-media": "Manage apartment images and media files",
       "contract-template": "Manage PDF contract templates and dynamic fields"
     },
     "modules": {
@@ -921,6 +923,7 @@
     "password": "Password",
     "startDate": "Start Date",
     "endDate": "End Date",
+    "viewDetails": "Salesman Details",
     "actions": "Actions",
     "successCreate": "Salesman created successfully",
     "successUpdate": "Salesman updated successfully",

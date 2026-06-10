@@ -112,8 +112,9 @@ export default function Roles() {
 
   const filteredRoles = data?.data.filter(
     (role) =>
-      role.name.toLowerCase().includes(searchValue.toLowerCase()) ||
-      (role.description?.toLowerCase().includes(searchValue.toLowerCase()) ?? false)
+      role.id !== 1 &&
+      (role.name.toLowerCase().includes(searchValue.toLowerCase()) ||
+      (role.description?.toLowerCase().includes(searchValue.toLowerCase()) ?? false))
   );
 
   const totalUsers = data?.data.reduce((sum, r) => sum + (r._count?.users || 0), 0) || 0;

@@ -11,8 +11,12 @@ import {
   Loader2,
   Sparkles,
   Wallet,
-  CalendarDays,
   FileText,
+  Mail,
+  Phone,
+  Briefcase,
+  TrendingUp,
+  Clock,
 } from "lucide-react";
 import { Shell } from "../../components/shared/Shell";
 import { cn } from "@/lib/utils";
@@ -22,16 +26,19 @@ import { Input } from "@/components/ui/input";
 import { FormField } from "../../components/shared/FormField";
 import DatePicker from "../../components/shared/DatePicker";
 import { toast } from "react-hot-toast";
+import { format } from "date-fns";
 
 interface SalesmanDetail {
   id: number;
   fullName: string;
-}
-
-interface SalesmanStatistics {
+  email: string;
+  phoneNumber: string;
+  agentType: string;
+  startDate: string;
+  endDate: string;
   totalCommission: number;
-  totalPaid: number;
-  balance: number;
+  totalPaidToSalesman: number;
+  role: { id: number; name: string } | null;
 }
 
 export default function PaySalesman() {
@@ -43,26 +50,16 @@ export default function PaySalesman() {
 
   const [form, setForm] = useState({ paidDate: "", amount: "", notes: "" });
 
-  const { data: salesmanResp, isLoading: loadingSalesman } = useQuery<{
-    data: SalesmanDetail;
-  }>({
+  const { data: salesmanResp, isLoading } = useQuery<{ data: SalesmanDetail }>({
     queryKey: ["salesman", id],
     queryFn: async () => (await api.get(`/salesman/${id}`)).data,
     enabled: !!id,
   });
 
-  const { data: statsResp, isLoading: loadingStats } = useQuery<{
-    data: SalesmanStatistics;
-  }>({
-    queryKey: ["salesman-statistics", id],
-    queryFn: async () => (await api.get(`/salesman/${id}`)).data,
-    enabled: !!id,
-  });
-
   const salesman = salesmanResp?.data;
-  const stats = statsResp?.data;
-  const balance =
-    stats?.balance ?? (stats ? stats.totalCommission - stats.totalPaid : 0);
+  const balance = salesman
+    ? salesman.totalCommission - salesman.totalPaidToSalesman
+    : 0;
 
   const payMutation = useMutation({
     mutationFn: async (payload: {
@@ -77,7 +74,6 @@ export default function PaySalesman() {
       toast.success(t("salesman.payBalance.success"));
       queryClient.invalidateQueries({ queryKey: ["salesmen"] });
       queryClient.invalidateQueries({ queryKey: ["salesman", id] });
-      queryClient.invalidateQueries({ queryKey: ["salesman-statistics", id] });
       setLocation("/salesman");
     },
     onError: (error: any) => {
@@ -111,7 +107,13 @@ export default function PaySalesman() {
     });
   };
 
-  const isLoading = loadingSalesman || loadingStats;
+  const formatDate = (d: string) => {
+    try {
+      return format(new Date(d), "MMM dd, yyyy");
+    } catch {
+      return d;
+    }
+  };
 
   if (isLoading) {
     return (
@@ -139,7 +141,7 @@ export default function PaySalesman() {
     <Shell>
       <TopHeader />
       <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-50 dark:from-gray-950 dark:via-gray-900 dark:to-gray-950">
-        <div className="  mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6 pb-32">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6 pb-32">
           {/* Page Header */}
           <div className="bg-white dark:bg-gray-900 rounded-md border border-gray-200 dark:border-gray-800 p-6 shadow-sm relative overflow-hidden">
             <div className="absolute top-0 right-0 w-48 h-48 bg-gradient-to-br from-[#4A1B1B]/5 to-transparent rounded-md -translate-y-1/2 translate-x-1/2 blur-3xl" />
@@ -173,186 +175,269 @@ export default function PaySalesman() {
             </div>
           </div>
 
-          {/* Balance Summary Card */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="bg-white dark:bg-gray-900 rounded-md border border-gray-200 dark:border-gray-800 shadow-sm overflow-hidden"
-          >
-            <div className="p-6 border-b border-gray-100 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-800/50">
-              <div className="flex items-center gap-4">
-                <div className="w-10 h-10 rounded-md bg-amber-50 dark:bg-amber-500/10 flex items-center justify-center">
-                  <Wallet className="w-5 h-5 text-amber-600 dark:text-amber-400" />
-                </div>
-                <div>
-                  <h2 className="text-base font-bold text-gray-900 dark:text-white">
-                    {t("salesman.stats.balance")}
-                  </h2>
-                  <p className="text-xs text-gray-500 dark:text-gray-400 font-medium">
-                    {t("salesman.payBalance.title")}
-                  </p>
-                </div>
-              </div>
-            </div>
-            <div className="p-6 grid grid-cols-3 gap-4">
-              {[
-                {
-                  label: t("salesman.stats.totalCommission"),
-                  value: stats?.totalCommission ?? 0,
-                  color: "text-gray-900 dark:text-white",
-                },
-                {
-                  label: t("salesman.stats.totalPaid"),
-                  value: stats?.totalPaid ?? 0,
-                  color: "text-emerald-600 dark:text-emerald-400",
-                },
-                {
-                  label: t("salesman.stats.balance"),
-                  value: balance,
-                  color:
-                    balance > 0
-                      ? "text-amber-600 dark:text-amber-400"
-                      : "text-gray-400",
-                },
-              ].map((item) => (
-                <div
-                  key={item.label}
-                  className="flex flex-col items-center justify-center p-4 rounded-md bg-gray-50 dark:bg-gray-800/50 border border-gray-100 dark:border-gray-800 gap-1"
-                >
-                  <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider text-center">
-                    {item.label}
-                  </span>
-                  <span className={cn("text-xl font-black", item.color)}>
-                    {item.value.toLocaleString()}
-                  </span>
-                  <span className="text-[10px] font-bold text-gray-400 uppercase">
-                    {t("common.sar")}
-                  </span>
-                </div>
-              ))}
-            </div>
-          </motion.div>
-
-          {/* Form Card */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
-            className="bg-white dark:bg-gray-900 rounded-md border border-gray-200 dark:border-gray-800 shadow-sm"
-          >
-            <div className="p-6 border-b border-gray-100 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-800/50">
-              <div className="flex items-center gap-4">
-                <div className="w-10 h-10 rounded-md bg-indigo-50 dark:bg-indigo-500/10 flex items-center justify-center">
-                  <CalendarDays className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
-                </div>
-                <div>
-                  <h2 className="text-base font-bold text-gray-900 dark:text-white">
-                    {t("salesman.payBalance.title")}
-                  </h2>
-                  <p className="text-xs text-gray-500 dark:text-gray-400 font-medium">
-                    {t("salesman.payBalance.date")} &amp;{" "}
-                    {t("salesman.payBalance.amount")}
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            <form onSubmit={handleSubmit} className="p-8 space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
-                {/* Payment Date */}
-                <FormField label={t("salesman.payBalance.date")} required>
-                  <DatePicker
-                    value={form.paidDate}
-                    onChange={(date) =>
-                      setForm((prev) => ({ ...prev, paidDate: date }))
-                    }
-                  />
-                </FormField>
-
-                {/* Amount */}
-                <FormField
-                  label={t("salesman.payBalance.amount")}
-                  required
-                  error={
-                    exceedsBalance
-                      ? t("salesman.payBalance.exceedsBalance")
-                      : undefined
-                  }
-                >
-                  <div className="relative group">
-                    <div className="absolute left-4 rtl:left-auto rtl:right-4 top-1/2 -translate-y-1/2 text-gray-400 text-[10px] font-bold pointer-events-none z-10">
-                      {t("common.sar")}
-                    </div>
-                    <Input
-                      type="number"
-                      step="0.01"
-                      min="0"
-                      max={balance}
-                      placeholder="0.00"
-                      className={cn(
-                        "h-12 pl-12 rtl:pl-4 rtl:pr-12 rounded-md bg-gray-50 dark:bg-gray-800/50 border-gray-100 dark:border-gray-800 focus:bg-white dark:focus:bg-gray-800 transition-all font-medium",
-                        exceedsBalance
-                          ? "border-rose-400 dark:border-rose-500"
-                          : "",
-                      )}
-                      value={form.amount}
-                      onChange={(e) =>
-                        setForm((prev) => ({ ...prev, amount: e.target.value }))
-                      }
-                    />
-                  </div>
-                </FormField>
-              </div>
-
-              {/* Notes */}
-              <FormField
-                label={`${t("salesman.payBalance.notes")} (${t("common.optional")})`}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            {/* Left: Salesman info + balance */}
+            <div className="lg:col-span-1 space-y-6">
+              {/* Salesman details */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="bg-white dark:bg-gray-900 rounded-md border border-gray-200 dark:border-gray-800 shadow-sm overflow-hidden"
               >
-                <div className="relative group">
-                  <FileText className="absolute left-4 rtl:left-auto rtl:right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 group-focus-within:text-[#B39371] transition-colors" />
-                  <Input
-                    type="text"
-                    placeholder={t("salesman.payBalance.notesPlaceholder")}
-                    className="h-12 pl-11 rtl:pl-4 rtl:pr-11 rounded-md bg-gray-50 dark:bg-gray-800/50 border-gray-100 dark:border-gray-800 focus:bg-white dark:focus:bg-gray-800 transition-all font-medium"
-                    value={form.notes}
-                    onChange={(e) =>
-                      setForm((prev) => ({ ...prev, notes: e.target.value }))
-                    }
-                  />
+                <div className="p-5 border-b border-gray-100 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-800/50">
+                  <div className="flex items-center gap-3">
+                    <div className="w-9 h-9 rounded-md bg-indigo-50 dark:bg-indigo-500/10 flex items-center justify-center">
+                      <UsersIcon className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
+                    </div>
+                    <h2 className="text-sm font-bold text-gray-900 dark:text-white">
+                      {t("salesman.viewDetails")}
+                    </h2>
+                  </div>
                 </div>
-              </FormField>
+                <div className="p-5 space-y-3">
+                  {[
+                    {
+                      icon: Mail,
+                      label: t("salesman.email"),
+                      value: salesman.email,
+                    },
+                    {
+                      icon: Phone,
+                      label: t("salesman.phoneNumber"),
+                      value: salesman.phoneNumber,
+                    },
+                    {
+                      icon: Briefcase,
+                      label: t("salesman.agentType"),
+                      value: t(
+                        `salesman.types.${salesman.agentType.toLowerCase()}`,
+                      ),
+                    },
+                    {
+                      icon: Clock,
+                      label: t("salesman.startDate"),
+                      value: formatDate(salesman.startDate),
+                    },
+                    {
+                      icon: Clock,
+                      label: t("salesman.endDate"),
+                      value: formatDate(salesman.endDate),
+                    },
+                  ].map(({ icon: Icon, label, value }) => (
+                    <div
+                      key={label}
+                      className="flex items-start gap-3 p-3 rounded-md bg-gray-50 dark:bg-gray-800/50 border border-gray-100 dark:border-gray-700/50"
+                    >
+                      <div className="w-7 h-7 rounded-md bg-gradient-to-br from-[#4A1B1B]/10 to-[#6B2727]/10 flex items-center justify-center flex-shrink-0 mt-0.5">
+                        <Icon className="w-3.5 h-3.5 text-[#B39371]" />
+                      </div>
+                      <div className="min-w-0">
+                        <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider mb-0.5">
+                          {label}
+                        </p>
+                        <p className="text-xs font-medium text-gray-900 dark:text-white break-all">
+                          {value}
+                        </p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </motion.div>
 
-              {/* Actions */}
-              <div className="flex items-center justify-end gap-3 pt-2">
-                <Button
-                  type="button"
-                  variant="ghost"
-                  onClick={() => setLocation("/salesman")}
-                  disabled={payMutation.isPending}
-                  className="h-11 px-6 rounded-md font-semibold"
-                >
-                  {t("common.cancel")}
-                </Button>
-                <Button
-                  type="submit"
-                  disabled={payMutation.isPending || exceedsBalance}
-                  className="h-11 px-8 rounded-md bg-emerald-600 hover:bg-emerald-700 text-white font-bold shadow-lg shadow-emerald-600/20 min-w-[160px]"
-                >
-                  {payMutation.isPending ? (
-                    <span className="flex items-center gap-2">
-                      <Loader2 className="w-4 h-4 animate-spin" />
-                      {t("common.processing")}
-                    </span>
-                  ) : (
-                    <span className="flex items-center gap-2">
-                      <Banknote className="w-4 h-4" />
-                      {t("salesman.payBalance.pay")}
-                    </span>
-                  )}
-                </Button>
-              </div>
-            </form>
-          </motion.div>
+              {/* Balance summary */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.05 }}
+                className="bg-white dark:bg-gray-900 rounded-md border border-gray-200 dark:border-gray-800 shadow-sm overflow-hidden"
+              >
+                <div className="p-5 border-b border-gray-100 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-800/50">
+                  <div className="flex items-center gap-3">
+                    <div className="w-9 h-9 rounded-md bg-amber-50 dark:bg-amber-500/10 flex items-center justify-center">
+                      <Wallet className="w-4 h-4 text-amber-600 dark:text-amber-400" />
+                    </div>
+                    <h2 className="text-sm font-bold text-gray-900 dark:text-white">
+                      {t("salesman.stats.balance")}
+                    </h2>
+                  </div>
+                </div>
+                <div className="p-5 space-y-3">
+                  {[
+                    {
+                      label: t("salesman.stats.totalCommission"),
+                      value: salesman.totalCommission,
+                      color: "text-gray-900 dark:text-white",
+                      bg: "bg-gray-50 dark:bg-gray-800/50 border-gray-100 dark:border-gray-700/50",
+                    },
+                    {
+                      label: t("salesman.stats.totalPaid"),
+                      value: salesman.totalPaidToSalesman,
+                      color: "text-emerald-600 dark:text-emerald-400",
+                      bg: "bg-emerald-50/50 dark:bg-emerald-500/5 border-emerald-100 dark:border-emerald-500/20",
+                    },
+                    {
+                      label: t("salesman.stats.balance"),
+                      value: balance,
+                      color:
+                        balance > 0
+                          ? "text-amber-600 dark:text-amber-400"
+                          : "text-gray-400",
+                      bg:
+                        balance > 0
+                          ? "bg-amber-50/50 dark:bg-amber-500/5 border-amber-200 dark:border-amber-500/20"
+                          : "bg-gray-50 dark:bg-gray-800/50 border-gray-100 dark:border-gray-700/50",
+                    },
+                  ].map((item) => (
+                    <div
+                      key={item.label}
+                      className={cn(
+                        "flex items-center justify-between px-3 py-2.5 rounded-md border",
+                        item.bg,
+                      )}
+                    >
+                      <span className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">
+                        {item.label}
+                      </span>
+                      <span className={cn("text-sm font-black", item.color)}>
+                        {item.value.toLocaleString()}
+                        <span className="text-[9px] font-bold ml-1 uppercase">
+                          {t("common.sar")}
+                        </span>
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </motion.div>
+            </div>
+
+            {/* Right: Form */}
+            <div className="lg:col-span-2 space-y-6">
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.1 }}
+                className="bg-white dark:bg-gray-900 rounded-md border border-gray-200 dark:border-gray-800 shadow-sm"
+              >
+                <div className="p-6 border-b border-gray-100 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-800/50">
+                  <div className="flex items-center gap-4">
+                    <div className="w-10 h-10 rounded-md bg-emerald-50 dark:bg-emerald-500/10 flex items-center justify-center">
+                      <TrendingUp className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
+                    </div>
+                    <div>
+                      <h2 className="text-base font-bold text-gray-900 dark:text-white">
+                        {t("salesman.payBalance.title")}
+                      </h2>
+                      <p className="text-xs text-gray-500 dark:text-gray-400 font-medium">
+                        {salesman.fullName}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                <form onSubmit={handleSubmit} className="p-8 space-y-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
+                    {/* Payment Date */}
+                    <FormField label={t("salesman.payBalance.date")} required>
+                      <DatePicker
+                        value={form.paidDate}
+                        onChange={(date) =>
+                          setForm((prev) => ({ ...prev, paidDate: date }))
+                        }
+                      />
+                    </FormField>
+
+                    {/* Amount */}
+                    <FormField
+                      label={t("salesman.payBalance.amount")}
+                      required
+                      error={
+                        exceedsBalance
+                          ? t("salesman.payBalance.exceedsBalance")
+                          : undefined
+                      }
+                    >
+                      <div className="relative group">
+                        <div className="absolute left-4 rtl:left-auto rtl:right-4 top-1/2 -translate-y-1/2 text-gray-400 text-[10px] font-bold pointer-events-none z-10">
+                          {t("common.sar")}
+                        </div>
+                        <Input
+                          type="number"
+                          step="0.01"
+                          min="0"
+                          max={balance}
+                          placeholder="0.00"
+                          className={cn(
+                            "h-12 pl-12 rtl:pl-4 rtl:pr-12 rounded-md bg-gray-50 dark:bg-gray-800/50 border-gray-100 dark:border-gray-800 focus:bg-white dark:focus:bg-gray-800 transition-all font-medium",
+                            exceedsBalance
+                              ? "border-rose-400 dark:border-rose-500"
+                              : "",
+                          )}
+                          value={form.amount}
+                          onChange={(e) =>
+                            setForm((prev) => ({
+                              ...prev,
+                              amount: e.target.value,
+                            }))
+                          }
+                        />
+                      </div>
+                    </FormField>
+                  </div>
+
+                  {/* Notes */}
+                  <FormField
+                    label={`${t("salesman.payBalance.notes")} (${t("common.optional")})`}
+                  >
+                    <div className="relative group">
+                      <FileText className="absolute left-4 rtl:left-auto rtl:right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 group-focus-within:text-[#B39371] transition-colors" />
+                      <Input
+                        type="text"
+                        placeholder={t("salesman.payBalance.notesPlaceholder")}
+                        className="h-12 pl-11 rtl:pl-4 rtl:pr-11 rounded-md bg-gray-50 dark:bg-gray-800/50 border-gray-100 dark:border-gray-800 focus:bg-white dark:focus:bg-gray-800 transition-all font-medium"
+                        value={form.notes}
+                        onChange={(e) =>
+                          setForm((prev) => ({
+                            ...prev,
+                            notes: e.target.value,
+                          }))
+                        }
+                      />
+                    </div>
+                  </FormField>
+
+                  {/* Actions */}
+                  <div className="flex items-center justify-end gap-3 pt-2">
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      onClick={() => setLocation("/salesman")}
+                      disabled={payMutation.isPending}
+                      className="h-11 px-6 rounded-md font-semibold"
+                    >
+                      {t("common.cancel")}
+                    </Button>
+                    <Button
+                      type="submit"
+                      disabled={payMutation.isPending || exceedsBalance}
+                      className="h-11 px-8 rounded-md bg-emerald-600 hover:bg-emerald-700 text-white font-bold shadow-lg shadow-emerald-600/20 min-w-40"
+                    >
+                      {payMutation.isPending ? (
+                        <span className="flex items-center gap-2">
+                          <Loader2 className="w-4 h-4 animate-spin" />
+                          {t("common.processing")}
+                        </span>
+                      ) : (
+                        <span className="flex items-center gap-2">
+                          <Banknote className="w-4 h-4" />
+                          {t("salesman.payBalance.pay")}
+                        </span>
+                      )}
+                    </Button>
+                  </div>
+                </form>
+              </motion.div>
+            </div>
+          </div>
         </div>
       </div>
     </Shell>

@@ -16,7 +16,6 @@ import {
   Receipt,
 } from "lucide-react";
 import { Shell } from "../../components/shared/Shell";
-import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";

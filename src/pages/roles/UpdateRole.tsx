@@ -1,6 +1,6 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import { useLocation, useParams } from "wouter";
-import { useTranslation, Trans } from "react-i18next";
+import { useTranslation } from "react-i18next";
 import { TopHeader } from "../../components/TopHeader";
 import { Shell } from "../../components/shared/Shell";
 import {
@@ -22,20 +22,11 @@ import {
 } from "lucide-react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import api from "@/lib/api";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { scrollToFirstError } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { FormField } from "@/components/shared/FormField";
-import { Checkbox } from "@/components/ui/checkbox";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 import { toast } from "react-hot-toast";
 
 interface Permission {
@@ -65,6 +56,15 @@ interface RoleDataResponse {
   code: number;
   data: Role;
 }
+
+const ACTION_ORDER = ["READ", "CREATE", "UPDATE", "DELETE"];
+
+const RESOURCE_GROUPS: Record<string, string[]> = {
+  project: ["project-media"],
+  apartment: ["apartment-media"],
+  salesman: ["salesman-paid-log"],
+  client: ["client-payment"],
+};
 
 const RESOURCE_ICONS: Record<string, any> = {
   user: Users,
@@ -97,6 +97,8 @@ export default function UpdateRole() {
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [searchValue, setSearchValue] = useState("");
+  const [selectedIds, setSelectedIds] = useState<number[]>([]);
+  const [isInitialized, setIsInitialized] = useState(false);
 
   const { data: permissionsData, isLoading: permissionsLoading } =
     useQuery<PermissionResponse>({
@@ -118,67 +120,111 @@ export default function UpdateRole() {
     },
   );
 
-  const [selectedIds, setSelectedIds] = useState<number[]>([]);
+  // Memoize groupedPermissions to prevent recalculation on every render
+  const groupedPermissions = useMemo(() => {
+    if (!permissionsData?.data) return null;
 
-  // Group permissions by resource for display.
-  // Sort so specific entries ("create:user" → id 208) come before bulk entries
-  // ("user" → id 269 with all actions), ensuring each action gets its own id.
-  const groupedPermissions = permissionsData?.data
-    .slice()
-    .sort((a, b) => {
-      const aSpecific = a.resource.includes(":") ? 0 : 1;
-      const bSpecific = b.resource.includes(":") ? 0 : 1;
-      return aSpecific - bSpecific;
-    })
-    .reduce(
-      (acc, p) => {
-        let resource = p.resource;
+    return permissionsData.data
+      .slice()
+      .sort(
+        (a, b) =>
+          (a.resource.includes(":") ? 0 : 1) -
+          (b.resource.includes(":") ? 0 : 1),
+      )
+      .reduce(
+        (acc, p) => {
+          let resource = p.resource;
+          if (resource.includes(":")) resource = resource.split(":")[1];
 
-        if (resource.includes(":")) {
-          const parts = resource.split(":");
-          resource = parts[1];
-        }
+          const parentResource = Object.keys(RESOURCE_GROUPS).find((parent) =>
+            RESOURCE_GROUPS[parent].includes(resource),
+          );
+          const target = parentResource ?? resource;
 
-        if (!acc[resource]) {
-          acc[resource] = {
-            resource,
-            actions: {} as Record<string, number>,
-          };
-        }
-        // First-write wins — specific entries already processed, bulk fills only gaps
-        p.actions.forEach((action) => {
-          if (!acc[resource].actions[action]) {
-            acc[resource].actions[action] = p.id;
+          if (!acc[target]) {
+            acc[target] = {
+              resource: target,
+              actions: {} as Record<string, number>,
+              subPermissions: [] as Array<{
+                resource: string;
+                action: string;
+                id: number;
+              }>,
+            };
           }
-        });
-        return acc;
-      },
-      {} as Record<string, { resource: string; actions: Record<string, number> }>,
-    );
 
-  const modules = groupedPermissions ? Object.values(groupedPermissions) : [];
+          if (parentResource) {
+            p.actions.forEach((action) => {
+              if (
+                !acc[target].subPermissions.some(
+                  (sp) => sp.resource === resource && sp.action === action,
+                )
+              ) {
+                acc[target].subPermissions.push({ resource, action, id: p.id });
+              }
+            });
+          } else {
+            p.actions.forEach((action) => {
+              if (!acc[target].actions[action])
+                acc[target].actions[action] = p.id;
+            });
+          }
+          return acc;
+        },
+        {} as Record<
+          string,
+          {
+            resource: string;
+            actions: Record<string, number>;
+            subPermissions: Array<{
+              resource: string;
+              action: string;
+              id: number;
+            }>;
+          }
+        >,
+      );
+  }, [permissionsData?.data]);
 
+  const modules = useMemo(() => {
+    return groupedPermissions ? Object.values(groupedPermissions) : [];
+  }, [groupedPermissions]);
+
+  // Initialize form data only once when roleData loads
   useEffect(() => {
-    if (roleData?.data) {
+    if (roleData?.data && !isInitialized) {
       setFormData({
         name: roleData.data.name,
         description: roleData.data.description || "",
       });
-
-      const initialSelectedIds = roleData.data.rolePermissions.map(
+      const newSelectedIds = roleData.data.rolePermissions.map(
         (rp) => rp.permission.id,
       );
-      setSelectedIds(initialSelectedIds);
+      setSelectedIds(newSelectedIds);
+      setIsInitialized(true);
     }
-  }, [roleData]);
+  }, [roleData?.data, isInitialized]);
 
-  const togglePermission = (permissionId: number) => {
-    setSelectedIds((prev) =>
-      prev.includes(permissionId)
-        ? prev.filter((id) => id !== permissionId)
-        : [...prev, permissionId],
-    );
-  };
+  // Memoize togglePermission to prevent recreation
+  const togglePermission = useCallback((ids: number[]) => {
+    setSelectedIds((prev) => {
+      const allSelected = ids.every((id) => prev.includes(id));
+      return allSelected
+        ? prev.filter((id) => !ids.includes(id))
+        : [...prev, ...ids.filter((id) => !prev.includes(id))];
+    });
+  }, []);
+
+  // Memoize actionLabels to prevent recreation
+  const actionLabels: Record<string, string> = useMemo(
+    () => ({
+      READ: t("roles.read"),
+      CREATE: t("roles.createPerm"),
+      UPDATE: t("roles.edit"),
+      DELETE: t("roles.delete"),
+    }),
+    [t],
+  );
 
   const updateMutation = useMutation({
     mutationFn: async (roleData: any) => {
@@ -254,13 +300,9 @@ export default function UpdateRole() {
                     {t("roles.modifyRole")}
                   </h1>
                   <p className="text-sm text-gray-500 dark:text-gray-400 mt-1 max-w-lg leading-relaxed">
-                    <Trans
-                      i18nKey="roles.updateDescription"
-                      values={{ name: roleData?.data.name }}
-                      components={[
-                        <span className="text-[#B39371] font-bold" />,
-                      ]}
-                    />
+                    {t("roles.updateDescription", {
+                      name: roleData?.data?.name,
+                    })}
                   </p>
                 </div>
               </div>
@@ -299,12 +341,26 @@ export default function UpdateRole() {
                   </div>
 
                   <div className="space-y-6">
-                    <FormField label={t("roles.roleIdentifier")} required error={errors.name}>
+                    <FormField
+                      label={t("roles.roleIdentifier")}
+                      required
+                      error={errors.name}
+                    >
                       <Input
                         placeholder={t("roles.roleNamePlaceholder")}
                         className="h-12 rounded-md bg-gray-50 dark:bg-gray-800/50 border-gray-100 dark:border-gray-800 focus:bg-white dark:focus:bg-gray-800 focus:ring-4 focus:ring-[#B39371]/10 transition-all font-bold placeholder:font-normal"
                         value={formData.name}
-                        onChange={(e) => { setFormData((prev) => ({ ...prev, name: e.target.value })); if (errors.name) setErrors((p) => { const { name, ...r } = p; return r; }); }}
+                        onChange={(e) => {
+                          setFormData((prev) => ({
+                            ...prev,
+                            name: e.target.value,
+                          }));
+                          if (errors.name)
+                            setErrors((p) => {
+                              const { name, ...r } = p;
+                              return r;
+                            });
+                        }}
                       />
                     </FormField>
                     <FormField label={t("roles.deploymentMemo")}>
@@ -313,7 +369,12 @@ export default function UpdateRole() {
                         rows={4}
                         className="w-full p-4 rounded-md bg-gray-50 dark:bg-gray-800/50 border border-gray-100 dark:border-gray-800 focus:bg-white dark:focus:bg-gray-800 focus:ring-4 focus:ring-[#B39371]/10 transition-all font-medium text-sm placeholder:font-normal resize-none"
                         value={formData.description}
-                        onChange={(e) => setFormData((prev) => ({ ...prev, description: e.target.value }))}
+                        onChange={(e) =>
+                          setFormData((prev) => ({
+                            ...prev,
+                            description: e.target.value,
+                          }))
+                        }
                       />
                     </FormField>
                   </div>
@@ -370,183 +431,184 @@ export default function UpdateRole() {
                     </div>
                   </div>
 
-                  <div className="overflow-x-auto">
-                    <Table>
-                      <TableHeader className="bg-gray-50/50 dark:bg-white/5">
-                        <TableRow className="border-b border-gray-100 dark:border-gray-800">
-                          <TableHead className="w-[350px] text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] h-12 px-8">
-                            {t("roles.componentModule")}
-                          </TableHead>
-                          <TableHead className="text-center text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] h-12 w-24">
-                            {t("roles.read")}
-                          </TableHead>
-                          <TableHead className="text-center text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] h-12 w-24">
-                            {t("roles.createPerm")}
-                          </TableHead>
-                          <TableHead className="text-center text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] h-12 w-24">
-                            {t("roles.edit")}
-                          </TableHead>
-                          <TableHead className="text-center text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] h-12 w-24">
-                            {t("roles.delete")}
-                          </TableHead>
-                        </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        {permissionsLoading ? (
-                          Array.from({ length: 6 }).map((_, i) => (
-                            <TableRow
-                              key={i}
-                              className="animate-pulse h-20 border-b border-gray-50 dark:border-gray-800/50"
-                            >
-                              <TableCell className="px-8">
-                                <div className="h-10 bg-gray-100 dark:bg-gray-800 rounded-md w-64" />
-                              </TableCell>
-                              <TableCell>
-                                <div className="h-5 w-5 bg-gray-100 dark:bg-gray-800 rounded-md mx-auto" />
-                              </TableCell>
-                              <TableCell>
-                                <div className="h-5 w-5 bg-gray-100 dark:bg-gray-800 rounded-md mx-auto" />
-                              </TableCell>
-                              <TableCell>
-                                <div className="h-5 w-5 bg-gray-100 dark:bg-gray-800 rounded-md mx-auto" />
-                              </TableCell>
-                              <TableCell>
-                                <div className="h-5 w-5 bg-gray-100 dark:bg-gray-800 rounded-md mx-auto" />
-                              </TableCell>
-                            </TableRow>
-                          ))
-                        ) : (
-                          <AnimatePresence>
-                            {modules
-                              .filter(
-                                (m) =>
-                                  m.resource
-                                    .toLowerCase()
-                                    .includes(searchValue.toLowerCase()) ||
-                                  (t(`roles.resources.${m.resource}`)
-                                    .toLowerCase()
-                                    .includes(searchValue.toLowerCase()) ??
-                                    false),
-                              )
-                              .map((module, idx) => {
-                                const Icon =
-                                  RESOURCE_ICONS[module.resource] || Shield;
-
+                  <div className="max-h-155 overflow-y-auto">
+                    {permissionsLoading ? (
+                      <div className="p-6 space-y-4">
+                        {Array.from({ length: 4 }).map((_, i) => (
+                          <div
+                            key={i}
+                            className="animate-pulse border border-gray-100 dark:border-gray-800 rounded-md p-4"
+                          >
+                            <div className="flex items-center gap-3 mb-4">
+                              <div className="w-9 h-9 bg-gray-100 dark:bg-gray-800 rounded-md shrink-0" />
+                              <div className="space-y-1.5 flex-1">
+                                <div className="h-4 w-32 bg-gray-100 dark:bg-gray-800 rounded" />
+                                <div className="h-3 w-48 bg-gray-100 dark:bg-gray-800 rounded" />
+                              </div>
+                            </div>
+                            <div className="grid grid-cols-2 gap-3">
+                              {Array.from({ length: 4 }).map((_, j) => (
+                                <div
+                                  key={j}
+                                  className="h-16 bg-gray-100 dark:bg-gray-800 rounded-md"
+                                />
+                              ))}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="p-6 space-y-4">
+                        <>
+                          {modules
+                            .filter(
+                              (m) =>
+                                m.resource
+                                  .toLowerCase()
+                                  .includes(searchValue.toLowerCase()) ||
+                                (t(`roles.resources.${m.resource}`)
+                                  .toLowerCase()
+                                  .includes(searchValue.toLowerCase()) ??
+                                  false),
+                            )
+                            .map((module, idx) => {
+                              const Icon =
+                                RESOURCE_ICONS[module.resource] || Shield;
+                              const allActions = Object.keys(
+                                module.actions,
+                              ).sort((a, b) => {
+                                const ai = ACTION_ORDER.indexOf(a);
+                                const bi = ACTION_ORDER.indexOf(b);
                                 return (
-                                  <motion.tr
-                                    key={module.resource}
-                                    initial={{ opacity: 0, y: 10 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    transition={{ delay: idx * 0.03 }}
-                                    className="group hover:bg-[#B39371]/5 dark:hover:bg-[#B39371]/10 transition-colors border-b border-gray-50 dark:border-gray-800 last:border-0 h-20"
-                                  >
-                                    <TableCell className="px-8">
-                                      <div className="flex items-center gap-4">
-                                        <div className="w-12 h-12 rounded-md bg-gray-100 dark:bg-white/5 flex items-center justify-center text-gray-400 group-hover:bg-[#4A1B1B]/10 group-hover:text-[#4A1B1B] dark:group-hover:bg-[#B39371]/20 dark:group-hover:text-[#B39371] transition-all border border-transparent group-hover:border-[#4A1B1B]/10 dark:group-hover:border-[#B39371]/30">
-                                          <Icon className="w-6 h-6" />
-                                        </div>
-                                        <div className="space-y-0.5">
-                                          <p className="text-sm font-black text-gray-900 dark:text-white uppercase tracking-tight">
-                                            {t(
-                                              `roles.resources.${module.resource.toLowerCase()}`,
-                                              { defaultValue: module.resource },
-                                            )}
-                                          </p>
-                                          <p className="text-[11px] text-gray-400 dark:text-gray-500 font-medium line-clamp-1">
-                                            {t(
-                                              `roles.resourceDescriptions.${module.resource.toLowerCase()}`,
-                                              {
-                                                defaultValue:
-                                                  t("roles.moduleAccess"),
-                                              },
-                                            )}
-                                          </p>
-                                        </div>
-                                      </div>
-                                    </TableCell>
-                                    <TableCell className="text-center">
-                                      <div className="flex justify-center">
-                                        {module.actions.READ ? (
-                                          <Checkbox
-                                            checked={selectedIds.includes(
-                                              module.actions.READ,
-                                            )}
-                                            onCheckedChange={() =>
-                                              togglePermission(
-                                                module.actions.READ,
-                                              )
-                                            }
-                                            className="w-6 h-6 rounded-md border-gray-200 dark:border-gray-700 data-[state=checked]:bg-[#B39371] data-[state=checked]:border-[#B39371] transition-all hover:scale-110 active:scale-90"
-                                          />
-                                        ) : (
-                                          <span className="w-1.5 h-1.5 rounded-md bg-gray-200 dark:bg-gray-800" />
-                                        )}
-                                      </div>
-                                    </TableCell>
-                                    <TableCell className="text-center">
-                                      <div className="flex justify-center">
-                                        {module.actions.CREATE ? (
-                                          <Checkbox
-                                            checked={selectedIds.includes(
-                                              module.actions.CREATE,
-                                            )}
-                                            onCheckedChange={() =>
-                                              togglePermission(
-                                                module.actions.CREATE,
-                                              )
-                                            }
-                                            className="w-6 h-6 rounded-md border-gray-200 dark:border-gray-700 data-[state=checked]:bg-[#B39371] data-[state=checked]:border-[#B39371] transition-all hover:scale-110 active:scale-90"
-                                          />
-                                        ) : (
-                                          <span className="w-1.5 h-1.5 rounded-md bg-gray-200 dark:bg-gray-800" />
-                                        )}
-                                      </div>
-                                    </TableCell>
-                                    <TableCell className="text-center">
-                                      <div className="flex justify-center">
-                                        {module.actions.UPDATE ? (
-                                          <Checkbox
-                                            checked={selectedIds.includes(
-                                              module.actions.UPDATE,
-                                            )}
-                                            onCheckedChange={() =>
-                                              togglePermission(
-                                                module.actions.UPDATE,
-                                              )
-                                            }
-                                            className="w-6 h-6 rounded-md border-gray-200 dark:border-gray-700 data-[state=checked]:bg-[#B39371] data-[state=checked]:border-[#B39371] transition-all hover:scale-110 active:scale-90"
-                                          />
-                                        ) : (
-                                          <span className="w-1.5 h-1.5 rounded-md bg-gray-200 dark:bg-gray-800" />
-                                        )}
-                                      </div>
-                                    </TableCell>
-                                    <TableCell className="text-center">
-                                      <div className="flex justify-center">
-                                        {module.actions.DELETE ? (
-                                          <Checkbox
-                                            checked={selectedIds.includes(
-                                              module.actions.DELETE,
-                                            )}
-                                            onCheckedChange={() =>
-                                              togglePermission(
-                                                module.actions.DELETE,
-                                              )
-                                            }
-                                            className="w-6 h-6 rounded-md border-gray-200 dark:border-gray-700 data-[state=checked]:bg-[#B39371] data-[state=checked]:border-[#B39371] transition-all hover:scale-110 active:scale-90"
-                                          />
-                                        ) : (
-                                          <span className="w-1.5 h-1.5 rounded-md bg-gray-200 dark:bg-gray-800" />
-                                        )}
-                                      </div>
-                                    </TableCell>
-                                  </motion.tr>
+                                  (ai === -1 ? 99 : ai) - (bi === -1 ? 99 : bi)
                                 );
-                              })}
-                          </AnimatePresence>
-                        )}
-                      </TableBody>
-                    </Table>
+                              });
+                              const totalCount =
+                                allActions.length +
+                                module.subPermissions.length;
+
+                              return (
+                                <motion.div
+                                  key={module.resource}
+                                  initial={{ opacity: 0, y: 10 }}
+                                  animate={{ opacity: 1, y: 0 }}
+                                  transition={{ delay: idx * 0.03 }}
+                                  className="border border-gray-100 dark:border-gray-800 rounded-md overflow-hidden"
+                                >
+                                  <div className="flex items-center gap-3 px-5 py-3 bg-gray-50/50 dark:bg-white/5 border-b border-gray-100 dark:border-gray-800">
+                                    <div className="w-9 h-9 rounded-md bg-linear-to-br from-[#4A1B1B] to-[#6B2727] flex items-center justify-center text-[#B39371] shadow-sm shrink-0">
+                                      <Icon className="w-4 h-4" />
+                                    </div>
+                                    <div className="flex-1 min-w-0">
+                                      <div className="flex items-center gap-2">
+                                        <span className="font-black text-gray-900 dark:text-white text-sm uppercase tracking-tight">
+                                          {t(
+                                            `roles.resources.${module.resource.toLowerCase()}`,
+                                            { defaultValue: module.resource },
+                                          )}
+                                        </span>
+                                        <span className="px-2 py-0.5 bg-[#B39371]/10 text-[#B39371] rounded-full text-[10px] font-bold shrink-0">
+                                          {totalCount}
+                                        </span>
+                                      </div>
+                                      <p className="text-[11px] text-gray-400 font-medium truncate">
+                                        {t(
+                                          `roles.resourceDescriptions.${module.resource.toLowerCase()}`,
+                                          {
+                                            defaultValue:
+                                              t("roles.moduleAccess"),
+                                          },
+                                        )}
+                                      </p>
+                                    </div>
+                                  </div>
+
+                                  <div className="p-4 grid grid-cols-2 gap-3">
+                                    {allActions.map((action) => {
+                                      const isChecked = selectedIds.includes(
+                                        module.actions[action],
+                                      );
+                                      const ids = [module.actions[action]];
+                                      return (
+                                        <button
+                                          key={action}
+                                          type="button"
+                                          onClick={() => togglePermission(ids)}
+                                          className={`flex items-start gap-3 p-3 rounded-md border text-left transition-all ${
+                                            isChecked
+                                              ? "border-[#B39371]/40 bg-[#B39371]/10 dark:bg-[#B39371]/15"
+                                              : "border-gray-100 dark:border-gray-700 hover:border-[#B39371]/25 hover:bg-gray-50 dark:hover:bg-white/5"
+                                          }`}
+                                        >
+                                          <div className={`mt-0.5 w-4 h-4 rounded border flex items-center justify-center shrink-0 ${isChecked ? "bg-[#B39371] border-[#B39371]" : "border-gray-200 dark:border-gray-700"}`}>
+                                            {isChecked && <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>}
+                                          </div>
+                                          <div>
+                                            <p className="text-sm font-bold text-gray-900 dark:text-white">
+                                              {actionLabels[action] ?? action}
+                                            </p>
+                                            <p className="text-[11px] text-gray-400 font-medium">
+                                              {t("roles.allowActionOn", {
+                                                defaultValue: `Allow ${actionLabels[action] ?? action} on {{resource}}`,
+                                                resource: t(
+                                                  `roles.resources.${module.resource.toLowerCase()}`,
+                                                  {
+                                                    defaultValue:
+                                                      module.resource,
+                                                  },
+                                                ),
+                                              })}
+                                            </p>
+                                          </div>
+                                        </button>
+                                      );
+                                    })}
+                                    {module.subPermissions.map((sp) => {
+                                      const isChecked = selectedIds.includes(
+                                        sp.id,
+                                      );
+                                      const ids = [sp.id];
+                                      return (
+                                        <button
+                                          key={`${sp.resource}-${sp.action}`}
+                                          type="button"
+                                          onClick={() => togglePermission(ids)}
+                                          className={`flex items-start gap-3 p-3 rounded-md border text-left transition-all ${
+                                            isChecked
+                                              ? "border-[#B39371]/40 bg-[#B39371]/10 dark:bg-[#B39371]/15"
+                                              : "border-gray-100 dark:border-gray-700 hover:border-[#B39371]/25 hover:bg-gray-50 dark:hover:bg-white/5"
+                                          }`}
+                                        >
+                                          <div className={`mt-0.5 w-4 h-4 rounded border flex items-center justify-center shrink-0 ${isChecked ? "bg-[#B39371] border-[#B39371]" : "border-gray-200 dark:border-gray-700"}`}>
+                                            {isChecked && <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>}
+                                          </div>
+                                          <div>
+                                            <p className="text-sm font-bold text-gray-900 dark:text-white">
+                                              {t(
+                                                `roles.resources.${sp.resource.toLowerCase()}`,
+                                                { defaultValue: sp.resource },
+                                              )}
+                                            </p>
+                                            <p className="text-[11px] text-gray-400 font-medium">
+                                              {t("roles.allowActionOn", {
+                                                defaultValue: `Allow ${actionLabels[sp.action] ?? sp.action} on {{resource}}`,
+                                                resource: t(
+                                                  `roles.resources.${sp.resource.toLowerCase()}`,
+                                                  { defaultValue: sp.resource },
+                                                ),
+                                              })}
+                                            </p>
+                                          </div>
+                                        </button>
+                                      );
+                                    })}
+                                  </div>
+                                </motion.div>
+                              );
+                            })}
+                        </>
+                      </div>
+                    )}
                   </div>
 
                   {/* Submission Row */}

@@ -139,7 +139,7 @@ export default function CreateProject() {
       <TopHeader />
 
       <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-50 dark:from-gray-950 dark:via-gray-900 dark:to-gray-950">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8 pb-32">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8  ">
           {/* Header Section */}
           <div className="bg-white dark:bg-gray-900 rounded-[28px] border border-gray-100 dark:border-gray-800 p-6 shadow-sm">
             <div className="flex flex-col sm:flex-row items-center gap-6">
@@ -329,7 +329,11 @@ export default function CreateProject() {
 
                   {/* Coordinates */}
                   <div className="grid grid-cols-2 gap-4">
-                    <FormField label={t("projects.labels.latitude")} required error={errors.latitude}>
+                    <FormField
+                      label={t("projects.labels.latitude")}
+                      required
+                      error={errors.latitude}
+                    >
                       <div className="relative">
                         <Globe className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                         <Input
@@ -337,15 +341,26 @@ export default function CreateProject() {
                           className="pl-10 h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md"
                           value={formData.latitude}
                           onChange={(e) => {
-                            setFormData({ ...formData, latitude: e.target.value });
-                            if (errors.latitude) setErrors((p) => { const { latitude, ...r } = p; return r; });
+                            setFormData({
+                              ...formData,
+                              latitude: e.target.value,
+                            });
+                            if (errors.latitude)
+                              setErrors((p) => {
+                                const { latitude, ...r } = p;
+                                return r;
+                              });
                           }}
                           type="number"
                           step="any"
                         />
                       </div>
                     </FormField>
-                    <FormField label={t("projects.labels.longitude")} required error={errors.longitude}>
+                    <FormField
+                      label={t("projects.labels.longitude")}
+                      required
+                      error={errors.longitude}
+                    >
                       <div className="relative">
                         <Globe className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                         <Input
@@ -353,8 +368,15 @@ export default function CreateProject() {
                           className="pl-10 h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md"
                           value={formData.longitude}
                           onChange={(e) => {
-                            setFormData({ ...formData, longitude: e.target.value });
-                            if (errors.longitude) setErrors((p) => { const { longitude, ...r } = p; return r; });
+                            setFormData({
+                              ...formData,
+                              longitude: e.target.value,
+                            });
+                            if (errors.longitude)
+                              setErrors((p) => {
+                                const { longitude, ...r } = p;
+                                return r;
+                              });
                           }}
                           type="number"
                           step="any"

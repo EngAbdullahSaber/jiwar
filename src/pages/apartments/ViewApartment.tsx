@@ -67,6 +67,7 @@ interface Apartment {
   updatedBy: { id: number; email: string } | null;
   createdAt: string;
   updatedAt: string | null;
+  contracts?: Array<{ id: number; pdfUrl?: string }>;
 }
 
 interface ApartmentResponse {
@@ -188,8 +189,9 @@ export default function ViewApartment() {
   }
 
   /* ─── derived data ─── */
-  const currentStatus =
-    statusConfig[apartment.status] ?? statusConfig.reselling;
+  const isSold = (apartment.contracts?.length ?? 0) > 0;
+  const effectiveStatus = isSold ? "sold" : apartment.status;
+  const currentStatus = statusConfig[effectiveStatus] ?? statusConfig.reselling;
 
   const identificationFields: DataField[] = [
     {
@@ -376,7 +378,7 @@ export default function ViewApartment() {
             </div>
 
             <div className="flex items-center gap-2 shrink-0">
-              {apartment.isAvailable && canCreateContract && (
+              {apartment.isAvailable && canCreateContract && !isSold && (
                 <motion.button
                   whileHover={{ scale: 1.01 }}
                   whileTap={{ scale: 0.99 }}
@@ -430,7 +432,7 @@ export default function ViewApartment() {
                             currentStatus.dot,
                           )}
                         />
-                        {t(`apartments.statuses.${apartment.status}`)}
+                        {t(`apartments.statuses.${effectiveStatus}`)}
                       </span>
                       <span className="text-xs font-mono text-gray-400">
                         #{apartment.id.toString().padStart(4, "0")}
@@ -628,16 +630,20 @@ export default function ViewApartment() {
 
             {/* ── Right sidebar ── */}
             <div className="space-y-5">
-              {/* Availability */}
+              {/* Availability / Sold */}
               <div
                 className={cn(
                   "rounded-md border p-4 flex items-center gap-3",
-                  apartment.isAvailable
-                    ? "bg-emerald-50 dark:bg-emerald-950/20 border-emerald-200 dark:border-emerald-800/40"
-                    : "bg-gray-50 dark:bg-gray-800/50 border-gray-200 dark:border-gray-700",
+                  isSold
+                    ? "bg-red-50 dark:bg-red-950/20 border-red-200 dark:border-red-800/40"
+                    : apartment.isAvailable
+                      ? "bg-emerald-50 dark:bg-emerald-950/20 border-emerald-200 dark:border-emerald-800/40"
+                      : "bg-gray-50 dark:bg-gray-800/50 border-gray-200 dark:border-gray-700",
                 )}
               >
-                {apartment.isAvailable ? (
+                {isSold ? (
+                  <XCircle className="w-5 h-5 text-red-500 shrink-0" />
+                ) : apartment.isAvailable ? (
                   <CheckCircle2 className="w-5 h-5 text-emerald-500 shrink-0" />
                 ) : (
                   <XCircle className="w-5 h-5 text-gray-400 shrink-0" />
@@ -647,9 +653,11 @@ export default function ViewApartment() {
                     {t("apartments.labels.isAvailable")}
                   </p>
                   <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
-                    {apartment.isAvailable
-                      ? t("common.available")
-                      : t("common.notAvailable")}
+                    {isSold
+                      ? t("apartments.statuses.sold")
+                      : apartment.isAvailable
+                        ? t("common.available")
+                        : t("common.notAvailable")}
                   </p>
                 </div>
               </div>

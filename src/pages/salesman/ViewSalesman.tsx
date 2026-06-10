@@ -48,6 +48,7 @@ interface Contract {
   type: string;
   contractDate: string;
   paidAmount: number;
+  totalContractValue?: number;
   client: {
     id: number;
     fullName: string;
@@ -76,25 +77,13 @@ interface Salesman {
   createdBy?: { id: number; email: string };
   updatedBy?: { id: number; email: string } | null;
   contracts?: Contract[];
+  totalCommission: number;
+  totalPaidToSalesman: number;
 }
 
 interface SalesmanResponse {
   code: number;
   data: Salesman;
-}
-
-interface SalesmanStatistics {
-  totalContracts: number;
-  totalApartmentContracts: number;
-  totalContractValue: number;
-  totalCommission: number;
-  totalPaid: number;
-  balance: number;
-}
-
-interface StatisticsResponse {
-  code: number;
-  data: SalesmanStatistics;
 }
 
 export default function ViewSalesman() {
@@ -119,26 +108,15 @@ export default function ViewSalesman() {
     enabled: !!id,
   });
 
-  const { data: statsResponse, isLoading: isLoadingStats } =
-    useQuery<StatisticsResponse>({
-      queryKey: ["salesman-statistics", id],
-      queryFn: async () => {
-        const res = await api.get(`/salesman/${id}/statistics`);
-        return res.data;
-      },
-      enabled: !!id,
-    });
-
   const salesman = response?.data;
-  const stats = statsResponse?.data;
 
   const contracts = salesman?.contracts || [];
-  const contractsCount = stats?.totalContracts ?? 0;
-  const apartmentContractsCount = stats?.totalApartmentContracts ?? 0;
-  const totalContractValue = stats?.totalContractValue ?? 0;
-  const totalCommission = stats?.totalCommission ?? 0;
-  const totalPaid = stats?.totalPaid ?? 0;
-  const balance = stats?.balance ?? totalCommission - totalPaid;
+  const contractsCount = contracts.length;
+  const apartmentContractsCount = contracts.filter((c) => c.type === "apartment").length;
+  const totalContractValue = contracts.reduce((sum, c) => sum + (c.totalContractValue ?? 0), 0);
+  const totalCommission = salesman?.totalCommission ?? 0;
+  const totalPaid = salesman?.totalPaidToSalesman ?? 0;
+  const balance = totalCommission - totalPaid;
 
   const { mutate: payBalance, isPending: isPaying } = useMutation({
     mutationFn: async (payload: {
@@ -152,7 +130,6 @@ export default function ViewSalesman() {
     onSuccess: () => {
       toast.success(t("salesman.payBalance.success"));
       queryClient.invalidateQueries({ queryKey: ["salesman", id] });
-      queryClient.invalidateQueries({ queryKey: ["salesman-statistics", id] });
       setPayDialogOpen(false);
       setPayForm({ paidDate: "", amount: "", notes: "" });
     },
@@ -195,7 +172,7 @@ export default function ViewSalesman() {
     }
   };
 
-  if (isLoading || isLoadingStats) {
+  if (isLoading) {
     return (
       <Shell>
         <TopHeader />
