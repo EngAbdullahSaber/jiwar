@@ -1,4 +1,4 @@
-﻿import { useState, useMemo, useCallback, useEffect } from "react";
+﻿import { useState, useMemo, useCallback } from "react";
 import { useLocation } from "wouter";
 import { useTranslation } from "react-i18next";
 import { TopHeader } from "../../components/TopHeader";
@@ -215,7 +215,9 @@ export default function CreateRole() {
       return;
     }
 
-    const permissionIds = [...new Set([...selectedKeys].map((key) => parseInt(key.split("|")[0])))];
+    const permissionIds = [
+      ...new Set([...selectedKeys].map((key) => parseInt(key.split("|")[0]))),
+    ];
     createMutation.mutate({
       name: formData.name,
       description: formData.description,
@@ -496,7 +498,9 @@ export default function CreateRole() {
                               <div className="p-4 grid grid-cols-2 gap-3">
                                 {allActions.map((action) => {
                                   const permissionId = module.actions[action];
-                                  const isChecked = selectedKeys.has(`${permissionId}|${action}`);
+                                  const isChecked = selectedKeys.has(
+                                    `${permissionId}|${action}`,
+                                  );
                                   return (
                                     <PermissionCard
                                       key={action}
@@ -515,7 +519,9 @@ export default function CreateRole() {
                                   );
                                 })}
                                 {module.subPermissions.map((sp) => {
-                                  const isChecked = selectedKeys.has(`${sp.id}|${sp.action}`);
+                                  const isChecked = selectedKeys.has(
+                                    `${sp.id}|${sp.action}`,
+                                  );
                                   return (
                                     <PermissionCard
                                       key={`${sp.resource}-${sp.action}`}

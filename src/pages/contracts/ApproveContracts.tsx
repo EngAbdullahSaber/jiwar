@@ -148,8 +148,9 @@ export default function ApproveContracts() {
       setSelectedContractId(null);
       setSelectedContract(null);
     },
-    onError: () => {
-      toast.error(t('contracts.approveError'));
+    onError: (error: any) => {
+      const msg = error?.response?.data?.message;
+      toast.error(typeof msg === 'string' ? msg : t('contracts.approveError'));
     }
   });
 
