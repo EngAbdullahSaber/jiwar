@@ -97,7 +97,7 @@ export default function UpdateRole() {
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [searchValue, setSearchValue] = useState("");
-  const [selectedIds, setSelectedIds] = useState<number[]>([]);
+  const [selectedKeys, setSelectedKeys] = useState<Set<string>>(new Set());
   const [isInitialized, setIsInitialized] = useState(false);
 
   const { data: permissionsData, isLoading: permissionsLoading } =
@@ -197,21 +197,27 @@ export default function UpdateRole() {
         name: roleData.data.name,
         description: roleData.data.description || "",
       });
-      const newSelectedIds = roleData.data.rolePermissions.map(
-        (rp) => rp.permission.id,
-      );
-      setSelectedIds(newSelectedIds);
+      const newSelectedKeys = new Set<string>();
+      roleData.data.rolePermissions.forEach((rp) => {
+        rp.permission.actions.forEach((action) => {
+          newSelectedKeys.add(`${rp.permission.id}|${action}`);
+        });
+      });
+      setSelectedKeys(newSelectedKeys);
       setIsInitialized(true);
     }
   }, [roleData?.data, isInitialized]);
 
-  // Memoize togglePermission to prevent recreation
-  const togglePermission = useCallback((ids: number[]) => {
-    setSelectedIds((prev) => {
-      const allSelected = ids.every((id) => prev.includes(id));
-      return allSelected
-        ? prev.filter((id) => !ids.includes(id))
-        : [...prev, ...ids.filter((id) => !prev.includes(id))];
+  const togglePermission = useCallback((id: number, action: string) => {
+    const key = `${id}|${action}`;
+    setSelectedKeys((prev) => {
+      const next = new Set(prev);
+      if (next.has(key)) {
+        next.delete(key);
+      } else {
+        next.add(key);
+      }
+      return next;
     });
   }, []);
 
@@ -252,15 +258,16 @@ export default function UpdateRole() {
       return;
     }
 
-    if (selectedIds.length === 0) {
+    if (selectedKeys.size === 0) {
       toast.error(t("roles.onePermissionRequired"));
       return;
     }
 
+    const permissionIds = [...new Set([...selectedKeys].map((key) => parseInt(key.split("|")[0])))];
     updateMutation.mutate({
       name: formData.name,
       description: formData.description,
-      permissionIds: selectedIds,
+      permissionIds,
     });
   };
 
@@ -431,7 +438,7 @@ export default function UpdateRole() {
                     </div>
                   </div>
 
-                  <div className="max-h-155 overflow-y-auto">
+                  <div className="max-h-155 overflow-y-auto roles-scrollbar">
                     {permissionsLoading ? (
                       <div className="p-6 space-y-4">
                         {Array.from({ length: 4 }).map((_, i) => (
@@ -525,16 +532,15 @@ export default function UpdateRole() {
 
                                   <div className="p-4 grid grid-cols-2 gap-3">
                                     {allActions.map((action) => {
-                                      const isChecked = selectedIds.includes(
-                                        module.actions[action],
+                                      const isChecked = selectedKeys.has(
+                                        `${module.actions[action]}|${action}`,
                                       );
-                                      const ids = [module.actions[action]];
                                       return (
                                         <button
                                           key={action}
                                           type="button"
-                                          onClick={() => togglePermission(ids)}
-                                          className={`flex items-start gap-3 p-3 rounded-md border text-left transition-all ${
+                                          onClick={() => togglePermission(module.actions[action], action)}
+                                          className={`flex items-start gap-3 p-3 rounded-md border text-left transition-all cursor-pointer ${
                                             isChecked
                                               ? "border-[#B39371]/40 bg-[#B39371]/10 dark:bg-[#B39371]/15"
                                               : "border-gray-100 dark:border-gray-700 hover:border-[#B39371]/25 hover:bg-gray-50 dark:hover:bg-white/5"
@@ -564,16 +570,15 @@ export default function UpdateRole() {
                                       );
                                     })}
                                     {module.subPermissions.map((sp) => {
-                                      const isChecked = selectedIds.includes(
-                                        sp.id,
+                                      const isChecked = selectedKeys.has(
+                                        `${sp.id}|${sp.action}`,
                                       );
-                                      const ids = [sp.id];
                                       return (
                                         <button
                                           key={`${sp.resource}-${sp.action}`}
                                           type="button"
-                                          onClick={() => togglePermission(ids)}
-                                          className={`flex items-start gap-3 p-3 rounded-md border text-left transition-all ${
+                                          onClick={() => togglePermission(sp.id, sp.action)}
+                                          className={`flex items-start gap-3 p-3 rounded-md border text-left transition-all cursor-pointer ${
                                             isChecked
                                               ? "border-[#B39371]/40 bg-[#B39371]/10 dark:bg-[#B39371]/15"
                                               : "border-gray-100 dark:border-gray-700 hover:border-[#B39371]/25 hover:bg-gray-50 dark:hover:bg-white/5"

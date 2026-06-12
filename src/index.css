@@ -411,3 +411,22 @@
   border-color: rgb(248 113 113) !important;
   box-shadow: 0 0 0 3px rgba(248, 113, 113, 0.12) !important;
 }
+
+/* Roles scrollbar */
+.roles-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(179, 147, 113, 0.4) transparent;
+}
+.roles-scrollbar::-webkit-scrollbar {
+  width: 5px;
+}
+.roles-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.roles-scrollbar::-webkit-scrollbar-thumb {
+  background-color: rgba(179, 147, 113, 0.4);
+  border-radius: 9999px;
+}
+.roles-scrollbar::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(179, 147, 113, 0.7);
+}
