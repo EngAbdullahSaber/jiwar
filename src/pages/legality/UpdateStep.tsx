@@ -101,7 +101,7 @@ export default function UpdateStep() {
 
   const updateMutation = useMutation({
     mutationFn: async (payload: any) => {
-      const resp = await api.patch(`/legality/${legalityId}`, payload);
+      const resp = await api.patch(`/legality/${legalityId}/steps`, payload);
       return resp.data;
     },
     onSuccess: () => {
@@ -133,23 +133,24 @@ export default function UpdateStep() {
       return;
     }
 
-    const payload: any = {
+    const stepPayload: any = {
       id: step.id,
       details: formData.details,
-      fromDate: formData.fromDate || null,
-      toDate: formData.toDate || null,
+      fromDate: formData.fromDate ? new Date(formData.fromDate).toISOString() : null,
+      toDate: formData.toDate ? new Date(formData.toDate).toISOString() : null,
       amount: formData.amount ? Number(formData.amount) : null,
       files,
+      isUpdated: true,
     };
 
     if (!isDefault) {
-      payload.name = {
+      stepPayload.name = {
         english: formData.nameEn,
         arabic: formData.nameAr,
       };
     }
 
-    updateMutation.mutate({ step: payload });
+    updateMutation.mutate({ steps: [stepPayload] });
   };
 
   const removeFile = (index: number) => {
