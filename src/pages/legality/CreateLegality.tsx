@@ -176,10 +176,21 @@ export default function CreateLegality() {
     createMutation.mutate(payload);
   };
 
+  if (isLoadingDefaults) {
+    return (
+      <Shell>
+        <TopHeader />
+        <div className="flex items-center justify-center min-h-[60vh]">
+          <Loader2 className="w-10 h-10 animate-spin text-[#B39371]" />
+        </div>
+      </Shell>
+    );
+  }
+
   return (
     <Shell>
       <TopHeader />
-      
+
       <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-50 dark:from-gray-950 dark:via-gray-900 dark:to-gray-950">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
           {/* Breadcrumb & Header */}
@@ -278,12 +289,7 @@ export default function CreateLegality() {
                   <div className="absolute left-7 top-0 bottom-0 w-0.5 bg-gray-200 dark:bg-gray-700" />
 
                   <AnimatePresence mode="popLayout">
-                    {isLoadingDefaults ? (
-                      <div className="flex items-center justify-center py-12">
-                        <Loader2 className="w-8 h-8 animate-spin text-[#B39371]" />
-                      </div>
-                    ) : (
-                      steps.map((step, index) => {
+                    {steps.map((step, index) => {
                         const hasConflictStep = !step.isDefault && (
                           (step.name && defaultEnNames.includes(step.name.toLowerCase())) ||
                           (step.nameAr && defaultArNames.includes(step.nameAr.toLowerCase()))
@@ -393,8 +399,7 @@ export default function CreateLegality() {
                             </div>
                           </motion.div>
                         );
-                      })
-                    )}
+                      })}
                   </AnimatePresence>
                 </div>
 
