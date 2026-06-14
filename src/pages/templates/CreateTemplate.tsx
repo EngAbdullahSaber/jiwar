@@ -1,6 +1,7 @@
 ﻿import { useLocation, Link } from "wouter";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
+import { useMemo } from "react";
 import { FormActions } from "../../components/shared/FormActions";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -37,31 +38,42 @@ import { cn, scrollToFirstError } from "@/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
 import { FileUpload } from "../../components/shared/FileUpload";
 
-const templateSchema = z.object({
-  name: z.object({
-    arabic: z.string().min(1, "Arabic name is required"),
-    english: z.string().min(1, "English name is required"),
-  }),
-  modelType: z.string().min(1, "Model type is required"),
-  sku: z.string().min(1, "SKU is required"),
-  maidRoom: z.coerce.number().min(0).optional(),
-  clothsRoom: z.coerce.number().min(0).optional(),
-  driverRoom: z.coerce.number().min(0).optional(),
-  rooftop: z.boolean().default(false),
-  size: z.coerce.number().min(1, "Size is required"),
-  totalRooms: z.coerce.number().min(1, "Total rooms is required"),
-  bedrooms: z.coerce.number().min(0),
-  bathrooms: z.coerce.number().min(0),
-  balconyAccess: z.boolean().default(false),
-  location: z.enum(["FRONT", "BACK"]),
-  file: z.string(),
-  duelEntrances: z.boolean().default(false),
-  familyLounge: z.boolean().default(false),
-  guestMajlis: z.boolean().default(false),
-  kitchen: z.boolean().default(false),
-});
+const createTemplateSchema = (t: (key: string) => string) =>
+  z.object({
+    name: z.object({
+      arabic: z.string().min(1, t("common.fieldRequired")),
+      english: z.string().min(1, t("common.fieldRequired")),
+    }),
+    modelType: z
+      .string({ required_error: t("common.fieldRequired") })
+      .min(1, t("common.fieldRequired")),
+    sku: z.string().min(1, t("common.fieldRequired")),
+    maidRoom: z.coerce.number().min(1, t("common.mustBeZeroOrMore")).optional(),
+    clothsRoom: z.coerce
+      .number()
+      .min(1, t("common.mustBeZeroOrMore"))
+      .optional(),
+    driverRoom: z.coerce
+      .number()
+      .min(1, t("common.mustBeZeroOrMore"))
+      .optional(),
+    rooftop: z.boolean().default(false),
+    size: z.coerce.number().min(1, t("common.mustBePositive")),
+    totalRooms: z.coerce.number().min(1, t("common.mustBeAtLeastOne")),
+    bedrooms: z.coerce.number().min(1, t("common.mustBeAtLeastOne")),
+    bathrooms: z.coerce.number().min(1, t("common.mustBeAtLeastOne")),
+    balconyAccess: z.boolean().default(false),
+    location: z.enum(["FRONT", "BACK"]),
+    file: z
+      .string({ required_error: t("common.fieldRequired") })
+      .min(1, t("common.fieldRequired")),
+    duelEntrances: z.boolean().default(false),
+    familyLounge: z.boolean().default(false),
+    guestMajlis: z.boolean().default(false),
+    kitchen: z.boolean().default(false),
+  });
 
-type TemplateFormValues = z.infer<typeof templateSchema>;
+type TemplateFormValues = z.infer<ReturnType<typeof createTemplateSchema>>;
 
 // Form Section Component
 const FormSection = ({
@@ -101,7 +113,7 @@ const FormSection = ({
 
 // Form Field Component
 const FormField = ({ label, required = false, children, error }: any) => (
-  <div className="space-y-2" {...(error ? { 'data-field-error': 'true' } : {})}>
+  <div className="space-y-2" {...(error ? { "data-field-error": "true" } : {})}>
     <Label className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
       {label} {required && <span className="text-[#B39371]">*</span>}
     </Label>
@@ -125,6 +137,9 @@ const FormField = ({ label, required = false, children, error }: any) => (
 export default function CreateTemplate() {
   const [, setLocation] = useLocation();
   const { t } = useTranslation();
+  const queryClient = useQueryClient();
+
+  const schema = useMemo(() => createTemplateSchema(t), [t]);
 
   const {
     register,
@@ -133,7 +148,7 @@ export default function CreateTemplate() {
     watch,
     formState: { errors },
   } = useForm<TemplateFormValues>({
-    resolver: zodResolver(templateSchema),
+    resolver: zodResolver(schema),
     defaultValues: {
       location: "FRONT",
       balconyAccess: true,
@@ -152,6 +167,7 @@ export default function CreateTemplate() {
       return response.data;
     },
     onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["templates"] });
       toast.success(t("templates.successCreate"), {
         icon: "🎉",
         style: {
@@ -224,7 +240,10 @@ export default function CreateTemplate() {
             </div>
           </div>
 
-          <form onSubmit={handleSubmit(onSubmit, () => scrollToFirstError())} className="space-y-6">
+          <form
+            onSubmit={handleSubmit(onSubmit, () => scrollToFirstError())}
+            className="space-y-6"
+          >
             {/* Section 1: General Information */}
             <FormSection
               icon={Info}
@@ -278,14 +297,14 @@ export default function CreateTemplate() {
                   required
                   error={errors.modelType?.message}
                 >
-                  <Select onValueChange={(val) => setValue("modelType", val)}>
+                  <Select onValueChange={(val) => setValue("modelType", val, { shouldValidate: true })}>
                     <SelectTrigger
                       className={cn(
                         "h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md",
                         "hover:bg-white dark:hover:bg-gray-700 hover:border-[#B39371]/30",
-                        "focus:border-[#B39371] focus:ring-2 focus:ring-[#B39371]/20",
+                        "focus:border-[#B39371] focus:ring-2 focus:ring-[#B39371]/20 focus:ring-offset-0",
                         errors.modelType &&
-                          "border-red-300 dark:border-red-700",
+                          "border-red-300 dark:border-red-700 focus:border-red-500 focus:ring-red-500/20 focus:ring-offset-0",
                       )}
                     >
                       <SelectValue
@@ -348,7 +367,10 @@ export default function CreateTemplate() {
                       step="1"
                       {...register("maidRoom")}
                       placeholder="1"
-                      className="h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md px-4"
+                      className={cn(
+                        "h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md px-4",
+                        errors.maidRoom && "border-red-300 dark:border-red-700",
+                      )}
                     />
                   </FormField>
                   <FormField
@@ -360,7 +382,11 @@ export default function CreateTemplate() {
                       step="1"
                       {...register("clothsRoom")}
                       placeholder="1"
-                      className="h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md px-4"
+                      className={cn(
+                        "h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md px-4",
+                        errors.clothsRoom &&
+                          "border-red-300 dark:border-red-700",
+                      )}
                     />
                   </FormField>
                   <FormField
@@ -372,7 +398,11 @@ export default function CreateTemplate() {
                       step="1"
                       {...register("driverRoom")}
                       placeholder="1"
-                      className="h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md px-4"
+                      className={cn(
+                        "h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md px-4",
+                        errors.driverRoom &&
+                          "border-red-300 dark:border-red-700",
+                      )}
                     />
                   </FormField>
                 </div>
@@ -394,6 +424,8 @@ export default function CreateTemplate() {
                           "h-12 pl-10 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md",
                           "hover:bg-white dark:hover:bg-gray-700 hover:border-[#B39371]/30",
                           "focus:bg-white dark:focus:bg-gray-700 focus:border-[#B39371] focus:ring-2 focus:ring-[#B39371]/20",
+                          errors.size &&
+                            "border-red-300 dark:border-red-700 focus:border-red-500 focus:ring-red-500/20",
                         )}
                       />
                     </div>
@@ -410,7 +442,11 @@ export default function CreateTemplate() {
                         type="number"
                         {...register("totalRooms")}
                         placeholder="7"
-                        className="h-12 pl-10 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md hover:bg-white focus:border-[#B39371] transition-all"
+                        className={cn(
+                          "h-12 pl-10 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md hover:bg-white focus:border-[#B39371] transition-all",
+                          errors.totalRooms &&
+                            "border-red-300 dark:border-red-700 focus:border-red-500",
+                        )}
                       />
                     </div>
                   </FormField>
@@ -426,7 +462,11 @@ export default function CreateTemplate() {
                         type="number"
                         {...register("bedrooms")}
                         placeholder="5"
-                        className="h-12 pl-10 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md hover:bg-white focus:border-[#B39371] transition-all"
+                        className={cn(
+                          "h-12 pl-10 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md hover:bg-white focus:border-[#B39371] transition-all",
+                          errors.bedrooms &&
+                            "border-red-300 dark:border-red-700 focus:border-red-500",
+                        )}
                       />
                     </div>
                   </FormField>
@@ -442,7 +482,11 @@ export default function CreateTemplate() {
                         type="number"
                         {...register("bathrooms")}
                         placeholder="2"
-                        className="h-12 pl-10 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md hover:bg-white focus:border-[#B39371] transition-all"
+                        className={cn(
+                          "h-12 pl-10 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md hover:bg-white focus:border-[#B39371] transition-all",
+                          errors.bathrooms &&
+                            "border-red-300 dark:border-red-700 focus:border-red-500",
+                        )}
                       />
                     </div>
                   </FormField>
@@ -624,9 +668,24 @@ export default function CreateTemplate() {
                   accept="image/*"
                   maxSizeMB={20}
                   helperText={t("materials.uploadHelper")}
-                  onUploadSuccess={(url) => setValue("file", url)}
+                  onUploadSuccess={(url) =>
+                    setValue("file", url, { shouldValidate: true })
+                  }
                   defaultValue={watch("file")}
                 />
+                <AnimatePresence>
+                  {errors.file && (
+                    <motion.p
+                      initial={{ opacity: 0, y: -10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -10 }}
+                      className="text-xs text-red-500 dark:text-red-400 font-medium flex items-center gap-1"
+                    >
+                      <AlertCircle className="w-3.5 h-3.5" />
+                      {errors.file.message}
+                    </motion.p>
+                  )}
+                </AnimatePresence>
               </div>
             </FormSection>
 

@@ -1,30 +1,30 @@
-﻿import { useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import api from '@/lib/api';
-import { TopHeader } from '../../components/TopHeader';
-import { StatCard } from '../../components/shared/StatCard';
-import { DataTable } from '../../components/shared/DataTable';
-import type { Column } from '../../components/shared/DataTable';
-import { FilterBar } from '../../components/shared/FilterBar';
-import type { FilterField } from '../../components/shared/FilterBar';
-import { DeleteDialog } from '../../components/shared/DeleteDialog';
-import { ConfirmDialog } from '../../components/shared/ConfirmDialog';
-import { toast } from 'react-hot-toast';
+﻿import { useState } from "react";
+import { useTranslation } from "react-i18next";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import api from "@/lib/api";
+import { TopHeader } from "../../components/TopHeader";
+import { StatCard } from "../../components/shared/StatCard";
+import { DataTable } from "../../components/shared/DataTable";
+import type { Column } from "../../components/shared/DataTable";
+import { FilterBar } from "../../components/shared/FilterBar";
+import type { FilterField } from "../../components/shared/FilterBar";
+import { DeleteDialog } from "../../components/shared/DeleteDialog";
+import { ConfirmDialog } from "../../components/shared/ConfirmDialog";
+import { toast } from "react-hot-toast";
 
 import { Link } from "wouter";
-import { Shell } from '../../components/shared/Shell';
-import { Can } from '../../components/shared/Can';
+import { Shell } from "../../components/shared/Shell";
+import { Can } from "../../components/shared/Can";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogFooter,
-} from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
   FileText,
   Plus,
@@ -40,9 +40,10 @@ import {
   Wallet,
   ChevronRight,
   Loader2,
-} from 'lucide-react';
-import { motion } from 'framer-motion';
-import { format } from 'date-fns';
+} from "lucide-react";
+import { motion } from "framer-motion";
+import { format } from "date-fns";
+import { useAppSelector } from "@/hooks/useRedux";
 
 interface Contract {
   id: number;
@@ -94,30 +95,38 @@ interface ContractsResponse {
 
 export default function ApproveContracts() {
   const { t, i18n } = useTranslation();
-  const [filters, setFilters] = useState({ search: '' });
+  const [filters, setFilters] = useState({ search: "" });
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 10;
   const queryClient = useQueryClient();
-
+  const { user } = useAppSelector((state) => state.auth);
+  const isSalesManager = user?.role?.name === "salesManager";
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [approveDialogOpen, setApproveDialogOpen] = useState(false);
   const [commissionDialogOpen, setCommissionDialogOpen] = useState(false);
-  const [selectedContractId, setSelectedContractId] = useState<number | null>(null);
-  const [selectedContract, setSelectedContract] = useState<Contract | null>(null);
-  const [commissionForm, setCommissionForm] = useState({ commissionBase: 'PERCENTAGE', commissionValue: '' });
+  const [selectedContractId, setSelectedContractId] = useState<number | null>(
+    null,
+  );
+  const [selectedContract, setSelectedContract] = useState<Contract | null>(
+    null,
+  );
+  const [commissionForm, setCommissionForm] = useState({
+    commissionBase: "PERCENTAGE",
+    commissionValue: "",
+  });
 
   const { data: response, isLoading } = useQuery<ContractsResponse>({
-    queryKey: ['contracts-approve', currentPage, pageSize, filters.search],
+    queryKey: ["contracts-approve", currentPage, pageSize, filters.search],
     queryFn: async () => {
-      const res = await api.get('/contract?isApproved=false', {
+      const res = await api.get("/contract?isApproved=false", {
         params: {
           page: currentPage,
           pageSize,
           search: filters.search || undefined,
-        }
+        },
       });
       return res.data;
-    }
+    },
   });
 
   const { mutate: deleteContract, isPending: isDeleting } = useMutation({
@@ -125,24 +134,30 @@ export default function ApproveContracts() {
       await api.delete(`/contract/${id}`);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['contracts-approve'] });
-      toast.success(t('contracts.deleteSuccess'));
+      queryClient.invalidateQueries({ queryKey: ["contracts-approve"] });
+      toast.success(t("contracts.deleteSuccess"));
       setDeleteDialogOpen(false);
       setSelectedContractId(null);
     },
     onError: () => {
-      toast.error(t('contracts.deleteError'));
-    }
+      toast.error(t("contracts.deleteError"));
+    },
   });
 
   const { mutate: approveContract, isPending: isApproving } = useMutation({
-    mutationFn: async ({ id, commission }: { id: number; commission?: { commissionBase: string; commissionValue: number } }) => {
+    mutationFn: async ({
+      id,
+      commission,
+    }: {
+      id: number;
+      commission?: { commissionBase: string; commissionValue: number };
+    }) => {
       await api.patch(`/contract/${id}/approve`, commission ?? {});
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['contracts-approve'] });
-      queryClient.invalidateQueries({ queryKey: ['contracts'] });
-      toast.success(t('contracts.approveSuccess'));
+      queryClient.invalidateQueries({ queryKey: ["contracts-approve"] });
+      queryClient.invalidateQueries({ queryKey: ["contracts"] });
+      toast.success(t("contracts.approveSuccess"));
       setApproveDialogOpen(false);
       setCommissionDialogOpen(false);
       setSelectedContractId(null);
@@ -150,27 +165,27 @@ export default function ApproveContracts() {
     },
     onError: (error: any) => {
       const msg = error?.response?.data?.message;
-      toast.error(typeof msg === 'string' ? msg : t('contracts.approveError'));
-    }
+      toast.error(typeof msg === "string" ? msg : t("contracts.approveError"));
+    },
   });
 
   const filterFields: FilterField[] = [
     {
-      type: 'search',
-      label: t('contracts.title'),
-      placeholder: t('contracts.placeholders.search'),
-      key: 'search'
-    }
+      type: "search",
+      label: t("contracts.title"),
+      placeholder: t("contracts.placeholders.search"),
+      key: "search",
+    },
   ];
 
   const columns: Column<Contract>[] = [
     {
-      header: t('common.id'),
+      header: t("common.id"),
       accessorKey: "id",
-      className: "text-sm font-medium text-[#B39371] w-16"
+      className: "text-sm font-medium text-[#B39371] w-16",
     },
     {
-      header: t('contracts.labels.client'),
+      header: t("contracts.labels.client"),
       cell: (c) => (
         <div className="flex items-center gap-3">
           <div className="w-8 h-8 rounded-md bg-[#F5F1ED] dark:bg-gray-800 flex items-center justify-center">
@@ -178,19 +193,23 @@ export default function ApproveContracts() {
           </div>
           <div>
             <p className="text-sm font-semibold text-gray-900 dark:text-white">
-              {c.client?.fullName || t('common.noData')}
+              {c.client?.fullName || t("common.noData")}
             </p>
             {c.nationalId && (
-              <p className="text-xs text-gray-500 dark:text-gray-400">{c.nationalId}</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400">
+                {c.nationalId}
+              </p>
             )}
           </div>
         </div>
-      )
+      ),
     },
     {
-      header: t('contracts.labels.apartment'),
+      header: t("contracts.labels.apartment"),
       cell: (c) => {
-        const location = [c.district || c.projectDistrict, c.contractCity].filter(Boolean).join(', ');
+        const location = [c.district || c.projectDistrict, c.contractCity]
+          .filter(Boolean)
+          .join(", ");
         return (
           <div className="flex items-center gap-3">
             <div className="w-8 h-8 rounded-md bg-[#F5F1ED] dark:bg-gray-800 flex items-center justify-center">
@@ -199,129 +218,153 @@ export default function ApproveContracts() {
             <div>
               <p className="text-sm font-medium text-gray-900 dark:text-white">
                 {c.apartment
-                  ? (i18n.language === 'ar' ? c.apartment?.mainName?.arabic : c.apartment?.mainName?.english)
-                  : t('common.noData')}
+                  ? i18n.language === "ar"
+                    ? c.apartment?.mainName?.arabic
+                    : c.apartment?.mainName?.english
+                  : t("common.noData")}
               </p>
               {location && (
-                <p className="text-xs text-gray-500 dark:text-gray-400">{location}</p>
+                <p className="text-xs text-gray-500 dark:text-gray-400">
+                  {location}
+                </p>
               )}
             </div>
           </div>
         );
-      }
+      },
     },
     {
-      header: t('contracts.labels.contractDate'),
+      header: t("contracts.labels.contractDate"),
       cell: (c) => (
         <div className="flex flex-col">
           <div className="flex items-center gap-1 text-sm text-gray-900 dark:text-white">
             <Calendar className="w-3.5 h-3.5 text-gray-400" />
-            {c.contractDate ? format(new Date(c.contractDate), 'dd/MM/yyyy') : t('common.noData')}
+            {c.contractDate
+              ? format(new Date(c.contractDate), "dd/MM/yyyy")
+              : t("common.noData")}
           </div>
           {c.hijriDate && (
-            <p className="text-xs text-gray-500 dark:text-gray-400">{c.hijriDate}</p>
+            <p className="text-xs text-gray-500 dark:text-gray-400">
+              {c.hijriDate}
+            </p>
           )}
         </div>
-      )
+      ),
     },
     {
-      header: t('contracts.labels.paidAmount'),
+      header: t("contracts.labels.paidAmount"),
       cell: (c) => (
         <div className="flex flex-col">
           <span className="text-sm font-bold text-[#4A1B1B] dark:text-[#B39371]">
-            {(c.paidAmount ?? 0).toLocaleString()} {t('common.sar')}
+            {(c.paidAmount ?? 0).toLocaleString()} {t("common.sar")}
           </span>
           {c.paymentType && (
-            <span className="text-xs text-gray-500 dark:text-gray-400">{t(`contracts.paymentMethods.${c.paymentType}`)}</span>
+            <span className="text-xs text-gray-500 dark:text-gray-400">
+              {t(`contracts.paymentMethods.${c.paymentType}`)}
+            </span>
           )}
         </div>
-      )
+      ),
     },
     {
-      header: t('contracts.labels.type'),
+      header: t("contracts.labels.type"),
       cell: (c) => (
         <span className="inline-flex items-center px-2.5 py-0.5 rounded-md text-xs font-medium bg-[#F5F1ED] text-[#4A1B1B] dark:bg-gray-800 dark:text-[#B39371]">
           {t(`contracts.types.${c.type}`, { defaultValue: c.type })}
         </span>
-      )
+      ),
     },
     {
-      header: t('contracts.steps.title'),
+      header: t("contracts.steps.title"),
       cell: (c) => {
-        let step = '';
-        let color = '';
-        
+        let step = "";
+        let color = "";
+
         if (!c.salesManagerApproval) {
-          step = t('contracts.steps.salesApproval');
-          color = 'text-amber-600 bg-amber-50 dark:bg-amber-900/20';
+          step = t("contracts.steps.salesApproval");
+          color = "text-amber-600 bg-amber-50 dark:bg-amber-900/20";
         } else if (!c.financeApproval) {
-          step = t('contracts.steps.financeApproval');
-          color = 'text-blue-600 bg-blue-50 dark:bg-blue-900/20';
+          step = t("contracts.steps.financeApproval");
+          color = "text-blue-600 bg-blue-50 dark:bg-blue-900/20";
         } else {
-          step = t('contracts.steps.completed');
-          color = 'text-green-600 bg-green-50 dark:bg-green-900/20';
+          step = t("contracts.steps.completed");
+          color = "text-green-600 bg-green-50 dark:bg-green-900/20";
         }
-        
+
         return (
-          <span className={`inline-flex items-center px-2.5 py-0.5 rounded-md text-xs font-medium ${color}`}>
+          <span
+            className={`inline-flex items-center px-2.5 py-0.5 rounded-md text-xs font-medium ${color}`}
+          >
             {step}
           </span>
         );
-      }
+      },
     },
     {
-      header: t('common.actions'),
+      header: t("common.actions"),
       headerClassName: "text-center",
       cell: (c) => (
         <div className="flex items-center justify-center gap-2">
           <Can I="UPDATE" a="contract-approval">
-            <button
-              onClick={() => {
-                if (!c.salesManagerApproval) {
+            {isSalesManager && !c.salesManagerApproval && (
+              <button
+                onClick={() => {
                   setSelectedContract(c);
-                  setCommissionForm({ commissionBase: 'PERCENTAGE', commissionValue: '' });
+                  setCommissionForm({
+                    commissionBase: "PERCENTAGE",
+                    commissionValue: "",
+                  });
                   setCommissionDialogOpen(true);
-                } else {
+                }}
+                className="p-2 hover:bg-green-50 dark:hover:bg-green-950/30 rounded-md text-gray-400 hover:text-green-600 transition-colors"
+                title={t("contracts.approve")}
+              >
+                <CheckCircle2 className="w-4 h-4" />
+              </button>
+            )}
+            {!isSalesManager && c.salesManagerApproval && !c.financeApproval && (
+              <button
+                onClick={() => {
                   setSelectedContractId(c.id);
                   setApproveDialogOpen(true);
-                }
-              }}
-              className="p-2 hover:bg-green-50 dark:hover:bg-green-950/30 rounded-md text-gray-400 hover:text-green-600 transition-colors"
-              title={t('contracts.approve')}
-            >
-              <CheckCircle2 className="w-4 h-4" />
-            </button>
+                }}
+                className="p-2 hover:bg-green-50 dark:hover:bg-green-950/30 rounded-md text-gray-400 hover:text-green-600 transition-colors"
+                title={t("contracts.approve")}
+              >
+                <CheckCircle2 className="w-4 h-4" />
+              </button>
+            )}
           </Can>
 
           {c.pdfUrl && (
             <Can I="READ" a="contract-approval">
               <a
-                href={`${import.meta.env.VITE_API_BASE_URL}/${c.pdfUrl.replace(/^\//, '')}`}
+                href={`${import.meta.env.VITE_API_BASE_URL}/${c.pdfUrl.replace(/^\//, "")}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="p-2 hover:bg-[#F5F1ED] dark:hover:bg-gray-800 rounded-md text-gray-400 hover:text-[#4A1B1B] dark:hover:text-[#B39371] transition-colors"
-                title={t('common.download')}
+                title={t("common.download")}
               >
                 <Download className="w-4 h-4" />
               </a>
             </Can>
           )}
-         
+
           <Can I="DELETE" a="contract-approval">
-            <button 
+            <button
               onClick={() => {
                 setSelectedContractId(c.id);
                 setDeleteDialogOpen(true);
-              }} 
-              className="p-2 hover:bg-red-50 dark:hover:bg-red-950/30 rounded-md text-gray-400 hover:text-red-600 transition-colors" 
-              title={t('common.delete')}
+              }}
+              className="p-2 hover:bg-red-50 dark:hover:bg-red-950/30 rounded-md text-gray-400 hover:text-red-600 transition-colors"
+              title={t("common.delete")}
             >
               <Trash2 className="w-4 h-4" />
             </button>
           </Can>
         </div>
-      )
-    }
+      ),
+    },
   ];
 
   const contracts = response?.data || [];
@@ -329,29 +372,36 @@ export default function ApproveContracts() {
   return (
     <Shell>
       <TopHeader />
-      
-      <DeleteDialog 
+
+      <DeleteDialog
         isOpen={deleteDialogOpen}
         onClose={() => setDeleteDialogOpen(false)}
-        onConfirm={() => selectedContractId && deleteContract(selectedContractId)}
+        onConfirm={() =>
+          selectedContractId && deleteContract(selectedContractId)
+        }
         isDeleting={isDeleting}
       />
 
       <ConfirmDialog
         isOpen={approveDialogOpen}
         onClose={() => setApproveDialogOpen(false)}
-        onConfirm={() => selectedContractId && approveContract({ id: selectedContractId })}
-        title={t('contracts.approveConfirmTitle')}
-        description={t('contracts.approveConfirmDescription')}
-        confirmText={t('contracts.approve')}
+        onConfirm={() =>
+          selectedContractId && approveContract({ id: selectedContractId })
+        }
+        title={t("contracts.approveConfirmTitle")}
+        description={t("contracts.approveConfirmDescription")}
+        confirmText={t("contracts.approve")}
         isProcessing={isApproving}
-        processingText={t('contracts.approving')}
+        processingText={t("contracts.approving")}
         variant="success"
         icon={CheckCircle2}
       />
 
       {/* Commission Dialog — shown for Sales Manager approval step */}
-      <Dialog open={commissionDialogOpen} onOpenChange={(open) => !open && setCommissionDialogOpen(false)}>
+      <Dialog
+        open={commissionDialogOpen}
+        onOpenChange={(open) => !open && setCommissionDialogOpen(false)}
+      >
         <DialogContent className="sm:max-w-[440px] rounded-md border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-0 overflow-hidden">
           <div className="p-6 border-b border-gray-100 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-800/50">
             <div className="flex items-center gap-3">
@@ -360,10 +410,10 @@ export default function ApproveContracts() {
               </div>
               <DialogHeader>
                 <DialogTitle className="text-lg font-bold text-gray-900 dark:text-white">
-                  {t('contracts.commission.title')}
+                  {t("contracts.commission.title")}
                 </DialogTitle>
                 <p className="text-xs text-gray-500 dark:text-gray-400 font-medium mt-0.5">
-                  {t('contracts.commission.description')}
+                  {t("contracts.commission.description")}
                 </p>
               </DialogHeader>
             </div>
@@ -373,17 +423,26 @@ export default function ApproveContracts() {
             {/* Commission Base */}
             <div className="space-y-2">
               <Label className="text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
-                {t('contracts.commission.base')}
+                {t("contracts.commission.base")}
               </Label>
               <div className="relative group">
                 <Percent className="absolute left-4 rtl:left-auto rtl:right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
                 <select
                   className="w-full h-11 pl-11 rtl:pl-4 rtl:pr-11 rounded-md bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700 text-sm font-medium text-gray-700 dark:text-gray-200 outline-none focus:ring-2 focus:ring-[#B39371]/20 transition-all appearance-none cursor-pointer"
                   value={commissionForm.commissionBase}
-                  onChange={(e) => setCommissionForm(prev => ({ ...prev, commissionBase: e.target.value }))}
+                  onChange={(e) =>
+                    setCommissionForm((prev) => ({
+                      ...prev,
+                      commissionBase: e.target.value,
+                    }))
+                  }
                 >
-                  <option value="PERCENTAGE">{t('contracts.commission.percentage')}</option>
-                  <option value="FIXED">{t('contracts.commission.fixed')}</option>
+                  <option value="PERCENTAGE">
+                    {t("contracts.commission.percentage")}
+                  </option>
+                  <option value="FIXED">
+                    {t("contracts.commission.fixed")}
+                  </option>
                 </select>
                 <ChevronRight className="absolute right-4 rtl:right-auto rtl:left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 rotate-90 pointer-events-none" />
               </div>
@@ -392,20 +451,31 @@ export default function ApproveContracts() {
             {/* Commission Value */}
             <div className="space-y-2">
               <Label className="text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
-                {t('contracts.commission.value')}
+                {t("contracts.commission.value")}
               </Label>
               <div className="relative group">
                 <div className="absolute left-4 rtl:left-auto rtl:right-4 top-1/2 -translate-y-1/2 text-gray-400 text-[10px] font-bold pointer-events-none">
-                  {commissionForm.commissionBase === 'PERCENTAGE' ? '%' : t('common.sar')}
+                  {commissionForm.commissionBase === "PERCENTAGE"
+                    ? "%"
+                    : t("common.sar")}
                 </div>
                 <Input
                   type="number"
                   step="0.01"
                   min="0"
-                  placeholder={commissionForm.commissionBase === 'PERCENTAGE' ? '2.5' : '5000'}
+                  placeholder={
+                    commissionForm.commissionBase === "PERCENTAGE"
+                      ? "2.5"
+                      : "5000"
+                  }
                   className="h-11 pl-11 rtl:pl-4 rtl:pr-11 rounded-md bg-gray-50 dark:bg-gray-800/50 border-gray-200 dark:border-gray-700 focus:bg-white dark:focus:bg-gray-800 transition-all font-medium"
                   value={commissionForm.commissionValue}
-                  onChange={(e) => setCommissionForm(prev => ({ ...prev, commissionValue: e.target.value }))}
+                  onChange={(e) =>
+                    setCommissionForm((prev) => ({
+                      ...prev,
+                      commissionValue: e.target.value,
+                    }))
+                  }
                 />
               </div>
             </div>
@@ -418,18 +488,25 @@ export default function ApproveContracts() {
               disabled={isApproving}
               className="rounded-md font-semibold"
             >
-              {t('common.cancel')}
+              {t("common.cancel")}
             </Button>
             <Button
               onClick={() => {
                 const value = parseFloat(commissionForm.commissionValue);
-                if (!commissionForm.commissionValue || isNaN(value) || value <= 0) {
-                  toast.error(t('contracts.commission.valueRequired'));
+                if (
+                  !commissionForm.commissionValue ||
+                  isNaN(value) ||
+                  value <= 0
+                ) {
+                  toast.error(t("contracts.commission.valueRequired"));
                   return;
                 }
                 approveContract({
                   id: selectedContract!.id,
-                  commission: { commissionBase: commissionForm.commissionBase, commissionValue: value },
+                  commission: {
+                    commissionBase: commissionForm.commissionBase,
+                    commissionValue: value,
+                  },
                 });
               }}
               disabled={isApproving}
@@ -438,22 +515,21 @@ export default function ApproveContracts() {
               {isApproving ? (
                 <span className="flex items-center gap-2">
                   <Loader2 className="w-4 h-4 animate-spin" />
-                  {t('contracts.approving')}
+                  {t("contracts.approving")}
                 </span>
               ) : (
                 <>
                   <CheckCircle2 className="w-4 h-4 mr-1 rtl:mr-0 rtl:ml-1" />
-                  {t('contracts.approve')}
+                  {t("contracts.approve")}
                 </>
               )}
             </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
-      
+
       <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-50 dark:from-gray-950 dark:via-gray-900 dark:to-gray-950">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
-          
           {/* Header Section */}
           <div className="bg-white dark:bg-gray-900 rounded-md border border-gray-200 dark:border-gray-800 p-6 shadow-sm">
             <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
@@ -468,14 +544,14 @@ export default function ApproveContracts() {
                   <div className="flex items-center gap-2 mb-1">
                     <Sparkles className="w-4 h-4 text-[#B39371]" />
                     <p className="text-xs font-medium text-[#B39371] uppercase tracking-wider">
-                      {t('contracts.management')}
+                      {t("contracts.management")}
                     </p>
                   </div>
                   <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
-                    {t('contracts.approveTitle')}
+                    {t("contracts.approveTitle")}
                   </h1>
                   <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                    {t('contracts.approveDescription')}
+                    {t("contracts.approveDescription")}
                   </p>
                 </div>
               </div>
@@ -489,7 +565,7 @@ export default function ApproveContracts() {
                       className="flex items-center gap-2 px-6 py-2.5 bg-gradient-to-r from-[#4A1B1B] to-[#6B2727] text-white rounded-md text-sm font-medium shadow-lg shadow-[#4A1B1B]/20 hover:shadow-xl transition-all"
                     >
                       <Plus className="w-5 h-5" />
-                      {t('contracts.add')}
+                      {t("contracts.add")}
                     </motion.button>
                   </Link>
                 </Can>
@@ -499,30 +575,30 @@ export default function ApproveContracts() {
 
           {/* Stats Grid */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <StatCard 
+            <StatCard
               icon={Clock}
-              label={t('contracts.pendingApproval')}
+              label={t("contracts.pendingApproval")}
               value={(response?.totalItems || 0).toLocaleString()}
-              subValue={t('contracts.approveDescription')}
+              subValue={t("contracts.approveDescription")}
               color="from-amber-500 to-amber-600"
             />
           </div>
 
           {/* Filter Bar */}
-          <FilterBar 
-            fields={filterFields} 
-            values={filters} 
+          <FilterBar
+            fields={filterFields}
+            values={filters}
             onChange={(key, value) => {
-              setFilters(prev => ({ ...prev, [key]: value }));
+              setFilters((prev) => ({ ...prev, [key]: value }));
               setCurrentPage(1);
-            }} 
+            }}
           />
 
-          <DataTable 
-            columns={columns} 
+          <DataTable
+            columns={columns}
             data={contracts}
             isLoading={isLoading}
-            loadingMessage={t('common.loading')}
+            loadingMessage={t("common.loading")}
             currentPage={currentPage}
             totalPages={response?.totalPages}
             totalItems={response?.totalItems}
@@ -541,12 +617,12 @@ export default function ApproveContracts() {
                 <FileText className="w-8 h-8 text-gray-400" />
               </div>
               <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
-                {t('contracts.empty.title')}
+                {t("contracts.empty.title")}
               </h3>
               <p className="text-sm text-gray-500 dark:text-gray-400 mb-8 max-w-md mx-auto">
-                {filters.search 
-                  ? t('contracts.empty.description')
-                  : t('contracts.approveDescription')}
+                {filters.search
+                  ? t("contracts.empty.description")
+                  : t("contracts.approveDescription")}
               </p>
             </motion.div>
           )}

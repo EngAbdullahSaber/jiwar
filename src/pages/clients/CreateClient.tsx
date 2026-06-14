@@ -31,7 +31,7 @@ import { toast } from "react-hot-toast";
 import { Link } from "wouter";
 import { useTranslation } from "react-i18next";
 import { PaginatedSelect } from "../../components/shared/PaginatedSelect";
-import { scrollToFirstError } from "@/lib/utils";
+import { cn, scrollToFirstError } from "@/lib/utils";
 
 export default function CreateClient() {
   const [, setLocation] = useLocation();
@@ -73,14 +73,32 @@ export default function CreateClient() {
     },
   });
 
+  const clearError = (field: string) =>
+    setErrors((p) => { const { [field]: _, ...r } = p; return r; });
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
     const newErrors: Record<string, string> = {};
-    if (!formData.fullName) newErrors.fullName = t("common.fieldRequired");
-    if (!formData.email) newErrors.email = t("common.fieldRequired");
-    if (!formData.phoneNumber) newErrors.phoneNumber = t("common.fieldRequired");
-    if (!formData.password) newErrors.password = t("common.fieldRequired");
+
+    if (!formData.fullName.trim())
+      newErrors.fullName = t("common.fieldRequired");
+
+    if (!formData.phoneNumber.trim())
+      newErrors.phoneNumber = t("common.fieldRequired");
+    else if (!/^\+?[\d\s()\-]{8,}$/.test(formData.phoneNumber.trim()))
+      newErrors.phoneNumber = t("common.invalidPhone");
+
+    if (!formData.email.trim())
+      newErrors.email = t("common.fieldRequired");
+    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email.trim()))
+      newErrors.email = t("common.invalidEmail");
+
+    if (!formData.password)
+      newErrors.password = t("common.fieldRequired");
+    else if (formData.password.length < 8)
+      newErrors.password = t("common.passwordMinLength");
+
     setErrors(newErrors);
     if (Object.keys(newErrors).length > 0) {
       scrollToFirstError();
@@ -173,15 +191,22 @@ export default function CreateClient() {
               <form onSubmit={handleSubmit} className="space-y-8">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
                   {/* Full Name */}
-                  <FormField label={t("clients.fullName")} required error={errors.fullName}>
+                  <FormField
+                    label={t("clients.fullName")}
+                    required
+                    error={errors.fullName}
+                  >
                     <div className="relative group">
                       <UserIcon className="absolute left-4 rtl:left-auto rtl:right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 group-focus-within:text-[#B39371] transition-colors" />
                       <Input
                         name="fullName"
                         placeholder={t("clients.placeholders.fullName")}
-                        className="h-12 pl-11 rtl:pl-4 rtl:pr-11 rounded-md bg-gray-50 dark:bg-gray-800/50 border-gray-100 dark:border-gray-700 focus:bg-white dark:focus:bg-gray-800 focus:ring-2 focus:ring-[#B39371]/10 transition-all"
+                        className={cn(
+                          "h-12 pl-11 rtl:pl-4 rtl:pr-11 rounded-md bg-gray-50 dark:bg-gray-800/50 border-gray-100 dark:border-gray-700 focus:bg-white dark:focus:bg-gray-800 focus:ring-2 focus:ring-[#B39371]/10 transition-all",
+                          errors.fullName && "border-red-300 dark:border-red-700",
+                        )}
                         value={formData.fullName}
-                        onChange={(e) => { handleChange(e); if (errors.fullName) setErrors((p) => { const { fullName, ...r } = p; return r; }); }}
+                        onChange={(e) => { handleChange(e); clearError("fullName"); }}
                       />
                     </div>
                   </FormField>
@@ -195,53 +220,78 @@ export default function CreateClient() {
                         value={formData.type}
                         onChange={handleChange}
                       >
-                        <option value="individual">{t("clients.individual")}</option>
-                        <option value="corporate">{t("clients.company")}</option>
+                        <option value="individual">
+                          {t("clients.individual")}
+                        </option>
+                        <option value="corporate">
+                          {t("clients.company")}
+                        </option>
                       </select>
                       <ChevronRight className="absolute right-4 rtl:right-auto rtl:left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 group-focus-within:text-[#B39371] rotate-90" />
                     </div>
                   </FormField>
 
                   {/* Phone Number */}
-                  <FormField label={t("clients.phoneNumber")} required error={errors.phoneNumber}>
+                  <FormField
+                    label={t("clients.phoneNumber")}
+                    required
+                    error={errors.phoneNumber}
+                  >
                     <div className="relative group">
                       <Phone className="absolute left-4 rtl:left-auto rtl:right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 group-focus-within:text-[#B39371] transition-colors" />
                       <Input
                         name="phoneNumber"
                         placeholder={t("clients.placeholders.phone")}
-                        className="h-12 pl-11 rtl:pl-4 rtl:pr-11 rounded-md bg-gray-50 dark:bg-gray-800/50 border-gray-100 dark:border-gray-700 focus:bg-white dark:focus:bg-gray-800 focus:ring-2 focus:ring-[#B39371]/10 transition-all"
+                        className={cn(
+                          "h-12 pl-11 rtl:pl-4 rtl:pr-11 rounded-md bg-gray-50 dark:bg-gray-800/50 border-gray-100 dark:border-gray-700 focus:bg-white dark:focus:bg-gray-800 focus:ring-2 focus:ring-[#B39371]/10 transition-all",
+                          errors.phoneNumber && "border-red-300 dark:border-red-700",
+                        )}
                         value={formData.phoneNumber}
-                        onChange={(e) => { handleChange(e); if (errors.phoneNumber) setErrors((p) => { const { phoneNumber, ...r } = p; return r; }); }}
+                        onChange={(e) => { handleChange(e); clearError("phoneNumber"); }}
                       />
                     </div>
                   </FormField>
 
                   {/* Email */}
-                  <FormField label={t("clients.email")} required error={errors.email}>
+                  <FormField
+                    label={t("clients.email")}
+                    required
+                    error={errors.email}
+                  >
                     <div className="relative group">
                       <Mail className="absolute left-4 rtl:left-auto rtl:right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 group-focus-within:text-[#B39371] transition-colors" />
                       <Input
                         name="email"
                         type="email"
                         placeholder={t("clients.placeholders.email")}
-                        className="h-12 pl-11 rtl:pl-4 rtl:pr-11 rounded-md bg-gray-50 dark:bg-gray-800/50 border-gray-100 dark:border-gray-700 focus:bg-white dark:focus:bg-gray-800 focus:ring-2 focus:ring-[#B39371]/10 transition-all"
+                        className={cn(
+                          "h-12 pl-11 rtl:pl-4 rtl:pr-11 rounded-md bg-gray-50 dark:bg-gray-800/50 border-gray-100 dark:border-gray-700 focus:bg-white dark:focus:bg-gray-800 focus:ring-2 focus:ring-[#B39371]/10 transition-all",
+                          errors.email && "border-red-300 dark:border-red-700",
+                        )}
                         value={formData.email}
-                        onChange={(e) => { handleChange(e); if (errors.email) setErrors((p) => { const { email, ...r } = p; return r; }); }}
+                        onChange={(e) => { handleChange(e); clearError("email"); }}
                       />
                     </div>
                   </FormField>
 
                   {/* Password */}
-                  <FormField label={t("clients.password")} required error={errors.password}>
+                  <FormField
+                    label={t("clients.password")}
+                    required
+                    error={errors.password}
+                  >
                     <div className="relative group">
                       <CreditCard className="absolute left-4 rtl:left-auto rtl:right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 group-focus-within:text-[#B39371] transition-colors" />
                       <Input
                         name="password"
                         type="password"
                         placeholder={t("clients.placeholders.password")}
-                        className="h-12 pl-11 rtl:pl-4 rtl:pr-11 rounded-md bg-gray-50 dark:bg-gray-800/50 border-gray-100 dark:border-gray-700 focus:bg-white dark:focus:bg-gray-800 focus:ring-2 focus:ring-[#B39371]/10 transition-all"
+                        className={cn(
+                          "h-12 pl-11 rtl:pl-4 rtl:pr-11 rounded-md bg-gray-50 dark:bg-gray-800/50 border-gray-100 dark:border-gray-700 focus:bg-white dark:focus:bg-gray-800 focus:ring-2 focus:ring-[#B39371]/10 transition-all",
+                          errors.password && "border-red-300 dark:border-red-700",
+                        )}
                         value={formData.password}
-                        onChange={(e) => { handleChange(e); if (errors.password) setErrors((p) => { const { password, ...r } = p; return r; }); }}
+                        onChange={(e) => { handleChange(e); clearError("password"); }}
                       />
                     </div>
                   </FormField>
@@ -275,7 +325,7 @@ export default function CreateClient() {
                   </FormField>
 
                   {/* IBAN */}
-                  <FormField label={t("clients.iban")} className="md:col-span-2">
+                  <FormField label={t("clients.iban")}>
                     <div className="relative group">
                       <Building2 className="absolute left-4 rtl:left-auto rtl:right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 group-focus-within:text-[#B39371] transition-colors" />
                       <Input
@@ -295,10 +345,21 @@ export default function CreateClient() {
                       apiEndpoint="/country"
                       queryKey="countries"
                       value={formData.countryId}
-                      onChange={(val) => setFormData((prev) => ({ ...prev, countryId: val, cityId: "" }))}
+                      onChange={(val) =>
+                        setFormData((prev) => ({
+                          ...prev,
+                          countryId: val,
+                          cityId: "",
+                          bankId: "",
+                        }))
+                      }
                       placeholder={t("clients.placeholders.selectCountry")}
                       mapResponseToOptions={(data: any) =>
-                        data.data.map((item: any) => ({ value: item.id, label: item.name[isRtl ? "arabic" : "english"], icon: <Globe className="w-4 h-4" /> }))
+                        data.data.map((item: any) => ({
+                          value: item.id,
+                          label: item.name[isRtl ? "arabic" : "english"],
+                          icon: <Globe className="w-4 h-4" />,
+                        }))
                       }
                     />
                   </div>
@@ -310,11 +371,17 @@ export default function CreateClient() {
                       apiEndpoint="/city"
                       queryKey={`cities-${formData.countryId}`}
                       value={formData.cityId}
-                      onChange={(val) => setFormData((prev) => ({ ...prev, cityId: val }))}
+                      onChange={(val) =>
+                        setFormData((prev) => ({ ...prev, cityId: val }))
+                      }
                       placeholder={t("clients.placeholders.selectCity")}
                       disabled={!formData.countryId}
                       mapResponseToOptions={(data: any) =>
-                        data.data.map((item: any) => ({ value: item.id, label: item.name[isRtl ? "arabic" : "english"], icon: <MapPin className="w-4 h-4" /> }))
+                        data.data.map((item: any) => ({
+                          value: item.id,
+                          label: item.name[isRtl ? "arabic" : "english"],
+                          icon: <MapPin className="w-4 h-4" />,
+                        }))
                       }
                     />
                   </div>
@@ -324,18 +391,33 @@ export default function CreateClient() {
                     <PaginatedSelect
                       label={t("clients.bank")}
                       apiEndpoint="/bank"
-                      queryKey="banks"
+                      queryKey={`banks-${formData.countryId}`}
                       value={formData.bankId}
-                      onChange={(val) => setFormData((prev) => ({ ...prev, bankId: val }))}
+                      onChange={(val) =>
+                        setFormData((prev) => ({ ...prev, bankId: val }))
+                      }
                       placeholder={t("clients.placeholders.selectBank")}
+                      disabled={!formData.countryId}
+                      extraParams={
+                        formData.countryId
+                          ? { countryId: parseInt(formData.countryId) }
+                          : undefined
+                      }
                       mapResponseToOptions={(data: any) =>
-                        data.data.map((item: any) => ({ value: item.id, label: item.name[isRtl ? "arabic" : "english"], icon: <Building className="w-4 h-4" /> }))
+                        data.data.map((item: any) => ({
+                          value: item.id,
+                          label: item.name[isRtl ? "arabic" : "english"],
+                          icon: <Building className="w-4 h-4" />,
+                        }))
                       }
                     />
                   </div>
 
                   {/* Physical Address */}
-                  <FormField label={t("clients.address")} className="md:col-span-2">
+                  <FormField
+                    label={t("clients.address")}
+                    className="md:col-span-2"
+                  >
                     <div className="relative group">
                       <MapPin className="absolute left-4 rtl:left-auto rtl:right-4 top-6 -translate-y-1/2 w-4 h-4 text-gray-400 group-focus-within:text-[#B39371] transition-colors" />
                       <textarea

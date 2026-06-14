@@ -60,7 +60,7 @@ import UpdateClient from "@/pages/clients/UpdateClient";
 import ViewClient from "@/pages/clients/ViewClient";
 import AddClientPayment from "@/pages/clients/AddClientPayment";
 import Contracts from "@/pages/contracts/Contracts";
-import ApproveContracts from "@/pages/contracts/ApproveContracts";
+import ApproveContracts from "@/pages/approve-contracts/ApproveContracts";
 
 
 import Stages from "@/pages/stages/Stages";

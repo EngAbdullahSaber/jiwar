@@ -171,9 +171,9 @@ export default function Clients() {
             <div className="flex items-center gap-1.5 text-xs text-gray-400">
               <Badge variant="outline" className={cn(
                 "px-2 py-0 text-[10px] font-medium rounded-md",
-                client.type === 'individual' 
-                  ? "bg-blue-50 text-blue-600 border-blue-100" 
-                  : "bg-purple-50 text-purple-600 border-purple-100"
+                client.type === 'individual'
+                  ? "bg-blue-50 text-blue-600 border-blue-100 dark:bg-blue-500/10 dark:text-blue-400 dark:border-blue-500/20"
+                  : "bg-purple-50 text-purple-600 border-purple-100 dark:bg-purple-500/10 dark:text-purple-400 dark:border-purple-500/20"
               )}>
                 {t(`clients.${client.type}`)}
               </Badge>
@@ -217,8 +217,8 @@ export default function Clients() {
             <Badge variant="outline" className={cn(
               "px-2 py-0 text-[10px] font-medium rounded-md",
               client.activeContract && client.activeContract !== 0
-                ? "bg-emerald-50 text-emerald-600 border-emerald-100"
-                : "bg-gray-50 text-gray-400 border-gray-100"
+                ? "bg-emerald-50 text-emerald-600 border-emerald-100 dark:bg-emerald-500/10 dark:text-emerald-400 dark:border-emerald-500/20"
+                : "bg-gray-50 text-gray-400 border-gray-100 dark:bg-gray-800 dark:text-gray-500 dark:border-gray-700"
             )}>
               {client.activeContract && client.activeContract !== 0 ? 1 : 0} {t('contracts.title')}
             </Badge>
