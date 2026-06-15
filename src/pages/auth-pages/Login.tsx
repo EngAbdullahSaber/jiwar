@@ -43,6 +43,14 @@ export const Login = (): JSX.Element => {
         localStorage.setItem("token", token);
         dispatch(setCredentials({ user }));
 
+        // Clients go directly to their own profile page
+        if (user?.userType === "client") {
+          localStorage.setItem("nextPath", `/clients/${user.id}`);
+          toast.success(t("common.success"));
+          setTimeout(() => setLocation("/loading"), 800);
+          return;
+        }
+
         // Find first available path based on permissions
         const priorityPaths = [
           { path: "/dashboard", resource: "resources-dashboard" },

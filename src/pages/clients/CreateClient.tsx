@@ -99,6 +99,14 @@ export default function CreateClient() {
     else if (formData.password.length < 8)
       newErrors.password = t("common.passwordMinLength");
 
+    if (!formData.vatNumber.trim()) newErrors.vatNumber = t("common.fieldRequired");
+    if (!formData.iqama.trim()) newErrors.iqama = t("common.fieldRequired");
+    if (!formData.iban.trim()) newErrors.iban = t("common.fieldRequired");
+    if (!formData.countryId) newErrors.countryId = t("common.fieldRequired");
+    if (!formData.cityId) newErrors.cityId = t("common.fieldRequired");
+    if (!formData.bankId) newErrors.bankId = t("common.fieldRequired");
+    if (!formData.physicalAddress.trim()) newErrors.physicalAddress = t("common.fieldRequired");
+
     setErrors(newErrors);
     if (Object.keys(newErrors).length > 0) {
       scrollToFirstError();
@@ -297,43 +305,43 @@ export default function CreateClient() {
                   </FormField>
 
                   {/* VAT Number */}
-                  <FormField label={t("clients.vatNumber")}>
+                  <FormField label={t("clients.vatNumber")} required error={errors.vatNumber}>
                     <div className="relative group">
                       <Hash className="absolute left-4 rtl:left-auto rtl:right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 group-focus-within:text-[#B39371] transition-colors" />
                       <Input
                         name="vatNumber"
                         placeholder={t("clients.placeholders.vat")}
-                        className="h-12 pl-11 rtl:pl-4 rtl:pr-11 rounded-md bg-gray-50 dark:bg-gray-800/50 border-gray-100 dark:border-gray-700 focus:bg-white dark:focus:bg-gray-800 focus:ring-2 focus:ring-[#B39371]/10 transition-all"
+                        className={cn("h-12 pl-11 rtl:pl-4 rtl:pr-11 rounded-md bg-gray-50 dark:bg-gray-800/50 border-gray-100 dark:border-gray-700 focus:bg-white dark:focus:bg-gray-800 focus:ring-2 focus:ring-[#B39371]/10 transition-all", errors.vatNumber && "border-red-300 dark:border-red-700")}
                         value={formData.vatNumber}
-                        onChange={handleChange}
+                        onChange={(e) => { handleChange(e); clearError("vatNumber"); }}
                       />
                     </div>
                   </FormField>
 
                   {/* Iqama / ID */}
-                  <FormField label={t("clients.iqama")}>
+                  <FormField label={t("clients.iqama")} required error={errors.iqama}>
                     <div className="relative group">
                       <CreditCard className="absolute left-4 rtl:left-auto rtl:right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 group-focus-within:text-[#B39371] transition-colors" />
                       <Input
                         name="iqama"
                         placeholder={t("clients.placeholders.iqama")}
-                        className="h-12 pl-11 rtl:pl-4 rtl:pr-11 rounded-md bg-gray-50 dark:bg-gray-800/50 border-gray-100 dark:border-gray-700 focus:bg-white dark:focus:bg-gray-800 focus:ring-2 focus:ring-[#B39371]/10 transition-all"
+                        className={cn("h-12 pl-11 rtl:pl-4 rtl:pr-11 rounded-md bg-gray-50 dark:bg-gray-800/50 border-gray-100 dark:border-gray-700 focus:bg-white dark:focus:bg-gray-800 focus:ring-2 focus:ring-[#B39371]/10 transition-all", errors.iqama && "border-red-300 dark:border-red-700")}
                         value={formData.iqama}
-                        onChange={handleChange}
+                        onChange={(e) => { handleChange(e); clearError("iqama"); }}
                       />
                     </div>
                   </FormField>
 
                   {/* IBAN */}
-                  <FormField label={t("clients.iban")}>
+                  <FormField label={t("clients.iban")} required error={errors.iban}>
                     <div className="relative group">
                       <Building2 className="absolute left-4 rtl:left-auto rtl:right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 group-focus-within:text-[#B39371] transition-colors" />
                       <Input
                         name="iban"
                         placeholder={t("clients.placeholders.iban")}
-                        className="h-12 pl-11 rtl:pl-4 rtl:pr-11 rounded-md bg-gray-50 dark:bg-gray-800/50 border-gray-100 dark:border-gray-700 focus:bg-white dark:focus:bg-gray-800 focus:ring-2 focus:ring-[#B39371]/10 transition-all"
+                        className={cn("h-12 pl-11 rtl:pl-4 rtl:pr-11 rounded-md bg-gray-50 dark:bg-gray-800/50 border-gray-100 dark:border-gray-700 focus:bg-white dark:focus:bg-gray-800 focus:ring-2 focus:ring-[#B39371]/10 transition-all", errors.iban && "border-red-300 dark:border-red-700")}
                         value={formData.iban}
-                        onChange={handleChange}
+                        onChange={(e) => { handleChange(e); clearError("iban"); }}
                       />
                     </div>
                   </FormField>
@@ -345,14 +353,11 @@ export default function CreateClient() {
                       apiEndpoint="/country"
                       queryKey="countries"
                       value={formData.countryId}
-                      onChange={(val) =>
-                        setFormData((prev) => ({
-                          ...prev,
-                          countryId: val,
-                          cityId: "",
-                          bankId: "",
-                        }))
-                      }
+                      error={errors.countryId}
+                      onChange={(val) => {
+                        setFormData((prev) => ({ ...prev, countryId: val, cityId: "", bankId: "" }));
+                        clearError("countryId");
+                      }}
                       placeholder={t("clients.placeholders.selectCountry")}
                       mapResponseToOptions={(data: any) =>
                         data.data.map((item: any) => ({
@@ -371,9 +376,11 @@ export default function CreateClient() {
                       apiEndpoint="/city"
                       queryKey={`cities-${formData.countryId}`}
                       value={formData.cityId}
-                      onChange={(val) =>
-                        setFormData((prev) => ({ ...prev, cityId: val }))
-                      }
+                      error={errors.cityId}
+                      onChange={(val) => {
+                        setFormData((prev) => ({ ...prev, cityId: val }));
+                        clearError("cityId");
+                      }}
                       placeholder={t("clients.placeholders.selectCity")}
                       disabled={!formData.countryId}
                       mapResponseToOptions={(data: any) =>
@@ -393,9 +400,11 @@ export default function CreateClient() {
                       apiEndpoint="/bank"
                       queryKey={`banks-${formData.countryId}`}
                       value={formData.bankId}
-                      onChange={(val) =>
-                        setFormData((prev) => ({ ...prev, bankId: val }))
-                      }
+                      error={errors.bankId}
+                      onChange={(val) => {
+                        setFormData((prev) => ({ ...prev, bankId: val }));
+                        clearError("bankId");
+                      }}
                       placeholder={t("clients.placeholders.selectBank")}
                       disabled={!formData.countryId}
                       extraParams={
@@ -416,6 +425,8 @@ export default function CreateClient() {
                   {/* Physical Address */}
                   <FormField
                     label={t("clients.address")}
+                    required
+                    error={errors.physicalAddress}
                     className="md:col-span-2"
                   >
                     <div className="relative group">
@@ -424,9 +435,9 @@ export default function CreateClient() {
                         name="physicalAddress"
                         rows={3}
                         placeholder={t("clients.placeholders.address")}
-                        className="w-full pl-11 pr-4 rtl:pl-4 rtl:pr-11 pt-3 rounded-md bg-gray-50 dark:bg-gray-800/50 border border-gray-100 dark:border-gray-700 text-sm font-medium text-gray-700 dark:text-gray-300 outline-none focus:bg-white dark:focus:bg-gray-800 focus:ring-2 focus:ring-[#B39371]/10 transition-all resize-none"
+                        className={cn("w-full pl-11 pr-4 rtl:pl-4 rtl:pr-11 pt-3 rounded-md bg-gray-50 dark:bg-gray-800/50 border border-gray-100 dark:border-gray-700 text-sm font-medium text-gray-700 dark:text-gray-300 outline-none focus:bg-white dark:focus:bg-gray-800 focus:ring-2 focus:ring-[#B39371]/10 transition-all resize-none", errors.physicalAddress && "border-red-300 dark:border-red-700")}
                         value={formData.physicalAddress}
-                        onChange={handleChange}
+                        onChange={(e) => { handleChange(e); clearError("physicalAddress"); }}
                       />
                     </div>
                   </FormField>

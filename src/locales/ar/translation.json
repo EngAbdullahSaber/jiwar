@@ -133,7 +133,8 @@
     "cities": "المدن",
     "banks": "البنوك",
     "financeDashboard": "لوحة البيانات المالية",
-    "stages": "المراحل"
+    "stages": "المراحل",
+    "myProfile": "ملفي الشخصي"
   },
   "financeDashboard": {
     "title": "لوحة البيانات المالية",

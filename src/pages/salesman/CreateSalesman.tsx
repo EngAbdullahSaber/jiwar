@@ -216,11 +216,31 @@ export default function CreateSalesman() {
               <div className="p-8 space-y-8">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
                   <FormField label={t("salesman.startDate")} required error={errors.startDate}>
-                    <DatePicker value={formData.startDate} onChange={(date) => { setFormData((prev) => ({ ...prev, startDate: date })); if (errors.startDate) setErrors(p => { const { startDate, ...r } = p; return r; }); }} />
+                    <DatePicker value={formData.startDate} onChange={(date) => {
+                      setFormData((prev) => ({ ...prev, startDate: date }));
+                      setErrors((p) => {
+                        const next = { ...p };
+                        delete next.startDate;
+                        if (date && formData.endDate && new Date(date) > new Date(formData.endDate))
+                          next.endDate = t("common.startDateBeforeEndDate");
+                        else if (p.endDate === t("common.startDateBeforeEndDate"))
+                          delete next.endDate;
+                        return next;
+                      });
+                    }} />
                   </FormField>
 
                   <FormField label={t("salesman.endDate")} required error={errors.endDate}>
-                    <DatePicker value={formData.endDate} onChange={(date) => { setFormData((prev) => ({ ...prev, endDate: date })); if (errors.endDate) setErrors(p => { const { endDate, ...r } = p; return r; }); }} />
+                    <DatePicker value={formData.endDate} onChange={(date) => {
+                      setFormData((prev) => ({ ...prev, endDate: date }));
+                      setErrors((p) => {
+                        const next = { ...p };
+                        delete next.endDate;
+                        if (date && formData.startDate && new Date(formData.startDate) > new Date(date))
+                          next.endDate = t("common.startDateBeforeEndDate");
+                        return next;
+                      });
+                    }} />
                   </FormField>
                 </div>
               </div>

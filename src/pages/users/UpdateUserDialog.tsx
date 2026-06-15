@@ -84,10 +84,20 @@ export function UpdateUserDialog({
     },
   });
 
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  const phoneRegex = /^[+\d][\d\s\-()]{6,19}$/;
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const newErrors: Record<string, string> = {};
-    if (!formData.email) newErrors.email = t("common.fieldRequired");
+    if (!formData.email) {
+      newErrors.email = t("common.fieldRequired");
+    } else if (!emailRegex.test(formData.email)) {
+      newErrors.email = t("common.invalidEmail");
+    }
+    if (formData.phoneNumber && !phoneRegex.test(formData.phoneNumber)) {
+      newErrors.phoneNumber = t("common.invalidPhone");
+    }
     if (!formData.roleId) newErrors.roleId = t("common.fieldRequired");
     setErrors(newErrors);
     if (Object.keys(newErrors).length > 0) {
@@ -196,10 +206,10 @@ export function UpdateUserDialog({
                     </div>
                   </FormField>
 
-                  <FormField label={t("users.phoneNumber")}>
+                  <FormField label={t("users.phoneNumber")} error={errors.phoneNumber}>
                     <div className="relative group">
                       <Phone className="absolute left-4 rtl:left-auto rtl:right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 group-focus-within:text-[#B39371] transition-colors" />
-                      <Input id="phoneNumber" name="phoneNumber" type="tel" placeholder={t("users.placeholders.phoneNumber")} className="h-12 pl-12 rtl:pl-4 rtl:pr-12 rounded-md bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700 focus:bg-gray-50 dark:focus:bg-gray-800 focus:ring-4 focus:ring-[#B39371]/10 focus:border-[#B39371]/50 transition-all font-semibold text-gray-700 dark:text-gray-200" value={formData.phoneNumber} onChange={(e) => setFormData((prev) => ({ ...prev, phoneNumber: e.target.value }))} />
+                      <Input id="phoneNumber" name="phoneNumber" type="tel" placeholder={t("users.placeholders.phoneNumber")} className="h-12 pl-12 rtl:pl-4 rtl:pr-12 rounded-md bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700 focus:bg-gray-50 dark:focus:bg-gray-800 focus:ring-4 focus:ring-[#B39371]/10 focus:border-[#B39371]/50 transition-all font-semibold text-gray-700 dark:text-gray-200" value={formData.phoneNumber} onChange={(e) => { setFormData((prev) => ({ ...prev, phoneNumber: e.target.value })); if (!e.target.value || phoneRegex.test(e.target.value)) setErrors((p) => { const { phoneNumber, ...r } = p; return r; }); }} />
                     </div>
                   </FormField>
 

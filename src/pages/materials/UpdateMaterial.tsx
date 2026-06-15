@@ -197,13 +197,29 @@ export default function UpdateMaterial() {
     },
   });
 
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  const phoneRegex = /^[+\d][\d\s\-()]{6,19}$/;
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const newErrors: Record<string, string> = {};
-    if (!formData.name) newErrors.name = t("common.fieldRequired");
-    if (!supplierData.name) newErrors.supplierName = t("common.fieldRequired");
-    if (!formData.quantity) newErrors.quantity = t("common.fieldRequired");
+
+    if (!formData.name.trim()) newErrors.name = t("common.fieldRequired");
+    if (!formData.quantity.trim()) newErrors.quantity = t("common.fieldRequired");
+    if (!formData.price || formData.price <= 0) newErrors.price = t("common.fieldRequired");
+    if (!formData.startDate) newErrors.startDate = t("common.fieldRequired");
+    if (!formData.endDate) newErrors.endDate = t("common.fieldRequired");
+    if (formData.startDate && formData.endDate && new Date(formData.startDate) >= new Date(formData.endDate))
+      newErrors.endDate = t("materials.dateError");
+    if (!supplierData.name.trim()) newErrors.supplierName = t("common.fieldRequired");
+    if (supplierData.email && !emailRegex.test(supplierData.email))
+      newErrors.supplierEmail = t("common.invalidEmail");
+    if (supplierData.phoneNumber && !phoneRegex.test(supplierData.phoneNumber))
+      newErrors.supplierPhone = t("common.invalidPhone");
+    if (supplierData.optionalPhoneNumber && !phoneRegex.test(supplierData.optionalPhoneNumber))
+      newErrors.supplierOptionalPhone = t("common.invalidPhone");
     if (!formData.projectId) newErrors.projectId = t("common.fieldRequired");
+
     setErrors(newErrors);
     if (Object.keys(newErrors).length > 0) {
       scrollToFirstError();
@@ -330,23 +346,37 @@ export default function UpdateMaterial() {
                 </FormField>
 
                 {/* Start Date */}
-                <FormField label={t("materials.startDate")}>
+                <FormField label={t("materials.startDate")} required error={errors.startDate}>
                   <DatePicker
                     value={formData.startDate}
-                    onChange={(date) =>
-                      setFormData((prev) => ({ ...prev, startDate: date }))
-                    }
+                    onChange={(date) => {
+                      setFormData((prev) => ({ ...prev, startDate: date }));
+                      setErrors((prev) => {
+                        const next = { ...prev };
+                        delete next.startDate;
+                        if (date && formData.endDate && new Date(date) < new Date(formData.endDate))
+                          delete next.endDate;
+                        return next;
+                      });
+                    }}
                     placeholder={t("materials.startDate")}
                   />
                 </FormField>
 
                 {/* End Date */}
-                <FormField label={t("materials.endDate")}>
+                <FormField label={t("materials.endDate")} required error={errors.endDate}>
                   <DatePicker
                     value={formData.endDate}
-                    onChange={(date) =>
-                      setFormData((prev) => ({ ...prev, endDate: date }))
-                    }
+                    onChange={(date) => {
+                      setFormData((prev) => ({ ...prev, endDate: date }));
+                      setErrors((prev) => {
+                        const next = { ...prev };
+                        delete next.endDate;
+                        if (date && formData.startDate && new Date(formData.startDate) >= new Date(date))
+                          next.endDate = t("materials.dateError");
+                        return next;
+                      });
+                    }}
                     placeholder={t("materials.endDate")}
                   />
                 </FormField>
@@ -375,19 +405,19 @@ export default function UpdateMaterial() {
                 </div>
 
                 {/* Price */}
-                <FormField label={t("materials.price")}>
+                <FormField label={t("materials.price")} required error={errors.price}>
                   <div className="relative">
                     <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 rtl:left-auto rtl:right-3" />
                     <Input
                       type="number"
+                      min="0"
+                      step="0.01"
                       placeholder="0.00"
-                      value={formData.price}
-                      onChange={(e) =>
-                        setFormData((prev) => ({
-                          ...prev,
-                          price: Number(e.target.value),
-                        }))
-                      }
+                      value={formData.price || ""}
+                      onChange={(e) => {
+                        setFormData((prev) => ({ ...prev, price: Number(e.target.value) }));
+                        if (errors.price) setErrors((p) => { const { price, ...r } = p; return r; });
+                      }}
                       className="pl-10 rtl:pl-3 rtl:pr-10 h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md"
                     />
                   </div>
@@ -434,55 +464,49 @@ export default function UpdateMaterial() {
                 </FormField>
 
                 {/* Email */}
-                <FormField label={t("materials.supplierEmail")}>
+                <FormField label={t("materials.supplierEmail")} error={errors.supplierEmail}>
                   <div className="relative">
                     <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 rtl:left-auto rtl:right-3" />
                     <Input
                       type="email"
                       placeholder="supplier@example.com"
                       value={supplierData.email}
-                      onChange={(e) =>
-                        setSupplierData((prev) => ({
-                          ...prev,
-                          email: e.target.value,
-                        }))
-                      }
+                      onChange={(e) => {
+                        setSupplierData((prev) => ({ ...prev, email: e.target.value }));
+                        if (errors.supplierEmail) setErrors((p) => { const { supplierEmail, ...r } = p; return r; });
+                      }}
                       className="pl-10 rtl:pl-3 rtl:pr-10 h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md"
                     />
                   </div>
                 </FormField>
 
                 {/* Phone Number */}
-                <FormField label={t("materials.supplierPhone")}>
+                <FormField label={t("materials.supplierPhone")} error={errors.supplierPhone}>
                   <div className="relative">
                     <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 rtl:left-auto rtl:right-3" />
                     <Input
                       placeholder="050XXXXXXXX"
                       value={supplierData.phoneNumber}
-                      onChange={(e) =>
-                        setSupplierData((prev) => ({
-                          ...prev,
-                          phoneNumber: e.target.value,
-                        }))
-                      }
+                      onChange={(e) => {
+                        setSupplierData((prev) => ({ ...prev, phoneNumber: e.target.value }));
+                        if (errors.supplierPhone) setErrors((p) => { const { supplierPhone, ...r } = p; return r; });
+                      }}
                       className="pl-10 rtl:pl-3 rtl:pr-10 h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md"
                     />
                   </div>
                 </FormField>
 
                 {/* Optional Phone Number */}
-                <FormField label={t("materials.supplierOptionalPhone")}>
+                <FormField label={t("materials.supplierOptionalPhone")} error={errors.supplierOptionalPhone}>
                   <div className="relative">
                     <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 rtl:left-auto rtl:right-3" />
                     <Input
                       placeholder="055XXXXXXXX"
                       value={supplierData.optionalPhoneNumber}
-                      onChange={(e) =>
-                        setSupplierData((prev) => ({
-                          ...prev,
-                          optionalPhoneNumber: e.target.value,
-                        }))
-                      }
+                      onChange={(e) => {
+                        setSupplierData((prev) => ({ ...prev, optionalPhoneNumber: e.target.value }));
+                        if (errors.supplierOptionalPhone) setErrors((p) => { const { supplierOptionalPhone, ...r } = p; return r; });
+                      }}
                       className="pl-10 rtl:pl-3 rtl:pr-10 h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md"
                     />
                   </div>

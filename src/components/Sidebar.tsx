@@ -62,26 +62,31 @@ export function Sidebar() {
   const { isExpanded: expanded, toggle: toggleExpanded } = useSidebarStore();
   const [isDark, setIsDark] = useState(false);
 
-  const filteredMenuItems = menuItems.filter(item => {
-    if (!item.resource) return true;
+  const isClient = user?.userType === "client";
 
-    const hasPerm = user?.role?.permissions?.some((p: any) => {
-      const normalizedResource = p.resource.includes(':') ? p.resource.split(':')[1] : p.resource;
-      return (
-        normalizedResource === item.resource ||
-        p.resource === item.resource ||
-        p.resource === `read:${item.resource}`
-      ) && p.actions?.includes('READ');
-    });
+  const filteredMenuItems = [
+    ...(isClient ? [{ icon: UserCircle, label: "myProfile", path: `/clients/${user.id}` } as MenuItem] : []),
+    ...menuItems.filter(item => {
+      if (!item.resource) return true;
 
-    if (!hasPerm && item.resource === 'finance-dashboard') {
-      return user?.role?.permissions?.some((p: any) =>
-        (p.resource === 'statics' || p.resource === 'read:statics') && p.actions?.includes('READ')
-      ) || false;
-    }
+      const hasPerm = user?.role?.permissions?.some((p: any) => {
+        const normalizedResource = p.resource.includes(':') ? p.resource.split(':')[1] : p.resource;
+        return (
+          normalizedResource === item.resource ||
+          p.resource === item.resource ||
+          p.resource === `read:${item.resource}`
+        ) && p.actions?.includes('READ');
+      });
 
-    return hasPerm || false;
-  });
+      if (!hasPerm && item.resource === 'finance-dashboard') {
+        return user?.role?.permissions?.some((p: any) =>
+          (p.resource === 'statics' || p.resource === 'read:statics') && p.actions?.includes('READ')
+        ) || false;
+      }
+
+      return hasPerm || false;
+    }),
+  ];
 
   const handleLogout = () => {
     dispatch(logout());

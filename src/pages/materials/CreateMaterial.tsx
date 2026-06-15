@@ -150,13 +150,21 @@ export default function CreateMaterial() {
     if (!formData.endDate) newErrors.endDate = t("common.fieldRequired");
     if (formData.startDate && formData.endDate && new Date(formData.startDate) >= new Date(formData.endDate))
       newErrors.endDate = t("materials.dateError");
+    if (!formData.notes.trim()) newErrors.notes = t("common.fieldRequired");
     if (!supplierData.name.trim()) newErrors.supplierName = t("common.fieldRequired");
-    if (supplierData.email && !emailRegex.test(supplierData.email))
+    if (!supplierData.email) {
+      newErrors.supplierEmail = t("common.fieldRequired");
+    } else if (!emailRegex.test(supplierData.email)) {
       newErrors.supplierEmail = t("common.invalidEmail");
-    if (supplierData.phoneNumber && !phoneRegex.test(supplierData.phoneNumber))
+    }
+    if (!supplierData.phoneNumber) {
+      newErrors.supplierPhone = t("common.fieldRequired");
+    } else if (!phoneRegex.test(supplierData.phoneNumber)) {
       newErrors.supplierPhone = t("common.invalidPhone");
+    }
     if (supplierData.optionalPhoneNumber && !phoneRegex.test(supplierData.optionalPhoneNumber))
       newErrors.supplierOptionalPhone = t("common.invalidPhone");
+    if (attachments.length === 0) newErrors.attachments = t("common.fieldRequired");
     if (!formData.projectId) newErrors.projectId = t("common.fieldRequired");
 
     setErrors(newErrors);
@@ -317,7 +325,7 @@ export default function CreateMaterial() {
 
                 {/* Notes */}
                 <div className="md:col-span-2">
-                  <FormField label={t("materials.notes")}>
+                  <FormField label={t("materials.notes")} required error={errors.notes}>
                     <div className="relative">
                       <FileText className="absolute left-3 top-3 w-4 h-4 text-gray-400 rtl:left-auto rtl:right-3" />
                       <Textarea
@@ -326,12 +334,10 @@ export default function CreateMaterial() {
                           "Enter any additional notes..."
                         }
                         value={formData.notes}
-                        onChange={(e) =>
-                          setFormData((prev) => ({
-                            ...prev,
-                            notes: e.target.value,
-                          }))
-                        }
+                        onChange={(e) => {
+                          setFormData((prev) => ({ ...prev, notes: e.target.value }));
+                          if (errors.notes) setErrors((prev) => { const { notes, ...rest } = prev; return rest; });
+                        }}
                         className="pl-10 rtl:pl-3 rtl:pr-10 min-h-[100px] bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md pt-2"
                       />
                     </div>
@@ -398,7 +404,7 @@ export default function CreateMaterial() {
                 </FormField>
 
                 {/* Email */}
-                <FormField label={t("materials.supplierEmail")} error={errors.supplierEmail}>
+                <FormField label={t("materials.supplierEmail")} required error={errors.supplierEmail}>
                   <div className="relative">
                     <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 rtl:left-auto rtl:right-3" />
                     <Input
@@ -415,7 +421,7 @@ export default function CreateMaterial() {
                 </FormField>
 
                 {/* Phone Number */}
-                <FormField label={t("materials.supplierPhone")} error={errors.supplierPhone}>
+                <FormField label={t("materials.supplierPhone")} required error={errors.supplierPhone}>
                   <div className="relative">
                     <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 rtl:left-auto rtl:right-3" />
                     <Input
@@ -580,19 +586,23 @@ export default function CreateMaterial() {
               description={t("materials.attachmentsDesc")}
               delay={0.3}
             >
-              <FileUpload
-                multiple
-                label={t("materials.uploadLabel")}
-                accept=".pdf"
-                maxSizeMB={20}
-                helperText={t("materials.uploadHelper")}
-                onUploadSuccess={(url) =>
-                  setAttachments((prev) => [...prev, url])
-                }
-                onUploadMultipleSuccess={(urls) =>
-                  setAttachments((prev) => [...prev, ...urls])
-                }
-              />
+              <FormField label="" required error={errors.attachments}>
+                <FileUpload
+                  multiple
+                  label={t("materials.uploadLabel")}
+                  accept=".pdf"
+                  maxSizeMB={20}
+                  helperText={t("materials.uploadHelper")}
+                  onUploadSuccess={(url) => {
+                    setAttachments((prev) => [...prev, url]);
+                    if (errors.attachments) setErrors((prev) => { const { attachments, ...rest } = prev; return rest; });
+                  }}
+                  onUploadMultipleSuccess={(urls) => {
+                    setAttachments((prev) => [...prev, ...urls]);
+                    if (errors.attachments) setErrors((prev) => { const { attachments, ...rest } = prev; return rest; });
+                  }}
+                />
+              </FormField>
             </FormSection>
 
             <FormActions

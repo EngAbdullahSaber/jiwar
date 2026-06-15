@@ -132,7 +132,8 @@
     "cities": "Cities",
     "banks": "Banks",
     "financeDashboard": "Finance Dashboard",
-    "stages": "Stages"
+    "stages": "Stages",
+    "myProfile": "My Profile"
   },
   "financeDashboard": {
     "title": "Finance Dashboard",
