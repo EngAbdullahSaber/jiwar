@@ -38,6 +38,7 @@ export default function UpdateLegality() {
 
   const [formData, setFormData] = useState({ nameEn: '', nameAr: '' });
   const [steps, setSteps] = useState<EditStep[]>([]);
+  const [stepErrors, setStepErrors] = useState<Record<string, boolean>>({});
   const [initialized, setInitialized] = useState(false);
   const [shouldScroll, setShouldScroll] = useState(false);
   const stepsEndRef = useRef<HTMLDivElement>(null);
@@ -118,14 +119,29 @@ export default function UpdateLegality() {
 
   const removeStep = (id: string) => setSteps(prev => prev.filter(s => s.id !== id));
 
-  const updateStep = (id: string, field: 'name' | 'nameAr', value: string) =>
-    setSteps(prev => prev.map(s => (s.id === id ? { ...s, [field]: value } : s)));
+  const updateStep = (id: string, field: 'name' | 'nameAr', value: string) => {
+    const updated = steps.map(s => (s.id === id ? { ...s, [field]: value } : s));
+    setSteps(updated);
+    if (stepErrors[id] && value.trim()) {
+      const step = updated.find(s => s.id === id);
+      if (step && step.name.trim() && step.nameAr.trim()) {
+        setStepErrors(prev => { const { [id]: _, ...rest } = prev; return rest; });
+      }
+    }
+  };
 
-  const hasEmptyStep = steps.some(s => !s.name || !s.nameAr);
+  const hasEmptyStep = steps.some(s => !s.isDefault && (!s.name.trim() || !s.nameAr.trim()));
   const isFormInvalid =
     updateMutation.isPending || !formData.nameEn || !formData.nameAr || hasEmptyStep;
 
   const handleSubmit = () => {
+    const newStepErrors: Record<string, boolean> = {};
+    steps.forEach(s => {
+      if (!s.isDefault && (!s.name.trim() || !s.nameAr.trim())) newStepErrors[s.id] = true;
+    });
+    if (Object.keys(newStepErrors).length > 0) {
+      setStepErrors(newStepErrors);
+    }
     if (isFormInvalid) return;
 
     const payload = {
@@ -292,40 +308,66 @@ export default function UpdateLegality() {
                               {/* English name */}
                               <div className="space-y-1">
                                 <label className="text-xs font-medium text-gray-500 dark:text-gray-400">
-                                  {t('legality.stepNameEn')}
+                                  {t('legality.stepNameEn')} {!step.isDefault && <span className="text-red-500">*</span>}
                                 </label>
                                 <Input
                                   value={step.name}
                                   onChange={e => updateStep(step.id, 'name', e.target.value)}
                                   placeholder={t('legality.stepNameEnPlaceholder')}
-                                  className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700 h-10 rounded-md focus:ring-2 focus:ring-[#B39371]/20 focus:border-[#B39371]"
+                                  disabled={step.isDefault}
+                                  className={cn(
+                                    "bg-white dark:bg-gray-900 h-10 rounded-md focus:ring-2 focus:border-[#B39371] disabled:bg-gray-100 dark:disabled:bg-gray-800 disabled:text-gray-600 dark:disabled:text-gray-400",
+                                    !step.isDefault && stepErrors[step.id] && !step.name.trim()
+                                      ? "border-red-400 dark:border-red-500 focus:ring-red-200 dark:focus:ring-red-500/20"
+                                      : "border-gray-200 dark:border-gray-700 focus:ring-[#B39371]/20"
+                                  )}
                                 />
+                                {!step.isDefault && stepErrors[step.id] && !step.name.trim() && (
+                                  <p className="flex items-center gap-1 text-xs text-red-500">
+                                    <AlertCircle className="w-3 h-3 shrink-0" />
+                                    {t('common.fieldRequired')}
+                                  </p>
+                                )}
                               </div>
 
                               {/* Arabic name */}
                               <div className="space-y-1">
                                 <label className="text-xs font-medium text-gray-500 dark:text-gray-400">
-                                  {t('legality.stepNameAr')}
+                                  {t('legality.stepNameAr')} {!step.isDefault && <span className="text-red-500">*</span>}
                                 </label>
                                 <Input
                                   value={step.nameAr}
                                   onChange={e => updateStep(step.id, 'nameAr', e.target.value)}
                                   placeholder={t('legality.stepNameArPlaceholder')}
                                   dir="rtl"
-                                  className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700 h-10 rounded-md focus:ring-2 focus:ring-[#B39371]/20 focus:border-[#B39371] text-right"
+                                  disabled={step.isDefault}
+                                  className={cn(
+                                    "bg-white dark:bg-gray-900 h-10 rounded-md focus:ring-2 focus:border-[#B39371] text-right disabled:bg-gray-100 dark:disabled:bg-gray-800 disabled:text-gray-600 dark:disabled:text-gray-400",
+                                    !step.isDefault && stepErrors[step.id] && !step.nameAr.trim()
+                                      ? "border-red-400 dark:border-red-500 focus:ring-red-200 dark:focus:ring-red-500/20"
+                                      : "border-gray-200 dark:border-gray-700 focus:ring-[#B39371]/20"
+                                  )}
                                 />
+                                {!step.isDefault && stepErrors[step.id] && !step.nameAr.trim() && (
+                                  <p className="flex items-center gap-1 text-xs text-red-500">
+                                    <AlertCircle className="w-3 h-3 shrink-0" />
+                                    {t('common.fieldRequired')}
+                                  </p>
+                                )}
                               </div>
                             </div>
 
-                            {/* Remove button (all steps) */}
-                            <motion.button
-                              whileHover={{ scale: 1.1 }}
-                              whileTap={{ scale: 0.9 }}
-                              onClick={() => removeStep(step.id)}
-                              className="flex-shrink-0 p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 rounded-md transition-colors"
-                            >
-                              <Trash2 className="w-5 h-5" />
-                            </motion.button>
+                            {/* Remove button (non-default steps only) */}
+                            {!step.isDefault && (
+                              <motion.button
+                                whileHover={{ scale: 1.1 }}
+                                whileTap={{ scale: 0.9 }}
+                                onClick={() => removeStep(step.id)}
+                                className="shrink-0 p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 rounded-md transition-colors"
+                              >
+                                <Trash2 className="w-5 h-5" />
+                              </motion.button>
+                            )}
                           </div>
                         </div>
                       </motion.div>

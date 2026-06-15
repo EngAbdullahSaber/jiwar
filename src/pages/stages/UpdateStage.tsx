@@ -22,7 +22,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import DatePicker from '../../components/shared/DatePicker';
 import { FormField } from '../../components/shared/FormField';
-import { scrollToFirstError } from '@/lib/utils';
+import { scrollToFirstError, cn } from '@/lib/utils';
 
 const FormSection = ({ icon: Icon, title, description, children, delay = 0 }: any) => (
   <motion.div
@@ -154,6 +154,8 @@ export default function UpdateStage() {
     if (!estimateCost) newErrors.estimateCost = t('common.fieldRequired');
     if (!fromDate) newErrors.fromDate = t('common.fieldRequired');
     if (!toDate) newErrors.toDate = t('common.fieldRequired');
+    if (fromDate && toDate && new Date(fromDate) >= new Date(toDate))
+      newErrors.toDate = t('common.startDateBeforeEndDate');
     setErrors(newErrors);
     if (Object.keys(newErrors).length > 0) {
       scrollToFirstError();
@@ -166,6 +168,28 @@ export default function UpdateStage() {
         });
         return;
       }
+      if (new Date(s.fromDate) >= new Date(s.toDate)) {
+        toast.error(`${t('common.startDateBeforeEndDate')} — ${t('stages.subStageLabel')} #${i + 1}`, {
+          style: { borderRadius: '1rem', background: '#ef4444', color: '#fff' },
+        });
+        return;
+      }
+      if (
+        (fromDate && new Date(s.fromDate) < new Date(fromDate)) ||
+        (toDate && new Date(s.toDate) > new Date(toDate))
+      ) {
+        toast.error(`${t('projects.stages.validation.dateRangeExceeded')} — ${t('stages.subStageLabel')} #${i + 1}`, {
+          style: { borderRadius: '1rem', background: '#ef4444', color: '#fff' },
+        });
+        return;
+      }
+    }
+    const totalSubCost = subStages.reduce((sum, s) => sum + parseFloat(s.estimateCost || '0'), 0);
+    if (estimateCost && totalSubCost > parseFloat(estimateCost)) {
+      toast.error(t('projects.stages.validation.costExceeded'), {
+        style: { borderRadius: '1rem', background: '#ef4444', color: '#fff' },
+      });
+      return;
     }
     updateMutation.mutate();
   };
@@ -186,6 +210,11 @@ export default function UpdateStage() {
         i === idx ? { ...s, name: { ...s.name, [field]: value } } : s
       )
     );
+
+  const mainCost = parseFloat(formData.estimateCost) || 0;
+  const totalSubCost = subStages.reduce((sum, s) => sum + (parseFloat(s.estimateCost) || 0), 0);
+  const costExceeded = mainCost > 0 && totalSubCost > mainCost;
+  const remainingCost = mainCost - totalSubCost;
 
   if (isLoading) {
     return (
@@ -310,7 +339,13 @@ export default function UpdateStage() {
                       value={formData.fromDate}
                       onChange={date => {
                         setFormData(prev => ({ ...prev, fromDate: date }));
-                        if (errors.fromDate) setErrors(p => { const { fromDate, ...r } = p; return r; });
+                        setErrors(p => {
+                          const next = { ...p };
+                          delete next.fromDate;
+                          if (date && formData.toDate && new Date(date) < new Date(formData.toDate))
+                            delete next.toDate;
+                          return next;
+                        });
                       }}
                       placeholder={t('stages.placeholders.fromDate')}
                     />
@@ -320,7 +355,13 @@ export default function UpdateStage() {
                       value={formData.toDate}
                       onChange={date => {
                         setFormData(prev => ({ ...prev, toDate: date }));
-                        if (errors.toDate) setErrors(p => { const { toDate, ...r } = p; return r; });
+                        setErrors(p => {
+                          const next = { ...p };
+                          delete next.toDate;
+                          if (date && formData.fromDate && new Date(formData.fromDate) >= new Date(date))
+                            next.toDate = t('common.startDateBeforeEndDate');
+                          return next;
+                        });
                       }}
                       placeholder={t('stages.placeholders.toDate')}
                     />
@@ -337,97 +378,141 @@ export default function UpdateStage() {
               delay={0.2}
             >
               <div className="space-y-4">
+
+                {/* Budget tracker */}
+                {subStages.length > 0 && mainCost > 0 && (
+                  <div className={cn(
+                    'flex items-center justify-between px-4 py-3 rounded-md border text-sm font-medium',
+                    costExceeded
+                      ? 'bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800 text-red-700 dark:text-red-400'
+                      : 'bg-emerald-50 dark:bg-emerald-900/20 border-emerald-200 dark:border-emerald-800 text-emerald-700 dark:text-emerald-400'
+                  )}>
+                    <span>
+                      {t('projects.stages.validation.remainingBudget')}:{' '}
+                      <strong>{remainingCost.toFixed(2)}</strong>
+                    </span>
+                    <span className="text-xs opacity-70">
+                      {totalSubCost.toFixed(2)} / {mainCost.toFixed(2)}
+                    </span>
+                  </div>
+                )}
+
                 <AnimatePresence>
-                  {subStages.map((sub, idx) => (
-                    <motion.div
-                      key={idx}
-                      initial={{ opacity: 0, y: -8 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, height: 0, overflow: 'hidden' }}
-                      transition={{ duration: 0.18 }}
-                      className="border border-gray-200 dark:border-gray-700 rounded-md p-5 space-y-5 bg-gray-50/50 dark:bg-gray-800/30"
-                    >
-                      {/* Sub-stage header */}
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                          <span className="w-6 h-6 rounded-md bg-[#B39371]/15 text-[#4A1B1B] dark:text-[#B39371] text-xs font-bold flex items-center justify-center">
-                            {idx + 1}
-                          </span>
-                          <span className="text-sm font-semibold text-gray-700 dark:text-gray-300">
-                            {t('stages.subStageLabel')} {idx + 1}
-                          </span>
+                  {subStages.map((sub, idx) => {
+                    const subFromDateErr =
+                      sub.fromDate && formData.fromDate && new Date(sub.fromDate) < new Date(formData.fromDate)
+                        ? t('projects.stages.validation.dateRangeExceeded')
+                        : undefined;
+                    const subToDateErr =
+                      sub.toDate && formData.toDate && new Date(sub.toDate) > new Date(formData.toDate)
+                        ? t('projects.stages.validation.dateRangeExceeded')
+                        : undefined;
+
+                    return (
+                      <motion.div
+                        key={idx}
+                        initial={{ opacity: 0, y: -8 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, height: 0, overflow: 'hidden' }}
+                        transition={{ duration: 0.18 }}
+                        className={cn(
+                          'border rounded-md p-5 space-y-5',
+                          (subFromDateErr || subToDateErr)
+                            ? 'border-red-300 dark:border-red-700 bg-red-50/30 dark:bg-red-900/10'
+                            : 'border-gray-200 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-800/30'
+                        )}
+                      >
+                        {/* Sub-stage header */}
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-2">
+                            <span className="w-6 h-6 rounded-md bg-[#B39371]/15 text-[#4A1B1B] dark:text-[#B39371] text-xs font-bold flex items-center justify-center">
+                              {idx + 1}
+                            </span>
+                            <span className="text-sm font-semibold text-gray-700 dark:text-gray-300">
+                              {t('stages.subStageLabel')} {idx + 1}
+                            </span>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => removeSubStage(idx)}
+                            className="p-1.5 rounded-md text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
                         </div>
-                        <button
-                          type="button"
-                          onClick={() => removeSubStage(idx)}
-                          className="p-1.5 rounded-md text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
+
+                        {/* Sub-stage Name */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <FormField label={t('stages.labels.nameEn')} required>
+                            <div className="relative">
+                              <Type className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                              <Input
+                                placeholder={t('stages.placeholders.nameEn')}
+                                value={sub.name.english}
+                                onChange={e => updateSubStageName(idx, 'english', e.target.value)}
+                                className="pl-10 h-11 bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md"
+                              />
+                            </div>
+                          </FormField>
+                          <FormField label={t('stages.labels.nameAr')} required>
+                            <div className="relative">
+                              <Type className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                              <Input
+                                placeholder={t('stages.placeholders.nameAr')}
+                                value={sub.name.arabic}
+                                onChange={e => updateSubStageName(idx, 'arabic', e.target.value)}
+                                className="pr-10 h-11 bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md text-right"
+                                dir="rtl"
+                              />
+                            </div>
+                          </FormField>
+                        </div>
+
+                        {/* Sub-stage Cost */}
+                        <FormField
+                          label={t('stages.labels.estimateCost')}
+                          required
+                          error={costExceeded ? t('projects.stages.validation.costExceeded') : undefined}
                         >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
-                      </div>
-
-                      {/* Sub-stage Name */}
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <FormField label={t('stages.labels.nameEn')} required>
                           <div className="relative">
-                            <Type className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                            <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                             <Input
-                              placeholder={t('stages.placeholders.nameEn')}
-                              value={sub.name.english}
-                              onChange={e => updateSubStageName(idx, 'english', e.target.value)}
-                              className="pl-10 h-11 bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md"
+                              type="number"
+                              min="0"
+                              step="0.01"
+                              placeholder={t('stages.placeholders.estimateCost')}
+                              value={sub.estimateCost}
+                              onChange={e => updateSubStage(idx, { estimateCost: e.target.value })}
+                              className={cn(
+                                'pl-10 h-11 bg-white dark:bg-gray-800 rounded-md',
+                                costExceeded
+                                  ? 'border-red-400 dark:border-red-500'
+                                  : 'border-gray-200 dark:border-gray-700'
+                              )}
                             />
                           </div>
                         </FormField>
-                        <FormField label={t('stages.labels.nameAr')} required>
-                          <div className="relative">
-                            <Type className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-                            <Input
-                              placeholder={t('stages.placeholders.nameAr')}
-                              value={sub.name.arabic}
-                              onChange={e => updateSubStageName(idx, 'arabic', e.target.value)}
-                              className="pr-10 h-11 bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md text-right"
-                              dir="rtl"
-                            />
-                          </div>
-                        </FormField>
-                      </div>
 
-                      {/* Sub-stage Cost */}
-                      <FormField label={t('stages.labels.estimateCost')} required>
-                        <div className="relative">
-                          <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-                          <Input
-                            type="number"
-                            min="0"
-                            step="0.01"
-                            placeholder={t('stages.placeholders.estimateCost')}
-                            value={sub.estimateCost}
-                            onChange={e => updateSubStage(idx, { estimateCost: e.target.value })}
-                            className="pl-10 h-11 bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md"
-                          />
+                        {/* Sub-stage Dates */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <FormField label={t('common.startDate')} required error={subFromDateErr}>
+                            <DatePicker
+                              value={sub.fromDate}
+                              onChange={date => updateSubStage(idx, { fromDate: date })}
+                              placeholder={t('stages.placeholders.fromDate')}
+                            />
+                          </FormField>
+                          <FormField label={t('common.endDate')} required error={subToDateErr}>
+                            <DatePicker
+                              value={sub.toDate}
+                              onChange={date => updateSubStage(idx, { toDate: date })}
+                              placeholder={t('stages.placeholders.toDate')}
+                            />
+                          </FormField>
                         </div>
-                      </FormField>
-
-                      {/* Sub-stage Dates */}
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <FormField label={t('common.startDate')} required>
-                          <DatePicker
-                            value={sub.fromDate}
-                            onChange={date => updateSubStage(idx, { fromDate: date })}
-                            placeholder={t('stages.placeholders.fromDate')}
-                          />
-                        </FormField>
-                        <FormField label={t('common.endDate')} required>
-                          <DatePicker
-                            value={sub.toDate}
-                            onChange={date => updateSubStage(idx, { toDate: date })}
-                            placeholder={t('stages.placeholders.toDate')}
-                          />
-                        </FormField>
-                      </div>
-                    </motion.div>
-                  ))}
+                      </motion.div>
+                    );
+                  })}
                 </AnimatePresence>
 
                 {/* Add sub-stage button */}

@@ -129,9 +129,13 @@ export default function CreateLegality() {
   };
 
   const updateStep = (id: string, field: 'name' | 'nameAr', value: string) => {
-    setSteps(steps.map(s => s.id === id ? { ...s, [field]: value } : s));
-    if (field === 'name' && stepErrors[id] && value.trim()) {
-      setStepErrors(prev => { const { [id]: _, ...rest } = prev; return rest; });
+    const updated = steps.map(s => s.id === id ? { ...s, [field]: value } : s);
+    setSteps(updated);
+    if (stepErrors[id] && value.trim()) {
+      const step = updated.find(s => s.id === id);
+      if (step && step.name.trim() && step.nameAr?.trim()) {
+        setStepErrors(prev => { const { [id]: _, ...rest } = prev; return rest; });
+      }
     }
   };
 
@@ -145,13 +149,13 @@ export default function CreateLegality() {
     )
   );
 
-  const hasEmptyStepName = steps.some(s => !s.isDefault && !s.name.trim());
+  const hasEmptyStepName = steps.some(s => !s.isDefault && (!s.name.trim() || !s.nameAr?.trim()));
   const isFormInvalid = hasConflict || createMutation.isPending || !formData.nameEn || !formData.nameAr || hasEmptyStepName;
 
   const handleSubmit = () => {
     const newStepErrors: Record<string, boolean> = {};
     steps.forEach(s => {
-      if (!s.isDefault && !s.name.trim()) newStepErrors[s.id] = true;
+      if (!s.isDefault && (!s.name.trim() || !s.nameAr?.trim())) newStepErrors[s.id] = true;
     });
     if (Object.keys(newStepErrors).length > 0) {
       setStepErrors(newStepErrors);
@@ -351,15 +355,26 @@ export default function CreateLegality() {
                                   {!step.isDefault && (
                                     <div className="space-y-1">
                                       <label className="text-xs font-medium text-gray-500 dark:text-gray-400">
-                                        {t('legality.stepNameAr')}
+                                        {t('legality.stepNameAr')} <span className="text-red-500">*</span>
                                       </label>
-                                      <Input 
+                                      <Input
                                         value={step.nameAr}
                                         onChange={(e) => updateStep(step.id, 'nameAr', e.target.value)}
                                         placeholder={t('legality.stepNameArPlaceholder')}
                                         dir="rtl"
-                                        className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700 h-10 rounded-md focus:ring-2 focus:ring-[#B39371]/20 focus:border-[#B39371] text-right"
+                                        className={cn(
+                                          "bg-white dark:bg-gray-900 h-10 rounded-md focus:ring-2 focus:border-[#B39371] text-right",
+                                          stepErrors[step.id] && !step.nameAr?.trim()
+                                            ? "border-red-400 dark:border-red-500 focus:ring-red-200 dark:focus:ring-red-500/20"
+                                            : "border-gray-200 dark:border-gray-700 focus:ring-[#B39371]/20"
+                                        )}
                                       />
+                                      {stepErrors[step.id] && !step.nameAr?.trim() && (
+                                        <p className="flex items-center gap-1 text-xs text-red-500">
+                                          <AlertCircle className="w-3 h-3 shrink-0" />
+                                          {t('common.fieldRequired')}
+                                        </p>
+                                      )}
                                     </div>
                                   )}
 

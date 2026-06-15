@@ -118,6 +118,7 @@ export default function Legality() {
       });
       return response.data;
     },
+    refetchOnMount: "always",
   });
 
   useEffect(() => {
