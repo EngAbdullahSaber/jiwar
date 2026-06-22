@@ -93,7 +93,7 @@ export default function CreateContractTemplate() {
         {
           icon: "❌",
           style: { borderRadius: "1rem", background: "#ef4444", color: "#fff" },
-        }
+        },
       );
     },
   });
@@ -115,7 +115,11 @@ export default function CreateContractTemplate() {
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0] ?? null;
     setSelectedFile(file);
-    if (file && errors.file) setErrors((p) => { const { file, ...r } = p; return r; });
+    if (file && errors.file)
+      setErrors((p) => {
+        const { file, ...r } = p;
+        return r;
+      });
   };
 
   const clearFile = () => {
@@ -184,12 +188,7 @@ export default function CreateContractTemplate() {
                     "paidAmount",
                     "clientPhone",
                     "clientIban",
-                    "iban",
-                    "phone",
-                    "date",
-                    "amount",
-                    "price",
-                    "number",
+                    "clientName",
                   ].map((name) => (
                     <code
                       key={name}
@@ -226,7 +225,10 @@ export default function CreateContractTemplate() {
                     onChange={(e) => {
                       setNameEn(e.target.value);
                       if (errors.nameEn)
-                        setErrors((p) => { const { nameEn, ...r } = p; return r; });
+                        setErrors((p) => {
+                          const { nameEn, ...r } = p;
+                          return r;
+                        });
                     }}
                     className="h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md"
                   />
@@ -244,7 +246,10 @@ export default function CreateContractTemplate() {
                     onChange={(e) => {
                       setNameAr(e.target.value);
                       if (errors.nameAr)
-                        setErrors((p) => { const { nameAr, ...r } = p; return r; });
+                        setErrors((p) => {
+                          const { nameAr, ...r } = p;
+                          return r;
+                        });
                     }}
                     className="h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md text-right"
                   />
@@ -265,9 +270,10 @@ export default function CreateContractTemplate() {
                   <label
                     htmlFor="pdf-upload"
                     className={`flex flex-col items-center justify-center gap-3 w-full h-40 rounded-md border-2 border-dashed cursor-pointer transition-colors
-                      ${errors.file
-                        ? "border-red-400 bg-red-50 dark:bg-red-950/20"
-                        : "border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-800/50 hover:border-[#B39371] hover:bg-[#F5F1ED]/40 dark:hover:bg-gray-800"
+                      ${
+                        errors.file
+                          ? "border-red-400 bg-red-50 dark:bg-red-950/20"
+                          : "border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-800/50 hover:border-[#B39371] hover:bg-[#F5F1ED]/40 dark:hover:bg-gray-800"
                       }`}
                   >
                     <div className="w-12 h-12 rounded-md bg-gradient-to-br from-[#4A1B1B]/10 to-[#6B2727]/10 flex items-center justify-center">
