@@ -1,4 +1,5 @@
 import axios from "axios";
+import i18n from "@/i18n";
 
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL,
@@ -12,6 +13,9 @@ api.interceptors.request.use((config) => {
   const token = localStorage.getItem("token");
   if (token && config.headers) {
     config.headers.set('Authorization', `Bearer ${token}`);
+  }
+  if (config.headers) {
+    config.headers.set('lang', i18n.language === 'ar' ? 'ar' : 'en');
   }
   return config;
 }, (error) => {
