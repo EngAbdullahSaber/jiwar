@@ -9,18 +9,21 @@ const api = axios.create({
 });
 
 // Optional: Add request interceptor for tokens
-api.interceptors.request.use((config) => {
-  const token = localStorage.getItem("token");
-  if (token && config.headers) {
-    config.headers.set('Authorization', `Bearer ${token}`);
-  }
-  if (config.headers) {
-    config.headers.set('lang', i18n.language === 'ar' ? 'ar' : 'en');
-  }
-  return config;
-}, (error) => {
-  return Promise.reject(error);
-});
+api.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem("token");
+    if (token && config.headers) {
+      config.headers.set("Authorization", `Bearer ${token}`);
+    }
+
+    config.headers.set("lang", i18n.language === "ar" ? "ar" : "en");
+
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  },
+);
 
 // Response interceptor for session expiration
 api.interceptors.response.use(
@@ -28,7 +31,7 @@ api.interceptors.response.use(
   (error) => {
     if (error.response?.status === 401 || error.response?.data?.code === 401) {
       // Don't redirect if we're already on the login page or making a login request
-      const isLoginRequest = error.config?.url?.includes('/user/login');
+      const isLoginRequest = error.config?.url?.includes("/user/login");
       if (!isLoginRequest) {
         localStorage.removeItem("token");
         localStorage.removeItem("user");
@@ -36,7 +39,7 @@ api.interceptors.response.use(
       }
     }
     return Promise.reject(error);
-  }
+  },
 );
 
 export default api;

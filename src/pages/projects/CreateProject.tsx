@@ -10,11 +10,13 @@ import {
   Hash,
   Globe,
   Navigation,
+  Image,
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 
 import { PaginatedSelect } from "../../components/shared/PaginatedSelect";
+import { FileUpload } from "../../components/shared/FileUpload";
 import { FormActions } from "../../components/shared/FormActions";
 import { Shell } from "../../components/shared/Shell";
 import { LocationMap } from "../../components/shared/LocationMap";
@@ -72,6 +74,7 @@ export default function CreateProject() {
     address: "",
     latitude: "24.7136",
     longitude: "46.6753",
+    projectSakPdfUrl: "",
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -85,6 +88,7 @@ export default function CreateProject() {
         address: data.address,
         latitude: Number(data.latitude),
         longitude: Number(data.longitude),
+        projectSakPdfUrl: data.projectSakPdfUrl || undefined,
       };
 
       const response = await api.post("/project", payload);
@@ -411,6 +415,34 @@ export default function CreateProject() {
                         longitude: lng.toString(),
                       })
                     }
+                  />
+                </div>
+              </div>
+            </FormSection>
+
+            {/* SAK Images */}
+            <FormSection
+              icon={Image}
+              title={t("apartments.sections.sakImages")}
+              description={t("apartments.sections.sakImagesDesc")}
+              delay={0.3}
+            >
+              <div className="flex flex-col rounded-md border border-gray-200 dark:border-gray-700 overflow-hidden max-w-sm">
+                <div className="px-4 py-3 bg-gray-50 dark:bg-gray-800/60 border-b border-gray-200 dark:border-gray-700 flex items-center gap-2">
+                  <div className="w-1.5 h-1.5 rounded-full bg-[#B39371]" />
+                  <span className="text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
+                    {t("apartments.labels.projectSak")}
+                  </span>
+                </div>
+                <div className="p-4">
+                  <FileUpload
+                    onUploadSuccess={(url: string) =>
+                      setFormData({ ...formData, projectSakPdfUrl: url })
+                    }
+                    defaultValue={formData.projectSakPdfUrl}
+                    accept=".jpg,.jpeg,.png,.webp"
+                    maxSizeMB={10}
+                    helperText={t("apartments.placeholders.uploadProjectSak")}
                   />
                 </div>
               </div>

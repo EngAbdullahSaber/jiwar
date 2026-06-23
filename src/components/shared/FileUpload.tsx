@@ -320,6 +320,7 @@ export function FileUpload({
     setPreview(null);
     setFileInfo(null);
     if (fileInputRef.current) fileInputRef.current.value = '';
+    onUploadSuccess('');
   };
 
   const removePreview = (index: number) => {

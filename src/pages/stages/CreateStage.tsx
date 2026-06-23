@@ -367,7 +367,7 @@ export default function CreateStage() {
                       : 'bg-emerald-50 dark:bg-emerald-900/20 border-emerald-200 dark:border-emerald-800 text-emerald-700 dark:text-emerald-400'
                   )}>
                     <span>
-                      {t('projects.stages.validation.remainingBudget')}:{' '}
+                      {t('projects.stages.remainingBudget')}:{' '}
                       <strong>{remainingCost.toFixed(2)}</strong>
                     </span>
                     <span className="text-xs opacity-70">

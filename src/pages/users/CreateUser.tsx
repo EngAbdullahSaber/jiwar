@@ -53,7 +53,13 @@ export default function CreateUser() {
       setLocation('/users');
     },
     onError: (error: any) => {
-      toast.error(error.response?.data?.message?.english || t('users.errorCreate'));
+      toast.error(error.response?.data?.message || t('users.errorCreate'));
+      const apiErrors: { field: string; message: string }[] = error.response?.data?.error;
+      if (Array.isArray(apiErrors)) {
+        const fieldErrors: Record<string, string> = {};
+        apiErrors.forEach(({ field, message }) => { fieldErrors[field] = message; });
+        setErrors(prev => ({ ...prev, ...fieldErrors }));
+      }
     }
   });
 

@@ -11,10 +11,10 @@ import type { FilterField } from '../../components/shared/FilterBar';
 import { DeleteDialog } from '../../components/shared/DeleteDialog';
 import { toast } from 'react-hot-toast';
 
-import { Link } from "wouter";
+import { Link, useSearch } from "wouter";
 import { Shell } from '../../components/shared/Shell';
 import { Can } from '../../components/shared/Can';
-import { 
+import {
   FileText,
   Plus,
   Sparkles,
@@ -22,7 +22,8 @@ import {
   Calendar,
   User,
   Building2,
-  Trash2
+  Trash2,
+  X
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { format } from 'date-fns';
@@ -77,6 +78,8 @@ interface ContractsResponse {
 
 export default function Contracts() {
   const { t, i18n } = useTranslation();
+  const search = useSearch();
+  const salesmanId = new URLSearchParams(search).get('salesmanId') || '';
   const [filters, setFilters] = useState({ search: '', type: 'all' });
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 10;
@@ -86,7 +89,7 @@ export default function Contracts() {
   const [selectedContractId, setSelectedContractId] = useState<number | null>(null);
 
   const { data: response, isLoading } = useQuery<ContractsResponse>({
-    queryKey: ['contracts', currentPage, pageSize, filters.search, filters.type],
+    queryKey: ['contracts', currentPage, pageSize, filters.search, filters.type, salesmanId],
     queryFn: async () => {
       const res = await api.get('/contract?isApproved=true', {
         params: {
@@ -94,6 +97,7 @@ export default function Contracts() {
           pageSize,
           search: filters.search || undefined,
           type: filters.type !== 'all' ? filters.type : undefined,
+          salesManId: salesmanId || undefined,
         }
       });
       return res.data;
@@ -350,14 +354,26 @@ export default function Contracts() {
             {/* Add more stats if needed based on data */}
           </div>
 
+          {/* Salesman filter banner */}
+          {salesmanId && (
+            <div className="flex items-center justify-between px-4 py-2.5 bg-[#F5F1ED] dark:bg-[#4A1B1B]/20 border border-[#E8DDD3] dark:border-[#4A1B1B]/40 rounded-md text-sm text-[#4A1B1B] dark:text-[#B39371]">
+              <span className="font-medium">{t('salesman.viewContracts')}: #{salesmanId}</span>
+              <Link href="/contracts">
+                <button className="p-1 hover:opacity-70 transition-opacity">
+                  <X className="w-4 h-4" />
+                </button>
+              </Link>
+            </div>
+          )}
+
           {/* Filter Bar */}
-          <FilterBar 
-            fields={filterFields} 
-            values={filters} 
+          <FilterBar
+            fields={filterFields}
+            values={filters}
             onChange={(key, value) => {
               setFilters(prev => ({ ...prev, [key]: value }));
               setCurrentPage(1);
-            }} 
+            }}
           />
 
           <DataTable 

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { TopHeader } from "../../components/TopHeader";
-import { Link, useLocation, useSearch } from "wouter";
+import { useSearch } from "wouter";
 import { FileText, ArrowLeft, Sparkles, LayoutList, Building2 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { PaginatedSelect } from "../../components/shared/PaginatedSelect";
@@ -206,7 +206,7 @@ function DynamicField({
 // ── Page component ─────────────────────────────────────────────────────────────
 
 export default function CreateContract() {
-  const [, setLocation] = useLocation();
+
   const { t, i18n } = useTranslation();
   const search = useSearch();
 
@@ -300,7 +300,7 @@ export default function CreateContract() {
         icon: "🎉",
         style: { borderRadius: "1rem", background: "#10b981", color: "#fff" },
       });
-      setLocation("/contracts");
+      window.history.back();
     },
     onError: (error: any) => {
       toast.error(error.response?.data?.message || t("contracts.errorCreate"), {
@@ -349,12 +349,13 @@ export default function CreateContract() {
           {/* Page Header */}
           <div className="bg-white dark:bg-gray-900 rounded-md border border-gray-200 dark:border-gray-800 p-6 shadow-sm">
             <div className="flex items-center gap-4">
-              <Link
-                href="/contracts"
+              <button
+                type="button"
+                onClick={() => window.history.back()}
                 className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-md transition-colors"
               >
                 <ArrowLeft className="w-5 h-5 text-gray-500" />
-              </Link>
+              </button>
               <div className="relative">
                 <div className="absolute inset-0 bg-gradient-to-r from-[#4A1B1B] to-[#6B2727] rounded-md blur-lg opacity-50" />
                 <div className="relative w-12 h-12 rounded-md bg-gradient-to-br from-[#4A1B1B] to-[#6B2727] shadow-lg flex items-center justify-center">
@@ -541,7 +542,7 @@ export default function CreateContract() {
             </AnimatePresence>
 
             <FormActions
-              onCancel={() => setLocation("/contracts")}
+              onCancel={() => window.history.back()}
               isSubmitting={createMutation.isPending}
               submitText={t("contracts.create")}
               submittingText={t("common.saving")}
