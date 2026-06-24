@@ -25,7 +25,7 @@ import {
   ZoomIn,
 } from "lucide-react";
 import { Shell } from "../../components/shared/Shell";
-import { cn } from "@/lib/utils";
+import { cn, buildImageUrl } from "@/lib/utils";
 import { motion } from "framer-motion";
 import { format } from "date-fns";
 
@@ -300,7 +300,6 @@ export default function ViewApartment() {
       ...COLORS[i % COLORS.length],
     }));
 
-  const baseUrl = import.meta.env.VITE_API_BASE_URL || "";
 
   const quickStats = [
     {
@@ -599,13 +598,13 @@ export default function ViewApartment() {
                         </p>
                         {item.url ? (
                           <a
-                            href={`${baseUrl}/${item.url}`}
+                            href={buildImageUrl(item.url) ?? ""}
                             target="_blank"
                             rel="noreferrer"
                             className="relative block rounded-md overflow-hidden border border-gray-200 dark:border-gray-700 hover:border-[#B39371]/60 transition-colors group aspect-[4/3] bg-gray-50 dark:bg-gray-800"
                           >
                             <img
-                              src={`${baseUrl}/${item.url}`}
+                              src={buildImageUrl(item.url) ?? ""}
                               alt={item.label}
                               className="w-full h-full object-cover"
                             />
@@ -782,7 +781,7 @@ export default function ViewApartment() {
                       {documents.map((doc, i) => (
                         <a
                           key={i}
-                          href={`${baseUrl}/${doc.url}`}
+                          href={buildImageUrl(doc.url) ?? ""}
                           target="_blank"
                           rel="noreferrer"
                           className="flex items-center gap-3 p-3 rounded-md hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors group"

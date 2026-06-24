@@ -12,7 +12,7 @@ import {
 import { motion, AnimatePresence } from "framer-motion";
 import { Shell } from '../../components/shared/Shell';
 import { useTranslation } from 'react-i18next';
-import { cn } from '@/lib/utils';
+import { cn, buildImageUrl } from '@/lib/utils';
 import { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import api from '@/lib/api';
@@ -243,7 +243,7 @@ export default function AddProjectMedia() {
                             className="relative aspect-[4/3] rounded-md overflow-hidden shadow-sm group border-2 border-transparent hover:border-[#B39371]/50 transition-all"
                           >
                             <img 
-                              src={image.url.startsWith('http') ? image.url : `${import.meta.env.VITE_API_BASE_URL}/${image.url}`} 
+                              src={buildImageUrl(image.url) ?? ""} 
                               className="w-full h-full object-cover" 
                               alt={`Project ${idx}`} 
                             />

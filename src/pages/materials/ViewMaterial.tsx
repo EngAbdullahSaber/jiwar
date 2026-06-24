@@ -34,7 +34,7 @@ import {
   Slash
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
-import { cn } from '@/lib/utils';
+import { cn, buildImageUrl } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { useTranslation } from 'react-i18next';
 
@@ -441,7 +441,7 @@ export default function ViewMaterial() {
                           return (
                             <a
                               key={i}
-                              href={`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000'}/${doc}`}
+                              href={buildImageUrl(doc) ?? ""}
                               target="_blank"
                               rel="noopener noreferrer"
                               className="flex items-center gap-2 p-2 rounded-md bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 hover:border-[#B39371]/40 transition-all group"
@@ -500,7 +500,7 @@ export default function ViewMaterial() {
                       return (
                         <a
                           key={i}
-                          href={`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000'}/${file}`}
+                          href={buildImageUrl(file) ?? ""}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="flex items-center gap-3 p-3 rounded-md bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 hover:border-[#B39371]/40 hover:bg-[#B39371]/5 transition-all group"

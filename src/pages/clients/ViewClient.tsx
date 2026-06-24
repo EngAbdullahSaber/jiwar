@@ -30,7 +30,7 @@ import api from "@/lib/api";
 import { motion } from "framer-motion";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { cn } from "@/lib/utils";
+import { cn, buildImageUrl } from "@/lib/utils";
 
 interface CommonEntity {
   id: number;
@@ -564,7 +564,7 @@ export default function ViewClient() {
                       </div>
                       {contract.pdfUrl && (
                         <a
-                          href={`${import.meta.env.VITE_API_BASE_URL}${contract.pdfUrl}`}
+                          href={buildImageUrl(contract.pdfUrl) ?? ""}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="p-1.5 text-gray-400 hover:text-[#B39371] hover:bg-[#B39371]/10 rounded-md transition-all"
@@ -702,7 +702,7 @@ export default function ViewClient() {
                       </span>
                       {payment.receipt && payment.receipt.length > 0 && (
                         <a
-                          href={`${import.meta.env.VITE_API_BASE_URL}/${payment.receipt[0]}`}
+                          href={buildImageUrl(payment.receipt[0]) ?? ""}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="p-1.5 text-gray-400 hover:text-[#B39371] hover:bg-[#B39371]/10 rounded-md transition-all"

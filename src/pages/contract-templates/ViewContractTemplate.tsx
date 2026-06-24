@@ -1,4 +1,5 @@
 import { useTranslation } from "react-i18next";
+import { buildImageUrl } from "@/lib/utils";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import api from "@/lib/api";
 import { TopHeader } from "../../components/TopHeader";
@@ -68,8 +69,6 @@ export default function ViewContractTemplate() {
   const id = params?.id;
   const [showDelete, setShowDelete] = useState(false);
 
-  const baseUrl = import.meta.env.VITE_API_BASE_URL || "";
-
   const { data: response, isLoading } = useQuery<ContractTemplateResponse>({
     queryKey: ["contract-template", id],
     queryFn: async () => {
@@ -130,9 +129,7 @@ export default function ViewContractTemplate() {
     );
   }
 
-  const pdfFullUrl = template.url?.startsWith("http")
-    ? template.url
-    : `${baseUrl}${template.url}`;
+  const pdfFullUrl = buildImageUrl(template.url) ?? "";
 
   const templateName =
     i18n.language === "ar" ? template.name?.arabic : template.name?.english;

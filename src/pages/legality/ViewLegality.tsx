@@ -22,7 +22,7 @@ import {
   TrendingUp,
   Edit
 } from 'lucide-react';
-import { cn } from "@/lib/utils";
+import { cn, buildImageUrl } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { motion, AnimatePresence } from "framer-motion";
 import { Shell } from '../../components/shared/Shell';
@@ -568,7 +568,7 @@ export default function ViewLegality() {
                                   {step.files.map((file: string, idx: number) => (
                                     <a
                                       key={idx}
-                                      href={`${import.meta.env.VITE_API_BASE_URL}/${file}`}
+                                      href={buildImageUrl(file) ?? ""}
                                       target="_blank"
                                       rel="noopener noreferrer"
                                       className="flex items-center gap-2 p-2 bg-white dark:bg-gray-900 rounded-md border border-gray-200 dark:border-gray-700 hover:border-[#B39371] transition-colors group"

@@ -821,6 +821,8 @@
     "editDescription": "Update your unit template configuration and specifications",
     "successDelete": "Template deleted successfully",
     "errorDelete": "Failed to delete template",
+    "successUpdate": "Template updated successfully",
+    "errorUpdate": "Failed to update template",
     "sortBy": "Sort by",
     "createSub": "Build a reusable unit configuration",
     "sku": "SKU",

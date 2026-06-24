@@ -1,4 +1,5 @@
 ﻿import { useState } from "react";
+import { buildImageUrl } from "@/lib/utils";
 import { useTranslation } from "react-i18next";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import api from "@/lib/api";
@@ -328,7 +329,7 @@ export default function ApproveContracts() {
           {c.pdfUrl && (
             <Can I="READ" a="contract">
               <a
-                href={`${import.meta.env.VITE_API_BASE_URL}/${c.pdfUrl}`}
+                href={buildImageUrl(c.pdfUrl) ?? ""}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="p-2 hover:bg-[#F5F1ED] dark:hover:bg-gray-800 rounded-md text-gray-400 hover:text-[#4A1B1B] dark:hover:text-[#B39371] transition-colors"

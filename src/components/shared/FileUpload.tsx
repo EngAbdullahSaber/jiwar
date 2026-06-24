@@ -5,7 +5,7 @@ import {
 } from 'lucide-react';
 import api from '@/lib/api';
 import toast from 'react-hot-toast';
-import { cn } from '@/lib/utils';
+import { cn, buildImageUrl } from '@/lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
 
 interface FileUploadProps {
@@ -439,7 +439,7 @@ export function FileUpload({
                 <div className="flex items-center gap-1">
                   <motion.a
                     whileHover={{ scale: 1.05 }}
-                    href={preview.startsWith('http') ? preview : `${import.meta.env.VITE_API_BASE_URL}/${preview}`}
+                    href={buildImageUrl(preview) ?? ""}
                     target="_blank"
                     rel="noopener noreferrer"
                     onClick={(e) => e.stopPropagation()}

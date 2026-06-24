@@ -42,7 +42,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { Badge } from "@/components/ui/badge";
-import { cn } from "@/lib/utils";
+import { cn, buildImageUrl } from "@/lib/utils";
 import toast from "react-hot-toast";
 
 interface Template {
@@ -318,11 +318,7 @@ export default function Templates() {
                     <div className="relative h-48 overflow-hidden">
                       <img
                         src={
-                          template.file
-                            ? template.file.startsWith("http")
-                              ? template.file
-                              : `${import.meta.env.VITE_API_BASE_URL}${template.file}`
-                            : getPlaceholderImage(template.id)
+                          buildImageUrl(template.file) ?? getPlaceholderImage(template.id)
                         }
                         alt={template.name.english}
                         className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"

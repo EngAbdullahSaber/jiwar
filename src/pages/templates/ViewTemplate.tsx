@@ -32,7 +32,7 @@ import {
 import api from "@/lib/api";
 import toast from "react-hot-toast";
 import { motion } from "framer-motion";
-import { cn } from "@/lib/utils";
+import { cn, buildImageUrl } from "@/lib/utils";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Badge } from "@/components/ui/badge";
@@ -245,13 +245,7 @@ export default function ViewTemplate() {
 
   const template = data.data;
 
-  // Construct full image URL
-  const baseUrl = import.meta.env.VITE_API_BASE_URL || "";
-  const imageUrl = template.file
-    ? template.file.startsWith("http")
-      ? template.file
-      : `${baseUrl}${template.file}`
-    : null;
+  const imageUrl = buildImageUrl(template.file);
 
   const features = [
     {
@@ -333,7 +327,7 @@ export default function ViewTemplate() {
       console.error("Error sharing:", error);
     }
   };
-
+  console.log(imageUrl);
   return (
     <Shell>
       <TopHeader />

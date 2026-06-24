@@ -11,6 +11,7 @@ import {
   Trash2,
   Layers,
   Loader2,
+  Briefcase,
 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { FormActions } from '../../components/shared/FormActions';
@@ -22,6 +23,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import DatePicker from '../../components/shared/DatePicker';
 import { FormField } from '../../components/shared/FormField';
+import { PaginatedSelect } from '../../components/shared/PaginatedSelect';
 import { scrollToFirstError, cn } from '@/lib/utils';
 
 const FormSection = ({ icon: Icon, title, description, children, delay = 0 }: any) => (
@@ -71,6 +73,7 @@ export default function UpdateStage() {
   const queryClient = useQueryClient();
 
   const [formData, setFormData] = useState({
+    projectId: '',
     name: { arabic: '', english: '' },
     estimateCost: '',
     fromDate: '',
@@ -79,6 +82,7 @@ export default function UpdateStage() {
 
   const [subStages, setSubStages] = useState<SubStage[]>([]);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [initialProjectLabel, setInitialProjectLabel] = useState('');
 
   const { data: stageData, isLoading } = useQuery({
     queryKey: ['stage', stageId],
@@ -89,10 +93,24 @@ export default function UpdateStage() {
     enabled: !!stageId,
   });
 
+  const projectId = stageData?.data?.projectId;
+  useQuery({
+    queryKey: ['project', projectId],
+    queryFn: async () => {
+      const res = await api.get(`/project/${projectId}`);
+      const p = res.data?.data;
+      setInitialProjectLabel(p?.name?.english || '');
+      return res.data;
+    },
+    enabled: !!projectId,
+    staleTime: 5 * 60 * 1000,
+  });
+
   useEffect(() => {
     if (stageData?.data) {
       const s = stageData.data;
       setFormData({
+        projectId: s.projectId?.toString() || '',
         name: { arabic: s.name?.arabic || '', english: s.name?.english || '' },
         estimateCost: s.estimateCost?.toString() || '',
         fromDate: s.fromDate || '',
@@ -114,6 +132,7 @@ export default function UpdateStage() {
   const updateMutation = useMutation({
     mutationFn: async () => {
       const payload: any = {
+        projectId: parseInt(formData.projectId),
         name: formData.name,
         estimateCost: parseFloat(formData.estimateCost),
         fromDate: formData.fromDate,
@@ -147,8 +166,9 @@ export default function UpdateStage() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const { name, estimateCost, fromDate, toDate } = formData;
+    const { projectId, name, estimateCost, fromDate, toDate } = formData;
     const newErrors: Record<string, string> = {};
+    if (!projectId) newErrors.projectId = t('common.fieldRequired');
     if (!name.english) newErrors.nameEn = t('common.fieldRequired');
     if (!name.arabic) newErrors.nameAr = t('common.fieldRequired');
     if (!estimateCost) newErrors.estimateCost = t('common.fieldRequired');
@@ -279,6 +299,30 @@ export default function UpdateStage() {
               delay={0.1}
             >
               <div className="space-y-6">
+
+                {/* Project */}
+                <FormField label={t('stages.labels.projectId')} required error={errors.projectId}>
+                  <PaginatedSelect
+                    apiEndpoint="/project"
+                    queryKey="projects-update-stage"
+                    value={formData.projectId}
+                    initialLabel={initialProjectLabel}
+                    onChange={value => {
+                      setFormData(prev => ({ ...prev, projectId: value }));
+                      if (errors.projectId) setErrors(p => { const { projectId, ...r } = p; return r; });
+                    }}
+                    placeholder={t('stages.placeholders.selectProject')}
+                    searchPlaceholder={t('stages.placeholders.searchProject')}
+                    mapResponseToOptions={(data: any) =>
+                      data.data.map((p: any) => ({
+                        value: p.id,
+                        label: p.name.english,
+                        description: p.projectIdentity || p.name.arabic,
+                        icon: <Briefcase className="w-4 h-4" />,
+                      }))
+                    }
+                  />
+                </FormField>
 
                 {/* Stage Name */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

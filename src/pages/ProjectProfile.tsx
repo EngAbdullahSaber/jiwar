@@ -23,6 +23,7 @@ import { Shell } from "../components/shared/Shell";
 import { useTranslation } from "react-i18next";
 import { useQuery } from "@tanstack/react-query";
 import api from "@/lib/api";
+import { buildImageUrl } from "@/lib/utils";
 import { format } from "date-fns";
 import { LocationMap } from "../components/shared/LocationMap";
 import { motion } from "framer-motion";
@@ -135,9 +136,7 @@ export default function ProjectProfile() {
     0,
   );
 
-  const baseUrl = import.meta.env.VITE_API_BASE_URL || "";
-  const imgUrl = (url: string) =>
-    url.startsWith("http") ? url : `${baseUrl}/${url}`;
+  const imgUrl = (url: string) => buildImageUrl(url) ?? "";
 
   const mainImage =
     project.images.find((i) => i.isMain) ?? project.images[0] ?? null;
