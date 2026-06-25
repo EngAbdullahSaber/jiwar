@@ -669,7 +669,7 @@ export default function UpdateTemplate() {
                 <FileUpload
                   label={t("materials.uploadLabel")}
                   accept="image/*"
-                  maxSizeMB={20}
+                  maxSizeMB={5}
                   helperText={t("materials.uploadHelper")}
                   onUploadSuccess={(url) => setValue("file", url)}
                   defaultValue={watch("file")}

@@ -441,7 +441,7 @@ export default function CreateProject() {
                     }
                     defaultValue={formData.projectSakPdfUrl}
                     accept=".jpg,.jpeg,.png,.webp"
-                    maxSizeMB={10}
+                    maxSizeMB={5}
                     helperText={t("apartments.placeholders.uploadProjectSak")}
                   />
                 </div>

@@ -144,14 +144,21 @@ export default function CreateMaterial() {
     const newErrors: Record<string, string> = {};
 
     if (!formData.name.trim()) newErrors.name = t("common.fieldRequired");
-    if (!formData.quantity.trim()) newErrors.quantity = t("common.fieldRequired");
-    if (!formData.price || formData.price <= 0) newErrors.price = t("common.fieldRequired");
+    if (!formData.quantity.trim())
+      newErrors.quantity = t("common.fieldRequired");
+    if (!formData.price || formData.price <= 0)
+      newErrors.price = t("common.fieldRequired");
     if (!formData.startDate) newErrors.startDate = t("common.fieldRequired");
     if (!formData.endDate) newErrors.endDate = t("common.fieldRequired");
-    if (formData.startDate && formData.endDate && new Date(formData.startDate) >= new Date(formData.endDate))
+    if (
+      formData.startDate &&
+      formData.endDate &&
+      new Date(formData.startDate) >= new Date(formData.endDate)
+    )
       newErrors.endDate = t("materials.dateError");
     if (!formData.notes.trim()) newErrors.notes = t("common.fieldRequired");
-    if (!supplierData.name.trim()) newErrors.supplierName = t("common.fieldRequired");
+    if (!supplierData.name.trim())
+      newErrors.supplierName = t("common.fieldRequired");
     if (!supplierData.email) {
       newErrors.supplierEmail = t("common.fieldRequired");
     } else if (!emailRegex.test(supplierData.email)) {
@@ -162,9 +169,13 @@ export default function CreateMaterial() {
     } else if (!phoneRegex.test(supplierData.phoneNumber)) {
       newErrors.supplierPhone = t("common.invalidPhone");
     }
-    if (supplierData.optionalPhoneNumber && !phoneRegex.test(supplierData.optionalPhoneNumber))
+    if (
+      supplierData.optionalPhoneNumber &&
+      !phoneRegex.test(supplierData.optionalPhoneNumber)
+    )
       newErrors.supplierOptionalPhone = t("common.invalidPhone");
-    if (attachments.length === 0) newErrors.attachments = t("common.fieldRequired");
+    if (attachments.length === 0)
+      newErrors.attachments = t("common.fieldRequired");
     if (!formData.projectId) newErrors.projectId = t("common.fieldRequired");
 
     setErrors(newErrors);
@@ -292,7 +303,12 @@ export default function CreateMaterial() {
                       setErrors((prev) => {
                         const next = { ...prev };
                         delete next.startDate;
-                        if (date && prev.endDate === t("materials.dateError") && formData.endDate && new Date(date) < new Date(formData.endDate))
+                        if (
+                          date &&
+                          prev.endDate === t("materials.dateError") &&
+                          formData.endDate &&
+                          new Date(date) < new Date(formData.endDate)
+                        )
                           delete next.endDate;
                         return next;
                       });
@@ -314,7 +330,11 @@ export default function CreateMaterial() {
                       setErrors((prev) => {
                         const next = { ...prev };
                         delete next.endDate;
-                        if (date && formData.startDate && new Date(formData.startDate) >= new Date(date))
+                        if (
+                          date &&
+                          formData.startDate &&
+                          new Date(formData.startDate) >= new Date(date)
+                        )
                           next.endDate = t("materials.dateError");
                         return next;
                       });
@@ -325,7 +345,11 @@ export default function CreateMaterial() {
 
                 {/* Notes */}
                 <div className="md:col-span-2">
-                  <FormField label={t("materials.notes")} required error={errors.notes}>
+                  <FormField
+                    label={t("materials.notes")}
+                    required
+                    error={errors.notes}
+                  >
                     <div className="relative">
                       <FileText className="absolute left-3 top-3 w-4 h-4 text-gray-400 rtl:left-auto rtl:right-3" />
                       <Textarea
@@ -335,8 +359,15 @@ export default function CreateMaterial() {
                         }
                         value={formData.notes}
                         onChange={(e) => {
-                          setFormData((prev) => ({ ...prev, notes: e.target.value }));
-                          if (errors.notes) setErrors((prev) => { const { notes, ...rest } = prev; return rest; });
+                          setFormData((prev) => ({
+                            ...prev,
+                            notes: e.target.value,
+                          }));
+                          if (errors.notes)
+                            setErrors((prev) => {
+                              const { notes, ...rest } = prev;
+                              return rest;
+                            });
                         }}
                         className="pl-10 rtl:pl-3 rtl:pr-10 min-h-[100px] bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md pt-2"
                       />
@@ -345,7 +376,11 @@ export default function CreateMaterial() {
                 </div>
 
                 {/* Price */}
-                <FormField label={t("materials.price")} required error={errors.price}>
+                <FormField
+                  label={t("materials.price")}
+                  required
+                  error={errors.price}
+                >
                   <div className="relative">
                     <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 rtl:left-auto rtl:right-3" />
                     <Input
@@ -355,8 +390,15 @@ export default function CreateMaterial() {
                       placeholder="0.00"
                       value={formData.price || ""}
                       onChange={(e) => {
-                        setFormData((prev) => ({ ...prev, price: Number(e.target.value) }));
-                        if (errors.price) setErrors((prev) => { const { price, ...rest } = prev; return rest; });
+                        setFormData((prev) => ({
+                          ...prev,
+                          price: Number(e.target.value),
+                        }));
+                        if (errors.price)
+                          setErrors((prev) => {
+                            const { price, ...rest } = prev;
+                            return rest;
+                          });
                       }}
                       className="pl-10 rtl:pl-3 rtl:pr-10 h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md"
                     />
@@ -404,7 +446,11 @@ export default function CreateMaterial() {
                 </FormField>
 
                 {/* Email */}
-                <FormField label={t("materials.supplierEmail")} required error={errors.supplierEmail}>
+                <FormField
+                  label={t("materials.supplierEmail")}
+                  required
+                  error={errors.supplierEmail}
+                >
                   <div className="relative">
                     <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 rtl:left-auto rtl:right-3" />
                     <Input
@@ -412,8 +458,15 @@ export default function CreateMaterial() {
                       placeholder="supplier@example.com"
                       value={supplierData.email}
                       onChange={(e) => {
-                        setSupplierData((prev) => ({ ...prev, email: e.target.value }));
-                        if (errors.supplierEmail) setErrors((prev) => { const { supplierEmail, ...rest } = prev; return rest; });
+                        setSupplierData((prev) => ({
+                          ...prev,
+                          email: e.target.value,
+                        }));
+                        if (errors.supplierEmail)
+                          setErrors((prev) => {
+                            const { supplierEmail, ...rest } = prev;
+                            return rest;
+                          });
                       }}
                       className="pl-10 rtl:pl-3 rtl:pr-10 h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md"
                     />
@@ -421,15 +474,26 @@ export default function CreateMaterial() {
                 </FormField>
 
                 {/* Phone Number */}
-                <FormField label={t("materials.supplierPhone")} required error={errors.supplierPhone}>
+                <FormField
+                  label={t("materials.supplierPhone")}
+                  required
+                  error={errors.supplierPhone}
+                >
                   <div className="relative">
                     <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 rtl:left-auto rtl:right-3" />
                     <Input
                       placeholder="050XXXXXXXX"
                       value={supplierData.phoneNumber}
                       onChange={(e) => {
-                        setSupplierData((prev) => ({ ...prev, phoneNumber: e.target.value }));
-                        if (errors.supplierPhone) setErrors((prev) => { const { supplierPhone, ...rest } = prev; return rest; });
+                        setSupplierData((prev) => ({
+                          ...prev,
+                          phoneNumber: e.target.value,
+                        }));
+                        if (errors.supplierPhone)
+                          setErrors((prev) => {
+                            const { supplierPhone, ...rest } = prev;
+                            return rest;
+                          });
                       }}
                       className="pl-10 rtl:pl-3 rtl:pr-10 h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md"
                     />
@@ -437,15 +501,25 @@ export default function CreateMaterial() {
                 </FormField>
 
                 {/* Optional Phone Number */}
-                <FormField label={t("materials.supplierOptionalPhone")} error={errors.supplierOptionalPhone}>
+                <FormField
+                  label={t("materials.supplierOptionalPhone")}
+                  error={errors.supplierOptionalPhone}
+                >
                   <div className="relative">
                     <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 rtl:left-auto rtl:right-3" />
                     <Input
                       placeholder="055XXXXXXXX"
                       value={supplierData.optionalPhoneNumber}
                       onChange={(e) => {
-                        setSupplierData((prev) => ({ ...prev, optionalPhoneNumber: e.target.value }));
-                        if (errors.supplierOptionalPhone) setErrors((prev) => { const { supplierOptionalPhone, ...rest } = prev; return rest; });
+                        setSupplierData((prev) => ({
+                          ...prev,
+                          optionalPhoneNumber: e.target.value,
+                        }));
+                        if (errors.supplierOptionalPhone)
+                          setErrors((prev) => {
+                            const { supplierOptionalPhone, ...rest } = prev;
+                            return rest;
+                          });
                       }}
                       className="pl-10 rtl:pl-3 rtl:pr-10 h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md"
                     />
@@ -459,7 +533,7 @@ export default function CreateMaterial() {
                       multiple
                       label={t("materials.uploadSupplierDocs")}
                       accept=".pdf"
-                      maxSizeMB={10}
+                      maxSizeMB={5}
                       onUploadSuccess={(url) =>
                         setSupplierDocuments((prev) => [...prev, url])
                       }
@@ -591,15 +665,23 @@ export default function CreateMaterial() {
                   multiple
                   label={t("materials.uploadLabel")}
                   accept=".pdf"
-                  maxSizeMB={20}
+                  maxSizeMB={5}
                   helperText={t("materials.uploadHelper")}
                   onUploadSuccess={(url) => {
                     setAttachments((prev) => [...prev, url]);
-                    if (errors.attachments) setErrors((prev) => { const { attachments, ...rest } = prev; return rest; });
+                    if (errors.attachments)
+                      setErrors((prev) => {
+                        const { attachments, ...rest } = prev;
+                        return rest;
+                      });
                   }}
                   onUploadMultipleSuccess={(urls) => {
                     setAttachments((prev) => [...prev, ...urls]);
-                    if (errors.attachments) setErrors((prev) => { const { attachments, ...rest } = prev; return rest; });
+                    if (errors.attachments)
+                      setErrors((prev) => {
+                        const { attachments, ...rest } = prev;
+                        return rest;
+                      });
                   }}
                 />
               </FormField>

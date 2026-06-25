@@ -1,12 +1,22 @@
-﻿import { useState, useRef, useEffect } from 'react';
-import { 
-  Upload, X, CheckCircle2, Loader2, FileText, Image, AlertCircle, 
-  Files, File, Trash2, Eye, Paperclip 
-} from 'lucide-react';
-import api from '@/lib/api';
-import toast from 'react-hot-toast';
-import { cn, buildImageUrl } from '@/lib/utils';
-import { motion, AnimatePresence } from 'framer-motion';
+﻿import { useState, useRef, useEffect } from "react";
+import {
+  Upload,
+  X,
+  CheckCircle2,
+  Loader2,
+  FileText,
+  Image,
+  AlertCircle,
+  Files,
+  File,
+  Trash2,
+  Eye,
+  Paperclip,
+} from "lucide-react";
+import api from "@/lib/api";
+import toast from "react-hot-toast";
+import { cn, buildImageUrl } from "@/lib/utils";
+import { motion, AnimatePresence } from "framer-motion";
 
 interface FileUploadProps {
   onUploadSuccess: (url: string) => void;
@@ -27,16 +37,16 @@ interface FileInfo {
   url: string;
 }
 
-export function FileUpload({ 
+export function FileUpload({
   onUploadSuccess,
   onUploadMultipleSuccess,
-  defaultValue, 
+  defaultValue,
   label,
   accept = ".pdf,.jpg,.jpeg,.png,.doc,.docx,.xls,.xlsx,.txt",
-  maxSizeMB = 10,
+  maxSizeMB = 5,
   helperText,
   multiple = false,
-  className
+  className,
 }: FileUploadProps) {
   const [isUploading, setIsUploading] = useState(false);
   const [preview, setPreview] = useState<string | null>(defaultValue || null);
@@ -49,12 +59,12 @@ export function FileUpload({
   useEffect(() => {
     if (defaultValue) {
       setPreview(defaultValue);
-      const fileName = defaultValue.split('/').pop() || 'File';
+      const fileName = defaultValue.split("/").pop() || "File";
       setFileInfo({
         name: fileName,
         size: 0,
-        type: fileName.split('.').pop() || 'unknown',
-        url: defaultValue
+        type: fileName.split(".").pop() || "unknown",
+        url: defaultValue,
       });
     } else {
       setPreview(null);
@@ -63,36 +73,39 @@ export function FileUpload({
   }, [defaultValue]);
 
   const formatFileSize = (bytes: number): string => {
-    if (bytes === 0) return '0 Bytes';
+    if (bytes === 0) return "0 Bytes";
     const k = 1024;
-    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const sizes = ["Bytes", "KB", "MB", "GB"];
     const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
   };
 
   const getFileIcon = (fileName: string, fileType: string) => {
-    const ext = fileName.split('.').pop()?.toLowerCase();
-    
-    if (fileType.startsWith('image/') || ['jpg', 'jpeg', 'png', 'gif', 'webp'].includes(ext || '')) {
+    const ext = fileName.split(".").pop()?.toLowerCase();
+
+    if (
+      fileType.startsWith("image/") ||
+      ["jpg", "jpeg", "png", "gif", "webp"].includes(ext || "")
+    ) {
       return <Image className="w-5 h-5" />;
     }
-    
-    if (['pdf'].includes(ext || '')) {
+
+    if (["pdf"].includes(ext || "")) {
       return <FileText className="w-5 h-5 text-red-500" />;
     }
-    
-    if (['doc', 'docx'].includes(ext || '')) {
+
+    if (["doc", "docx"].includes(ext || "")) {
       return <FileText className="w-5 h-5 text-blue-500" />;
     }
-    
-    if (['xls', 'xlsx', 'csv'].includes(ext || '')) {
+
+    if (["xls", "xlsx", "csv"].includes(ext || "")) {
       return <FileText className="w-5 h-5 text-green-500" />;
     }
-    
-    if (['txt', 'text'].includes(ext || '')) {
+
+    if (["txt", "text"].includes(ext || "")) {
       return <FileText className="w-5 h-5 text-gray-500" />;
     }
-    
+
     return <File className="w-5 h-5" />;
   };
 
@@ -109,27 +122,30 @@ export function FileUpload({
         </div>,
         {
           duration: 4000,
-          style: { 
-            borderRadius: '16px', 
-            background: '#ef4444', 
-            color: '#fff',
-            padding: '16px'
-          }
-        }
+          style: {
+            borderRadius: "16px",
+            background: "#ef4444",
+            color: "#fff",
+            padding: "16px",
+          },
+        },
       );
       return false;
     }
 
     // Type validation
-    const fileExt = file.name.split('.').pop()?.toLowerCase();
-    const acceptedTypes = accept.split(',').map(type => 
-      type.trim().replace('*', '').replace('.', '').toLowerCase()
-    );
-    
-    const isAccepted = acceptedTypes.some(type => 
-      fileExt === type || 
-      (type === 'jpg' && fileExt === 'jpeg') ||
-      (file.type.startsWith('image/') && accept.includes('image'))
+    const fileExt = file.name.split(".").pop()?.toLowerCase();
+    const acceptedTypes = accept
+      .split(",")
+      .map((type) =>
+        type.trim().replace("*", "").replace(".", "").toLowerCase(),
+      );
+
+    const isAccepted = acceptedTypes.some(
+      (type) =>
+        fileExt === type ||
+        (type === "jpg" && fileExt === "jpeg") ||
+        (file.type.startsWith("image/") && accept.includes("image")),
     );
 
     if (!isAccepted && acceptedTypes.length > 0) {
@@ -143,13 +159,13 @@ export function FileUpload({
         </div>,
         {
           duration: 4000,
-          style: { 
-            borderRadius: '16px', 
-            background: '#ef4444', 
-            color: '#fff',
-            padding: '16px'
-          }
-        }
+          style: {
+            borderRadius: "16px",
+            background: "#ef4444",
+            color: "#fff",
+            padding: "16px",
+          },
+        },
       );
       return false;
     }
@@ -173,30 +189,32 @@ export function FileUpload({
     try {
       if (multiple) {
         // Multi-file upload
-        validFiles.forEach(file => formData.append('files', file));
-        
-        const response = await api.post('/upload/multiple', formData, {
-          headers: { 'Content-Type': 'multipart/form-data' },
+        validFiles.forEach((file) => formData.append("files", file));
+
+        const response = await api.post("/upload/multiple", formData, {
+          headers: { "Content-Type": "multipart/form-data" },
           onUploadProgress: (progressEvent) => {
             if (progressEvent.total) {
-              const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+              const percentCompleted = Math.round(
+                (progressEvent.loaded * 100) / progressEvent.total,
+              );
               setUploadProgress(percentCompleted);
             }
-          }
+          },
         });
 
         const urls = response.data.data.urls || [];
-        
+
         // Create file info objects
         const newFiles: FileInfo[] = validFiles.map((file, index) => ({
           name: file.name,
           size: file.size,
           type: file.type,
-          url: urls[index]
+          url: urls[index],
         }));
 
-        setPreviews(prev => [...prev, ...newFiles]);
-        
+        setPreviews((prev) => [...prev, ...newFiles]);
+
         if (onUploadMultipleSuccess) {
           onUploadMultipleSuccess(urls);
         } else {
@@ -208,32 +226,36 @@ export function FileUpload({
             <CheckCircle2 className="w-5 h-5" />
             <div>
               <p className="font-bold">Upload Complete!</p>
-              <p className="text-sm opacity-90">{validFiles.length} files uploaded successfully</p>
+              <p className="text-sm opacity-90">
+                {validFiles.length} files uploaded successfully
+              </p>
             </div>
           </div>,
           {
             duration: 3000,
-            style: { 
-              borderRadius: '16px', 
-              background: '#10b981', 
-              color: '#fff',
-              padding: '16px'
-            }
-          }
+            style: {
+              borderRadius: "16px",
+              background: "#10b981",
+              color: "#fff",
+              padding: "16px",
+            },
+          },
         );
       } else {
         // Single file upload
         const file = validFiles[0];
-        formData.append('file', file);
-        
-        const response = await api.post('/upload', formData, {
-          headers: { 'Content-Type': 'multipart/form-data' },
+        formData.append("file", file);
+
+        const response = await api.post("/upload", formData, {
+          headers: { "Content-Type": "multipart/form-data" },
           onUploadProgress: (progressEvent) => {
             if (progressEvent.total) {
-              const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+              const percentCompleted = Math.round(
+                (progressEvent.loaded * 100) / progressEvent.total,
+              );
               setUploadProgress(percentCompleted);
             }
-          }
+          },
         });
 
         const url = response.data.data.url;
@@ -242,7 +264,7 @@ export function FileUpload({
           name: file.name,
           size: file.size,
           type: file.type,
-          url
+          url,
         });
         onUploadSuccess(url);
 
@@ -256,34 +278,36 @@ export function FileUpload({
           </div>,
           {
             duration: 3000,
-            style: { 
-              borderRadius: '16px', 
-              background: '#10b981', 
-              color: '#fff',
-              padding: '16px'
-            }
-          }
+            style: {
+              borderRadius: "16px",
+              background: "#10b981",
+              color: "#fff",
+              padding: "16px",
+            },
+          },
         );
       }
     } catch (error: any) {
-      console.error('Upload Error:', error);
+      console.error("Upload Error:", error);
       toast.error(
         <div className="flex items-center gap-3">
           <AlertCircle className="w-5 h-5" />
           <div>
             <p className="font-bold">Upload Failed</p>
-            <p className="text-sm opacity-90">{error.response?.data?.message?.english || 'Please try again'}</p>
+            <p className="text-sm opacity-90">
+              {error.response?.data?.message?.english || "Please try again"}
+            </p>
           </div>
         </div>,
         {
           duration: 4000,
-          style: { 
-            borderRadius: '16px', 
-            background: '#ef4444', 
-            color: '#fff',
-            padding: '16px'
-          }
-        }
+          style: {
+            borderRadius: "16px",
+            background: "#ef4444",
+            color: "#fff",
+            padding: "16px",
+          },
+        },
       );
     } finally {
       setIsUploading(false);
@@ -319,12 +343,12 @@ export function FileUpload({
   const removeFile = () => {
     setPreview(null);
     setFileInfo(null);
-    if (fileInputRef.current) fileInputRef.current.value = '';
-    onUploadSuccess('');
+    if (fileInputRef.current) fileInputRef.current.value = "";
+    onUploadSuccess("");
   };
 
   const removePreview = (index: number) => {
-    setPreviews(prev => prev.filter((_, i) => i !== index));
+    setPreviews((prev) => prev.filter((_, i) => i !== index));
   };
 
   return (
@@ -354,7 +378,9 @@ export function FileUpload({
           dragActive
             ? "border-[#B39371] bg-[#B39371]/5"
             : "border-gray-200 dark:border-gray-700 hover:border-[#B39371]/60 hover:bg-[#B39371]/5",
-          preview && !multiple && "border-emerald-500/40 bg-emerald-50/20 dark:bg-emerald-500/5"
+          preview &&
+            !multiple &&
+            "border-emerald-500/40 bg-emerald-50/20 dark:bg-emerald-500/5",
         )}
         onDragEnter={onDrag}
         onDragLeave={onDrag}
@@ -411,14 +437,14 @@ export function FileUpload({
             >
               <div className="flex items-center gap-3 bg-white dark:bg-gray-800 p-3 rounded-md border border-emerald-100 dark:border-emerald-500/20">
                 <div className="w-10 h-10 rounded-md bg-emerald-50 dark:bg-emerald-500/10 flex items-center justify-center flex-shrink-0">
-                  {fileInfo?.type.startsWith('image/') && fileInfo.url ? (
+                  {fileInfo?.type.startsWith("image/") && fileInfo.url ? (
                     <img
                       src={fileInfo.url}
                       alt="Preview"
                       className="w-full h-full object-cover rounded-md"
                     />
                   ) : (
-                    getFileIcon(fileInfo?.name || '', fileInfo?.type || '')
+                    getFileIcon(fileInfo?.name || "", fileInfo?.type || "")
                   )}
                 </div>
 
@@ -428,7 +454,9 @@ export function FileUpload({
                   </p>
                   <div className="flex items-center gap-1.5 mt-0.5">
                     {fileInfo?.size !== undefined && fileInfo.size > 0 && (
-                      <span className="text-xs text-gray-400">{formatFileSize(fileInfo.size)}</span>
+                      <span className="text-xs text-gray-400">
+                        {formatFileSize(fileInfo.size)}
+                      </span>
                     )}
                     <span className="text-xs text-emerald-500 flex items-center gap-1">
                       <CheckCircle2 className="w-3 h-3" /> تم الرفع
@@ -449,7 +477,10 @@ export function FileUpload({
                   </motion.a>
                   <motion.button
                     whileHover={{ scale: 1.05 }}
-                    onClick={(e) => { e.stopPropagation(); removeFile(); }}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      removeFile();
+                    }}
                     className="p-1.5 rounded-md text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 transition-all"
                   >
                     <Trash2 className="w-4 h-4" />
@@ -475,15 +506,24 @@ export function FileUpload({
 
               <div className="space-y-1">
                 <p className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                  {multiple ? 'اسحب الملفات هنا أو اضغط للرفع' : 'اسحب الملف هنا أو اضغط للرفع'}
+                  {multiple
+                    ? "اسحب الملفات هنا أو اضغط للرفع"
+                    : "اسحب الملف هنا أو اضغط للرفع"}
                 </p>
                 {helperText && (
-                  <p className="text-xs text-gray-400 dark:text-gray-500">{helperText}</p>
+                  <p className="text-xs text-gray-400 dark:text-gray-500">
+                    {helperText}
+                  </p>
                 )}
               </div>
 
+              <div>
+                <span className="text-[11px] px-2 py-0.5 bg-rose-50 dark:bg-rose-500/10 text-rose-500 dark:text-rose-400 rounded-md font-semibold border border-rose-100 dark:border-rose-500/20">
+                  Max {maxSizeMB} MB
+                </span>
+              </div>
               <div className="flex flex-wrap items-center justify-center gap-1">
-                {accept.split(',').map((type, i) => (
+                {accept.split(",").map((type, i) => (
                   <span
                     key={i}
                     className="text-[11px] px-2 py-0.5 bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400 rounded-md"
@@ -502,7 +542,7 @@ export function FileUpload({
         {multiple && previews.length > 0 && (
           <motion.div
             initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
+            animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
             className="space-y-3"
           >

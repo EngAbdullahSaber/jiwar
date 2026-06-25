@@ -620,7 +620,12 @@
       "avgPerStage": "المتوسط لكل مرحلة",
       "docsTitle": "مستندات المشروع",
       "noDocs": "لا توجد مستندات مرفقة",
-      "noImages": "لم يتم العثور على أصول مرئية"
+      "noImages": "لم يتم العثور على أصول مرئية",
+      "projectTimeline": "الجدول الزمني للمشروع",
+      "projectStart": "البداية",
+      "projectEnd": "النهاية",
+      "totalDuration": "المدة الإجمالية",
+      "days": "يوم"
     },
     "media": {
       "title": "الوسائط والمستندات",
@@ -704,7 +709,7 @@
       "buildingOrBlock": "المبنى / البلوك",
       "floorNo": "رقم الدور",
       "size": "المساحة (متر مربع)",
-      "meterNumber": "رقم العداد",
+      "meterNumber": "رقم عداد الكهرباء",
       "linkedProject": "المشروع المرتبط",
       "linkedTemplate": "النموذج المرتبط",
       "basePrice": "السعر الأساسي (ريال)",
@@ -1120,6 +1125,8 @@
       "maintenanceFeeText": "رسوم الصيانة (كتابة)"
     },
     "types": {
+      "apartment": "وحدة سكنية",
+      "land": "أرض",
       "apartment_sale": "بيع وحدة سكنية",
       "apartment_partial_sale": "بيع جزئي لوحدة سكنية",
       "land_partnership": "شراكة أرض"

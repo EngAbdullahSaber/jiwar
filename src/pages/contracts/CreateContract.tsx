@@ -112,9 +112,8 @@ const FormSection = ({
 );
 
 const CONTRACT_TYPE_OPTIONS = [
-  { value: "apartment", labelAr: "وحدة سكنية", labelEn: "Apartment" },
-
-  { value: "land", labelAr: " أرض", labelEn: "Land" },
+  { value: "apartment", tKey: "contracts.types.apartment" },
+  { value: "land", tKey: "contracts.types.land" },
 ];
 
 // ── Dynamic field renderer ────────────────────────────────────────────────────
@@ -132,6 +131,7 @@ function DynamicField({
   error?: string;
   lang: string;
 }) {
+  const { t } = useTranslation();
   const label = getLabel(field.name, lang);
 
   if (field.name === "type") {
@@ -147,7 +147,7 @@ function DynamicField({
           </option>
           {CONTRACT_TYPE_OPTIONS.map((opt) => (
             <option key={opt.value} value={opt.value}>
-              {lang === "ar" ? opt.labelAr : opt.labelEn}
+              {t(opt.tKey)}
             </option>
           ))}
         </select>
@@ -436,7 +436,7 @@ export default function CreateContract() {
                     </option>
                     {CONTRACT_TYPE_OPTIONS.map((opt) => (
                       <option key={opt.value} value={opt.value}>
-                        {lang === "ar" ? opt.labelAr : opt.labelEn}
+                        {t(opt.tKey)}
                       </option>
                     ))}
                   </select>

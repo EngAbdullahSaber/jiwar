@@ -619,7 +619,12 @@
       "avgPerStage": "Avg per Stage",
       "docsTitle": "Project Documents",
       "noDocs": "No documents attached",
-      "noImages": "No visual assets found"
+      "noImages": "No visual assets found",
+      "projectTimeline": "Project Timeline",
+      "projectStart": "Start",
+      "projectEnd": "End",
+      "totalDuration": "Total Duration",
+      "days": "days"
     },
     "media": {
       "title": "Media & Documents",
@@ -636,7 +641,7 @@
       "remove": "Remove",
       "uploadedPdf": "Uploaded PDF",
       "planFile": "Plan File",
-      "imageHelper": "JPG, PNG or WEBP up to 10MB",
+      "imageHelper": "JPG, PNG or WEBP up to 5MB",
       "docHelper": "PDF, DOCX up to 20MB",
       "blueprintHelper": "High-res PDF or CAD files",
       "noImages": "No visual assets found",
@@ -703,7 +708,7 @@
       "buildingOrBlock": "Building / Block",
       "floorNo": "Floor Number",
       "size": "Size (sqm)",
-      "meterNumber": "Meter Number",
+      "meterNumber": "Electricity Meter No.",
       "linkedProject": "Linked Project",
       "linkedTemplate": "Linked Template",
       "basePrice": "Base Price (SAR)",
@@ -1121,6 +1126,8 @@
       "maintenanceFeeText": "Maintenance Fee (Text)"
     },
     "types": {
+      "apartment": "Apartment",
+      "land": "Land",
       "apartment_sale": "Apartment Sale",
       "apartment_partial_sale": "Partial Apartment Sale",
       "land_partnership": "Land Partnership"

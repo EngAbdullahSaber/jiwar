@@ -335,6 +335,30 @@ export default function PaySalesman() {
                 </div>
 
                 <form onSubmit={handleSubmit} className="p-8 space-y-6">
+                  {/* Available balance banner */}
+                  <div className={cn(
+                    "flex items-center justify-between px-4 py-3 rounded-md border",
+                    balance > 0
+                      ? "bg-amber-50/60 dark:bg-amber-500/5 border-amber-200 dark:border-amber-500/20"
+                      : "bg-gray-50 dark:bg-gray-800/50 border-gray-100 dark:border-gray-700/50"
+                  )}>
+                    <div className="flex items-center gap-2.5">
+                      <div className="w-7 h-7 rounded-md bg-amber-100 dark:bg-amber-500/10 flex items-center justify-center">
+                        <Wallet className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400" />
+                      </div>
+                      <span className="text-xs font-semibold text-gray-500 dark:text-gray-400">
+                        {t("salesman.stats.balance")}
+                      </span>
+                    </div>
+                    <span className={cn(
+                      "text-base font-black",
+                      balance > 0 ? "text-amber-600 dark:text-amber-400" : "text-gray-400"
+                    )}>
+                      {balance.toLocaleString()}
+                      <span className="text-[10px] font-bold ml-1 uppercase">{t("common.sar")}</span>
+                    </span>
+                  </div>
+
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
                     {/* Payment Date */}
                     <FormField label={t("salesman.payBalance.date")} required>

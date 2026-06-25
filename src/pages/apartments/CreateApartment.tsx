@@ -688,7 +688,7 @@ export default function CreateApartment() {
                       }
                       defaultValue={formData.projectSakPdfUrl}
                       accept=".jpg,.jpeg,.png,.webp"
-                      maxSizeMB={10}
+                      maxSizeMB={5}
                       helperText={t("apartments.placeholders.uploadProjectSak")}
                     />
                   </div>
@@ -707,9 +707,11 @@ export default function CreateApartment() {
                         setFormData({ ...formData, apartmentSakPdfUrl: url })
                       }
                       defaultValue={formData.apartmentSakPdfUrl}
-                      accept=".jpg,.jpeg,.png,.webp"
-                      maxSizeMB={10}
-                      helperText={t("apartments.placeholders.uploadApartmentSak")}
+                      accept=".jpg,.JPEG,.JPG,.jpeg,.png,.PNG,.webp"
+                      maxSizeMB={5}
+                      helperText={t(
+                        "apartments.placeholders.uploadApartmentSak",
+                      )}
                     />
                   </div>
                 </div>
@@ -731,8 +733,10 @@ export default function CreateApartment() {
                       }
                       defaultValue={formData.apartmentSubDivisionPdfUrl}
                       accept=".jpg,.jpeg,.png,.webp"
-                      maxSizeMB={10}
-                      helperText={t("apartments.placeholders.uploadSubDivision")}
+                      maxSizeMB={5}
+                      helperText={t(
+                        "apartments.placeholders.uploadSubDivision",
+                      )}
                     />
                   </div>
                 </div>
@@ -779,7 +783,7 @@ export default function CreateApartment() {
                         }
                         defaultValue={file.url}
                         accept=".pdf,.jpg,.jpeg,.png,.doc,.docx,.xls,.xlsx"
-                        maxSizeMB={20}
+                        maxSizeMB={5}
                         helperText={t("apartments.placeholders.uploadFile")}
                       />
                     </div>

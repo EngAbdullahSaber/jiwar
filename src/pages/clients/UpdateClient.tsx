@@ -49,7 +49,6 @@ export default function UpdateClient() {
     countryId: "",
     cityId: "",
     bankId: "",
-    password: "",
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
 
@@ -80,7 +79,6 @@ export default function UpdateClient() {
         countryId: c.country?.id?.toString() || "",
         cityId: c.city?.id?.toString() || "",
         bankId: c.bank?.id?.toString() || "",
-        password: "",
       });
     }
   }, [clientResponse]);
@@ -117,18 +115,12 @@ export default function UpdateClient() {
       return;
     }
 
-    const payload: any = {
+    updateMutation.mutate({
       ...formData,
       countryId: formData.countryId ? parseInt(formData.countryId) : undefined,
       cityId: formData.cityId ? parseInt(formData.cityId) : undefined,
       bankId: formData.bankId ? parseInt(formData.bankId) : undefined,
-    };
-
-    if (!payload.password) {
-      delete payload.password;
-    }
-
-    updateMutation.mutate(payload);
+    });
   };
 
   const handleChange = (
@@ -271,21 +263,6 @@ export default function UpdateClient() {
                         placeholder={t("clients.placeholders.email")}
                         className="h-12 pl-11 rtl:pl-4 rtl:pr-11 rounded-md bg-gray-50 dark:bg-gray-800/50 border-gray-100 dark:border-gray-700 focus:bg-white dark:focus:bg-gray-800 focus:ring-2 focus:ring-[#B39371]/10 transition-all"
                         value={formData.email}
-                        onChange={handleChange}
-                      />
-                    </div>
-                  </FormField>
-
-                  {/* Password */}
-                  <FormField label={t("clients.password")}>
-                    <div className="relative group">
-                      <CreditCard className="absolute left-4 rtl:left-auto rtl:right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 group-focus-within:text-[#B39371] transition-colors" />
-                      <Input
-                        name="password"
-                        type="password"
-                        placeholder={t("clients.placeholders.password")}
-                        className="h-12 pl-11 rtl:pl-4 rtl:pr-11 rounded-md bg-gray-50 dark:bg-gray-800/50 border-gray-100 dark:border-gray-700 focus:bg-white dark:focus:bg-gray-800 focus:ring-2 focus:ring-[#B39371]/10 transition-all"
-                        value={formData.password}
                         onChange={handleChange}
                       />
                     </div>

@@ -37,5 +37,10 @@ export const store = configureStore({
 
 export const persistor = persistStore(store);
 
-export type RootState = ReturnType<typeof store.getState>;
+export type RootState = ReturnType<typeof rootReducer>;
 export type AppDispatch = typeof store.dispatch;
+
+// Augment the store's getState return type so selectors resolve correctly
+declare module 'react-redux' {
+  interface DefaultRootState extends RootState {}
+}

@@ -136,6 +136,21 @@ export default function ProjectProfile() {
     0,
   );
 
+  const stageDateValues = project.stages
+    .flatMap((s) => [
+      new Date(s.fromDate).getTime(),
+      new Date(s.toDate).getTime(),
+    ])
+    .filter((t) => !isNaN(t));
+  const projectStart =
+    stageDateValues.length > 0 ? new Date(Math.min(...stageDateValues)) : null;
+  const projectEnd =
+    stageDateValues.length > 0 ? new Date(Math.max(...stageDateValues)) : null;
+  const totalDays =
+    projectStart && projectEnd
+      ? Math.ceil((projectEnd.getTime() - projectStart.getTime()) / 86_400_000)
+      : 0;
+
   const imgUrl = (url: string) => buildImageUrl(url) ?? "";
 
   const mainImage =
@@ -263,6 +278,22 @@ export default function ProjectProfile() {
                   </span>
                 </p>
               </div>
+              {totalDays > 0 && (
+                <>
+                  <div className="h-10 w-px bg-gray-100 dark:bg-gray-800" />
+                  <div className="text-center">
+                    <p className="text-[10px] text-gray-400 uppercase tracking-wide font-medium">
+                      {t("projects.profile.totalDuration")}
+                    </p>
+                    <p className="text-lg font-bold text-gray-900 dark:text-white">
+                      {totalDays}{" "}
+                      <span className="text-xs text-[#B39371] font-medium">
+                        {t("projects.profile.days")}
+                      </span>
+                    </p>
+                  </div>
+                </>
+              )}
             </div>
           </div>
 
@@ -358,12 +389,6 @@ export default function ProjectProfile() {
                     <span className="text-xs text-gray-400">
                       {project.stages.length} {t("legality.steps")}
                     </span>
-                    <Link href={`/projects/${projectId}/stages`}>
-                      <button className="flex items-center gap-1.5 text-xs text-[#B39371] hover:text-[#4A1B1B] transition-colors font-medium">
-                        <Plus className="w-3.5 h-3.5" />
-                        {t("projects.stages.addStage")}
-                      </button>
-                    </Link>
                   </div>
                 </div>
 
@@ -581,6 +606,29 @@ export default function ProjectProfile() {
                     </div>
                   </div>
 
+                  {/* Timeline */}
+                  {projectStart && projectEnd && (
+                    <div className="p-3 rounded-md border border-gray-100 dark:border-gray-800">
+                      <p className="text-[10px] text-gray-400 font-medium uppercase tracking-wide mb-2">
+                        {t("projects.profile.projectTimeline")}
+                      </p>
+                      <div className="flex items-center gap-1.5 text-xs text-gray-600 dark:text-gray-400 mb-2">
+                        <CalendarDays className="w-3 h-3 text-[#B39371] shrink-0" />
+                        <span>{fmtDate(projectStart.toISOString())}</span>
+                        <span className="text-gray-300">→</span>
+                        <span>{fmtDate(projectEnd.toISOString())}</span>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-[10px] text-gray-400">
+                          {t("projects.profile.totalDuration")}
+                        </span>
+                        <span className="text-xs font-bold text-[#4A1B1B] dark:text-[#B39371]">
+                          {totalDays} {t("projects.profile.days")}
+                        </span>
+                      </div>
+                    </div>
+                  )}
+
                   {/* Liquidity bar */}
                   <div>
                     <div className="flex items-center justify-between mb-2">
@@ -656,22 +704,6 @@ export default function ProjectProfile() {
 
               {/* Quick links */}
               <div className="grid grid-cols-1 gap-2">
-                <Link href={`/projects/${projectId}/stages`}>
-                  <div className="flex items-center gap-3 p-3.5 rounded-md border border-gray-100 dark:border-gray-800 hover:border-[#B39371]/40 hover:bg-[#F5F1ED]/30 dark:hover:bg-gray-800 transition-all group cursor-pointer bg-white dark:bg-gray-900">
-                    <div className="w-8 h-8 rounded-md bg-[#F5F1ED] dark:bg-gray-800 flex items-center justify-center shrink-0">
-                      <Layers className="w-4 h-4 text-[#B39371]" />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-gray-900 dark:text-white">
-                        {t("projects.stages.phasesTitle")}
-                      </p>
-                      <p className="text-[10px] text-gray-400">
-                        {t("projects.stages.addNewStage")}
-                      </p>
-                    </div>
-                    <ArrowUpRight className="w-4 h-4 text-gray-300 group-hover:text-[#B39371] transition-colors shrink-0" />
-                  </div>
-                </Link>
                 <Link href={`/projects/${projectId}/media`}>
                   <div className="flex items-center gap-3 p-3.5 rounded-md border border-gray-100 dark:border-gray-800 hover:border-[#B39371]/40 hover:bg-[#F5F1ED]/30 dark:hover:bg-gray-800 transition-all group cursor-pointer bg-white dark:bg-gray-900">
                     <div className="w-8 h-8 rounded-md bg-[#F5F1ED] dark:bg-gray-800 flex items-center justify-center shrink-0">

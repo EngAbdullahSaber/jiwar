@@ -145,12 +145,18 @@ export default function UpdateProject() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const newErrors: Record<string, string> = {};
-    if (!formData.name.english) newErrors.nameEn = t("projects.errors.fieldRequired");
-    if (!formData.name.arabic) newErrors.nameAr = t("projects.errors.fieldRequired");
-    if (!formData.legalityId) newErrors.legalityId = t("projects.errors.fieldRequired");
-    if (!formData.address) newErrors.address = t("projects.errors.fieldRequired");
-    if (!formData.latitude) newErrors.latitude = t("projects.errors.fieldRequired");
-    if (!formData.longitude) newErrors.longitude = t("projects.errors.fieldRequired");
+    if (!formData.name.english)
+      newErrors.nameEn = t("projects.errors.fieldRequired");
+    if (!formData.name.arabic)
+      newErrors.nameAr = t("projects.errors.fieldRequired");
+    if (!formData.legalityId)
+      newErrors.legalityId = t("projects.errors.fieldRequired");
+    if (!formData.address)
+      newErrors.address = t("projects.errors.fieldRequired");
+    if (!formData.latitude)
+      newErrors.latitude = t("projects.errors.fieldRequired");
+    if (!formData.longitude)
+      newErrors.longitude = t("projects.errors.fieldRequired");
     setErrors(newErrors);
     if (Object.keys(newErrors).length > 0) {
       scrollToFirstError();
@@ -235,41 +241,71 @@ export default function UpdateProject() {
                 </FormField>
 
                 {/* Project Name English */}
-                <FormField label={t("projects.labels.projectNameEn")} required error={errors.nameEn}>
+                <FormField
+                  label={t("projects.labels.projectNameEn")}
+                  required
+                  error={errors.nameEn}
+                >
                   <Input
                     placeholder={t("projects.placeholders.nameEn")}
                     className="h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md"
                     value={formData.name.english}
                     onChange={(e) => {
-                      setFormData({ ...formData, name: { ...formData.name, english: e.target.value } });
-                      if (errors.nameEn) setErrors((p) => { const { nameEn, ...r } = p; return r; });
+                      setFormData({
+                        ...formData,
+                        name: { ...formData.name, english: e.target.value },
+                      });
+                      if (errors.nameEn)
+                        setErrors((p) => {
+                          const { nameEn, ...r } = p;
+                          return r;
+                        });
                     }}
                   />
                 </FormField>
 
                 {/* Project Name Arabic */}
-                <FormField label={t("projects.labels.projectNameAr")} required error={errors.nameAr}>
+                <FormField
+                  label={t("projects.labels.projectNameAr")}
+                  required
+                  error={errors.nameAr}
+                >
                   <Input
                     dir="rtl"
                     placeholder={t("projects.placeholders.nameAr")}
                     className="h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md text-right"
                     value={formData.name.arabic}
                     onChange={(e) => {
-                      setFormData({ ...formData, name: { ...formData.name, arabic: e.target.value } });
-                      if (errors.nameAr) setErrors((p) => { const { nameAr, ...r } = p; return r; });
+                      setFormData({
+                        ...formData,
+                        name: { ...formData.name, arabic: e.target.value },
+                      });
+                      if (errors.nameAr)
+                        setErrors((p) => {
+                          const { nameAr, ...r } = p;
+                          return r;
+                        });
                     }}
                   />
                 </FormField>
 
                 {/* Linked Legality File */}
-                <FormField label={t("projects.labels.linkedLegality")} required error={errors.legalityId}>
+                <FormField
+                  label={t("projects.labels.linkedLegality")}
+                  required
+                  error={errors.legalityId}
+                >
                   <PaginatedSelect
                     apiEndpoint="/legality"
                     queryKey="legalities-paginated"
                     value={formData.legalityId}
                     onChange={(val) => {
                       setFormData({ ...formData, legalityId: val });
-                      if (errors.legalityId) setErrors((p) => { const { legalityId, ...r } = p; return r; });
+                      if (errors.legalityId)
+                        setErrors((p) => {
+                          const { legalityId, ...r } = p;
+                          return r;
+                        });
                     }}
                     placeholder={t("projects.placeholders.selectLegality")}
                     searchPlaceholder={t(
@@ -311,21 +347,33 @@ export default function UpdateProject() {
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 <div className="space-y-6">
                   {/* Physical Address */}
-                  <FormField label={t("projects.labels.address")} required error={errors.address}>
+                  <FormField
+                    label={t("projects.labels.address")}
+                    required
+                    error={errors.address}
+                  >
                     <Textarea
                       placeholder={t("projects.placeholders.address")}
                       className="bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md min-h-[120px] resize-none"
                       value={formData.address}
                       onChange={(e) => {
                         setFormData({ ...formData, address: e.target.value });
-                        if (errors.address) setErrors((p) => { const { address, ...r } = p; return r; });
+                        if (errors.address)
+                          setErrors((p) => {
+                            const { address, ...r } = p;
+                            return r;
+                          });
                       }}
                     />
                   </FormField>
 
                   {/* Coordinates */}
                   <div className="grid grid-cols-2 gap-4">
-                    <FormField label={t("projects.labels.latitude")} required error={errors.latitude}>
+                    <FormField
+                      label={t("projects.labels.latitude")}
+                      required
+                      error={errors.latitude}
+                    >
                       <div className="relative">
                         <Globe className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                         <Input
@@ -333,15 +381,26 @@ export default function UpdateProject() {
                           className="pl-10 h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md"
                           value={formData.latitude}
                           onChange={(e) => {
-                            setFormData({ ...formData, latitude: e.target.value });
-                            if (errors.latitude) setErrors((p) => { const { latitude, ...r } = p; return r; });
+                            setFormData({
+                              ...formData,
+                              latitude: e.target.value,
+                            });
+                            if (errors.latitude)
+                              setErrors((p) => {
+                                const { latitude, ...r } = p;
+                                return r;
+                              });
                           }}
                           type="number"
                           step="any"
                         />
                       </div>
                     </FormField>
-                    <FormField label={t("projects.labels.longitude")} required error={errors.longitude}>
+                    <FormField
+                      label={t("projects.labels.longitude")}
+                      required
+                      error={errors.longitude}
+                    >
                       <div className="relative">
                         <Globe className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                         <Input
@@ -349,8 +408,15 @@ export default function UpdateProject() {
                           className="pl-10 h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md"
                           value={formData.longitude}
                           onChange={(e) => {
-                            setFormData({ ...formData, longitude: e.target.value });
-                            if (errors.longitude) setErrors((p) => { const { longitude, ...r } = p; return r; });
+                            setFormData({
+                              ...formData,
+                              longitude: e.target.value,
+                            });
+                            if (errors.longitude)
+                              setErrors((p) => {
+                                const { longitude, ...r } = p;
+                                return r;
+                              });
                           }}
                           type="number"
                           step="any"
@@ -411,7 +477,7 @@ export default function UpdateProject() {
                     }
                     defaultValue={formData.projectSakPdfUrl}
                     accept=".jpg,.jpeg,.png,.webp"
-                    maxSizeMB={10}
+                    maxSizeMB={5}
                     helperText={t("apartments.placeholders.uploadProjectSak")}
                   />
                 </div>

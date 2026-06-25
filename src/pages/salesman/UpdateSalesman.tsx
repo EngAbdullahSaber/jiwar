@@ -41,7 +41,6 @@ export default function UpdateSalesman() {
     agentType: "INTERNAL",
     startDate: "",
     endDate: "",
-    password: "",
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
 
@@ -69,7 +68,6 @@ export default function UpdateSalesman() {
         endDate: s.endDate
           ? new Date(s.endDate).toISOString().split("T")[0]
           : "",
-        password: "",
       });
     }
   }, [salesmanData]);
@@ -113,13 +111,7 @@ export default function UpdateSalesman() {
       return;
     }
 
-    const payload: any = { ...formData };
-
-    if (!payload.password) {
-      delete payload.password;
-    }
-
-    updateMutation.mutate(payload);
+    updateMutation.mutate({ ...formData });
   };
 
   const handleChange = (
@@ -216,13 +208,6 @@ export default function UpdateSalesman() {
                     <div className="relative group">
                       <Mail className="absolute left-4 rtl:left-auto rtl:right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 group-focus-within:text-[#B39371] transition-colors" />
                       <Input name="email" type="email" placeholder={t("salesman.form.placeholders.email")} className="h-12 pl-11 rtl:pl-4 rtl:pr-11 rounded-md bg-gray-50 dark:bg-gray-800/50 border-gray-100 dark:border-gray-800 focus:bg-white dark:focus:bg-gray-800 transition-all font-medium" value={formData.email} onChange={(e) => { handleChange(e); if (errors.email) setErrors((p) => { const { email, ...r } = p; return r; }); }} />
-                    </div>
-                  </FormField>
-
-                  <FormField label={t("salesman.password")}>
-                    <div className="relative group">
-                      <CreditCard className="absolute left-4 rtl:left-auto rtl:right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 group-focus-within:text-[#B39371] transition-colors" />
-                      <Input name="password" type="password" placeholder={t("salesman.form.placeholders.password")} className="h-12 pl-11 rtl:pl-4 rtl:pr-11 rounded-md bg-gray-50 dark:bg-gray-800/50 border-gray-100 dark:border-gray-800 focus:bg-white dark:focus:bg-gray-800 transition-all font-medium" value={formData.password} onChange={handleChange} />
                     </div>
                   </FormField>
 

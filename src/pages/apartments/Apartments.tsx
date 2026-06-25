@@ -39,6 +39,7 @@ interface Apartment {
     english: string;
   };
   templateTotalRooms: number;
+  contracts?: { id: number }[];
 }
 
 interface ApartmentsResponse {
@@ -55,7 +56,13 @@ interface ApartmentsResponse {
 
 export default function Apartments() {
   const { t, i18n } = useTranslation();
-  const [filters, setFilters] = useState({ search: "", projectId: "" });
+  const [filters, setFilters] = useState({
+    search: "",
+    projectId: "",
+    status: "",
+    streetCount: "",
+    size: "",
+  });
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 10;
 
@@ -66,6 +73,9 @@ export default function Apartments() {
       pageSize,
       filters.search,
       filters.projectId,
+      filters.status,
+      filters.streetCount,
+      filters.size,
     ],
     queryFn: async () => {
       const res = await api.get("/apartment", {
@@ -74,6 +84,9 @@ export default function Apartments() {
           pageSize,
           search: filters.search || undefined,
           projectId: filters.projectId || undefined,
+          status: filters.status || undefined,
+          streetCount: filters.streetCount || undefined,
+          size: filters.size || undefined,
         },
       });
       return res.data;
@@ -102,6 +115,32 @@ export default function Apartments() {
           description: project.projectIdentity,
           icon: <Building className="w-4 h-4" />,
         })),
+    },
+    {
+      type: "select",
+      label: t("apartments.labels.status"),
+      key: "status",
+      placeholder: t("apartments.placeholders.selectStatus"),
+      options: [
+        { value: "available", label: t("apartments.statuses.available") },
+        { value: "sold", label: t("apartments.statuses.sold") },
+      ],
+    },
+    {
+      type: "select",
+      label: t("apartments.labels.streetCount"),
+      key: "streetCount",
+      placeholder: t("apartments.placeholders.selectType"),
+      options: [
+        { value: "ONE_STREET", label: t("apartments.streetCounts.ONE_STREET") },
+        { value: "TWO_STREET", label: t("apartments.streetCounts.TWO_STREET") },
+      ],
+    },
+    {
+      type: "search",
+      label: t("apartments.labels.size"),
+      placeholder: t("apartments.placeholders.size"),
+      key: "size",
     },
   ];
 
@@ -171,6 +210,25 @@ export default function Apartments() {
           </span>
         </div>
       ),
+    },
+    {
+      header: t("apartments.labels.status"),
+      cell: (a) => {
+        const isSold = (a.contracts?.length ?? 0) > 0;
+        return (
+          <span
+            className={
+              isSold
+                ? "inline-flex items-center px-2.5 py-0.5 rounded-md text-xs font-medium bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400"
+                : "inline-flex items-center px-2.5 py-0.5 rounded-md text-xs font-medium bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400"
+            }
+          >
+            {isSold
+              ? t("apartments.statuses.sold")
+              : t("apartments.statuses.available")}
+          </span>
+        );
+      },
     },
     {
       header: t("common.actions"),
@@ -276,6 +334,7 @@ export default function Apartments() {
           <FilterBar
             fields={filterFields}
             values={filters}
+            rows={[2, 3]}
             onChange={(key, value) => {
               setFilters((prev) => ({ ...prev, [key]: value }));
               setCurrentPage(1);

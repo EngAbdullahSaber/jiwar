@@ -112,8 +112,13 @@ export default function ViewSalesman() {
 
   const contracts = salesman?.contracts || [];
   const contractsCount = contracts.length;
-  const apartmentContractsCount = contracts.filter((c) => c.type === "apartment").length;
-  const totalContractValue = contracts.reduce((sum, c) => sum + (c.totalContractValue ?? 0), 0);
+  const apartmentContractsCount = contracts.filter(
+    (c) => c.type === "apartment",
+  ).length;
+  const totalContractValue = contracts.reduce(
+    (sum, c) => sum + (c.totalContractValue ?? 0),
+    0,
+  );
   const totalCommission = salesman?.totalCommission ?? 0;
   const totalPaid = salesman?.totalPaidToSalesman ?? 0;
   const balance = totalCommission - totalPaid;
@@ -246,18 +251,13 @@ export default function ViewSalesman() {
             </div>
 
             <div className="flex items-center gap-3">
-              <motion.button
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                onClick={() => {
-                  setPayForm({ paidDate: "", amount: "", notes: "" });
-                  setPayDialogOpen(true);
-                }}
+              <Link
+                href={`/salesman/${salesman.id}/pay`}
                 className="px-6 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-md text-sm font-bold shadow-lg shadow-emerald-600/20 hover:shadow-xl transition-all flex items-center gap-2"
               >
                 <Banknote className="w-4 h-4" />
                 {t("salesman.payBalance.button")}
-              </motion.button>
+              </Link>
               <Link href={`/salesman/${salesman.id}/edit`}>
                 <motion.button
                   whileHover={{ scale: 1.02 }}
@@ -750,7 +750,8 @@ export default function ViewSalesman() {
           className="sm:max-w-[440px] rounded-md border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-0 overflow-visible"
           onOpenAutoFocus={(e) => e.preventDefault()}
           onPointerDownOutside={(e) => {
-            if ((e.target as HTMLElement).closest('.flatpickr-calendar')) e.preventDefault();
+            if ((e.target as HTMLElement).closest(".flatpickr-calendar"))
+              e.preventDefault();
           }}
         >
           <div className="p-6 border-b border-gray-100 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-800/50">

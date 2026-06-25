@@ -297,7 +297,11 @@ export default function CreateTemplate() {
                   required
                   error={errors.modelType?.message}
                 >
-                  <Select onValueChange={(val) => setValue("modelType", val, { shouldValidate: true })}>
+                  <Select
+                    onValueChange={(val) =>
+                      setValue("modelType", val, { shouldValidate: true })
+                    }
+                  >
                     <SelectTrigger
                       className={cn(
                         "h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md",
@@ -666,7 +670,7 @@ export default function CreateTemplate() {
                 <FileUpload
                   label={t("materials.uploadLabel")}
                   accept="image/*"
-                  maxSizeMB={20}
+                  maxSizeMB={5}
                   helperText={t("materials.uploadHelper")}
                   onUploadSuccess={(url) =>
                     setValue("file", url, { shouldValidate: true })

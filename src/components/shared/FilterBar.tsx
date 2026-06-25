@@ -46,17 +46,20 @@ interface FilterBarProps {
   variant?: 'default' | 'compact' | 'minimal';
   showFilterChips?: boolean;
   activeFiltersCount?: number;
+  /** Split fields into fixed rows. e.g. [2,3] = first 2 fields in row 1, next 3 in row 2 */
+  rows?: number[];
 }
 
-export function FilterBar({ 
-  fields, 
-  values, 
-  onChange, 
+export function FilterBar({
+  fields,
+  values,
+  onChange,
   onReset,
   className,
   variant = 'default',
   showFilterChips = true,
-  activeFiltersCount
+  activeFiltersCount,
+  rows,
 }: FilterBarProps) {
   const { t } = useTranslation();
   const [isExpanded, setIsExpanded] = useState(true);
@@ -242,28 +245,61 @@ export function FilterBar({
           )}
 
           {/* Filter Fields */}
-          <AnimatePresence>
-            {fields.map((field) => (
-              <motion.div
-                key={field.key}
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.95 }}
-                className={cn(
-                  "space-y-1",
-                  getFilterWidth(field.width)
-                )}
-              >
-                {variant !== 'minimal' && (
-                  <label className="text-[10px] font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider flex items-center gap-1">
-                    {field.icon}
-                    {field.label}
-                  </label>
-                )}
-                {renderField(field)}
-              </motion.div>
-            ))}
-          </AnimatePresence>
+          {rows ? (
+            <div className="flex-1 space-y-3">
+              {(() => {
+                const renderedRows: React.ReactNode[] = [];
+                let offset = 0;
+                const colsMap: Record<number, string> = {
+                  1: 'grid-cols-1',
+                  2: 'grid-cols-2',
+                  3: 'grid-cols-3',
+                  4: 'grid-cols-4',
+                  5: 'grid-cols-5',
+                };
+                rows.forEach((count, rowIdx) => {
+                  const rowFields = fields.slice(offset, offset + count);
+                  offset += count;
+                  renderedRows.push(
+                    <div key={rowIdx} className={cn('grid gap-4', colsMap[count] || 'grid-cols-3')}>
+                      {rowFields.map((field) => (
+                        <div key={field.key} className="space-y-1">
+                          {variant !== 'minimal' && (
+                            <label className="text-[10px] font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider flex items-center gap-1">
+                              {field.icon}
+                              {field.label}
+                            </label>
+                          )}
+                          {renderField(field)}
+                        </div>
+                      ))}
+                    </div>
+                  );
+                });
+                return renderedRows;
+              })()}
+            </div>
+          ) : (
+            <AnimatePresence>
+              {fields.map((field) => (
+                <motion.div
+                  key={field.key}
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.95 }}
+                  className={cn('space-y-1', getFilterWidth(field.width))}
+                >
+                  {variant !== 'minimal' && (
+                    <label className="text-[10px] font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider flex items-center gap-1">
+                      {field.icon}
+                      {field.label}
+                    </label>
+                  )}
+                  {renderField(field)}
+                </motion.div>
+              ))}
+            </AnimatePresence>
+          )}
 
           {/* Reset Button */}
           {onReset && activeCount > 0 && (

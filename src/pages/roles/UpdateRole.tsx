@@ -263,11 +263,20 @@ export default function UpdateRole() {
       return;
     }
 
-    const permissionIds = [...new Set([...selectedKeys].map((key) => parseInt(key.split("|")[0])))];
+    const permissionsMap = new Map<number, string[]>();
+    for (const key of selectedKeys) {
+      const [idStr, action] = key.split("|");
+      const id = parseInt(idStr);
+      if (!permissionsMap.has(id)) permissionsMap.set(id, []);
+      permissionsMap.get(id)!.push(action);
+    }
+    const permissions = [...permissionsMap.entries()].map(
+      ([permissionId, actions]) => ({ permissionId, actions }),
+    );
     updateMutation.mutate({
       name: formData.name,
       description: formData.description,
-      permissionIds,
+      permissions,
     });
   };
 

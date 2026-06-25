@@ -27,7 +27,6 @@ import { scrollToFirstError } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { FormField } from "@/components/shared/FormField";
-import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "react-hot-toast";
 
 interface Permission {
@@ -42,6 +41,57 @@ interface PermissionResponse {
 }
 
 const ACTION_ORDER = ["READ", "CREATE", "UPDATE", "DELETE"];
+
+function PermissionCard({
+  id,
+  action,
+  title,
+  description,
+  isChecked,
+  onToggle,
+}: {
+  id: number;
+  action: string;
+  title: string;
+  description: string;
+  isChecked: boolean;
+  onToggle: (id: number, action: string) => void;
+}) {
+  return (
+    <div
+      role="button"
+      tabIndex={0}
+      onClick={() => onToggle(id, action)}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          onToggle(id, action);
+        }
+      }}
+      className={`flex items-start gap-3 p-3 rounded-md border text-left transition-all cursor-pointer ${
+        isChecked
+          ? "border-[#B39371]/40 bg-[#B39371]/10 dark:bg-[#B39371]/15"
+          : "border-gray-100 dark:border-gray-700 hover:border-[#B39371]/25 hover:bg-gray-50 dark:hover:bg-white/5"
+      }`}
+    >
+      <div className={`mt-0.5 w-4 h-4 rounded border flex items-center justify-center shrink-0 transition-colors ${
+        isChecked
+          ? "bg-[#B39371] border-[#B39371]"
+          : "border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900"
+      }`}>
+        {isChecked && (
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+            <polyline points="20 6 9 17 4 12" />
+          </svg>
+        )}
+      </div>
+      <div>
+        <p className="text-sm font-bold text-gray-900 dark:text-white">{title}</p>
+        <p className="text-[11px] text-gray-400 font-medium">{description}</p>
+      </div>
+    </div>
+  );
+}
 
 const RESOURCE_GROUPS: Record<string, string[]> = {
   project: ["project-media"],
@@ -215,59 +265,23 @@ export default function CreateRole() {
       return;
     }
 
-    const permissionIds = [
-      ...new Set([...selectedKeys].map((key) => parseInt(key.split("|")[0]))),
-    ];
+    const permissionsMap = new Map<number, string[]>();
+    for (const key of selectedKeys) {
+      const [idStr, action] = key.split("|");
+      const id = parseInt(idStr);
+      if (!permissionsMap.has(id)) permissionsMap.set(id, []);
+      permissionsMap.get(id)!.push(action);
+    }
+    const permissions = [...permissionsMap.entries()].map(
+      ([permissionId, actions]) => ({ permissionId, actions }),
+    );
     createMutation.mutate({
       name: formData.name,
       description: formData.description,
-      permissionIds,
+      permissions,
     });
   };
 
-  const PermissionCard = useCallback(
-    ({
-      id,
-      action,
-      title,
-      description,
-      isChecked,
-    }: {
-      id: number;
-      action: string;
-      title: string;
-      description: string;
-      isChecked: boolean;
-    }) => {
-      return (
-        <button
-          type="button"
-          onClick={() => togglePermission(id, action)}
-          className={`flex items-start gap-3 p-3 rounded-md border text-left transition-all cursor-pointer ${
-            isChecked
-              ? "border-[#B39371]/40 bg-[#B39371]/10 dark:bg-[#B39371]/15"
-              : "border-gray-100 dark:border-gray-700 hover:border-[#B39371]/25 hover:bg-gray-50 dark:hover:bg-white/5"
-          }`}
-        >
-          <Checkbox
-            checked={isChecked}
-            onCheckedChange={() => togglePermission(id, action)}
-            onClick={(e) => e.stopPropagation()}
-            className="mt-0.5 w-4 h-4 rounded border-gray-200 dark:border-gray-700 data-[state=checked]:bg-[#B39371] data-[state=checked]:border-[#B39371] shrink-0"
-          />
-          <div>
-            <p className="text-sm font-bold text-gray-900 dark:text-white">
-              {title}
-            </p>
-            <p className="text-[11px] text-gray-400 font-medium">
-              {description}
-            </p>
-          </div>
-        </button>
-      );
-    },
-    [togglePermission],
-  );
 
   if (permissionsLoading) {
     return (
@@ -515,6 +529,7 @@ export default function CreateRole() {
                                         ),
                                       })}
                                       isChecked={isChecked}
+                                      onToggle={togglePermission}
                                     />
                                   );
                                 })}
@@ -539,6 +554,7 @@ export default function CreateRole() {
                                         ),
                                       })}
                                       isChecked={isChecked}
+                                      onToggle={togglePermission}
                                     />
                                   );
                                 })}
