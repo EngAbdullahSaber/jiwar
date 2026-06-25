@@ -14,8 +14,7 @@ import {
   Calendar,
   Sparkles,
   Save,
-  CreditCard,
-} from "lucide-react";
+ } from "lucide-react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import api from "@/lib/api";
 import { motion } from "framer-motion";
