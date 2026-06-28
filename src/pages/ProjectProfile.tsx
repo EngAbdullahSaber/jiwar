@@ -35,6 +35,7 @@ interface ProjectStage {
   fromDate: string;
   toDate: string;
   parentId: number | null;
+  status?: string | null;
   children?: ProjectStage[];
 }
 
@@ -60,6 +61,31 @@ interface ProjectData {
   createdBy?: { id: number; email: string };
   updatedBy?: { id: number; email: string } | null;
   stages: ProjectStage[];
+  estimatedBudget?: number | null;
+  sk?: string | null;
+}
+
+const STATUS_STYLES: Record<string, string> = {
+  pending: "bg-yellow-50 text-yellow-700 border-yellow-200 dark:bg-yellow-900/20 dark:text-yellow-400 dark:border-yellow-800",
+  in_progress: "bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-900/20 dark:text-blue-400 dark:border-blue-800",
+  completed: "bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-900/20 dark:text-emerald-400 dark:border-emerald-800",
+  on_hold: "bg-gray-50 text-gray-600 border-gray-200 dark:bg-gray-800/50 dark:text-gray-400 dark:border-gray-700",
+};
+
+function StageStatusBadge({ status, t }: { status: string; t: (k: string) => string }) {
+  const tKeyMap: Record<string, string> = {
+    pending: "stages.statuses.pending",
+    in_progress: "stages.statuses.inProgress",
+    completed: "stages.statuses.completed",
+    on_hold: "stages.statuses.onHold",
+  };
+  const style = STATUS_STYLES[status] || STATUS_STYLES.pending;
+  const label = tKeyMap[status] ? t(tKeyMap[status]) : status;
+  return (
+    <span className={`inline-flex items-center text-[10px] font-semibold px-2 py-0.5 rounded-md border ${style}`}>
+      {label}
+    </span>
+  );
 }
 
 export default function ProjectProfile() {
@@ -429,11 +455,16 @@ export default function ProjectProfile() {
                               <div className="flex-1 min-w-0">
                                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 p-3 rounded-md border border-gray-100 dark:border-gray-800 hover:border-[#B39371]/30 hover:bg-[#F5F1ED]/20 dark:hover:bg-gray-800/40 transition-all">
                                   <div className="min-w-0">
-                                    <p className="text-sm font-semibold text-gray-900 dark:text-white truncate group-hover:text-[#4A1B1B] dark:group-hover:text-[#B39371] transition-colors">
-                                      {isRtl
-                                        ? stage.name.arabic
-                                        : stage.name.english}
-                                    </p>
+                                    <div className="flex items-center gap-2 flex-wrap">
+                                      <p className="text-sm font-semibold text-gray-900 dark:text-white truncate group-hover:text-[#4A1B1B] dark:group-hover:text-[#B39371] transition-colors">
+                                        {isRtl
+                                          ? stage.name.arabic
+                                          : stage.name.english}
+                                      </p>
+                                      {stage.status && (
+                                        <StageStatusBadge status={stage.status} t={t} />
+                                      )}
+                                    </div>
                                     <span className="inline-flex items-center mt-1 text-[10px] font-semibold text-[#B39371] bg-[#B39371]/10 px-2 py-0.5 rounded-md">
                                       {stage.estimateCost.toLocaleString()}{" "}
                                       {t("common.sar")}
@@ -555,6 +586,22 @@ export default function ProjectProfile() {
                       </span>
                     </div>
                   ))}
+                  {project.sk && (
+                    <div className="flex items-center justify-between gap-3 px-5 py-3 hover:bg-gray-50/50 dark:hover:bg-gray-800/30 transition-colors">
+                      <span className="text-[11px] text-gray-400 shrink-0 w-28 leading-tight">
+                        {t("projects.labels.sk")}
+                      </span>
+                      <a
+                        href={buildImageUrl(project.sk) ?? ""}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-1.5 text-xs font-medium text-[#B39371] hover:text-[#4A1B1B] transition-colors"
+                      >
+                        <FileText className="w-3.5 h-3.5 shrink-0" />
+                        {t("common.viewFile")}
+                      </a>
+                    </div>
+                  )}
                 </div>
               </div>
 
@@ -569,7 +616,7 @@ export default function ProjectProfile() {
                   </h3>
                 </div>
                 <div className="p-5 space-y-4">
-                  {/* Total cost */}
+                  {/* Total cost from stages */}
                   <div className="p-4 rounded-md bg-[#F5F1ED] dark:bg-gray-800 border border-[#E8DDD3] dark:border-gray-700">
                     <p className="text-[10px] text-[#B39371] font-semibold uppercase tracking-widest mb-1">
                       {t("projects.profile.estCost")}
@@ -581,6 +628,19 @@ export default function ProjectProfile() {
                       {t("common.sar")}
                     </p>
                   </div>
+
+                  {/* Estimated budget (manual) */}
+                  {project.estimatedBudget != null && (
+                    <div className="flex items-center justify-between px-3 py-2.5 rounded-md border border-gray-100 dark:border-gray-800">
+                      <span className="text-[10px] text-gray-400 font-medium uppercase tracking-wide">
+                        {t("projects.labels.estimatedBudget")}
+                      </span>
+                      <span className="text-sm font-bold text-gray-900 dark:text-white">
+                        {project.estimatedBudget.toLocaleString()}{" "}
+                        <span className="text-[10px] text-[#B39371] font-medium">{t("common.sar")}</span>
+                      </span>
+                    </div>
+                  )}
 
                   {/* Phases + avg */}
                   <div className="grid grid-cols-2 gap-3">

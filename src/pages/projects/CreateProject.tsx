@@ -74,8 +74,9 @@ export default function CreateProject() {
     address: "",
     latitude: "24.7136",
     longitude: "46.6753",
-    projectSakPdfUrl: "",
-  });
+    sk: "",
+    estimatedBudget: "",
+   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
 
@@ -88,8 +89,9 @@ export default function CreateProject() {
         address: data.address,
         latitude: Number(data.latitude),
         longitude: Number(data.longitude),
-        projectSakPdfUrl: data.projectSakPdfUrl || undefined,
-      };
+        sk: data.sk || undefined,
+        estimatedBudget: data.estimatedBudget ? Number(data.estimatedBudget) : undefined,
+       };
 
       const response = await api.post("/project", payload);
       return response.data;
@@ -298,6 +300,22 @@ export default function CreateProject() {
                     }}
                   />
                 </FormField>
+                {/* Estimated Budget */}
+                <FormField label={t("projects.labels.estimatedBudget")}>
+                  <Input
+                    type="number"
+                    min="0"
+                    step="0.01"
+                    placeholder="0.00"
+                    className="h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md"
+                    value={formData.estimatedBudget}
+                    onChange={(e) =>
+                      setFormData({ ...formData, estimatedBudget: e.target.value })
+                    }
+                  />
+                </FormField>
+
+            
               </div>
             </FormSection>
 
@@ -427,7 +445,7 @@ export default function CreateProject() {
               description={t("apartments.sections.sakImagesDesc")}
               delay={0.3}
             >
-              <div className="flex flex-col rounded-md border border-gray-200 dark:border-gray-700 overflow-hidden max-w-sm">
+              <div className="flex flex-col rounded-md border border-gray-200 dark:border-gray-700 overflow-hidden w-full">
                 <div className="px-4 py-3 bg-gray-50 dark:bg-gray-800/60 border-b border-gray-200 dark:border-gray-700 flex items-center gap-2">
                   <div className="w-1.5 h-1.5 rounded-full bg-[#B39371]" />
                   <span className="text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
@@ -437,9 +455,9 @@ export default function CreateProject() {
                 <div className="p-4">
                   <FileUpload
                     onUploadSuccess={(url: string) =>
-                      setFormData({ ...formData, projectSakPdfUrl: url })
+                      setFormData({ ...formData, sk: url })
                     }
-                    defaultValue={formData.projectSakPdfUrl}
+                    defaultValue={formData.sk}
                     accept=".jpg,.jpeg,.png,.webp"
                     maxSizeMB={5}
                     helperText={t("apartments.placeholders.uploadProjectSak")}

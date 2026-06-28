@@ -49,6 +49,7 @@ interface Stage {
   fromDate: string;
   toDate: string;
   parentId: null;
+  status?: string | null;
   children: StageChild[];
 }
 
@@ -61,6 +62,29 @@ interface StagesResponse {
 }
 
 const COL = 'grid-cols-[2fr_100px_140px_180px_110px_96px]';
+
+const STATUS_STYLES: Record<string, string> = {
+  pending: "bg-yellow-50 text-yellow-700 border-yellow-200 dark:bg-yellow-900/20 dark:text-yellow-400 dark:border-yellow-800",
+  in_progress: "bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-900/20 dark:text-blue-400 dark:border-blue-800",
+  completed: "bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-900/20 dark:text-emerald-400 dark:border-emerald-800",
+  on_hold: "bg-gray-50 text-gray-600 border-gray-200 dark:bg-gray-800/50 dark:text-gray-400 dark:border-gray-700",
+};
+const STATUS_T_KEY: Record<string, string> = {
+  pending: "stages.statuses.pending",
+  in_progress: "stages.statuses.inProgress",
+  completed: "stages.statuses.completed",
+  on_hold: "stages.statuses.onHold",
+};
+
+function StageStatusBadge({ status, t }: { status: string; t: (k: string) => string }) {
+  const style = STATUS_STYLES[status] || STATUS_STYLES.pending;
+  const label = STATUS_T_KEY[status] ? t(STATUS_T_KEY[status]) : status;
+  return (
+    <span className={`inline-flex items-center mt-1 text-[10px] font-semibold px-2 py-0.5 rounded-md border ${style}`}>
+      {label}
+    </span>
+  );
+}
 
 export default function Stages() {
   const { t, i18n } = useTranslation();
@@ -298,6 +322,9 @@ export default function Stages() {
                         <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5 truncate" dir="rtl">
                           {stage.name[otherLang]}
                         </p>
+                        {stage.status && (
+                          <StageStatusBadge status={stage.status} t={t} />
+                        )}
                       </div>
                     </div>
 

@@ -560,7 +560,9 @@
       "address": "Physical Address",
       "latitude": "Latitude",
       "longitude": "Longitude",
-      "selectedCoordinates": "Selected Coordinates"
+      "selectedCoordinates": "Selected Coordinates",
+      "estimatedBudget": "Estimated Budget (SAR)",
+      "sk": "Deed No. (Sak / صك)"
     },
     "success": {
       "create": "Project created successfully",
@@ -1175,6 +1177,7 @@
     "steps": {
       "title": "Next Step",
       "salesApproval": "Sales Manager Approval",
+      "contractManagerApproval": "Contract Manager Approval",
       "financeApproval": "Finance Manager Approval",
       "completed": "Fully Approved"
     },
@@ -1446,7 +1449,8 @@
       "estimateCost": "Est. Cost",
       "dateRange": "Date Range",
       "subStages": "Sub-stages",
-      "sub": "sub"
+      "sub": "sub",
+      "status": "Status"
     },
     "placeholders": {
       "nameEn": "e.g. Excavation & Foundation",
@@ -1455,7 +1459,14 @@
       "fromDate": "Select start date",
       "toDate": "Select end date",
       "selectProject": "Select project...",
-      "searchProject": "Search projects..."
+      "searchProject": "Search projects...",
+      "status": "Select status..."
+    },
+    "statuses": {
+      "pending": "Pending",
+      "inProgress": "In Progress",
+      "completed": "Completed",
+      "onHold": "On Hold"
     },
     "sections": {
       "details": "Stage Details",

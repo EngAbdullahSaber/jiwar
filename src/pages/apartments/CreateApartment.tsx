@@ -109,7 +109,6 @@ export default function CreateApartment() {
     projectId: "",
     meterNumber: "",
     templateId: "",
-    projectSakPdfUrl: "",
     apartmentSakPdfUrl: "",
     apartmentSubDivisionPdfUrl: "",
     files: [] as Array<{ title: string; url: string }>,
@@ -673,27 +672,7 @@ export default function CreateApartment() {
               description={t("apartments.sections.sakImagesDesc")}
               delay={0.4}
             >
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="flex flex-col rounded-md border border-gray-200 dark:border-gray-700 overflow-hidden">
-                  <div className="px-4 py-3 bg-gray-50 dark:bg-gray-800/60 border-b border-gray-200 dark:border-gray-700 flex items-center gap-2">
-                    <div className="w-1.5 h-1.5 rounded-full bg-[#B39371]" />
-                    <span className="text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
-                      {t("apartments.labels.projectSak")}
-                    </span>
-                  </div>
-                  <div className="p-4 flex-1">
-                    <FileUpload
-                      onUploadSuccess={(url: string) =>
-                        setFormData({ ...formData, projectSakPdfUrl: url })
-                      }
-                      defaultValue={formData.projectSakPdfUrl}
-                      accept=".jpg,.jpeg,.png,.webp"
-                      maxSizeMB={5}
-                      helperText={t("apartments.placeholders.uploadProjectSak")}
-                    />
-                  </div>
-                </div>
-
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="flex flex-col rounded-md border border-gray-200 dark:border-gray-700 overflow-hidden">
                   <div className="px-4 py-3 bg-gray-50 dark:bg-gray-800/60 border-b border-gray-200 dark:border-gray-700 flex items-center gap-2">
                     <div className="w-1.5 h-1.5 rounded-full bg-[#B39371]" />

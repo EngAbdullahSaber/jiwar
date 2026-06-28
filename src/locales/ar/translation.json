@@ -561,7 +561,9 @@
       "address": "العنوان الفعلي",
       "latitude": "خط العرض",
       "longitude": "خط الطول",
-      "selectedCoordinates": "الإحداثيات المختارة"
+      "selectedCoordinates": "الإحداثيات المختارة",
+      "estimatedBudget": "الميزانية التقديرية (ريال)",
+      "sk": "رقم الصك"
     },
     "success": {
       "create": "تم إنشاء المشروع بنجاح",
@@ -1174,6 +1176,7 @@
     "steps": {
       "title": "الخطوة القادمة",
       "salesApproval": "اعتماد مدير المبيعات",
+      "contractManagerApproval": "اعتماد مدير العقود",
       "financeApproval": "اعتماد المدير المالي",
       "completed": "معتمد بالكامل"
     },
@@ -1445,7 +1448,8 @@
       "estimateCost": "التكلفة التقديرية",
       "dateRange": "نطاق التاريخ",
       "subStages": "مراحل فرعية",
-      "sub": "فرعي"
+      "sub": "فرعي",
+      "status": "الحالة"
     },
     "placeholders": {
       "nameEn": "مثال: Excavation & Foundation",
@@ -1454,7 +1458,14 @@
       "fromDate": "اختر تاريخ البدء",
       "toDate": "اختر تاريخ الانتهاء",
       "selectProject": "اختر المشروع...",
-      "searchProject": "البحث في المشاريع..."
+      "searchProject": "البحث في المشاريع...",
+      "status": "اختر الحالة..."
+    },
+    "statuses": {
+      "pending": "قيد الانتظار",
+      "inProgress": "جاري التنفيذ",
+      "completed": "مكتمل",
+      "onHold": "معلق"
     },
     "sections": {
       "details": "تفاصيل المرحلة",

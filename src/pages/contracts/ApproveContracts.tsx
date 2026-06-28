@@ -83,6 +83,7 @@ interface Contract {
   };
   updatedBy: any;
   salesManagerApproval: boolean;
+  contractManagerApproval: boolean;
   financeApproval: boolean;
 }
 
@@ -102,6 +103,7 @@ export default function ApproveContracts() {
   const queryClient = useQueryClient();
   const { user } = useAppSelector((state) => state.auth);
   const isSalesManager = user?.role?.name === "salesManager";
+  const isContractManager = user?.role?.name === "contractManager";
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [approveDialogOpen, setApproveDialogOpen] = useState(false);
   const [commissionDialogOpen, setCommissionDialogOpen] = useState(false);
@@ -259,11 +261,6 @@ export default function ApproveContracts() {
           <span className="text-sm font-bold text-[#4A1B1B] dark:text-[#B39371]">
             {(c.paidAmount ?? 0).toLocaleString()} {t("common.sar")}
           </span>
-          {c.paymentType && (
-            <span className="text-xs text-gray-500 dark:text-gray-400">
-              {t(`contracts.paymentMethods.${c.paymentType}`)}
-            </span>
-          )}
         </div>
       ),
     },
@@ -284,6 +281,9 @@ export default function ApproveContracts() {
         if (!c.salesManagerApproval) {
           step = t("contracts.steps.salesApproval");
           color = "text-amber-600 bg-amber-50 dark:bg-amber-900/20";
+        } else if (!c.contractManagerApproval) {
+          step = t("contracts.steps.contractManagerApproval");
+          color = "text-purple-600 bg-purple-50 dark:bg-purple-900/20";
         } else if (!c.financeApproval) {
           step = t("contracts.steps.financeApproval");
           color = "text-blue-600 bg-blue-50 dark:bg-blue-900/20";
@@ -323,18 +323,36 @@ export default function ApproveContracts() {
                 <CheckCircle2 className="w-4 h-4" />
               </button>
             )}
-            {!isSalesManager && c.salesManagerApproval && !c.financeApproval && (
-              <button
-                onClick={() => {
-                  setSelectedContractId(c.id);
-                  setApproveDialogOpen(true);
-                }}
-                className="p-2 hover:bg-green-50 dark:hover:bg-green-950/30 rounded-md text-gray-400 hover:text-green-600 transition-colors"
-                title={t("contracts.approve")}
-              >
-                <CheckCircle2 className="w-4 h-4" />
-              </button>
-            )}
+            {isContractManager &&
+              c.salesManagerApproval &&
+              !c.contractManagerApproval && (
+                <button
+                  onClick={() => {
+                    setSelectedContractId(c.id);
+                    setApproveDialogOpen(true);
+                  }}
+                  className="p-2 hover:bg-green-50 dark:hover:bg-green-950/30 rounded-md text-gray-400 hover:text-green-600 transition-colors"
+                  title={t("contracts.approve")}
+                >
+                  <CheckCircle2 className="w-4 h-4" />
+                </button>
+              )}
+            {!isSalesManager &&
+              !isContractManager &&
+              c.salesManagerApproval &&
+              c.contractManagerApproval &&
+              !c.financeApproval && (
+                <button
+                  onClick={() => {
+                    setSelectedContractId(c.id);
+                    setApproveDialogOpen(true);
+                  }}
+                  className="p-2 hover:bg-green-50 dark:hover:bg-green-950/30 rounded-md text-gray-400 hover:text-green-600 transition-colors"
+                  title={t("contracts.approve")}
+                >
+                  <CheckCircle2 className="w-4 h-4" />
+                </button>
+              )}
           </Can>
 
           {c.pdfUrl && (

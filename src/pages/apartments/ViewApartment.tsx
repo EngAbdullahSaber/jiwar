@@ -48,7 +48,6 @@ interface Apartment {
   requestDate: string;
   requestNumber: string;
   meterNumber: number;
-  projectSakPdfUrl: string | null;
   apartmentSakPdfUrl: string | null;
   apartmentSubDivisionPdfUrl: string | null;
   files: Array<{ title: string; url: string }>;
@@ -565,8 +564,7 @@ export default function ViewApartment() {
               </div>
 
               {/* Sak Images */}
-              {(apartment.projectSakPdfUrl ||
-                apartment.apartmentSakPdfUrl ||
+              {(apartment.apartmentSakPdfUrl ||
                 apartment.apartmentSubDivisionPdfUrl) && (
                 <div className="bg-white dark:bg-gray-900 rounded-md border border-gray-200 dark:border-gray-800 overflow-hidden">
                   <div className="flex items-center gap-3 px-5 py-4 border-b border-gray-100 dark:border-gray-800">
@@ -577,12 +575,8 @@ export default function ViewApartment() {
                       {t("apartments.sections.sakImages")}
                     </h3>
                   </div>
-                  <div className="p-5 grid grid-cols-1 sm:grid-cols-3 gap-4">
+                  <div className="p-5 grid grid-cols-1 sm:grid-cols-2 gap-4">
                     {[
-                      {
-                        url: apartment.projectSakPdfUrl,
-                        label: t("apartments.labels.projectSak"),
-                      },
                       {
                         url: apartment.apartmentSakPdfUrl,
                         label: t("apartments.labels.apartmentSak"),

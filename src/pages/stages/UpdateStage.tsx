@@ -12,8 +12,16 @@ import {
   Layers,
   Loader2,
   Briefcase,
+  Activity,
 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { FormActions } from '../../components/shared/FormActions';
 import { Shell } from '../../components/shared/Shell';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
@@ -78,7 +86,9 @@ export default function UpdateStage() {
     estimateCost: '',
     fromDate: '',
     toDate: '',
+    status: '',
   });
+  const [isParentStage, setIsParentStage] = useState(true);
 
   const [subStages, setSubStages] = useState<SubStage[]>([]);
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -109,12 +119,14 @@ export default function UpdateStage() {
   useEffect(() => {
     if (stageData?.data) {
       const s = stageData.data;
+      setIsParentStage(s.parentId === null || s.parentId === undefined);
       setFormData({
         projectId: s.projectId?.toString() || '',
         name: { arabic: s.name?.arabic || '', english: s.name?.english || '' },
         estimateCost: s.estimateCost?.toString() || '',
         fromDate: s.fromDate || '',
         toDate: s.toDate || '',
+        status: s.status || '',
       });
       if (s.children?.length) {
         setSubStages(
@@ -137,6 +149,7 @@ export default function UpdateStage() {
         estimateCost: parseFloat(formData.estimateCost),
         fromDate: formData.fromDate,
         toDate: formData.toDate,
+        ...(formData.status ? { status: formData.status } : {}),
       };
       if (subStages.length > 0) {
         payload.subStages = subStages.map(s => ({
@@ -158,7 +171,12 @@ export default function UpdateStage() {
       setLocation('/stages');
     },
     onError: (error: any) => {
-      toast.error(error.response?.data?.message || t('common.error'), {
+      const data = error.response?.data;
+      const errMsg =
+        data?.errors?.find((e: any) => e.field === 'status')?.message?.english ||
+        data?.message ||
+        t('common.error');
+      toast.error(errMsg, {
         style: { borderRadius: '1rem', background: '#ef4444', color: '#fff' },
       });
     },
@@ -411,6 +429,29 @@ export default function UpdateStage() {
                     />
                   </FormField>
                 </div>
+
+                {/* Status — parent stages only */}
+                {isParentStage && (
+                  <FormField label={t('stages.labels.status')}>
+                    <div className="relative">
+                      <Activity className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none z-10" />
+                      <Select
+                        value={formData.status}
+                        onValueChange={val => setFormData(prev => ({ ...prev, status: val }))}
+                      >
+                        <SelectTrigger className="pl-10 h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md">
+                          <SelectValue placeholder={t('stages.placeholders.status')} />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="pending">{t('stages.statuses.pending')}</SelectItem>
+                          <SelectItem value="in_progress">{t('stages.statuses.inProgress')}</SelectItem>
+                          <SelectItem value="completed">{t('stages.statuses.completed')}</SelectItem>
+                          <SelectItem value="on_hold">{t('stages.statuses.onHold')}</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </FormField>
+                )}
               </div>
             </FormSection>
 

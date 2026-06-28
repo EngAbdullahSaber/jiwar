@@ -38,6 +38,8 @@ interface Project {
   budgetSum: number;
   totalApartments: number;
   apartmentsWithContract: number;
+  estimatedBudget?: number | null;
+  sk?: string | null;
 }
 
 interface ProjectsResponse {

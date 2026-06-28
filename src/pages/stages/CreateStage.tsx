@@ -11,8 +11,16 @@ import {
   Trash2,
   Layers,
   Briefcase,
+  Activity,
 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { FormActions } from '../../components/shared/FormActions';
 import { Shell } from '../../components/shared/Shell';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
@@ -75,6 +83,7 @@ export default function CreateStage() {
     estimateCost: '',
     fromDate: '',
     toDate: '',
+    status: '',
   });
 
   const [subStages, setSubStages] = useState<SubStage[]>([]);
@@ -88,6 +97,7 @@ export default function CreateStage() {
         estimateCost: parseFloat(formData.estimateCost),
         fromDate: formData.fromDate,
         toDate: formData.toDate,
+        ...(formData.status ? { status: formData.status } : {}),
       };
       if (subStages.length > 0) {
         payload.subStages = subStages.map(s => ({
@@ -346,6 +356,27 @@ export default function CreateStage() {
                     />
                   </FormField>
                 </div>
+
+                {/* Status */}
+                <FormField label={t('stages.labels.status')}>
+                  <div className="relative">
+                    <Activity className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none z-10" />
+                    <Select
+                      value={formData.status}
+                      onValueChange={val => setFormData(prev => ({ ...prev, status: val }))}
+                    >
+                      <SelectTrigger className="pl-10 h-12 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-md">
+                        <SelectValue placeholder={t('stages.placeholders.status')} />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="pending">{t('stages.statuses.pending')}</SelectItem>
+                        <SelectItem value="in_progress">{t('stages.statuses.inProgress')}</SelectItem>
+                        <SelectItem value="completed">{t('stages.statuses.completed')}</SelectItem>
+                        <SelectItem value="on_hold">{t('stages.statuses.onHold')}</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </FormField>
               </div>
             </FormSection>
 

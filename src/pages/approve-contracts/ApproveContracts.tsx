@@ -83,6 +83,7 @@ interface Contract {
   };
   updatedBy: any;
   salesManagerApproval: boolean;
+  contractManagerApproval: boolean;
   financeApproval: boolean;
 }
 
@@ -98,6 +99,7 @@ export default function ApproveContracts() {
   const { t, i18n } = useTranslation();
   const { user } = useAppSelector((state) => state.auth);
   const isSalesManager = user?.role?.name === "salesManager";
+  const isContractManager = user?.role?.name === "contractManager";
   const [filters, setFilters] = useState({ search: "" });
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 10;
@@ -246,9 +248,6 @@ export default function ApproveContracts() {
           <span className="text-sm font-bold text-[#4A1B1B] dark:text-[#B39371]">
             {c.paidAmount.toLocaleString()} {t("common.sar")}
           </span>
-          <span className="text-xs text-gray-500 dark:text-gray-400">
-            {t(`contracts.paymentMethods.${c.paymentType}`)}
-          </span>
         </div>
       ),
     },
@@ -269,6 +268,9 @@ export default function ApproveContracts() {
         if (!c.salesManagerApproval) {
           step = t("contracts.steps.salesApproval");
           color = "text-amber-600 bg-amber-50 dark:bg-amber-900/20";
+        } else if (!c.contractManagerApproval) {
+          step = t("contracts.steps.contractManagerApproval");
+          color = "text-purple-600 bg-purple-50 dark:bg-purple-900/20";
         } else if (!c.financeApproval) {
           step = t("contracts.steps.financeApproval");
           color = "text-blue-600 bg-blue-50 dark:bg-blue-900/20";
@@ -292,7 +294,6 @@ export default function ApproveContracts() {
       cell: (c) => (
         <div className="flex items-center justify-center gap-2">
           <Can I="UPDATE" a="contract">
-            {/* Sales manager: only when salesManagerApproval is still false */}
             {isSalesManager && !c.salesManagerApproval && (
               <button
                 onClick={() => {
@@ -309,9 +310,24 @@ export default function ApproveContracts() {
                 <CheckCircle2 className="w-4 h-4" />
               </button>
             )}
-            {/* Finance: only when salesManagerApproval is done but financeApproval is not */}
-            {!isSalesManager &&
+            {isContractManager &&
               c.salesManagerApproval &&
+              !c.contractManagerApproval && (
+                <button
+                  onClick={() => {
+                    setSelectedContractId(c.id);
+                    setApproveDialogOpen(true);
+                  }}
+                  className="p-2 hover:bg-green-50 dark:hover:bg-green-950/30 rounded-md text-gray-400 hover:text-green-600 transition-colors"
+                  title={t("contracts.approve")}
+                >
+                  <CheckCircle2 className="w-4 h-4" />
+                </button>
+              )}
+            {!isSalesManager &&
+              !isContractManager &&
+              c.salesManagerApproval &&
+              c.contractManagerApproval &&
               !c.financeApproval && (
                 <button
                   onClick={() => {
