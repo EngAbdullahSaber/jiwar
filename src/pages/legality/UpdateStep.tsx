@@ -68,6 +68,7 @@ export default function UpdateStep() {
     fromDate: "",
     toDate: "",
     amount: "",
+    isCompleted: false,
   });
   const [files, setFiles] = useState<string[]>([]);
 
@@ -86,7 +87,7 @@ export default function UpdateStep() {
   );
   const step = stepRecord?.step;
   const isDefault = step?.isDefault !== false;
-  const isCompleted = step?.isUpdated || !!step?.toDate;
+  const isCompleted = step?.isCompleted ?? false;
 
   useEffect(() => {
     if (step && !initialized) {
@@ -97,6 +98,7 @@ export default function UpdateStep() {
         fromDate: step.fromDate ? step.fromDate.split("T")[0] : "",
         toDate: step.toDate ? step.toDate.split("T")[0] : "",
         amount: step.amount?.toString() || "",
+        isCompleted: step.isCompleted ?? false,
       });
       setFiles(step.files || []);
       setInitialized(true);
@@ -151,6 +153,7 @@ export default function UpdateStep() {
       amount: formData.amount ? Number(formData.amount) : null,
       files,
       isUpdated: true,
+      isCompleted: formData.isCompleted,
     };
 
     if (!isDefault) {
@@ -445,6 +448,23 @@ export default function UpdateStep() {
                 />
               </div>
             </FormSection>
+
+            {/* Mark as Completed */}
+            <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 px-6 py-4 flex items-center gap-3">
+              <input
+                type="checkbox"
+                id="isCompleted"
+                checked={formData.isCompleted}
+                onChange={(e) =>
+                  setFormData((prev) => ({ ...prev, isCompleted: e.target.checked }))
+                }
+                className="w-4 h-4 rounded accent-emerald-600 cursor-pointer"
+              />
+              <label htmlFor="isCompleted" className="text-sm font-medium text-gray-700 dark:text-gray-300 cursor-pointer select-none flex items-center gap-1.5">
+                <CheckCircle2 className="w-4 h-4 text-emerald-500" />
+                {t("legality.markAsCompleted")}
+              </label>
+            </div>
 
             {/* Footer Actions */}
             <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 px-6 py-4 flex items-center justify-end gap-3">

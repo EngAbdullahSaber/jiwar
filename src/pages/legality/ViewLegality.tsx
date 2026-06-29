@@ -1,11 +1,10 @@
-﻿import { useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { TopHeader } from '../../components/TopHeader';
+﻿import { useState } from "react";
+import { useTranslation } from "react-i18next";
+import { TopHeader } from "../../components/TopHeader";
 import { Link, useRoute, useLocation } from "wouter";
-import { 
+import {
   ChevronDown,
   Gavel,
-
   Info,
   CheckCircle2,
   Clock,
@@ -20,14 +19,15 @@ import {
   Eye,
   Hourglass,
   TrendingUp,
-  Edit
-} from 'lucide-react';
+  Edit,
+} from "lucide-react";
 import { cn, buildImageUrl } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { motion, AnimatePresence } from "framer-motion";
-import { Shell } from '../../components/shared/Shell';
-import { useQuery } from '@tanstack/react-query';
-import api from '@/lib/api';
+import { Shell } from "../../components/shared/Shell";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import api from "@/lib/api";
+import toast from "react-hot-toast";
 
 interface LegalityStep {
   id: number;
@@ -39,6 +39,7 @@ interface LegalityStep {
     };
     isDefault: boolean;
     isUpdated: boolean;
+    isCompleted: boolean;
     details: string | null;
     fromDate: string | null;
     toDate: string | null;
@@ -68,24 +69,28 @@ interface LegalityResponse {
 
 // Stat Card Component
 const StatCard = ({ icon: Icon, label, value, color, gradient }: any) => (
-  <motion.div
-    whileHover={{ y: -2 }}
-    className="relative group"
-  >
-    <div className="absolute inset-0 bg-gradient-to-r opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-md blur-xl"
+  <motion.div whileHover={{ y: -2 }} className="relative group">
+    <div
+      className="absolute inset-0 bg-gradient-to-r opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-md blur-xl"
       style={{ background: gradient }}
     />
     <div className="relative bg-white dark:bg-gray-900 rounded-md border border-gray-200 dark:border-gray-800 p-6 shadow-lg group-hover:shadow-xl transition-all">
       <div className="flex items-center gap-4">
-        <div className={cn(
-          "w-12 h-12 rounded-md flex items-center justify-center",
-          color
-        )}>
+        <div
+          className={cn(
+            "w-12 h-12 rounded-md flex items-center justify-center",
+            color,
+          )}
+        >
           <Icon className="w-6 h-6 text-white" />
         </div>
         <div>
-          <p className="text-sm font-medium text-gray-500 dark:text-gray-400">{label}</p>
-          <p className="text-lg font-semibold text-gray-900 dark:text-white mt-1">{value}</p>
+          <p className="text-sm font-medium text-gray-500 dark:text-gray-400">
+            {label}
+          </p>
+          <p className="text-lg font-semibold text-gray-900 dark:text-white mt-1">
+            {value}
+          </p>
         </div>
       </div>
     </div>
@@ -94,31 +99,39 @@ const StatCard = ({ icon: Icon, label, value, color, gradient }: any) => (
 
 // Step Timeline Component
 const StepTimeline = ({ steps }: { steps: LegalityStep[] }) => {
-  const completedCount = steps.filter(s => s.step.isUpdated || !!s.step.toDate).length;
+  const completedCount = steps.filter((s) => s.step.isCompleted).length;
   const totalSteps = steps.length;
-  const { t,  i18n } = useTranslation();
+  const { t, i18n } = useTranslation();
   return (
     <div className="bg-white dark:bg-gray-900 rounded-md border border-gray-200 dark:border-gray-800 p-6">
       <div className="flex items-center justify-between mb-4">
-        <h3 className="text-sm font-semibold text-gray-900 dark:text-white">{t('legality.profile.timeline')}</h3>
+        <h3 className="text-sm font-semibold text-gray-900 dark:text-white">
+          {t("legality.profile.timeline")}
+        </h3>
         <span className="text-xs font-medium text-gray-500 dark:text-gray-400">
-          {completedCount}/{totalSteps} {t('legality.profile.stepsCompleted')}
+          {completedCount}/{totalSteps} {t("legality.profile.stepsCompleted")}
         </span>
       </div>
       <div className="space-y-2">
         {steps?.map((item, index) => {
-           const isCompleted = item.step?.isUpdated || !!item.step?.toDate;
+          const isCompleted = item.step?.isCompleted;
           const stepNumber = index + 1;
-          
+
           return (
             <div key={item.id} className="flex items-center gap-3">
-              <div className={cn(
-                "w-6 h-6 rounded-md flex items-center justify-center text-xs font-medium",
-                isCompleted 
-                  ? "bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400"
-                  : "bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400"
-              )}>
-                {isCompleted ? <CheckCircle2 className="w-3.5 h-3.5" /> : stepNumber}
+              <div
+                className={cn(
+                  "w-6 h-6 rounded-md flex items-center justify-center text-xs font-medium",
+                  isCompleted
+                    ? "bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400"
+                    : "bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400",
+                )}
+              >
+                {isCompleted ? (
+                  <CheckCircle2 className="w-3.5 h-3.5" />
+                ) : (
+                  stepNumber
+                )}
               </div>
               <div className="flex-1">
                 <div className="flex items-center justify-between">
@@ -127,15 +140,19 @@ const StepTimeline = ({ steps }: { steps: LegalityStep[] }) => {
                   </span>
                   {isCompleted && item.step?.toDate && (
                     <span className="text-[10px] text-emerald-600 dark:text-emerald-400">
-                      {new Date(item.step.toDate).toLocaleDateString(i18n.language === 'ar' ? 'ar-SA' : 'en-US')}
+                      {new Date(item.step.toDate).toLocaleDateString(
+                        i18n.language === "ar" ? "ar-SA" : "en-US",
+                      )}
                     </span>
                   )}
                 </div>
                 <div className="w-full h-1 bg-gray-100 dark:bg-gray-800 rounded-md mt-1">
-                  <div className={cn(
-                    "h-full rounded-md transition-all duration-500",
-                    isCompleted ? "w-full bg-emerald-500" : "w-0"
-                  )} />
+                  <div
+                    className={cn(
+                      "h-full rounded-md transition-all duration-500",
+                      isCompleted ? "w-full bg-emerald-500" : "w-0",
+                    )}
+                  />
                 </div>
               </div>
             </div>
@@ -148,18 +165,47 @@ const StepTimeline = ({ steps }: { steps: LegalityStep[] }) => {
 
 export default function ViewLegality() {
   const [, params] = useRoute("/legality/:id");
-  const {t,  i18n } = useTranslation();
+  const { t, i18n } = useTranslation();
   const id = params?.id;
   const [, setLocation] = useLocation();
   const [expandedStep, setExpandedStep] = useState<number | null>(null);
+  const queryClient = useQueryClient();
 
-  const { data: response, isLoading, error } = useQuery<LegalityResponse>({
-    queryKey: ['legality', id],
+  const completeMutation = useMutation({
+    mutationFn: async ({
+      legalityStepId,
+      stepId,
+    }: {
+      legalityStepId: number;
+      stepId: number;
+    }) => {
+      await api.patch(`/legality/${id}/steps`, {
+        steps: [{ id: stepId, isCompleted: true, isUpdated: true }],
+      });
+      return legalityStepId;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["legality", id] });
+      toast.success(t("legality.markAsCompleted"), {
+        style: { borderRadius: "1rem", background: "#10b981", color: "#fff" },
+      });
+    },
+    onError: (error: any) => {
+      toast.error(error.response?.data?.message || t("common.error"));
+    },
+  });
+
+  const {
+    data: response,
+    isLoading,
+    error,
+  } = useQuery<LegalityResponse>({
+    queryKey: ["legality", id],
     queryFn: async () => {
       const resp = await api.get(`/legality/${id}`);
       return resp.data;
     },
-    enabled: !!id
+    enabled: !!id,
   });
 
   const legality = response?.data;
@@ -169,21 +215,27 @@ export default function ViewLegality() {
   };
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString(i18n.language === 'ar' ? 'ar-SA' : 'en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric'
-    });
+    return new Date(dateString).toLocaleDateString(
+      i18n.language === "ar" ? "ar-SA" : "en-US",
+      {
+        year: "numeric",
+        month: "short",
+        day: "numeric",
+      },
+    );
   };
 
   const formatStepName = (name: string) => {
     if (!name) return "";
-    return name.split('_').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
+    return name
+      .split("_")
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(" ");
   };
 
   const calculateProgress = (steps: LegalityStep[]) => {
     if (!steps || steps.length === 0) return 0;
-    const completedCount = steps.filter(s => s.step.isUpdated || !!s.step.toDate).length;
+    const completedCount = steps.filter((s) => s.step.isCompleted).length;
     return Math.round((completedCount / steps.length) * 100);
   };
 
@@ -195,13 +247,19 @@ export default function ViewLegality() {
           <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
             <div className="h-24 bg-white dark:bg-gray-900 rounded-md border border-gray-200 dark:border-gray-800 animate-pulse" />
             <div className="grid grid-cols-3 gap-6">
-              {[1, 2, 3].map(i => (
-                <div key={i} className="h-32 bg-white dark:bg-gray-900 rounded-md border border-gray-200 dark:border-gray-800 animate-pulse" />
+              {[1, 2, 3].map((i) => (
+                <div
+                  key={i}
+                  className="h-32 bg-white dark:bg-gray-900 rounded-md border border-gray-200 dark:border-gray-800 animate-pulse"
+                />
               ))}
             </div>
             <div className="space-y-4">
-              {[1, 2, 3].map(i => (
-                <div key={i} className="h-24 bg-white dark:bg-gray-900 rounded-md border border-gray-200 dark:border-gray-800 animate-pulse" />
+              {[1, 2, 3].map((i) => (
+                <div
+                  key={i}
+                  className="h-24 bg-white dark:bg-gray-900 rounded-md border border-gray-200 dark:border-gray-800 animate-pulse"
+                />
               ))}
             </div>
           </div>
@@ -225,14 +283,14 @@ export default function ViewLegality() {
                 <AlertCircle className="w-10 h-10 text-red-500" />
               </div>
               <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
-                {t('legality.failedLoad')}
+                {t("legality.failedLoad")}
               </h2>
               <p className="text-sm text-gray-500 dark:text-gray-400 mb-8 max-w-md mx-auto">
-                {t('legality.errorDesc')}
+                {t("legality.errorDesc")}
               </p>
               <Link href="/legality">
                 <button className="px-6 py-3 bg-gradient-to-r from-[#4A1B1B] to-[#6B2727] text-white rounded-md text-sm font-medium shadow-lg shadow-[#4A1B1B]/20 hover:shadow-xl transition-all">
-                  {t('legality.backToList')}
+                  {t("legality.backToList")}
                 </button>
               </Link>
             </motion.div>
@@ -243,16 +301,17 @@ export default function ViewLegality() {
   }
 
   const progress = calculateProgress(legality.legalitySteps);
-  const completedCount = legality.legalitySteps.filter(s => s.step.isUpdated || !!s.step.toDate).length;
+  const completedCount = legality.legalitySteps.filter(
+    (s) => s.step.isUpdated || !!s.step.toDate,
+  ).length;
   const pendingCount = legality.legalitySteps.length - completedCount;
 
   return (
     <Shell>
       <TopHeader />
-      
+
       <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-50 dark:from-gray-950 dark:via-gray-900 dark:to-gray-950">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
-          
           {/* Header with Back Button */}
           <div className="bg-white dark:bg-gray-900 rounded-md border border-gray-200 dark:border-gray-800 p-6 shadow-sm">
             <div className="flex items-center gap-4">
@@ -272,17 +331,19 @@ export default function ViewLegality() {
                 <div className="flex items-center gap-2 mb-1">
                   <Sparkles className="w-4 h-4 text-[#B39371]" />
                   <p className="text-xs font-medium text-[#B39371] uppercase tracking-wider">
-                    LF-{legality.id.toString().padStart(4, '0')}
+                    LF-{legality.id.toString().padStart(4, "0")}
                   </p>
                 </div>
                 <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-                  {i18n.language === 'ar' ? legality.name.arabic : legality.name.english}
+                  {i18n.language === "ar"
+                    ? legality.name.arabic
+                    : legality.name.english}
                 </h1>
               </div>
               <Link href={`/legality/${id}/edit`}>
                 <button className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-[#4A1B1B] to-[#6B2727] text-white rounded-md text-sm font-medium shadow-lg shadow-[#4A1B1B]/20 hover:shadow-xl transition-all">
                   <Edit className="w-4 h-4" />
-                  {t('legality.updateLegality')}
+                  {t("legality.updateLegality")}
                 </button>
               </Link>
             </div>
@@ -292,28 +353,28 @@ export default function ViewLegality() {
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             <StatCard
               icon={User}
-              label={t('legality.labels.createdBy')}
-              value={legality.createdBy.email.split('@')[0]}
+              label={t("legality.labels.createdBy")}
+              value={legality.createdBy.email.split("@")[0]}
               color="bg-gradient-to-br from-blue-500 to-blue-600"
               gradient="linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)"
             />
             <StatCard
               icon={Calendar}
-              label={t('legality.labels.createdAt')}
+              label={t("legality.labels.createdAt")}
               value={formatDate(legality.createdAt)}
               color="bg-gradient-to-br from-emerald-500 to-emerald-600"
               gradient="linear-gradient(135deg, #10b981 0%, #059669 100%)"
             />
             <StatCard
               icon={Layers}
-              label={t('legality.profile.workflowSteps')}
+              label={t("legality.profile.workflowSteps")}
               value={legality.legalitySteps.length}
               color="bg-gradient-to-br from-amber-500 to-amber-600"
               gradient="linear-gradient(135deg, #f59e0b 0%, #d97706 100%)"
             />
             <StatCard
               icon={TrendingUp}
-              label={t('legality.progress')}
+              label={t("legality.progress")}
               value={`${progress}%`}
               color="bg-gradient-to-br from-purple-500 to-purple-600"
               gradient="linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%)"
@@ -324,21 +385,23 @@ export default function ViewLegality() {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <div className="lg:col-span-2 bg-white dark:bg-gray-900 rounded-md border border-gray-200 dark:border-gray-800 p-6">
               <div className="flex items-center justify-between mb-4">
-                <h3 className="text-sm font-semibold text-gray-900 dark:text-white">{t('legality.profile.overallProgress')}</h3>
+                <h3 className="text-sm font-semibold text-gray-900 dark:text-white">
+                  {t("legality.profile.overallProgress")}
+                </h3>
                 <div className="flex items-center gap-3">
                   <span className="flex items-center gap-1 text-xs text-emerald-600 dark:text-emerald-400">
                     <CheckCircle2 className="w-3.5 h-3.5" />
-                    {completedCount} {t('legality.completed')}
+                    {completedCount} {t("legality.completed")}
                   </span>
                   <span className="flex items-center gap-1 text-xs text-amber-600 dark:text-amber-400">
                     <Hourglass className="w-3.5 h-3.5" />
-                    {pendingCount} {t('legality.pending')}
+                    {pendingCount} {t("legality.pending")}
                   </span>
                 </div>
               </div>
               <div className="h-3 bg-gray-100 dark:bg-gray-800 rounded-md overflow-hidden">
-                <motion.div 
-                   initial={{ width: 0 }}
+                <motion.div
+                  initial={{ width: 0 }}
                   animate={{ width: `${progress}%` }}
                   transition={{ duration: 1.5, ease: "easeOut" }}
                   className="h-full bg-gradient-to-r from-[#4A1B1B] to-[#B39371] relative"
@@ -347,32 +410,56 @@ export default function ViewLegality() {
                 </motion.div>
               </div>
               <div className="flex justify-between mt-2">
-                <span className="text-xs text-gray-500 dark:text-gray-400">0%</span>
-                <span className="text-xs font-medium text-gray-900 dark:text-white">{progress}% {t('legality.profile.complete')}</span>
-                <span className="text-xs text-gray-500 dark:text-gray-400">100%</span>
+                <span className="text-xs text-gray-500 dark:text-gray-400">
+                  0%
+                </span>
+                <span className="text-xs font-medium text-gray-900 dark:text-white">
+                  {progress}% {t("legality.profile.complete")}
+                </span>
+                <span className="text-xs text-gray-500 dark:text-gray-400">
+                  100%
+                </span>
               </div>
             </div>
 
             {/* Quick Stats */}
             <div className="bg-white dark:bg-gray-900 rounded-md border border-gray-200 dark:border-gray-800 p-6">
-              <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-4">{t('legality.profile.quickOverview')}</h3>
+              <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-4">
+                {t("legality.profile.quickOverview")}
+              </h3>
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
-                  <span className="text-xs text-gray-500 dark:text-gray-400">{t('legality.profile.standardSteps')}</span>
+                  <span className="text-xs text-gray-500 dark:text-gray-400">
+                    {t("legality.profile.standardSteps")}
+                  </span>
                   <span className="text-sm font-medium text-gray-900 dark:text-white">
-                    {legality.legalitySteps.filter(s => s.step.isDefault).length}
+                    {
+                      legality.legalitySteps.filter((s) => s.step.isDefault)
+                        .length
+                    }
                   </span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-xs text-gray-500 dark:text-gray-400">{t('legality.profile.customSteps')}</span>
+                  <span className="text-xs text-gray-500 dark:text-gray-400">
+                    {t("legality.profile.customSteps")}
+                  </span>
                   <span className="text-sm font-medium text-gray-900 dark:text-white">
-                    {legality.legalitySteps.filter(s => !s.step.isDefault).length}
+                    {
+                      legality.legalitySteps.filter((s) => !s.step.isDefault)
+                        .length
+                    }
                   </span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-xs text-gray-500 dark:text-gray-400">{t('legality.profile.withAttachments')}</span>
+                  <span className="text-xs text-gray-500 dark:text-gray-400">
+                    {t("legality.profile.withAttachments")}
+                  </span>
                   <span className="text-sm font-medium text-gray-900 dark:text-white">
-                    {legality.legalitySteps.filter(s => s.step.files?.length > 0).length}
+                    {
+                      legality.legalitySteps.filter(
+                        (s) => s.step.files?.length > 0,
+                      ).length
+                    }
                   </span>
                 </div>
               </div>
@@ -384,10 +471,10 @@ export default function ViewLegality() {
             <div className="flex items-center justify-between">
               <h2 className="text-lg font-semibold text-gray-900 dark:text-white flex items-center gap-2">
                 <Layers className="w-5 h-5 text-[#B39371]" />
-                {t('legality.profile.workflowSteps')}
+                {t("legality.profile.workflowSteps")}
               </h2>
               <span className="text-xs text-gray-500 dark:text-gray-400">
-                {t('legality.profile.clickToView')}
+                {t("legality.profile.clickToView")}
               </span>
             </div>
 
@@ -395,9 +482,9 @@ export default function ViewLegality() {
             <div className="space-y-3">
               {legality.legalitySteps?.map((item, index) => {
                 const step = item.step;
-                const isCompleted = step?.isUpdated || !!step?.toDate;
+                const isCompleted = step?.isCompleted;
                 const isExpanded = expandedStep === item.id;
-                
+
                 return (
                   <motion.div
                     key={item.id}
@@ -407,34 +494,47 @@ export default function ViewLegality() {
                     className="bg-white dark:bg-gray-900 rounded-md border border-gray-200 dark:border-gray-800 overflow-hidden"
                   >
                     {/* Step Header */}
-                    <div 
+                    <div
                       onClick={() => toggleStep(item.id)}
                       className="p-4 flex items-center justify-between cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors"
                     >
                       <div className="flex items-center gap-4 flex-1">
                         {/* Step Icon */}
-                        <div className={cn(
-                          "w-10 h-10 rounded-md flex items-center justify-center flex-shrink-0",
-                          isCompleted 
-                            ? "bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400"
-                            : "bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400"
-                        )}>
-                          {isCompleted ? <CheckCircle2 className="w-5 h-5" /> : <span className="text-sm font-medium">{index + 1}</span>}
+                        <div
+                          className={cn(
+                            "w-10 h-10 rounded-md flex items-center justify-center flex-shrink-0",
+                            isCompleted
+                              ? "bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400"
+                              : "bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400",
+                          )}
+                        >
+                          {isCompleted ? (
+                            <CheckCircle2 className="w-5 h-5" />
+                          ) : (
+                            <span className="text-sm font-medium">
+                              {index + 1}
+                            </span>
+                          )}
                         </div>
- 
+
                         {/* Step Info */}
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-2 mb-1">
                             <h3 className="text-sm font-medium text-gray-900 dark:text-white truncate">
-                              {i18n.language === 'ar' ? step?.name?.arabic : formatStepName(step?.name?.english || "")}
+                              {i18n.language === "ar"
+                                ? step?.name?.arabic
+                                : formatStepName(step?.name?.english || "")}
                             </h3>
                             {step?.isDefault && (
-                              <Badge variant="secondary" className="text-[10px] px-1.5 py-0.5 bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400">
-                                {t('legality.profile.default')}
+                              <Badge
+                                variant="secondary"
+                                className="text-[10px] px-1.5 py-0.5 bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400"
+                              >
+                                {t("legality.profile.default")}
                               </Badge>
                             )}
                           </div>
-                          
+
                           <div className="flex items-center gap-3 text-xs">
                             {step?.fromDate && (
                               <span className="text-gray-500 dark:text-gray-400">
@@ -443,37 +543,59 @@ export default function ViewLegality() {
                             )}
                             {step?.toDate && (
                               <span className="text-emerald-600 dark:text-emerald-400">
-                                Completed: {formatDate(step.toDate)}
+                                Finished: {formatDate(step.toDate)}
                               </span>
                             )}
                           </div>
                         </div>
                       </div>
- 
+
                       <div className="flex items-center gap-3">
                         {/* Status Badge */}
-                        <Badge 
+                        <Badge
                           className={cn(
                             "text-[10px] px-2 py-0.5",
-                            isCompleted 
+                            isCompleted
                               ? "bg-emerald-50 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-400"
-                              : "bg-amber-50 text-amber-700 dark:bg-amber-500/10 dark:text-amber-400"
+                              : "bg-amber-50 text-amber-700 dark:bg-amber-500/10 dark:text-amber-400",
                           )}
                         >
-                          {isCompleted ? t('legality.completed') : t('legality.pending')}
+                          {isCompleted
+                            ? t("legality.completed")
+                            : t("legality.pending")}
                         </Badge>
- 
+
+                        {/* Complete Button */}
+                        {!isCompleted && (
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              completeMutation.mutate({
+                                legalityStepId: item.id,
+                                stepId: step.id,
+                              });
+                            }}
+                            disabled={completeMutation.isPending}
+                            className="inline-flex items-center gap-1 px-2 py-1 rounded-md text-[11px] font-semibold bg-emerald-50 text-emerald-700 hover:bg-emerald-100 dark:bg-emerald-500/10 dark:text-emerald-400 dark:hover:bg-emerald-500/20 transition-colors disabled:opacity-50"
+                          >
+                            <CheckCircle2 className="w-3.5 h-3.5" />
+                            {t("legality.markAsCompleted")}
+                          </button>
+                        )}
+
                         {/* Edit Button */}
                         <button
                           onClick={(e) => {
                             e.stopPropagation();
-                            setLocation(`/legality/${id}/steps/${item.id}/edit`);
+                            setLocation(
+                              `/legality/${id}/steps/${item.id}/edit`,
+                            );
                           }}
                           className="p-1 text-gray-400 hover:text-[#B39371] hover:bg-[#B39371]/10 rounded-md transition-all"
                         >
                           <Edit className="w-4 h-4" />
                         </button>
- 
+
                         {/* Expand Icon */}
                         <motion.div
                           animate={{ rotate: isExpanded ? 180 : 0 }}
@@ -484,7 +606,7 @@ export default function ViewLegality() {
                         </motion.div>
                       </div>
                     </div>
- 
+
                     {/* Expanded Content */}
                     <AnimatePresence>
                       {isExpanded && (
@@ -498,41 +620,55 @@ export default function ViewLegality() {
                           <div className="p-4 bg-gray-50 dark:bg-gray-800/50 space-y-4">
                             {/* Status row always shown */}
                             <div className="flex items-center gap-3 pb-3 border-b border-gray-200 dark:border-gray-700">
-                              <div className={cn(
-                                "flex items-center gap-1.5 text-xs font-medium px-2.5 py-1 rounded-md",
-                                isCompleted
-                                  ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-400"
-                                  : "bg-amber-100 text-amber-700 dark:bg-amber-500/10 dark:text-amber-400"
-                              )}>
-                                {isCompleted
-                                  ? <><CheckCircle2 className="w-3.5 h-3.5" /> {t('legality.completed')}</>
-                                  : <><Clock className="w-3.5 h-3.5" /> {t('legality.pending')}</>}
+                              <div
+                                className={cn(
+                                  "flex items-center gap-1.5 text-xs font-medium px-2.5 py-1 rounded-md",
+                                  isCompleted
+                                    ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-400"
+                                    : "bg-amber-100 text-amber-700 dark:bg-amber-500/10 dark:text-amber-400",
+                                )}
+                              >
+                                {isCompleted ? (
+                                  <>
+                                    <CheckCircle2 className="w-3.5 h-3.5" />{" "}
+                                    {t("legality.completed")}
+                                  </>
+                                ) : (
+                                  <>
+                                    <Clock className="w-3.5 h-3.5" />{" "}
+                                    {t("legality.pending")}
+                                  </>
+                                )}
                               </div>
                               {step?.isDefault && (
                                 <span className="text-[10px] font-medium text-gray-400 bg-gray-100 dark:bg-gray-800 px-2 py-0.5 rounded-md">
-                                  {t('legality.profile.default')}
+                                  {t("legality.profile.default")}
                                 </span>
                               )}
                             </div>
- 
+
                             {/* Description */}
                             {step?.details && (
                               <div>
                                 <h4 className="text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">
-                                  {t('common.details')}
+                                  {t("common.details")}
                                 </h4>
                                 <p className="text-sm text-gray-700 dark:text-gray-300">
                                   {step.details}
                                 </p>
                               </div>
                             )}
- 
+
                             {/* Dates and Amount */}
-                            {(step?.fromDate || step?.toDate || step?.amount) && (
+                            {(step?.fromDate ||
+                              step?.toDate ||
+                              step?.amount) && (
                               <div className="grid grid-cols-3 gap-4">
                                 {step.fromDate && (
                                   <div>
-                                    <p className="text-xs text-gray-500 dark:text-gray-400">{t('legality.profile.startedAt')}</p>
+                                    <p className="text-xs text-gray-500 dark:text-gray-400">
+                                      {t("legality.profile.startedAt")}
+                                    </p>
                                     <p className="text-sm font-medium text-gray-900 dark:text-white">
                                       {formatDate(step.fromDate)}
                                     </p>
@@ -540,7 +676,9 @@ export default function ViewLegality() {
                                 )}
                                 {step.toDate && (
                                   <div>
-                                    <p className="text-xs text-gray-500 dark:text-gray-400">{t('legality.profile.completedAt')}</p>
+                                    <p className="text-xs text-gray-500 dark:text-gray-400">
+                                      {t("legality.profile.completedAt")}
+                                    </p>
                                     <p className="text-sm font-medium text-gray-900 dark:text-white">
                                       {formatDate(step.toDate)}
                                     </p>
@@ -548,7 +686,9 @@ export default function ViewLegality() {
                                 )}
                                 {step.amount && (
                                   <div>
-                                    <p className="text-xs text-gray-500 dark:text-gray-400">{t('legality.materials.cost')}</p>
+                                    <p className="text-xs text-gray-500 dark:text-gray-400">
+                                      {t("legality.materials.cost")}
+                                    </p>
                                     <p className="text-sm font-medium text-[#B39371]">
                                       {step.amount.toLocaleString()} SAR
                                     </p>
@@ -556,47 +696,60 @@ export default function ViewLegality() {
                                 )}
                               </div>
                             )}
- 
+
                             {/* Files */}
                             {step?.files && step.files.length > 0 && (
                               <div>
                                 <h4 className="text-xs font-medium text-gray-500 dark:text-gray-400 mb-2 flex items-center gap-1">
                                   <Paperclip className="w-3.5 h-3.5" />
-                                  {t('legality.labels.attachments')} ({step.files.length})
+                                  {t("legality.labels.attachments")} (
+                                  {step.files.length})
                                 </h4>
                                 <div className="grid grid-cols-2 gap-2">
-                                  {step.files.map((file: string, idx: number) => (
-                                    <a
-                                      key={idx}
-                                      href={buildImageUrl(file) ?? ""}
-                                      target="_blank"
-                                      rel="noopener noreferrer"
-                                      className="flex items-center gap-2 p-2 bg-white dark:bg-gray-900 rounded-md border border-gray-200 dark:border-gray-700 hover:border-[#B39371] transition-colors group"
-                                    >
-                                      <File className="w-4 h-4 text-gray-400 group-hover:text-[#B39371]" />
-                                      <span className="text-xs text-gray-600 dark:text-gray-400 truncate flex-1">
-                                        {file.split('/').pop()}
-                                      </span>
-                                      <Eye className="w-3.5 h-3.5 text-gray-400 group-hover:text-[#B39371]" />
-                                    </a>
-                                  ))}
+                                  {step.files.map(
+                                    (file: string, idx: number) => (
+                                      <a
+                                        key={idx}
+                                        href={buildImageUrl(file) ?? ""}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="flex items-center gap-2 p-2 bg-white dark:bg-gray-900 rounded-md border border-gray-200 dark:border-gray-700 hover:border-[#B39371] transition-colors group"
+                                      >
+                                        <File className="w-4 h-4 text-gray-400 group-hover:text-[#B39371]" />
+                                        <span className="text-xs text-gray-600 dark:text-gray-400 truncate flex-1">
+                                          {file.split("/").pop()}
+                                        </span>
+                                        <Eye className="w-3.5 h-3.5 text-gray-400 group-hover:text-[#B39371]" />
+                                      </a>
+                                    ),
+                                  )}
                                 </div>
                               </div>
                             )}
- 
+
                             {/* Fallback — nothing to show yet */}
-                            {(!step || (!step.details && !step.fromDate && !step.toDate && !step.amount && (!step.files || step.files.length === 0))) && (
+                            {(!step ||
+                              (!step.details &&
+                                !step.fromDate &&
+                                !step.toDate &&
+                                !step.amount &&
+                                (!step.files || step.files.length === 0))) && (
                               <div className="flex flex-col items-center justify-center py-4 text-center">
                                 <Info className="w-8 h-8 text-gray-300 dark:text-gray-600 mb-2" />
                                 <p className="text-xs text-gray-400 dark:text-gray-500">
-                                  {t('legality.profile.noDetails')}
+                                  {t("legality.profile.noDetails")}
                                 </p>
                                 <button
-                                  onClick={(e) => { e.stopPropagation(); setLocation(`/legality/${id}/steps/${item.id}/edit`); }}
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    setLocation(
+                                      `/legality/${id}/steps/${item.id}/edit`,
+                                    );
+                                  }}
                                   className="mt-3 text-xs font-medium text-[#B39371] hover:text-[#8B6951] flex items-center gap-1 transition-colors"
                                 >
                                   <Edit className="w-3 h-3" />
-                                  {t('legality.profile.addDetails')}
+                                  {t("legality.profile.addDetails")}
                                 </button>
                               </div>
                             )}
@@ -614,7 +767,6 @@ export default function ViewLegality() {
           <StepTimeline steps={legality.legalitySteps} />
         </div>
       </div>
-
     </Shell>
   );
 }

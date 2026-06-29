@@ -409,6 +409,7 @@
     "deleteSuccess": "Legality deleted successfully",
     "backToList": "Back to List",
     "updateStep": "Update Step Details",
+    "markAsCompleted": "Mark as Completed",
     "updateStepDesc": "Modify step name, timing, and attachments.",
     "failedLoad": "Failed to load legality",
     "errorDesc": "The legality record you're looking for might not exist or there was a connection error.",
@@ -498,6 +499,9 @@
       "amount": "Amount",
       "files": "files",
       "createdBy": "Created By"
+    },
+    "materials": {
+      "cost": "Cost"
     }
   },
   "projects": {

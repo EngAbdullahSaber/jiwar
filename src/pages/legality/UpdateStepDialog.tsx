@@ -51,7 +51,7 @@ export function UpdateStepDialog({
   const queryClient = useQueryClient();
 
   const isDefault = stepData?.step?.isDefault !== false;
-  const isCompleted = stepData?.step?.isUpdated || !!stepData?.step?.toDate;
+  const isCompleted = stepData?.step?.isCompleted ?? false;
 
   const [formData, setFormData] = useState({
     nameEn: '',
@@ -60,6 +60,7 @@ export function UpdateStepDialog({
     fromDate: '',
     toDate: '',
     amount: '',
+    isCompleted: false,
   });
   const [files, setFiles] = useState<string[]>([]);
 
@@ -72,6 +73,7 @@ export function UpdateStepDialog({
         fromDate: stepData.step.fromDate ? stepData.step.fromDate.split('T')[0] : '',
         toDate: stepData.step.toDate ? stepData.step.toDate.split('T')[0] : '',
         amount: stepData.step.amount?.toString() || '',
+        isCompleted: stepData.step.isCompleted ?? false,
       });
       setFiles(stepData.step.files || []);
     }
@@ -114,6 +116,7 @@ export function UpdateStepDialog({
       toDate: formData.toDate || null,
       amount: formData.amount ? Number(formData.amount) : null,
       files,
+      isCompleted: formData.isCompleted,
     };
 
     if (!isDefault) {
@@ -345,6 +348,23 @@ export function UpdateStepDialog({
                 onUploadMultipleSuccess={(urls) => setFiles(prev => [...prev, ...urls])}
               />
             </div>
+          </div>
+
+          {/* Mark as Completed */}
+          <div className="px-6 pb-4 flex items-center gap-3">
+            <input
+              type="checkbox"
+              id="dialog-isCompleted"
+              checked={formData.isCompleted}
+              onChange={(e) =>
+                setFormData((prev) => ({ ...prev, isCompleted: e.target.checked }))
+              }
+              className="w-4 h-4 rounded accent-emerald-600 cursor-pointer"
+            />
+            <label htmlFor="dialog-isCompleted" className="text-sm font-medium text-gray-700 dark:text-gray-300 cursor-pointer select-none flex items-center gap-1.5">
+              <CheckCircle2 className="w-4 h-4 text-emerald-500" />
+              {t('legality.markAsCompleted')}
+            </label>
           </div>
 
           {/* Footer */}

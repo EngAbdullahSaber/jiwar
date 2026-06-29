@@ -33,6 +33,8 @@ interface LegalityStep {
   step: {
     id: number;
     name: { arabic: string; english: string };
+    isCompleted: boolean;
+    isUpdated: boolean;
     fromDate: string | null;
     toDate: string | null;
   };
@@ -128,7 +130,7 @@ export default function Legality() {
   const calcProgress = (steps: LegalityStep[]) => {
     if (!steps?.length) return 0;
     return Math.round(
-      (steps.filter((s) => s.step.toDate).length / steps.length) * 100,
+      (steps.filter((s) => s.step.isCompleted).length / steps.length) * 100,
     );
   };
 
@@ -242,7 +244,7 @@ export default function Legality() {
               >
                 <option value="all">{t("legality.allStatus")}</option>
                 <option value="completed">{t("legality.completed")}</option>
-                <option value="progress">{t("legality.inProgress")}</option>
+                <option value="inProgress">{t("legality.inProgress")}</option>
                 <option value="pending">{t("legality.pending")}</option>
               </select>
               <ChevronDown className="absolute right-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[#A8A29E] pointer-events-none" />
@@ -377,8 +379,8 @@ export default function Legality() {
                         <p className="text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-2">
                           {t("legality.lastSteps")}
                         </p>
-                        {item.legalitySteps?.slice(-2).length > 0 ? (
-                          item.legalitySteps.slice(-2).map((s) => (
+                        {item.legalitySteps?.filter((s) => s.step.isUpdated || s.step.isCompleted).slice(-2).length > 0 ? (
+                          item.legalitySteps.filter((s) => s.step.isUpdated || s.step.isCompleted).slice(-2).map((s) => (
                             <div
                               key={s.id}
                               className="flex items-center justify-between gap-2"
@@ -387,7 +389,7 @@ export default function Legality() {
                                 <div
                                   className={cn(
                                     "w-1.5 h-1.5 rounded-md shrink-0",
-                                    s.step?.toDate
+                                    s.step?.isCompleted
                                       ? "bg-emerald-500"
                                       : "bg-amber-400",
                                   )}
@@ -396,7 +398,7 @@ export default function Legality() {
                                   {s.step?.name?.[lang] || "—"}
                                 </span>
                               </div>
-                              {s.step?.toDate ? (
+                              {s.step?.isCompleted ? (
                                 <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
                               ) : (
                                 <Clock className="w-3.5 h-3.5 text-gray-400 shrink-0" />
