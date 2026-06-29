@@ -110,6 +110,9 @@ export default function Roles() {
     return Shield;
   };
 
+  const PROTECTED_ROLES = ['client', 'contract manager', 'salesman', 'sales manager', 'finance manager'];
+  const isProtectedRole = (name: string) => PROTECTED_ROLES.includes(name.toLowerCase());
+
   const filteredRoles = data?.data.filter(
     (role) =>
       role.id !== 1 &&
@@ -291,18 +294,20 @@ export default function Roles() {
                                 </DropdownMenuItem>
                               </Link>
                             </Can>
-                            <Can I="DELETE" a="role-permission">
-                              <>
-                                <DropdownMenuSeparator />
-                                <DropdownMenuItem
-                                  className="cursor-pointer rounded-md gap-2 text-red-600 focus:text-red-700"
-                                  onClick={() => setRoleToDelete(role.id)}
-                                >
-                                  <Trash2 className="w-3.5 h-3.5" />
-                                  <span className="text-xs">{t('common.delete')}</span>
-                                </DropdownMenuItem>
-                              </>
-                            </Can>
+                            {!isProtectedRole(role.name) && (
+                              <Can I="DELETE" a="role-permission">
+                                <>
+                                  <DropdownMenuSeparator />
+                                  <DropdownMenuItem
+                                    className="cursor-pointer rounded-md gap-2 text-red-600 focus:text-red-700"
+                                    onClick={() => setRoleToDelete(role.id)}
+                                  >
+                                    <Trash2 className="w-3.5 h-3.5" />
+                                    <span className="text-xs">{t('common.delete')}</span>
+                                  </DropdownMenuItem>
+                                </>
+                              </Can>
+                            )}
                           </DropdownMenuContent>
                         </DropdownMenu>
                       </div>
