@@ -1,7 +1,7 @@
 ﻿import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { TopHeader } from '../../components/TopHeader';
-import { 
+import {
   MoreVertical,
    Phone,
   MapPin,
@@ -13,7 +13,9 @@ import {
   Eye,
   Edit,
   Trash2,
-  CreditCard
+  CreditCard,
+  AlertTriangle,
+  Loader2,
 } from 'lucide-react';
 import { Link } from "wouter";
 import { Shell } from '../../components/shared/Shell';
@@ -25,11 +27,20 @@ import { cn } from '@/lib/utils';
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
+import {
+  AlertDialog,
+  AlertDialogContent,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogDescription,
+  AlertDialogCancel,
+  AlertDialogAction,
+} from "@/components/ui/alert-dialog";
  import { DataTable } from '../../components/shared/DataTable';
 import type { Column } from '../../components/shared/DataTable';
 import { FilterBar } from '../../components/shared/FilterBar';
 import type { FilterField } from '../../components/shared/FilterBar';
-import { DeleteDialog } from '../../components/shared/DeleteDialog';
 import { toast } from 'react-hot-toast';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { AddClientPaymentDialog } from '../../components/clients/AddClientPaymentDialog';
@@ -86,6 +97,20 @@ interface ClientResponse {
   totalPages: number;
 }
 
+interface DeletedModule {
+  module: string;
+  count: number;
+  label: { arabic: string; english: string };
+}
+
+interface DeleteImpactData {
+  isAffected: boolean;
+  deletedModules: DeletedModule[];
+  setNullModules: any[];
+  deletedMessage: { arabic: string; english: string } | null;
+  setNullMessage: { arabic: string; english: string } | null;
+}
+
 export default function Clients() {
   const [currentPage, setCurrentPage] = useState(1);
   const { t, i18n } = useTranslation();
@@ -93,9 +118,11 @@ export default function Clients() {
   const pageSize = 10;
   const queryClient = useQueryClient();
   const [clientToDelete, setClientToDelete] = useState<number | null>(null);
+  const [impactData, setImpactData] = useState<DeleteImpactData | null>(null);
   const [paymentClient, setPaymentClient] = useState<{ id: number; name: string } | null>(null);
 
   const isRtl = i18n.language === 'ar';
+  const lang = isRtl ? 'arabic' : 'english';
 
   const { data, isLoading, refetch } = useQuery<ClientResponse>({
     queryKey: ['clients', currentPage, filters.search, filters.type],
@@ -112,6 +139,20 @@ export default function Clients() {
     }
   });
 
+  const impactMutation = useMutation({
+    mutationFn: async (id: number) => {
+      const res = await api.get('/delete-impact', { params: { module: 'client', id } });
+      return res.data.data as DeleteImpactData;
+    },
+    onSuccess: (data) => {
+      setImpactData(data);
+    },
+    onError: () => {
+      toast.error(t('common.error'));
+      setClientToDelete(null);
+    },
+  });
+
   const deleteMutation = useMutation({
     mutationFn: async (id: number) => {
       await api.delete(`/client/${id}`);
@@ -122,16 +163,16 @@ export default function Clients() {
       });
       queryClient.invalidateQueries({ queryKey: ['clients'] });
       setClientToDelete(null);
+      setImpactData(null);
     },
     onError: (error: any) => {
-      toast.error(error.response?.data?.message?.[isRtl ? 'arabic' : 'english'] || t('clients.errors.delete'));
+      toast.error(error.response?.data?.message?.[lang] || t('clients.errors.delete'));
     }
   });
 
-  const handleDelete = () => {
-    if (clientToDelete) {
-      deleteMutation.mutate(clientToDelete);
-    }
+  const handleDeleteClick = (id: number) => {
+    setClientToDelete(id);
+    impactMutation.mutate(id);
   };
 
   const filterFields: FilterField[] = [
@@ -287,11 +328,14 @@ export default function Clients() {
             <Can I="DELETE" a="client">
               <>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem 
-                  className="rounded-md cursor-pointer text-red-600"
-                  onClick={() => setClientToDelete(client.id)}
+                <DropdownMenuItem
+                  className="rounded-md cursor-pointer text-red-600 focus:text-red-700"
+                  onClick={() => handleDeleteClick(client.id)}
+                  disabled={impactMutation.isPending && clientToDelete === client.id}
                 >
-                  <Trash2 className="w-3.5 h-3.5 mr-2 rtl:ml-2 rtl:mr-0" />
+                  {impactMutation.isPending && clientToDelete === client.id
+                    ? <Loader2 className="w-3.5 h-3.5 mr-2 rtl:ml-2 rtl:mr-0 animate-spin" />
+                    : <Trash2 className="w-3.5 h-3.5 mr-2 rtl:ml-2 rtl:mr-0" />}
                   <span className="text-xs">{t('common.delete')}</span>
                 </DropdownMenuItem>
               </>
@@ -417,15 +461,83 @@ export default function Clients() {
         </div>
       </div>
 
-      <DeleteDialog 
-        isOpen={clientToDelete !== null}
-        onClose={() => setClientToDelete(null)}
-        onConfirm={handleDelete}
-        isDeleting={deleteMutation.isPending}
-        title={t('sidebar.clients')}
-        description={t('deleteDialog.confirmDescription')}
-        confirmText={t('common.delete')}
-      />
+      {/* Delete Impact Dialog */}
+      <AlertDialog
+        open={clientToDelete !== null && impactData !== null}
+        onOpenChange={(open) => {
+          if (!open) {
+            setClientToDelete(null);
+            setImpactData(null);
+          }
+        }}
+      >
+        <AlertDialogContent className="sm:max-w-[480px] rounded-md border border-red-100 dark:border-red-900/30 shadow-2xl p-0 overflow-hidden bg-white dark:bg-gray-900">
+          <div className="h-1 w-full bg-gradient-to-r from-red-400 to-red-600" />
+
+          <div className="p-6 space-y-4">
+            <AlertDialogHeader>
+              <div className="flex items-center gap-3 mb-1">
+                <div className="w-10 h-10 rounded-md bg-red-50 dark:bg-red-900/20 flex items-center justify-center shrink-0">
+                  <AlertTriangle className="w-5 h-5 text-red-500" />
+                </div>
+                <AlertDialogTitle className="text-lg font-bold text-gray-900 dark:text-white">
+                  {t("deleteDialog.confirmTitle")}
+                </AlertDialogTitle>
+              </div>
+              <AlertDialogDescription className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed">
+                {t("deleteDialog.confirmDescription")}
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+
+            {impactData?.isAffected && impactData.deletedModules.length > 0 && (
+              <div className="bg-red-50 dark:bg-red-900/10 border border-red-100 dark:border-red-900/30 rounded-md p-4 space-y-3">
+                <p className="text-xs font-semibold text-red-600 dark:text-red-400 leading-relaxed">
+                  {t("deleteDialog.alsoWillDelete")}
+                </p>
+                <div className="space-y-2">
+                  {impactData.deletedModules.map((m) => (
+                    <div key={m.module} className="flex items-center justify-between gap-3">
+                      <div className="flex items-center gap-2">
+                        <div className="w-1.5 h-1.5 rounded-full bg-red-500 shrink-0" />
+                        <span className="text-sm text-gray-700 dark:text-gray-300">
+                          {m.label?.[lang] || m.module}
+                        </span>
+                      </div>
+                      <span className="text-xs font-bold px-2 py-0.5 bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 rounded-md shrink-0">
+                        {m.count}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+
+          <AlertDialogFooter className="px-6 pb-6 flex-col-reverse sm:flex-row gap-3">
+            <AlertDialogCancel
+              disabled={deleteMutation.isPending}
+              className="w-full sm:w-auto px-6 py-2.5 rounded-md border-2 border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 font-medium"
+            >
+              {t("deleteDialog.cancel")}
+            </AlertDialogCancel>
+            <AlertDialogAction
+              disabled={deleteMutation.isPending}
+              onClick={(e) => {
+                e.preventDefault();
+                if (clientToDelete) deleteMutation.mutate(clientToDelete);
+              }}
+              className="w-full sm:w-auto px-6 py-2.5 rounded-md bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white font-semibold shadow-lg shadow-red-500/30 transition-all border-none disabled:opacity-50"
+            >
+              {deleteMutation.isPending ? (
+                <span className="flex items-center gap-2">
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  {t("deleteDialog.deleting")}
+                </span>
+              ) : t("deleteDialog.confirm")}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
       <AddClientPaymentDialog 
         isOpen={!!paymentClient}

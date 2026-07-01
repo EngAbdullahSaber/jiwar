@@ -80,7 +80,8 @@
     "lastUpdated": "Last updated",
     "id": "ID",
     "optional": "optional",
-    "confirm": "Confirm"
+    "confirm": "Confirm",
+    "willBeDeleted": "Will be deleted"
   },
   "dashboard": {
     "title": "General Dashboard",
@@ -235,7 +236,9 @@
     "roleAssignment": "Role Assignment",
     "selectRole": "Select a role for this user...",
     "assignRole": "Assign User Role...",
-    "searchRoles": "Search roles..."
+    "searchRoles": "Search roles...",
+    "deleteSuccess": "User deleted successfully",
+    "deleteError": "Failed to delete user"
   },
   "roles": {
     "title": "Roles & Permissions",
@@ -510,6 +513,7 @@
     "listTitle": "Project Management List",
     "description": "Manage and track the construction lifecycle through a central project registry",
     "create": "Create Project",
+    "deleteSuccess": "Project deleted successfully",
     "newProject": "New Project",
     "editProject": "Edit Project",
     "projectDetails": "Project Details",
@@ -656,6 +660,7 @@
   },
   "apartments": {
     "title": "Apartments",
+    "deleteSuccess": "Apartment deleted successfully",
     "add": "Add Apartment",
     "create": "Create Apartment",
     "new": "New Apartment",
@@ -1346,6 +1351,8 @@
     "lastUpdated": "Last Updated",
     "quickActions": "Quick Actions",
     "backToList": "Back to Registry",
+    "deleteSuccess": "Material deleted successfully",
+    "deleteError": "Failed to delete material",
     "statuses": {
       "pending": "Pending",
       "draft": "Draft",
@@ -1402,11 +1409,14 @@
     "edit": "Edit City"
   },
   "deleteDialog": {
+    "title": "Confirm Deletion",
+    "description": "Are you sure you want to delete this item? This action cannot be undone.",
     "confirmTitle": "Confirm Deletion",
     "confirmDescription": "Are you sure you want to delete this item? This action cannot be undone.",
     "confirm": "Delete",
     "cancel": "Cancel",
-    "deleting": "Deleting..."
+    "deleting": "Deleting...",
+    "alsoWillDelete": "In addition, the following will also be permanently deleted:"
   },
   "banks": {
     "title": "Banks",

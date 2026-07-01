@@ -1,5 +1,5 @@
 ﻿import { useTranslation } from "react-i18next";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import api from "@/lib/api";
 import { TopHeader } from "../../components/TopHeader";
 import { StatCard } from "../../components/shared/StatCard";
@@ -7,7 +7,16 @@ import { DataTable } from "../../components/shared/DataTable";
 import type { Column } from "../../components/shared/DataTable";
 import { FilterBar } from "../../components/shared/FilterBar";
 import type { FilterField } from "../../components/shared/FilterBar";
-
+import {
+  AlertDialog,
+  AlertDialogContent,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogDescription,
+  AlertDialogCancel,
+  AlertDialogAction,
+} from "@/components/ui/alert-dialog";
 import { Progress } from "@/components/ui/progress";
 import { Link } from "wouter";
 import { Shell } from "../../components/shared/Shell";
@@ -22,9 +31,13 @@ import {
   Sparkles,
   Home,
   FolderOpen,
+  Trash2,
+  AlertTriangle,
+  Loader2,
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { useState } from "react";
+import toast from "react-hot-toast";
 
 interface Project {
   id: number;
@@ -55,11 +68,64 @@ interface ProjectsResponse {
   totalPages: number;
 }
 
+interface DeletedModule {
+  module: string;
+  count: number;
+  label: { arabic: string; english: string };
+}
+
+interface DeleteImpactData {
+  isAffected: boolean;
+  deletedModules: DeletedModule[];
+  setNullModules: any[];
+  deletedMessage: { arabic: string; english: string } | null;
+  setNullMessage: { arabic: string; english: string } | null;
+}
+
 export default function Projects() {
   const { t, i18n } = useTranslation();
   const [filters, setFilters] = useState({ search: "" });
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 10;
+  const queryClient = useQueryClient();
+  const [projectToDelete, setProjectToDelete] = useState<number | null>(null);
+  const [impactData, setImpactData] = useState<DeleteImpactData | null>(null);
+
+  const impactMutation = useMutation({
+    mutationFn: async (id: number) => {
+      const res = await api.get("/delete-impact", { params: { module: "project", id } });
+      return res.data.data as DeleteImpactData;
+    },
+    onSuccess: (data) => {
+      setImpactData(data);
+    },
+    onError: () => {
+      toast.error(t("common.error"));
+      setProjectToDelete(null);
+    },
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: async (id: number) => {
+      await api.delete(`/project/${id}`);
+    },
+    onSuccess: () => {
+      toast.success(t("projects.deleteSuccess"));
+      queryClient.invalidateQueries({ queryKey: ["projects"] });
+      setProjectToDelete(null);
+      setImpactData(null);
+    },
+    onError: () => {
+      toast.error(t("common.error"));
+    },
+  });
+
+  const handleDeleteClick = (id: number) => {
+    setProjectToDelete(id);
+    impactMutation.mutate(id);
+  };
+
+  const lang = i18n.language === "ar" ? "arabic" : "english";
 
   const { data: response, isLoading } = useQuery<ProjectsResponse>({
     queryKey: ["projects", currentPage, pageSize, filters.search],
@@ -198,6 +264,16 @@ export default function Projects() {
               </Link>
             </>
           </Can>
+          <button
+            onClick={() => handleDeleteClick(p.id)}
+            disabled={impactMutation.isPending && projectToDelete === p.id}
+            className="p-2 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-md text-gray-400 hover:text-red-500 transition-colors disabled:opacity-40"
+            title={t("common.delete")}
+          >
+            {impactMutation.isPending && projectToDelete === p.id
+              ? <Loader2 className="w-4 h-4 animate-spin" />
+              : <Trash2 className="w-4 h-4" />}
+          </button>
         </div>
       ),
     },
@@ -327,6 +403,86 @@ export default function Projects() {
           )}
         </div>
       </div>
+
+      {/* Delete Impact Dialog */}
+      <AlertDialog
+        open={projectToDelete !== null && impactData !== null}
+        onOpenChange={(open) => {
+          if (!open) {
+            setProjectToDelete(null);
+            setImpactData(null);
+          }
+        }}
+      >
+        <AlertDialogContent className="sm:max-w-[480px] rounded-md border border-red-100 dark:border-red-900/30 shadow-2xl p-0 overflow-hidden bg-white dark:bg-gray-900">
+          {/* Red top strip */}
+          <div className="h-1 w-full bg-gradient-to-r from-red-400 to-red-600" />
+
+          <div className="p-6 space-y-4">
+            <AlertDialogHeader>
+              <div className="flex items-center gap-3 mb-1">
+                <div className="w-10 h-10 rounded-md bg-red-50 dark:bg-red-900/20 flex items-center justify-center shrink-0">
+                  <AlertTriangle className="w-5 h-5 text-red-500" />
+                </div>
+                <AlertDialogTitle className="text-lg font-bold text-gray-900 dark:text-white">
+                  {t("deleteDialog.confirmTitle")}
+                </AlertDialogTitle>
+              </div>
+              <AlertDialogDescription className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed">
+                {t("deleteDialog.confirmDescription")}
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+
+            {/* Affected modules */}
+            {impactData?.isAffected && impactData.deletedModules.length > 0 && (
+              <div className="bg-red-50 dark:bg-red-900/10 border border-red-100 dark:border-red-900/30 rounded-md p-4 space-y-3">
+                <p className="text-xs font-semibold text-red-600 dark:text-red-400 leading-relaxed">
+                  {t("deleteDialog.alsoWillDelete")}
+                </p>
+                <div className="space-y-2">
+                  {impactData.deletedModules.map((m) => (
+                    <div key={m.module} className="flex items-center justify-between gap-3">
+                      <div className="flex items-center gap-2">
+                        <div className="w-1.5 h-1.5 rounded-full bg-red-500 shrink-0" />
+                        <span className="text-sm text-gray-700 dark:text-gray-300">
+                          {m.label?.[lang] || m.module}
+                        </span>
+                      </div>
+                      <span className="text-xs font-bold px-2 py-0.5 bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 rounded-md shrink-0">
+                        {m.count}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+
+          <AlertDialogFooter className="px-6 pb-6 flex-col-reverse sm:flex-row gap-3">
+            <AlertDialogCancel
+              disabled={deleteMutation.isPending}
+              className="w-full sm:w-auto px-6 py-2.5 rounded-md border-2 border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 font-medium"
+            >
+              {t("deleteDialog.cancel")}
+            </AlertDialogCancel>
+            <AlertDialogAction
+              disabled={deleteMutation.isPending}
+              onClick={(e) => {
+                e.preventDefault();
+                if (projectToDelete) deleteMutation.mutate(projectToDelete);
+              }}
+              className="w-full sm:w-auto px-6 py-2.5 rounded-md bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white font-semibold shadow-lg shadow-red-500/30 transition-all border-none disabled:opacity-50"
+            >
+              {deleteMutation.isPending ? (
+                <span className="flex items-center gap-2">
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  {t("deleteDialog.deleting")}
+                </span>
+              ) : t("deleteDialog.confirm")}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </Shell>
   );
 }

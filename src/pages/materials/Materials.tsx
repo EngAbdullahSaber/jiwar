@@ -1,7 +1,18 @@
 ﻿import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import api from "@/lib/api";
+import { useToast } from "@/hooks/use-toast";
+import {
+  AlertDialog,
+  AlertDialogContent,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogDescription,
+  AlertDialogCancel,
+  AlertDialogAction,
+} from "@/components/ui/alert-dialog";
 import { TopHeader } from "../../components/TopHeader";
 import { DataTable } from "../../components/shared/DataTable";
 import type { Column } from "../../components/shared/DataTable";
@@ -30,9 +41,25 @@ import {
   Calendar,
   Paperclip,
   Hash,
+  Trash2,
+  Loader2,
 } from "lucide-react";
 import { format } from "date-fns";
 import { motion } from "framer-motion";
+
+interface DeletedModule {
+  module: string;
+  count: number;
+  label: { arabic: string; english: string };
+}
+
+interface DeleteImpactData {
+  isAffected: boolean;
+  deletedModules: DeletedModule[];
+  setNullModules: any[];
+  deletedMessage: { arabic: string; english: string } | null;
+  setNullMessage: { arabic: string; english: string } | null;
+}
 
 interface Material {
   id: number;
@@ -165,13 +192,18 @@ const StatusBadge = ({ status }: { status: string }) => {
 };
 
 export default function Materials() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
+  const lang = i18n.language === "ar" ? "arabic" : "english";
   const [filters, setFilters] = useState({
     search: "",
     requestStatus: "all",
     approvalStatus: "all",
   });
   const [currentPage, setCurrentPage] = useState(1);
+  const [materialToDelete, setMaterialToDelete] = useState<number | null>(null);
+  const [impactData, setImpactData] = useState<DeleteImpactData | null>(null);
   const pageSize = 10;
 
   const { data: response, isLoading } = useQuery<MaterialsResponse>({
@@ -200,6 +232,40 @@ export default function Materials() {
       return res.data;
     },
   });
+
+  const impactMutation = useMutation({
+    mutationFn: async (id: number) => {
+      const res = await api.get("/delete-impact", { params: { module: "material", id } });
+      return res.data.data as DeleteImpactData;
+    },
+    onSuccess: (data) => {
+      setImpactData(data);
+    },
+    onError: () => {
+      toast({ title: t("common.error"), variant: "destructive" });
+      setMaterialToDelete(null);
+    },
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: async (id: number) => {
+      await api.delete(`/material/${id}`);
+    },
+    onSuccess: () => {
+      toast({ title: t("common.success"), description: t("materials.deleteSuccess") });
+      queryClient.invalidateQueries({ queryKey: ["materials"] });
+      setMaterialToDelete(null);
+      setImpactData(null);
+    },
+    onError: () => {
+      toast({ title: t("common.error"), description: t("materials.deleteError"), variant: "destructive" });
+    },
+  });
+
+  const handleDelete = (id: number) => {
+    setMaterialToDelete(id);
+    impactMutation.mutate(id);
+  };
 
   const filterFields: FilterField[] = [
     {
@@ -343,6 +409,20 @@ export default function Materials() {
               </button>
             </Link>
           </Can>
+          <Can I="DELETE" a="material">
+            <button
+              onClick={() => handleDelete(m.id)}
+              disabled={impactMutation.isPending && materialToDelete === m.id}
+              className="p-2 hover:bg-rose-50 dark:hover:bg-rose-900/10 rounded-md text-gray-400 hover:text-rose-600 transition-colors disabled:opacity-50"
+              title={t("common.delete")}
+            >
+              {impactMutation.isPending && materialToDelete === m.id ? (
+                <Loader2 className="w-4 h-4 animate-spin" />
+              ) : (
+                <Trash2 className="w-4 h-4" />
+              )}
+            </button>
+          </Can>
         </div>
       ),
     },
@@ -455,6 +535,54 @@ export default function Materials() {
           )}
         </div>
       </div>
+
+      <AlertDialog open={!!impactData} onOpenChange={(open) => { if (!open) { setImpactData(null); setMaterialToDelete(null); } }}>
+        <AlertDialogContent className="max-w-md rounded-md border-gray-200 dark:border-gray-800">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="flex items-center gap-2 text-rose-600">
+              <AlertTriangle className="w-5 h-5" />
+              {t("deleteDialog.title")}
+            </AlertDialogTitle>
+            <AlertDialogDescription className="text-gray-600 dark:text-gray-400">
+              {t("deleteDialog.description")}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+
+          {impactData && impactData.deletedModules && impactData.deletedModules.length > 0 && (
+            <div className="my-2 rounded-md bg-rose-50 dark:bg-rose-900/10 border border-rose-200 dark:border-rose-800 p-4">
+              <p className="text-xs font-semibold text-rose-700 dark:text-rose-400 mb-3">
+                {t("deleteDialog.alsoWillDelete")}
+              </p>
+              <ul className="space-y-2">
+                {impactData.deletedModules.map((mod, idx) => (
+                  <li key={idx} className="flex items-center justify-between">
+                    <span className="text-xs text-rose-700 dark:text-rose-300 font-medium">
+                      {mod.label[lang]}
+                    </span>
+                    <span className="inline-flex items-center justify-center min-w-[24px] h-6 px-2 rounded-md bg-rose-100 dark:bg-rose-900/30 text-rose-700 dark:text-rose-300 text-xs font-bold">
+                      {mod.count}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => { setImpactData(null); setMaterialToDelete(null); }}>
+              {t("common.cancel")}
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => { if (materialToDelete) deleteMutation.mutate(materialToDelete); }}
+              disabled={deleteMutation.isPending}
+              className="bg-rose-600 hover:bg-rose-700 text-white"
+            >
+              {deleteMutation.isPending ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
+              {t("common.delete")}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </Shell>
   );
 }

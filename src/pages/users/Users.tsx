@@ -15,11 +15,13 @@ import {
   Plus,
   Mail,
   Phone,
+  AlertTriangle,
+  Loader2,
 } from "lucide-react";
 import { Link } from "wouter";
 import { Shell } from "../../components/shared/Shell";
 import { Can } from "../../components/shared/Can";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import api from "@/lib/api";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
@@ -39,6 +41,31 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  AlertDialog,
+  AlertDialogContent,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogDescription,
+  AlertDialogCancel,
+  AlertDialogAction,
+} from "@/components/ui/alert-dialog";
+import { useToast } from "@/hooks/use-toast";
+
+interface DeletedModule {
+  module: string;
+  count: number;
+  label: { arabic: string; english: string };
+}
+
+interface DeleteImpactData {
+  isAffected: boolean;
+  deletedModules: DeletedModule[];
+  setNullModules: any[];
+  deletedMessage: { arabic: string; english: string } | null;
+  setNullMessage: { arabic: string; english: string } | null;
+}
 
 interface Role {
   id: number;
@@ -65,7 +92,8 @@ interface UserResponse {
 
 export default function Users() {
   const [currentPage, setCurrentPage] = useState(1);
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const { toast } = useToast();
   const [filters, setFilters] = useState({
     search: "",
     role: "",
@@ -73,7 +101,11 @@ export default function Users() {
   });
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [isUpdateDialogOpen, setIsUpdateDialogOpen] = useState(false);
+  const [userToDelete, setUserToDelete] = useState<number | null>(null);
+  const [impactData, setImpactData] = useState<DeleteImpactData | null>(null);
   const pageSize = 10;
+  const queryClient = useQueryClient();
+  const lang = i18n.language === "ar" ? "arabic" : "english";
 
   const { data, isLoading, refetch } = useQuery<UserResponse>({
     queryKey: [
@@ -102,6 +134,40 @@ export default function Users() {
       return response.data;
     },
   });
+
+  const impactMutation = useMutation({
+    mutationFn: async (id: number) => {
+      const res = await api.get("/delete-impact", { params: { module: "user", id } });
+      return res.data.data as DeleteImpactData;
+    },
+    onSuccess: (data) => {
+      setImpactData(data);
+    },
+    onError: () => {
+      toast({ title: t("common.error"), variant: "destructive" });
+      setUserToDelete(null);
+    },
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: async (id: number) => {
+      await api.delete(`/user/${id}`);
+    },
+    onSuccess: () => {
+      toast({ title: t("common.success"), description: t("users.deleteSuccess") });
+      queryClient.invalidateQueries({ queryKey: ["users"] });
+      setUserToDelete(null);
+      setImpactData(null);
+    },
+    onError: () => {
+      toast({ title: t("common.error"), description: t("users.deleteError"), variant: "destructive" });
+    },
+  });
+
+  const handleDelete = (id: number) => {
+    setUserToDelete(id);
+    impactMutation.mutate(id);
+  };
 
   const filterFields: FilterField[] = [
     {
@@ -275,8 +341,16 @@ export default function Users() {
             <Can I="DELETE" a="user">
               <>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem className="rounded-md cursor-pointer text-red-600">
-                  <Trash2 className="w-3.5 h-3.5 mr-2 rtl:mr-0 rtl:ml-2" />
+                <DropdownMenuItem
+                  className="rounded-md cursor-pointer text-red-600 focus:bg-rose-50 dark:focus:bg-rose-900/10"
+                  onClick={() => handleDelete(user.id)}
+                  disabled={impactMutation.isPending && userToDelete === user.id}
+                >
+                  {impactMutation.isPending && userToDelete === user.id ? (
+                    <Loader2 className="w-3.5 h-3.5 mr-2 rtl:mr-0 rtl:ml-2 animate-spin" />
+                  ) : (
+                    <Trash2 className="w-3.5 h-3.5 mr-2 rtl:mr-0 rtl:ml-2" />
+                  )}
                   <span className="text-xs">{t("users.delete")}</span>
                 </DropdownMenuItem>
               </>
@@ -375,6 +449,54 @@ export default function Users() {
         open={isUpdateDialogOpen}
         onOpenChange={setIsUpdateDialogOpen}
       />
+
+      <AlertDialog open={!!impactData} onOpenChange={(open) => { if (!open) { setImpactData(null); setUserToDelete(null); } }}>
+        <AlertDialogContent className="max-w-md rounded-md border-gray-200 dark:border-gray-800">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="flex items-center gap-2 text-rose-600">
+              <AlertTriangle className="w-5 h-5" />
+              {t("deleteDialog.title")}
+            </AlertDialogTitle>
+            <AlertDialogDescription className="text-gray-600 dark:text-gray-400">
+              {t("deleteDialog.description")}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+
+          {impactData && impactData.deletedModules && impactData.deletedModules.length > 0 && (
+            <div className="my-2 rounded-md bg-rose-50 dark:bg-rose-900/10 border border-rose-200 dark:border-rose-800 p-4">
+              <p className="text-xs font-semibold text-rose-700 dark:text-rose-400 mb-3">
+                {t("deleteDialog.alsoWillDelete")}
+              </p>
+              <ul className="space-y-2">
+                {impactData.deletedModules.map((mod, idx) => (
+                  <li key={idx} className="flex items-center justify-between">
+                    <span className="text-xs text-rose-700 dark:text-rose-300 font-medium">
+                      {mod.label[lang]}
+                    </span>
+                    <span className="inline-flex items-center justify-center min-w-[24px] h-6 px-2 rounded-md bg-rose-100 dark:bg-rose-900/30 text-rose-700 dark:text-rose-300 text-xs font-bold">
+                      {mod.count}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => { setImpactData(null); setUserToDelete(null); }}>
+              {t("common.cancel")}
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => { if (userToDelete) deleteMutation.mutate(userToDelete); }}
+              disabled={deleteMutation.isPending}
+              className="bg-rose-600 hover:bg-rose-700 text-white"
+            >
+              {deleteMutation.isPending ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
+              {t("common.delete")}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </Shell>
   );
 }

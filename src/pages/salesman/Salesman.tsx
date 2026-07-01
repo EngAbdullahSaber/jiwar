@@ -18,7 +18,7 @@ import {
 import { Link, useLocation } from "wouter";
 import { Shell } from "../../components/shared/Shell";
 import { Can } from "../../components/shared/Can";
-import { useQuery, useMutation } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import api from "@/lib/api";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
@@ -37,7 +37,17 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { DeleteDialog } from "../../components/shared/DeleteDialog";
+import {
+  AlertDialog,
+  AlertDialogContent,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogDescription,
+  AlertDialogCancel,
+  AlertDialogAction,
+} from "@/components/ui/alert-dialog";
+import { AlertTriangle, Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 interface Salesman {
@@ -80,15 +90,31 @@ interface SalesmanResponse {
   totalPages: number;
 }
 
+interface DeletedModule {
+  module: string;
+  count: number;
+  label: { arabic: string; english: string };
+}
+
+interface DeleteImpactData {
+  isAffected: boolean;
+  deletedModules: DeletedModule[];
+  setNullModules: any[];
+  deletedMessage: { arabic: string; english: string } | null;
+  setNullMessage: { arabic: string; english: string } | null;
+}
+
 export default function SalesmanPage() {
   const [currentPage, setCurrentPage] = useState(1);
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { toast: shadToast } = useToast();
   const [, setLocation] = useLocation();
   const [filters, setFilters] = useState({ search: "", agentType: "all" });
-  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [salesmanToDelete, setSalesmanToDelete] = useState<number | null>(null);
+  const [impactData, setImpactData] = useState<DeleteImpactData | null>(null);
   const pageSize = 10;
+  const queryClient = useQueryClient();
+  const lang = i18n.language === "ar" ? "arabic" : "english";
 
   const { data, isLoading, refetch } = useQuery<SalesmanResponse>({
     queryKey: ["salesmen", currentPage, filters.search, filters.agentType],
@@ -106,6 +132,20 @@ export default function SalesmanPage() {
     },
   });
 
+  const impactMutation = useMutation({
+    mutationFn: async (id: number) => {
+      const res = await api.get("/delete-impact", { params: { module: "salesman", id } });
+      return res.data.data as DeleteImpactData;
+    },
+    onSuccess: (data) => {
+      setImpactData(data);
+    },
+    onError: () => {
+      shadToast({ title: t("common.error"), variant: "destructive" });
+      setSalesmanToDelete(null);
+    },
+  });
+
   const deleteMutation = useMutation({
     mutationFn: async (id: number) => {
       await api.delete(`/salesman/${id}`);
@@ -116,9 +156,9 @@ export default function SalesmanPage() {
         description: t("salesman.deleteSuccess"),
         variant: "default",
       });
-      refetch();
-      setIsDeleteDialogOpen(false);
+      queryClient.invalidateQueries({ queryKey: ["salesmen"] });
       setSalesmanToDelete(null);
+      setImpactData(null);
     },
     onError: () => {
       shadToast({
@@ -131,13 +171,7 @@ export default function SalesmanPage() {
 
   const handleDelete = (id: number) => {
     setSalesmanToDelete(id);
-    setIsDeleteDialogOpen(true);
-  };
-
-  const confirmDelete = () => {
-    if (salesmanToDelete) {
-      deleteMutation.mutate(salesmanToDelete);
-    }
+    impactMutation.mutate(id);
   };
 
   const filterFields: FilterField[] = [
@@ -329,8 +363,13 @@ export default function SalesmanPage() {
               <DropdownMenuItem
                 className="rounded-md cursor-pointer py-2 px-3 focus:bg-rose-50 dark:focus:bg-rose-900/10 text-rose-600"
                 onClick={() => handleDelete(salesman.id)}
+                disabled={impactMutation.isPending && salesmanToDelete === salesman.id}
               >
-                <Trash2 className="w-4 h-4 mr-2 rtl:mr-0 rtl:ml-2" />
+                {impactMutation.isPending && salesmanToDelete === salesman.id ? (
+                  <Loader2 className="w-4 h-4 mr-2 rtl:mr-0 rtl:ml-2 animate-spin" />
+                ) : (
+                  <Trash2 className="w-4 h-4 mr-2 rtl:mr-0 rtl:ml-2" />
+                )}
                 <span className="text-xs font-medium">
                   {t("common.delete")}
                 </span>
@@ -517,12 +556,55 @@ export default function SalesmanPage() {
         </div>
       </div>
 
-      <DeleteDialog
-        isOpen={isDeleteDialogOpen}
-        onClose={() => setIsDeleteDialogOpen(false)}
-        onConfirm={confirmDelete}
-        isDeleting={deleteMutation.isPending}
-      />
+      <AlertDialog open={!!impactData} onOpenChange={(open) => { if (!open) { setImpactData(null); setSalesmanToDelete(null); } }}>
+        <AlertDialogContent className="max-w-md rounded-md border-gray-200 dark:border-gray-800">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="flex items-center gap-2 text-rose-600">
+              <AlertTriangle className="w-5 h-5" />
+              {t("deleteDialog.title")}
+            </AlertDialogTitle>
+            <AlertDialogDescription className="text-gray-600 dark:text-gray-400">
+              {t("deleteDialog.description")}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+
+          {impactData && impactData.deletedModules && impactData.deletedModules.length > 0 && (
+            <div className="my-2 rounded-md bg-rose-50 dark:bg-rose-900/10 border border-rose-200 dark:border-rose-800 p-4">
+              <p className="text-xs font-semibold text-rose-700 dark:text-rose-400 mb-3">
+                {t("deleteDialog.alsoWillDelete")}
+              </p>
+              <ul className="space-y-2">
+                {impactData.deletedModules.map((mod, idx) => (
+                  <li key={idx} className="flex items-center justify-between">
+                    <span className="text-xs text-rose-700 dark:text-rose-300 font-medium">
+                      {mod.label[lang]}
+                    </span>
+                    <span className="inline-flex items-center justify-center min-w-[24px] h-6 px-2 rounded-md bg-rose-100 dark:bg-rose-900/30 text-rose-700 dark:text-rose-300 text-xs font-bold">
+                      {mod.count}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => { setImpactData(null); setSalesmanToDelete(null); }}>
+              {t("common.cancel")}
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => { if (salesmanToDelete) deleteMutation.mutate(salesmanToDelete); }}
+              disabled={deleteMutation.isPending}
+              className="bg-rose-600 hover:bg-rose-700 text-white"
+            >
+              {deleteMutation.isPending ? (
+                <Loader2 className="w-4 h-4 animate-spin mr-2" />
+              ) : null}
+              {t("common.delete")}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
     </Shell>
   );
